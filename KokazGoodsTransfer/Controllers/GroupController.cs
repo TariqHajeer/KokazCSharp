@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KokazGoodsTransfer.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class GroupController : Controller
     {
         KokazContext Context;

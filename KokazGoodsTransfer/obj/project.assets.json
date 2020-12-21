@@ -8593,11 +8593,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\t_w19\\source\\repos\\KokazGoodsTransfer\\KokazGoodsTransfer\\KokazGoodsTransfer.csproj",
+      "projectUniqueName": "C:\\Users\\t_w19\\Desktop\\KokazCSharp\\KokazGoodsTransfer\\KokazGoodsTransfer.csproj",
       "projectName": "KokazGoodsTransfer",
-      "projectPath": "C:\\Users\\t_w19\\source\\repos\\KokazGoodsTransfer\\KokazGoodsTransfer\\KokazGoodsTransfer.csproj",
+      "projectPath": "C:\\Users\\t_w19\\Desktop\\KokazCSharp\\KokazGoodsTransfer\\KokazGoodsTransfer.csproj",
       "packagesPath": "C:\\Users\\t_w19\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\t_w19\\source\\repos\\KokazGoodsTransfer\\KokazGoodsTransfer\\obj\\",
+      "outputPath": "C:\\Users\\t_w19\\Desktop\\KokazCSharp\\KokazGoodsTransfer\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\t_w19\\AppData\\Roaming\\NuGet\\NuGet.Config",
