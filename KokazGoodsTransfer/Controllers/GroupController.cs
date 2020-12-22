@@ -19,6 +19,26 @@ namespace KokazGoodsTransfer.Controllers
         {
             this.Context = context;
         }
+        [HttpDelete("{id}"]
+        public IActionResult Delete(int id)
+        {
+            var group = this.Context.Groups
+                .Find(id);
+            if (group == null)
+                return Conflict();
+            var totalPrivilegesCount = this.Context.Privileges.Count();
+            if (group.GroupPrivileges.Count() == totalPrivilegesCount)
+            {
+                var anotherGroups = this.Context.Groups
+                    .Include(c=>c.GroupPrivileges)
+                    .Where(c => c.Id != id).ToList();
+                anotherGroups = anotherGroups.Where(c => c.GroupPrivileges.Count() == totalPrivilegesCount).ToList();
+                if (anotherGroups.Count == 0)
+                    return Conflict();
+            }
+
+            return Ok();
+        }
         [HttpPost]
         public IActionResult Creat(CreateGroupDto createGroupDto)
         {
@@ -58,6 +78,7 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(groupsDto);
         }
+       
         [HttpGet("Privileges")]
         public IActionResult GetAlL()
         {
@@ -73,5 +94,6 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(privilegeDtos);
         }
+
     }
 }
