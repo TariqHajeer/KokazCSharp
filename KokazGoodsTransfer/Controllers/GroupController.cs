@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("EnableCORS")]
     public class GroupController : Controller
     {
         KokazContext Context;
