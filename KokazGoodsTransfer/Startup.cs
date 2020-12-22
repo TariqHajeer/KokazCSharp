@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KokazGoodsTransfer.DAL.Classes;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,8 +28,6 @@ namespace KokazGoodsTransfer
         {
             services.AddControllers();
             services.AddTransient(typeof(KokazContext), typeof(KokazContext));
-            services.AddTransient(typeof(GenericRepository<>), typeof(GenericRepository<>));
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

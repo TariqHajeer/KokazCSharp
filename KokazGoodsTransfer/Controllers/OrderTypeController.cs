@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -21,7 +22,9 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var orderTypes = Context.OrderTypes.ToList();
+            var orderTypes = Context.OrderTypes
+                .Include(c=>c.ClientOrderTypes)
+                .ToList();
             List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
             foreach (var item in orderTypes)
             {
@@ -35,7 +38,27 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(orderTypeDtos);
         }
-        //[HttpPost]
-        //public IActionResult Create()
+        [HttpPost]
+        public IActionResult Create(CreateOrderType orderTypeDto)
+        {
+            var similerOrderType = this.Context.OrderTypes.Where(c => c.Name.Equals(orderTypeDto.Name));
+            if (similerOrderType != null)
+                return Conflict();
+            
+            OrderType orderType = new OrderType()
+            {
+                Name = orderTypeDto.Name
+            };
+
+            Context.Add(orderType);
+            Context.SaveChanges();
+            OrderTypeDto response = new OrderTypeDto()
+            {
+                Id = orderType.Id,
+                Name = orderType.Name,
+                CanDelete = true
+            };
+            return Ok(response);
+        }
     }
 }

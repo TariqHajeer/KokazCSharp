@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Groups;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -34,12 +35,15 @@ namespace KokazGoodsTransfer.Controllers
                     PrivilegId = item
                 });
             }
+            Context.SaveChanges();
             return Ok();
         }
         [HttpGet]
         public IActionResult GetAll()
         {
-            var groups = this.Context.Groups.ToList();
+            var groups = this.Context.Groups
+                .Include(c=>c.GroupPrivileges)
+                .ToList();
             var groupsDto = new List<GroupDto>();
             foreach (var item in groups)
             {

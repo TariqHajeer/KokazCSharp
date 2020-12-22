@@ -293,10 +293,11 @@ C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\bin\Debug\netcoreapp3.0\ru
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.csprojAssemblyReference.cache
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\staticwebassets\KokazGoodsTransfer.StaticWebAssets.Manifest.cache
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\staticwebassets\KokazGoodsTransfer.StaticWebAssets.xml
-C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.AssemblyInfoInputs.cache
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.AssemblyInfo.cs
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.RazorTargetAssemblyInfo.cache
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.csproj.CopyComplete
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.dll
 C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.pdb
+C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\bin\Debug\netcoreapp3.0\AutoMapper.dll
+C:\Users\t_w19\Desktop\KokazCSharp\KokazGoodsTransfer\obj\Debug\netcoreapp3.0\KokazGoodsTransfer.MvcApplicationPartsAssemblyInfo.cache

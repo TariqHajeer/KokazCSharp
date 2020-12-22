@@ -35,7 +35,7 @@ namespace KokazGoodsTransfer.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.;Database=kokaz;Trusted_Connection=True;");
             }
         }
 
@@ -176,7 +176,14 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Password).HasMaxLength(50);
 
+                entity.Property(e => e.Salary).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.UserName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Country)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.CountryId)
+                    .HasConstraintName("FK_Users_Country");
 
                 entity.HasOne(d => d.Department)
                     .WithMany(p => p.Users)

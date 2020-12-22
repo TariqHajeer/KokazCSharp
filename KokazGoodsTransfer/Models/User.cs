@@ -19,12 +19,15 @@ namespace KokazGoodsTransfer.Models
         public int DepartmentId { get; set; }
         public string Experince { get; set; }
         public string Adress { get; set; }
-        public string HireDate { get; set; }
+        public DateTime HireDate { get; set; }
         public string Note { get; set; }
         public bool CanWorkAsAgent { get; set; }
+        public int? CountryId { get; set; }
+        public decimal? Salary { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
 
+        public virtual Country Country { get; set; }
         public virtual Department Department { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
