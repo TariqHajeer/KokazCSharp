@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers
         {
             var countries = Context.Countries
                 .Include(c => c.Users)
-                .Include(c => c.Clients)
+                .Include(c => c.Regions)
                 .ToList();
             List<CountryDto> countryDtos = new List<CountryDto>();
             foreach (var item in countries)
@@ -32,7 +32,8 @@ namespace KokazGoodsTransfer.Controllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    CanDelete = item.Clients.Count() == 0&&item.Users.Count()==0
+                    CanDelete = item.Regions.Count() == 0&&item.Users.Count()==0,
+                    Regions = item.Regions.Select(c=>c.Name).ToList()
                 });
             }
             return Ok(countryDtos);
@@ -42,12 +43,22 @@ namespace KokazGoodsTransfer.Controllers
         {
             var similer = Context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
             if (similer != null)
-                return Conflict();
+                   return Conflict();
             var country = new Country()
             {
                 Name = createCountryDto.Name
             };
             Context.Add(country);
+
+            foreach (var item in createCountryDto.Regions)
+            {
+                var region = new Region()
+                {
+                    Name = item,
+                    CountryId = country.Id,
+                };
+                Context.Add(region);    
+            }
             Context.SaveChanges();
             var countryDto = new CountryDto()
             {
@@ -57,6 +68,14 @@ namespace KokazGoodsTransfer.Controllers
             };
             return Ok(countryDto);
         }
-
+        [HttpPatch]
+        public IActionResult Update([FromBody] UpdateCountryDto updateCountryDto)
+        {
+            var country = this.Context.Countries.Find(updateCountryDto.Id);
+            country.Name = updateCountryDto.Name;
+            this.Context.Update(country);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }

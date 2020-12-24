@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers
             this.Context = context;
         }
         [HttpPost]
-        public IActionResult Crete(CreateDepartmentDto  departmentDto)
+        public IActionResult Crete(CreateDepartmentDto departmentDto)
         {
             var similer = Context.Departments.Where(c => c.Name == departmentDto.Name).FirstOrDefault();
             if (similer != null)
@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetAll()
         {
             var departments = this.Context.Departments
-                .Include(c=>c.Users)
+                .Include(c => c.Users)
                 .ToList();
             List<DepartmentDto> departmentDtos = new List<DepartmentDto>();
             foreach (var item in departments)
@@ -57,6 +57,27 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(departmentDtos);
         }
-
+        [HttpPatch]
+        public IActionResult UpdateDepartment(UpdateDepartmentDto updateDepartmentDto)
+        {
+            var department = this.Context.Departments.Find(updateDepartmentDto.Id);
+            var similerDepartment = this.Context.Departments.Where(c => c.Id != updateDepartmentDto.Id && c.Name == updateDepartmentDto.Name).FirstOrDefault();
+            if (similerDepartment != null)
+                return Conflict();
+            department.Name = updateDepartmentDto.Name;
+            this.Context.Update(department);
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteDepartment(int id)
+        {
+            var departmnet= this.Context.Departments.Find(id);
+            if (departmnet == null || departmnet.Users.Count() > 0)
+                return Conflict();
+            this.Context.Departments.Remove(departmnet);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }

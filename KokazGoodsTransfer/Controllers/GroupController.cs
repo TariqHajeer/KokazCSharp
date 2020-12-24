@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Groups;
 using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers
         {
             this.Context = context;
         }
-        [HttpDelete("{id}"]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var group = this.Context.Groups
@@ -36,9 +37,12 @@ namespace KokazGoodsTransfer.Controllers
                 if (anotherGroups.Count == 0)
                     return Conflict();
             }
-
+            this.Context.Groups.Remove(group);
+            this.Context.Remove(group);
+            this.Context.SaveChanges();
             return Ok();
         }
+        
         [HttpPost]
         public IActionResult Creat(CreateGroupDto createGroupDto)
         {
@@ -62,6 +66,7 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            
             var groups = this.Context.Groups
                 .Include(c=>c.GroupPrivileges)
                 .ToList();
@@ -93,6 +98,28 @@ namespace KokazGoodsTransfer.Controllers
                 });
             }
             return Ok(privilegeDtos);
+        }
+        [HttpPatch]
+        public IActionResult Update([FromBody] UpdateGroupDto updateGroupDto)
+        {
+            var group= this.Context.Groups.Find(updateGroupDto.Id);
+            if (group == null)
+                return NotFound();
+            var similer = this.Context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
+            if (similer != null)
+                return Conflict();
+            group.Name = group.Name;
+            group.GroupPrivileges.Clear();
+            foreach (var item in updateGroupDto.Privileges)
+            {
+                group.GroupPrivileges.Add(new GroupPrivilege()
+                {
+                    GroupId = group.Id,
+                    PrivilegId = item
+                });
+            }
+            this.Context.SaveChanges();
+            return Ok();
         }
 
     }

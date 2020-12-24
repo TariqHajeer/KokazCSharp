@@ -56,5 +56,27 @@ namespace KokazGoodsTransfer.Controllers
             Context.SaveChanges();
             return Ok();
         }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = this.Context.Users.ToList();
+            List<UserDto> userDtos = new List<UserDto>();
+            foreach (var item in users)
+            {
+                userDtos.Add(new UserDto()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    UserName = item.UserName,
+                    CanWorkAsAgent = item.CanWorkAsAgent,
+                    Department = new Dtos.Department.DepartmentDto()
+                    {
+                        Id = item.Department.Id,
+                        Name = item.Department.Name
+                    }
+                });
+            }
+            return Ok(userDtos);
+        }
     }
 }

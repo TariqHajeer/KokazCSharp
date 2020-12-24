@@ -16,6 +16,10 @@ namespace KokazGoodsTransfer
 {
     public class Startup
     {
+        //remotlyconnection
+        //Data Source = SQL5069.site4now.net; Initial Catalog = DB_A6C91F_Kokaz; User Id = DB_A6C91F_Kokaz_admin; Password=123qwe123
+        // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -46,6 +50,7 @@ namespace KokazGoodsTransfer
             {
                 app.UseDeveloperExceptionPage();
             }
+             app.UseCors("EnableCORS");
 
             app.UseHttpsRedirection();
 
@@ -57,7 +62,6 @@ namespace KokazGoodsTransfer
             {
                 endpoints.MapControllers();
             });
-             app.UseCors("EnableCORS");
         }
     }
 }

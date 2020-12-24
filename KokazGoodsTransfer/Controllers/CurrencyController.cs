@@ -53,6 +53,6 @@ namespace KokazGoodsTransfer.Controllers
                 });
             }
             return Ok(currencyDtos);
-        }
+        } 
     }
 }

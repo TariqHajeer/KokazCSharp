@@ -8,5 +8,6 @@ namespace KokazGoodsTransfer.Dtos.Countries
     public class CreateCountryDto
     {
         public string Name { get; set; }
+        public string[] Regions { get; set; }
     }
 }
