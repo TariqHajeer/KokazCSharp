@@ -38,6 +38,7 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(countryDtos);
         }
+        
         [HttpPost]
         public IActionResult Create([FromBody]CreateCountryDto createCountryDto)
         {
@@ -77,5 +78,14 @@ namespace KokazGoodsTransfer.Controllers
             this.Context.SaveChanges();
             return Ok();
         }
+        //[HttpDelete("{id}"]
+        //public IActionResult Delte(int id)
+        //{
+        //    var country = this.Context.Countries.Find(id);
+        //    if (country == null)
+        //        return NotFound();
+        //    if(country.Regions.Count()>0||country.Users.Count())
+        //    return Ok();
+        //}
     }
 }

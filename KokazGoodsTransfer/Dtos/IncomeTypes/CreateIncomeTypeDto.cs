@@ -7,5 +7,6 @@ namespace KokazGoodsTransfer.Dtos.IncomeTypes
 {
     public class CreateIncomeTypeDto
     {
+        public string Name { get; set; }
     }
 }

@@ -14,9 +14,9 @@ namespace KokazGoodsTransfer.Models
         public decimal Earining { get; set; }
         public string Note { get; set; }
         public int UserId { get; set; }
-        public int IncomeType { get; set; }
+        public int IncomeTypeId { get; set; }
 
-        public virtual IncomeType IncomeTypeNavigation { get; set; }
+        public virtual IncomeType IncomeType { get; set; }
         public virtual User User { get; set; }
     }
 }

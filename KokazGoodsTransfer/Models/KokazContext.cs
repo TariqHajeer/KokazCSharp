@@ -163,9 +163,9 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
-                entity.HasOne(d => d.IncomeTypeNavigation)
+                entity.HasOne(d => d.IncomeType)
                     .WithMany(p => p.Incomes)
-                    .HasForeignKey(d => d.IncomeType)
+                    .HasForeignKey(d => d.IncomeTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Income_IncomeType");
 
