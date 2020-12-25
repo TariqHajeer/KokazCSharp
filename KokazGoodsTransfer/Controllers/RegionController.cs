@@ -10,12 +10,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionController : ControllerBase
+    public class RegionController : AbstractController
     {
-        KokazContext Context;
-        public RegionController(KokazContext context )
+        
+        public RegionController(KokazContext context ):base(context)
         {
-            this.Context = context;
+            
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)

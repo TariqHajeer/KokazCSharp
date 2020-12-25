@@ -11,13 +11,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountryController : ControllerBase
+    public class CountryController : AbstractController
     {
-        KokazContext Context;
-        public CountryController(KokazContext context)
+        public CountryController(KokazContext context) : base(context)
         {
-            this.Context = context;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
