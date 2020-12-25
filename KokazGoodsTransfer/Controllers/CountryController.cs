@@ -31,34 +31,35 @@ namespace KokazGoodsTransfer.Controllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    CanDelete = item.Regions.Count() == 0&&item.Users.Count()==0,
-                    Regions = item.Regions.Select(c=>c.Name).ToList()
+                    CanDelete = item.Regions.Count() == 0 && item.Users.Count() == 0,
+                    Regions = item.Regions.Select(c => c.Name).ToList()
                 });
             }
             return Ok(countryDtos);
         }
-        
+
         [HttpPost]
         public IActionResult Create([FromBody]CreateCountryDto createCountryDto)
         {
             var similer = Context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
             if (similer != null)
-                   return Conflict();
+                return Conflict();
             var country = new Country()
             {
                 Name = createCountryDto.Name
             };
             Context.Add(country);
 
-            foreach (var item in createCountryDto.Regions)
-            {
-                var region = new Region()
+            if (createCountryDto.Regions != null)
+                foreach (var item in createCountryDto.Regions)
                 {
-                    Name = item,
-                    CountryId = country.Id,
-                };
-                Context.Add(region);    
-            }
+                    var region = new Region()
+                    {
+                        Name = item,
+                        CountryId = country.Id,
+                    };
+                    Context.Add(region);
+                }
             Context.SaveChanges();
             var countryDto = new CountryDto()
             {
