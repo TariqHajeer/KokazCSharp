@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OutComeType
 {
-    public class CreateOutComeType
+    public class UpdateOutComeTypeDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

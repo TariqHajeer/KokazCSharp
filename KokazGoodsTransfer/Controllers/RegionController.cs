@@ -20,8 +20,25 @@ namespace KokazGoodsTransfer.Controllers
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
         {
-             
-            return Ok();
+
+            var similerRegion = Context.Regions.Where(c => c.Name == createRegionDto.Name && c.CountryId == createRegionDto.CountryId).FirstOrDefault();
+            if (similerRegion != null)
+                return Conflict();
+
+            Region region = new Region()
+            {
+                CountryId = createRegionDto.CountryId,
+                Name = createRegionDto.Name
+            };
+            Context.Add(region);
+            Context.SaveChanges();
+            RegionDto response = new RegionDto()
+            {
+                Id = region.Id,
+                Name = region.Name,
+                CanDelete = true
+            };
+            return Ok(response);
         }
     }
 }
