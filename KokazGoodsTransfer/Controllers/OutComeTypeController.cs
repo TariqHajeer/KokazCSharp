@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.OutComeType;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,17 +12,16 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OutComeTypeController : ControllerBase
+    public class OutComeTypeController : AbstractController
     {
-        KokazContext context;
-        public OutComeTypeController(KokazContext context)
+        public OutComeTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.context = context;
         }
+
         [HttpGet]
         public IActionResult GetALl()
         {
-            var outComeTypes = this.context.OutComeTypes
+            var outComeTypes = this.Context.OutComeTypes
                 .Include(c=>c.OutComes)
                 .ToList();
             List<OutComeTypeDto> response = new List<OutComeTypeDto>();
@@ -39,15 +39,15 @@ namespace KokazGoodsTransfer.Controllers
         [HttpPost]
         public IActionResult Create([FromBody]CreateOutComeTypeDto createOutComeTypeDto  )
         {
-            var similer = this.context.OutComeTypes.Where(c => c.Name == createOutComeTypeDto.Name).Count();
+            var similer = this.Context.OutComeTypes.Where(c => c.Name == createOutComeTypeDto.Name).Count();
             if (similer > 0)
                 return Conflict();
             OutComeType outComeType = new OutComeType()
             {
                 Name = createOutComeTypeDto.Name
             };
-            this.context.Add(outComeType); 
-            this.context.SaveChanges();
+            this.Context.Add(outComeType); 
+            this.Context.SaveChanges();
             OutComeTypeDto outeComeTypeDto = new OutComeTypeDto()
             {
                 Id = outComeType.Id,

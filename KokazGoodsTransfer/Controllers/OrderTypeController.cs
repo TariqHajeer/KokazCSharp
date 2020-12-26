@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,13 +13,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderTypeController : ControllerBase
+    public class OrderTypeController : AbstractController
     {
-        KokazContext Context;
-        public OrderTypeController(KokazContext context)
+        public OrderTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.Context = context;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {

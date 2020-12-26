@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.Department;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,13 +13,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : ControllerBase
+    public class DepartmentController : AbstractController
     {
-        KokazContext Context;
-        public DepartmentController(KokazContext context)
+        public DepartmentController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.Context = context;
         }
+
         [HttpPost]
         public IActionResult Crete(CreateDepartmentDto departmentDto)
         {

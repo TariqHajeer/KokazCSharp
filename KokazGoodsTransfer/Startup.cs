@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace KokazGoodsTransfer
 {
@@ -18,7 +21,7 @@ namespace KokazGoodsTransfer
     {
         //remotlyconnection
         //Data Source = SQL5069.site4now.net; Initial Catalog = DB_A6C91F_Kokaz; User Id = DB_A6C91F_Kokaz_admin; Password=123qwe123
-        // t
+        // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
         //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -F
         public Startup(IConfiguration configuration)
         {
@@ -26,10 +29,12 @@ namespace KokazGoodsTransfer
         }
 
         public IConfiguration Configuration { get; }
+        public object JwtBearerDefaults { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddControllers();
             services.AddTransient(typeof(KokazContext), typeof(KokazContext));
             services.AddCors(options =>
@@ -41,10 +46,42 @@ namespace KokazGoodsTransfer
                        .AllowAnyMethod();
                 });
             });
+            
+            string securityKey = "this_is_our_supper_long_security_key_for_token_validation_project_2018_09_07$smesk.in";
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
+
+
+
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            //what to validate
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateIssuerSigningKey = true,
+            //            //setup validate data
+            //            ValidIssuer = "smesk.in",
+            //            ValidAudience = "readers",
+            //            IssuerSigningKey = symmetricSecurityKey
+            //        };
+            //    });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .WithExposedHeaders("x-paging"); ;
+                });
+            });
+
             services.AddSwaggerGen(c =>
             {
             });
-
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

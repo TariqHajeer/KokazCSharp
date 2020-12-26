@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CurrencyController : ControllerBase
+    public class CurrencyController : AbstractController
     {
-        KokazContext Context;
-        public CurrencyController(KokazContext context)
+        public CurrencyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            Context = context;
         }
+
         [HttpPost]
         public IActionResult Create([FromBody] CreateCurrencyDto createCurrency)
         {

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
 namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
@@ -13,9 +16,15 @@ namespace KokazGoodsTransfer.Controllers
     public class RegionController : AbstractController
     {
         
-        public RegionController(KokazContext context ):base(context)
+        public RegionController(KokazContext context ,IMapper mapper):base(context, mapper)
         {
             
+        }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+
+            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
@@ -32,13 +41,8 @@ namespace KokazGoodsTransfer.Controllers
             };
             Context.Add(region);
             Context.SaveChanges();
-            RegionDto response = new RegionDto()
-            {
-                Id = region.Id,
-                Name = region.Name,
-                CanDelete = true
-            };
-            return Ok(response);
+            
+            return Ok(mapper.Map<RegionDto>(region));
         }
     }
 }

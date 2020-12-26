@@ -1,4 +1,5 @@
-﻿using KokazGoodsTransfer.Models;
+﻿using AutoMapper;
+using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,9 +14,11 @@ namespace KokazGoodsTransfer.Controllers
     public abstract class AbstractController: ControllerBase
     {
         protected KokazContext Context;
-        public AbstractController(KokazContext context)
+        protected IMapper mapper;
+        public AbstractController(KokazContext context,IMapper mapper)
         {
             this.Context = context;
+            this.mapper = mapper;
         }
     }
 }

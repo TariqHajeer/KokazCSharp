@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,18 +13,19 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeTypeController : ControllerBase
+    public class IncomeTypeController : AbstractController
     {
 
-        KokazContext context;
-        public IncomeTypeController(KokazContext context )
+        
+
+        public IncomeTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.context = context;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
-            var incomeTypes = this.context.IncomeTypes
+            var incomeTypes = this.Context.IncomeTypes
                 .Include(c=>c.Incomes)
                 .ToList();
             List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
@@ -41,15 +43,15 @@ namespace KokazGoodsTransfer.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)
         {
-            var similer = this.context.IncomeTypes.Where(c => c.Name == createIncomeTypeDto.Name).Count();
+            var similer = this.Context.IncomeTypes.Where(c => c.Name == createIncomeTypeDto.Name).Count();
             if (similer > 0)
                 return Conflict();
             IncomeType incomeType = new IncomeType()
             {
                 Name = createIncomeTypeDto.Name
             };
-            this.context.Add(incomeType);
-            this.context.SaveChanges();
+            this.Context.Add(incomeType);
+            this.Context.SaveChanges();
             var response = new IncomeTypeDto()
             {
                 Id = incomeType.Id,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers
     [ApiController]
     public class CountryController : AbstractController
     {
-        public CountryController(KokazContext context) : base(context)
+        public CountryController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
@@ -24,18 +25,8 @@ namespace KokazGoodsTransfer.Controllers
                 .Include(c => c.Users)
                 .Include(c => c.Regions)
                 .ToList();
-            List<CountryDto> countryDtos = new List<CountryDto>();
-            foreach (var item in countries)
-            {
-                countryDtos.Add(new CountryDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    CanDelete = item.Regions.Count() == 0 && item.Users.Count() == 0,
-                    Regions = item.Regions.Select(c => c.Name).ToList()
-                });
-            }
-            return Ok(countryDtos);
+            var x = mapper.Map<CountryDto[]>(countries);
+            return Ok(x);
         }
 
         [HttpPost]
@@ -48,26 +39,30 @@ namespace KokazGoodsTransfer.Controllers
             {
                 Name = createCountryDto.Name
             };
-            Context.Add(country);
 
+            //Context.Add(country);
+            //if (createCountryDto.Regions != null)
+            //    foreach (var item in createCountryDto.Regions)
+            //    {
+            //        var region = new Region()
+            //        {
+            //            Name = item,
+            //            CountryId = country.Id,
+            //        };
+            //        Context.Add(region);
+            //    }
+            
             if (createCountryDto.Regions != null)
                 foreach (var item in createCountryDto.Regions)
                 {
-                    var region = new Region()
+                    country.Regions.Add(new Region()
                     {
-                        Name = item,
-                        CountryId = country.Id,
-                    };
-                    Context.Add(region);
+                        Name = item
+                    });
                 }
+            Context.Add(country);
             Context.SaveChanges();
-            var countryDto = new CountryDto()
-            {
-                Id = country.Id,
-                Name = country.Name,
-                CanDelete = true
-            };
-            return Ok(countryDto);
+            return Ok(mapper.Map<CountryDto>(country));
         }
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateCountryDto updateCountryDto)

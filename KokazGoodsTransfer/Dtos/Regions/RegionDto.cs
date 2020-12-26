@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Dtos.Countries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,6 @@ namespace KokazGoodsTransfer.Dtos.Regions
         public int Id { get; set; }
         public string Name { get; set; }
         public bool CanDelete { get; set; }
-
+        public CountryDto Country { get; set; }
     }
 }

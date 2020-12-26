@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using KokazGoodsTransfer.Dtos.Groups;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
@@ -12,14 +13,14 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("EnableCORS")]
-    public class GroupController : Controller
+    
+    public class GroupController : AbstractController
     {
-        KokazContext Context;
-        public GroupController(KokazContext context)
+
+        public GroupController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.Context = context;
         }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
