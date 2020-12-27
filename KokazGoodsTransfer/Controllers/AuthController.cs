@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers
                     signingCredentials: signingCredentials
                     , claims: claims
                 );
-            return Ok();
+            return Ok(token);
         }
     }
 }

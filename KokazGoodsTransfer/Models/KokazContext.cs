@@ -18,7 +18,6 @@ namespace KokazGoodsTransfer.Models
         }
 
         public virtual DbSet<Client> Clients { get; set; }
-        public virtual DbSet<ClientOrderType> ClientOrderTypes { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
@@ -72,25 +71,6 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Clients_Users");
-            });
-
-            modelBuilder.Entity<ClientOrderType>(entity =>
-            {
-                entity.HasKey(e => new { e.ClientId, e.OrderTypeId });
-
-                entity.ToTable("ClientOrderType");
-
-                entity.HasOne(d => d.Client)
-                    .WithMany(p => p.ClientOrderTypes)
-                    .HasForeignKey(d => d.ClientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ClientOrderType_Clients");
-
-                entity.HasOne(d => d.OrderType)
-                    .WithMany(p => p.ClientOrderTypes)
-                    .HasForeignKey(d => d.OrderTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ClientOrderType_OrderType");
             });
 
             modelBuilder.Entity<Country>(entity =>

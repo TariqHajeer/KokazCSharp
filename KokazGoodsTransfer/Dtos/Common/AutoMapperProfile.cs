@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<DepartmentDto>(user.Department);
                 }));
+            CreateMap<CreateClientDto, Client>()
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             
         }
     }

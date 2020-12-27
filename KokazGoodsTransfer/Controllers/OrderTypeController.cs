@@ -23,7 +23,6 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetAll()
         {
             var orderTypes = Context.OrderTypes
-                .Include(c=>c.ClientOrderTypes)
                 .ToList();
             List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
             foreach (var item in orderTypes)
@@ -32,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    CanDelete = item.ClientOrderTypes.ToList().Count == 0
+                    CanDelete = true
                 });
 
             }

@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers
         [HttpPost]
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
-            var similerUser = this.Context.Users.Where(c => c.UserName == createUserDto.UserName).Count();
+            var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
             if (similerUser != 0)
                 return Conflict();
             User user = new User()
