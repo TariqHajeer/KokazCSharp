@@ -23,13 +23,11 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-
             return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
         {
-
             var similerRegion = Context.Regions.Where(c => c.Name == createRegionDto.Name && c.CountryId == createRegionDto.CountryId).FirstOrDefault();
             if (similerRegion != null)
                 return Conflict();

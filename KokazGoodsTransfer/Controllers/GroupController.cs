@@ -86,7 +86,7 @@ namespace KokazGoodsTransfer.Controllers
         }
        
         [HttpGet("Privileges")]
-        public IActionResult GetAlL()
+        public IActionResult GetPrivileges()
         {
             var privileges= this.Context.Privileges.ToList();
             List<PrivilegeDto> privilegeDtos = new List<PrivilegeDto>();
@@ -103,24 +103,42 @@ namespace KokazGoodsTransfer.Controllers
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateGroupDto updateGroupDto)
         {
-            var group= this.Context.Groups.Find(updateGroupDto.Id);
-            if (group == null)
-                return NotFound();
-            var similer = this.Context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
-            if (similer != null)
-                return Conflict();
-            group.Name = group.Name;
-            group.GroupPrivileges.Clear();
-            foreach (var item in updateGroupDto.Privileges)
+            try
             {
-                group.GroupPrivileges.Add(new GroupPrivilege()
+                var group = this.Context.Groups.Find(updateGroupDto.Id);
+                if (group == null)
+                    return NotFound();
+                var similer = this.Context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
+                if (similer != null)
+                    return Conflict();
+                group.Name = group.Name;
+                this.Context.Update(group);
+                var groupPrivilges= this.Context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
+                foreach (var item in groupPrivilges)
                 {
-                    GroupId = group.Id,
-                    PrivilegId = item
-                });
+                    if (!updateGroupDto.Privileges.Contains(item.PrivilegId))
+                    {
+                        this.Context.Remove(item);
+                    }
+                }
+                foreach (var item in updateGroupDto.Privileges)
+                {
+                    if (!groupPrivilges.Select(c=>c.PrivilegId).Contains(item))
+                    {
+                        this.Context.Add(new GroupPrivilege()
+                        {
+                            GroupId = updateGroupDto.Id,
+                            PrivilegId = item
+                        });
+                    }
+                }
+                this.Context.SaveChanges();
+                return Ok();
             }
-            this.Context.SaveChanges();
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }   
         }
 
     }

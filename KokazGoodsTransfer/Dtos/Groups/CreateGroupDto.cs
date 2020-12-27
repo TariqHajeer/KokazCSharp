@@ -7,7 +7,7 @@ namespace KokazGoodsTransfer.Dtos.Groups
 {
     public class CreateGroupDto
     {
-        public string Name;
+        public string Name { set; get; }
         public int[] PrivilegesId { get; set; }
     }
 }

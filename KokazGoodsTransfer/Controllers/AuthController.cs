@@ -25,11 +25,11 @@ namespace KokazGoodsTransfer.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login ([FromBody] LoginDto loginDto)
+        public IActionResult Login([FromBody] LoginDto loginDto)
         {
             var user = this.Context.Users.Where(c => c.UserName == loginDto.UserName).FirstOrDefault();
             if (user == null)
-                    return Conflict();
+                return Conflict();
             if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
                 return Conflict();
             //security key
@@ -42,7 +42,7 @@ namespace KokazGoodsTransfer.Controllers
 
             //add claims
             var claims = new List<Claim>();
-
+            claims.Add(new Claim("userId", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Email, user.UserName));
             foreach (var Role in user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(r => r.Privileg)))
             {
@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers
                     signingCredentials: signingCredentials
                     , claims: claims
                 );
-            return Ok();    
+            return Ok();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.Dtos.Countries;
+using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.Regions;
+using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,14 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
                 .MaxDepth(2);
+            CreateMap<Department, DepartmentDto>()
+                .ForMember(d=>d.UserCount,opt=>opt.MapFrom(src=>src.Users.Count()));
+            CreateMap<User, UserDto>()
+                .ForMember(d=>d.Phones,opt=>opt.MapFrom(src=>src.UserPhones.Select(c=>c.Phone).ToList()))
+                .ForMember(d=>d.Department,opt=>opt.MapFrom((user,userDto,i,context)=>
+                {
+                    return context.Mapper.Map<DepartmentDto>(user.Department);
+                }));
             
         }
     }

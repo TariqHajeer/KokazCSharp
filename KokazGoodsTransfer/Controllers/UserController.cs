@@ -6,21 +6,25 @@ using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KokazGoodsTransfer.Dtos.Users;
-
+using KokazGoodsTransfer.Helpers;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : AbstractController
     {
-        KokazContext Context;
-        public UserController(KokazContext context)
+        public UserController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this.Context = context;
         }
+
         [HttpPost]
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
+            var similerUser = this.Context.Users.Where(c => c.UserName == createUserDto.UserName).Count();
+            if (similerUser != 0)
+                return Conflict();
             User user = new User()
             {
                 Name = createUserDto.Name,
@@ -30,7 +34,7 @@ namespace KokazGoodsTransfer.Controllers
                 HireDate = createUserDto.HireDate,
                 Note = createUserDto.Note,
                 UserName = createUserDto.UserName,
-                Password = createUserDto.Password,
+                Password = MD5Hash.GetMd5Hash(createUserDto.Password),
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
                 CountryId = createUserDto.CountryId,
@@ -41,7 +45,7 @@ namespace KokazGoodsTransfer.Controllers
             {
                 user.UserGroups.Add(new UserGroup()
                 {
-                    UserId = user.Id, 
+                    UserId = user. Id,
                     GroupId = item
                 });
             }
@@ -53,30 +57,18 @@ namespace KokazGoodsTransfer.Controllers
                     UserId = user.Id
                 });
             }
-            Context.SaveChanges();
-            return Ok();
+            Context.SaveChanges();           
+
+            return Ok(mapper.Map<UserDto>(user));
         }
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = this.Context.Users.ToList();
-            List<UserDto> userDtos = new List<UserDto>();
-            foreach (var item in users)
-            {
-                userDtos.Add(new UserDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    UserName = item.UserName,
-                    CanWorkAsAgent = item.CanWorkAsAgent,
-                    Department = new Dtos.Department.DepartmentDto()
-                    {
-                        Id = item.Department.Id,
-                        Name = item.Department.Name
-                    }
-                });
-            }
-            return Ok(userDtos);
+            var users = this.Context.Users
+                .Include(c=>c.UserPhones)
+                .Include(c=>c.Department)
+                .ToList();
+            return Ok(mapper.Map<UserDto[]>(users));
         }
     }
 }
