@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.Clients
 {
-    public class ClietnDto
+    public class ClientDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -17,6 +17,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string UserName { get; set; }
         public RegionDto Region { get; set; }
         public string CreatedBy { get; set; }
-        //public int UserId { get; set; }
+        public bool CanDelete { get; set; } = true;
     }
 }

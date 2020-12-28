@@ -106,6 +106,8 @@ namespace KokazGoodsTransfer
                         Scheme = "oauth2",
                         Name = "Bearer",
                         In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        BearerFormat="JWT",
                     },
                     Array.Empty<string>()
                 }
