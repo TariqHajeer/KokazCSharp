@@ -10,7 +10,7 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CurrencyController : AbstractController
+    public class CurrencyController : AbstractEmployeePolicyController
     {
         public CurrencyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

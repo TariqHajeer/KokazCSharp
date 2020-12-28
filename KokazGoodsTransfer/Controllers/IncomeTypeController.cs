@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeTypeController : AbstractController
+    public class IncomeTypeController : AbstractEmployeePolicyController
     {
 
         

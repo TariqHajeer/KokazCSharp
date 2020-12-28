@@ -59,6 +59,7 @@ namespace KokazGoodsTransfer
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                
 
             }).AddJwtBearer(x =>
             {
@@ -72,6 +73,17 @@ namespace KokazGoodsTransfer
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
                 };
+            });
+            services.AddAuthorization(option =>
+            {
+                option.AddPolicy("Employee", policy =>
+                {
+                    policy.RequireClaim("Type", "Employee");
+                });
+                option.AddPolicy("Client", policy =>
+                {
+                    policy.RequireClaim("Type", "Client");
+                });
             });
 
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KokazGoodsTransfer.Dtos.Users
+namespace KokazGoodsTransfer.Dtos.Common
 {
     public class LoginDto
     {

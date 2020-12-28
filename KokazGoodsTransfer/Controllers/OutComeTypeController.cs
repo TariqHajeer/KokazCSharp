@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OutComeTypeController : AbstractController
+    public class OutComeTypeController : AbstractEmployeePolicyController
     {
         public OutComeTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers
     [Route("api/[controller]")]
     [ApiController]
     
-    public class GroupController : AbstractController
+    public class GroupController : AbstractEmployeePolicyController
     {
 
         public GroupController(KokazContext context, IMapper mapper) : base(context, mapper)

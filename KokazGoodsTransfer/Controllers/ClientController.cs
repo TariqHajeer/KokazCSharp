@@ -15,13 +15,13 @@ namespace KokazGoodsTransfer.Controllers
     [Route("api/[controller]")]
     [ApiController]
     
-    public class ClientController : AbstractController
+    public class ClientController : AbstractEmployeePolicyController
     {
         public ClientController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpPost]
-        [Authorize]
+
         public IActionResult CreateClient(CreateClientDto createClientDto)
         {
             var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower());

@@ -55,6 +55,11 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<RegionDto>(client.Region);
                 }));
+            CreateMap<Client, AuthClient>()
+                .ForMember(d => d.Region, opt => opt.MapFrom((client, authclient, i, context) =>
+                {
+                    return context.Mapper.Map<RegionDto>(client.Region);
+                }));
         }
     }
 }

@@ -13,12 +13,12 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionController : AbstractController
+    public class RegionController : AbstractEmployeePolicyController
     {
-        
-        public RegionController(KokazContext context ,IMapper mapper):base(context, mapper)
+
+        public RegionController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            
+
         }
         [HttpGet]
         public IActionResult GetAll()
@@ -39,8 +39,31 @@ namespace KokazGoodsTransfer.Controllers
             };
             Context.Add(region);
             Context.SaveChanges();
-            
+
             return Ok(mapper.Map<RegionDto>(region));
+        }
+        
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var region = this.Context.Regions.Find(id);
+                if (region == null)
+                    return NotFound();
+                if (region.Clients.Any())
+                {
+                    return Conflict();
+                }
+
+                this.Context.Regions.Remove(region);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
@@ -18,10 +19,10 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : AbstractController
+    public class EmployeeAuthController : AbstractController
     {
 
-        public AuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
@@ -46,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers
                 climes.Add(new Claim(ClaimTypes.Role, item.SysName));
             }
             climes.Add(new Claim("UserID", user.Id.ToString()));
-            climes.Add(new Claim("Type","User"));
+            climes.Add(new Claim("Type", "Employee"));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(climes),

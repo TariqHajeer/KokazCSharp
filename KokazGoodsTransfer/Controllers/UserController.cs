@@ -9,17 +9,20 @@ using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : AbstractController
+    public class UserController : AbstractEmployeePolicyController
     {
         public UserController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
         [HttpPost]
+        
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
             var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();

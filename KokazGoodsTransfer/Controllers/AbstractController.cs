@@ -11,11 +11,12 @@ namespace KokazGoodsTransfer.Controllers
 {
 
     [EnableCors("EnableCORS")]
-    public abstract class AbstractController: ControllerBase
+
+    public abstract class AbstractController : ControllerBase
     {
         protected KokazContext Context;
         protected IMapper mapper;
-        public AbstractController(KokazContext context,IMapper mapper)
+        public AbstractController(KokazContext context, IMapper mapper)
         {
             this.Context = context;
             this.mapper = mapper;
@@ -23,8 +24,8 @@ namespace KokazGoodsTransfer.Controllers
         protected int? AuthoticateUserId()
         {
             var claim = User.Claims.ToList();
-            if(claim.Count==0)
-            return null;
+            if (claim.Count == 0)
+                return null;
             var userIdClaim = claim.Where(c => c.Type == "UserID").FirstOrDefault();
             return Convert.ToInt32(userIdClaim.Value);
         }

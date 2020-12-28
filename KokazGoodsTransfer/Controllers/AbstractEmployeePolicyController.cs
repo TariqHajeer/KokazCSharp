@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,11 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OutComeController : AbstractEmployeePolicyController
+    [Authorize(Policy = "Employee")]
+    public class AbstractEmployeePolicyController : AbstractController
     {
-        public OutComeController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public AbstractEmployeePolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        
     }
 }
