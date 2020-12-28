@@ -14,6 +14,7 @@ namespace KokazGoodsTransfer.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public string SysName { get; set; }
 
         public virtual ICollection<GroupPrivilege> GroupPrivileges { get; set; }
     }

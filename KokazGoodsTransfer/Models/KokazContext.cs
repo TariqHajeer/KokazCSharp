@@ -61,6 +61,14 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Clients)
                     .HasForeignKey(d => d.RegionId)
@@ -215,6 +223,8 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.SysName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Region>(entity =>

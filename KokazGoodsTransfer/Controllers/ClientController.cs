@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,12 @@ namespace KokazGoodsTransfer.Controllers
             this.Context.Add(client);
 
             return Ok();
+        }
+        [HttpGet]
+        [Authorize]
+        public string Test()
+        {
+            return "t";
         }
     }
 }
