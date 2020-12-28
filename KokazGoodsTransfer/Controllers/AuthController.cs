@@ -56,33 +56,9 @@ namespace KokazGoodsTransfer.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var token = tokenHandler.WriteToken(securityToken);
-            return Ok(new { token });
-
-            ////security key
-            //string securityKey = "this_is_our_supper_long_security_key_for_token_validation_project_2018_09_07$smesk.in";
-            ////symmetric security key
-            //var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
-
-            ////signing credentials
-            //var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
-
-            ////add claims
-            //var claims = new List<Claim>();
-            //claims.Add(new Claim("userId", user.Id.ToString()));
-            //claims.Add(new Claim(ClaimTypes.Email, user.UserName));
-            //foreach (var Role in user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(r => r.Privileg)))
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, Role.Name));
-            //}
-            ////create token
-            //var token = new JwtSecurityToken(
-            //        issuer: "smesk.in",
-            //        audience: "readers",
-            //        expires: DateTime.Now.AddMinutes(7 * 60),
-            //        signingCredentials: signingCredentials
-            //        , claims: claims
-            //    );
-            //return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            AuthenticatedUserDto authenticatedUserDto = mapper.Map<AuthenticatedUserDto>(user);
+            authenticatedUserDto.Token = token;
+            return Ok(authenticatedUserDto);
         }
     }
 }

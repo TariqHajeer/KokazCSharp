@@ -33,16 +33,22 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .MaxDepth(2);
             CreateMap<Department, DepartmentDto>()
-                .ForMember(d=>d.UserCount,opt=>opt.MapFrom(src=>src.Users.Count()));
+                .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
             CreateMap<User, UserDto>()
-                .ForMember(d=>d.Phones,opt=>opt.MapFrom(src=>src.UserPhones.Select(c=>c.Phone).ToList()))
-                .ForMember(d=>d.Department,opt=>opt.MapFrom((user,userDto,i,context)=>
-                {
-                    return context.Mapper.Map<DepartmentDto>(user.Department);
-                }));
+                .ForMember(d => d.Phones, opt => opt.MapFrom(src => src.UserPhones.Select(c => c.Phone).ToList()))
+                .ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
+                     {
+                         return context.Mapper.Map<DepartmentDto>(user.Department);
+                     }));
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
-            
+            CreateMap<Privilege, UserPrivilegeDto>();
+            CreateMap<User, AuthenticatedUserDto>()
+                .ForMember(c => c.Privileges, opt => opt.MapFrom((user, authDto, i, context) =>
+                     {
+                         return context.Mapper.Map<UserPrivilegeDto[]>(user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(c => c.Privileg).Distinct()));
+                     }));
+
         }
     }
 }
