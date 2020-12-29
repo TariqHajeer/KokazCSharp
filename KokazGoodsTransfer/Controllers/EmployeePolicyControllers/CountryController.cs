@@ -38,7 +38,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             var country = new Country()
             {
-                Name = createCountryDto.Name
+                Name = createCountryDto.Name,
+                DeliveryCost = createCountryDto.DeliveryCost
             };
 
             if (createCountryDto.Regions != null)

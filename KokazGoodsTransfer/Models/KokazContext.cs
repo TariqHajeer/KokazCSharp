@@ -101,6 +101,8 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Country");
 
+                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
