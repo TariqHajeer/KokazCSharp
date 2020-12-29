@@ -58,7 +58,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Update([FromBody] UpdateCountryDto updateCountryDto)
         {
             var country = this.Context.Countries.Find(updateCountryDto.Id);
+            var similarCountry = this.Context.Countries.Where(c => c.Name == updateCountryDto.Name && c.Id != updateCountryDto.Id).Any();
+            if (similarCountry)
+                return Conflict();
             country.Name = updateCountryDto.Name;
+            country.DeliveryCost = updateCountryDto.DeliveryCost;
             this.Context.Update(country);   
             this.Context.SaveChanges();
             return Ok();
