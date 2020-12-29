@@ -58,13 +58,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var country = this.Context.Countries.Find(updateCountryDto.Id);
             country.Name = updateCountryDto.Name;
-            this.Context.Update(country);
-            foreach (var item in updateCountryDto.Regions)
-            {
-                var region = country.Regions.Where(c => c.Id == item.Id).FirstOrDefault();
-                region.Name = item.Name;
-                this.Context.Update(region);
-            }
+            this.Context.Update(country);   
             this.Context.SaveChanges();
             return Ok();
         }

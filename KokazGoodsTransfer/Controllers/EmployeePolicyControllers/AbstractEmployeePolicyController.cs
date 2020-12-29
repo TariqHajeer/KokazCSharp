@@ -14,10 +14,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public AbstractEmployeePolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        protected int AuthoticateUserId()
-        {
-            var userIdClaim = User.Claims.ToList().Where(c => c.Type == "UserID").Single();
-            return Convert.ToInt32(userIdClaim.Value);
-        }
+        
     }
 }

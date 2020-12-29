@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
-        [HttpPut]
+        [HttpPut("addPhone")]
         public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
         {
             try

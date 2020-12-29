@@ -2,6 +2,8 @@
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -16,6 +18,10 @@ namespace KokazGoodsTransfer.Controllers
             this.Context = context;
             this.mapper = mapper;
         }
-
+        protected int AuthoticateUserId()
+        {
+            var userIdClaim = User.Claims.ToList().Where(c => c.Type == "UserID").Single();
+            return Convert.ToInt32(userIdClaim.Value);
+        }
     }
 }

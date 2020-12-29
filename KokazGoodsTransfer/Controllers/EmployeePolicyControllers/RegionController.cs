@@ -61,5 +61,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPatch]
+        public IActionResult UpdateRegion([FromBody]UpdateRegion updateRegion )
+        {
+            var region = this.Context.Regions.Find(updateRegion.Id);
+            if(this.Context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
+            {
+                return Conflict();
+            }
+            region.Name = updateRegion.Name;
+            this.Context.Update(region);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }
