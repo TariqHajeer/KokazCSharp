@@ -8,7 +8,8 @@ using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-namespace KokazGoodsTransfer.Controllers
+
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -24,9 +25,9 @@ namespace KokazGoodsTransfer.Controllers
             var countries = Context.Countries
                 .Include(c => c.Users)
                 .Include(c => c.Regions)
+                    .ThenInclude(c => c.Clients)
                 .ToList();
-            var x = mapper.Map<CountryDto[]>(countries);
-            return Ok(x);
+            return Ok(mapper.Map<CountryDto[]>(countries));
         }
 
         [HttpPost]
@@ -40,18 +41,6 @@ namespace KokazGoodsTransfer.Controllers
                 Name = createCountryDto.Name
             };
 
-            //Context.Add(country);
-            //if (createCountryDto.Regions != null)
-            //    foreach (var item in createCountryDto.Regions)
-            //    {
-            //        var region = new Region()
-            //        {
-            //            Name = item,
-            //            CountryId = country.Id,
-            //        };
-            //        Context.Add(region);
-            //    }
-            
             if (createCountryDto.Regions != null)
                 foreach (var item in createCountryDto.Regions)
                 {
@@ -70,17 +59,48 @@ namespace KokazGoodsTransfer.Controllers
             var country = this.Context.Countries.Find(updateCountryDto.Id);
             country.Name = updateCountryDto.Name;
             this.Context.Update(country);
+            foreach (var item in updateCountryDto.Regions)
+            {
+                var region = country.Regions.Where(c => c.Id == item.Id).FirstOrDefault();
+                region.Name = item.Name;
+                this.Context.Update(region);
+            }
             this.Context.SaveChanges();
             return Ok();
         }
-        //[HttpDelete("{id}"]
-        //public IActionResult Delte(int id)
-        //{
-        //    var country = this.Context.Countries.Find(id);
-        //    if (country == null)
-        //        return NotFound();
-        //    if(country.Regions.Count()>0||country.Users.Count())
-        //    return Ok();
-        //}
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                //test find instade of that
+                var country = this.Context.Countries
+                    .Include(c => c.Regions)
+                    .ThenInclude(c => c.Clients)
+                    .Where(c => c.Id == id)
+                    .SingleOrDefault();
+
+                if (country == null)
+                    return NotFound();
+                if (country.Users.Any())
+                    return Conflict();
+                if (country.Regions.Any(c => c.Clients.Any()))
+                {
+                    return Conflict();
+                }
+                foreach (var item in country.Regions)
+                {
+                    this.Context.Regions.Remove(item);
+                }
+                this.Context.Countries.Remove(country);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }

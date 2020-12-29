@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
+using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
@@ -18,6 +19,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
         public AutoMapperProfile()
         {
+
             CreateMap<Region, RegionDto>()
                 .ForMember(d => d.Country, src => src.MapFrom((region, regionDto, i, context) =>
                      {
@@ -27,6 +29,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.Users.Count() == 0))
+                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.Users.Count() == 0 && src.Regions.All(c => c.CanDelete)))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
@@ -50,16 +53,26 @@ namespace KokazGoodsTransfer.Dtos.Common
                      }));
             CreateMap<Client, ClientDto>()
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
-                
+
                 .ForMember(d => d.Region, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {
                     return context.Mapper.Map<RegionDto>(client.Region);
-                }));
+                }))
+                .ForMember(d => d.Phnoes, opt => opt.MapFrom((client, clientDto, i, context) =>
+                     {
+                         return context.Mapper.Map<ClientPhoneDto[]>(client.ClientPhones);
+                     }));
+            CreateMap<ClientPhone, ClientPhoneDto>();
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Region, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
                     return context.Mapper.Map<RegionDto>(client.Region);
+                }))
+                .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
+                {
+                    return context.Mapper.Map<ClientPhoneDto[]>(client.ClientPhones);
                 }));
+            CreateMap<CreateOutComeDto, OutCome>();
         }
     }
 }

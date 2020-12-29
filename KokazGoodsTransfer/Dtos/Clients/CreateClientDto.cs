@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Address { get; set; }
         public DateTime FirstDate { get; set; }
         public string Note { get; set; }
-        
+        public string[] Phones { get; set; }
 
     }
 }

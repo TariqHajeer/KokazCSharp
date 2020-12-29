@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -30,10 +30,10 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             var user = this.Context.Users
-                .Include(c=>c.UserGroups)
-                .ThenInclude(c=>c.Group)
-                .ThenInclude(c=>c.GroupPrivileges)
-                .ThenInclude(c=>c.Privileg)
+                .Include(c => c.UserGroups)
+                .ThenInclude(c => c.Group)
+                .ThenInclude(c => c.GroupPrivileges)
+                .ThenInclude(c => c.Privileg)
                 .Where(c => c.UserName == loginDto.UserName).FirstOrDefault();
             if (user == null)
                 return Conflict();

@@ -7,6 +7,11 @@ namespace KokazGoodsTransfer.Models
 {
     public partial class Client
     {
+        public Client()
+        {
+            ClientPhones = new HashSet<ClientPhone>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public int? RegionId { get; set; }
@@ -19,5 +24,6 @@ namespace KokazGoodsTransfer.Models
 
         public virtual Region Region { get; set; }
         public virtual User User { get; set; }
+        public virtual ICollection<ClientPhone> ClientPhones { get; set; }
     }
 }

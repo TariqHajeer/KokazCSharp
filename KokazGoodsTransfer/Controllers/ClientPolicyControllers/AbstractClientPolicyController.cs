@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]

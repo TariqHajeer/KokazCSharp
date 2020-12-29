@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -42,7 +39,6 @@ namespace KokazGoodsTransfer.Controllers
 
             return Ok(mapper.Map<RegionDto>(region));
         }
-        
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

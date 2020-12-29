@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -27,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult Login([FromBody]LoginDto loginDto)
         {
             var client = this.Context.Clients
-                .Include(c=>c.Region)
+                .Include(c => c.Region)
                 .Where(c => c.UserName == loginDto.UserName).FirstOrDefault();
             if (client == null)
                 return Conflict();

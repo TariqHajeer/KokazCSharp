@@ -157,6 +157,7 @@ namespace KokazGoodsTransfer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
+                //c.SwaggerEndpoint("v1/swagger.json", "Swagger Test");
             });
         }
     }

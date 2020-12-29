@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class IncomeTypeController : AbstractEmployeePolicyController
     {
 
-        
+
 
         public IncomeTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
@@ -26,16 +26,16 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetAll()
         {
             var incomeTypes = this.Context.IncomeTypes
-                .Include(c=>c.Incomes)
+                .Include(c => c.Incomes)
                 .ToList();
             List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
             foreach (var item in incomeTypes)
             {
-                incomeTypeDtos.Add( new IncomeTypeDto()
+                incomeTypeDtos.Add(new IncomeTypeDto()
                 {
                     Id = item.Id,
-                   Name =item.Name,
-                    CanDelete =item.Incomes.Count()==0
+                    Name = item.Name,
+                    CanDelete = item.Incomes.Count() == 0
                 });
             }
             return Ok(incomeTypeDtos);

@@ -12,5 +12,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Token { get; set; }
         public string Address { get; set; }
         public RegionDto Region { get; set; }
+        public List<ClientPhoneDto> Phones { get; set; }
     }
 }

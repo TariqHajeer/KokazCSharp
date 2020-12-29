@@ -2,14 +2,9 @@
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Controllers
 {
-
     [EnableCors("EnableCORS")]
 
     public abstract class AbstractController : ControllerBase
@@ -21,13 +16,6 @@ namespace KokazGoodsTransfer.Controllers
             this.Context = context;
             this.mapper = mapper;
         }
-        protected int? AuthoticateUserId()
-        {
-            var claim = User.Claims.ToList();
-            if (claim.Count == 0)
-                return null;
-            var userIdClaim = claim.Where(c => c.Type == "UserID").FirstOrDefault();
-            return Convert.ToInt32(userIdClaim.Value);
-        }
+
     }
 }

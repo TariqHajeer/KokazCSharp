@@ -18,5 +18,11 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public RegionDto Region { get; set; }
         public string CreatedBy { get; set; }
         public bool CanDelete { get; set; } = true;
+        public List<ClientPhoneDto> Phnoes { get; set; }
+    }
+    public class ClientPhoneDto 
+    {
+        public int Id { get; set; }
+        public string Phone { get; set; }
     }
 }

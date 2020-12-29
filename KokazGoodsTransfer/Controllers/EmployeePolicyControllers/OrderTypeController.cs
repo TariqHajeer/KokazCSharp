@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers
             var similerOrderType = this.Context.OrderTypes.Where(c => c.Name.Equals(orderTypeDto.Name));
             if (similerOrderType != null)
                 return Conflict();
-            
+
             OrderType orderType = new OrderType()
             {
                 Name = orderTypeDto.Name

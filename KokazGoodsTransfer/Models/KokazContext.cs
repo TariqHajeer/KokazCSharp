@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         }
 
         public virtual DbSet<Client> Clients { get; set; }
+        public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
@@ -79,6 +80,21 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Clients_Users");
+            });
+
+            modelBuilder.Entity<ClientPhone>(entity =>
+            {
+                entity.ToTable("clientPhones");
+
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.ClientPhones)
+                    .HasForeignKey(d => d.ClientId)
+                    .HasConstraintName("FK_clientPhones_Clients");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -191,6 +207,12 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
+
+                entity.HasOne(d => d.Currency)
+                    .WithMany(p => p.OutComes)
+                    .HasForeignKey(d => d.CurrencyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OutCome_Currency");
 
                 entity.HasOne(d => d.OutComeType)
                     .WithMany(p => p.OutComes)

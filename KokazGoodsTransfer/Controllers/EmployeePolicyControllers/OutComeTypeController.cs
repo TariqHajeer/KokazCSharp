@@ -8,7 +8,8 @@ using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-namespace KokazGoodsTransfer.Controllers
+
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetALl()
         {
             var outComeTypes = this.Context.OutComeTypes
-                .Include(c=>c.OutComes)
+                .Include(c => c.OutComes)
                 .ToList();
             List<OutComeTypeDto> response = new List<OutComeTypeDto>();
             foreach (var item in outComeTypes)
@@ -37,7 +38,7 @@ namespace KokazGoodsTransfer.Controllers
             return Ok();
         }
         [HttpPost]
-        public IActionResult Create([FromBody]CreateOutComeTypeDto createOutComeTypeDto  )
+        public IActionResult Create([FromBody]CreateOutComeTypeDto createOutComeTypeDto)
         {
             var similer = this.Context.OutComeTypes.Where(c => c.Name == createOutComeTypeDto.Name).Count();
             if (similer > 0)
@@ -46,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers
             {
                 Name = createOutComeTypeDto.Name
             };
-            this.Context.Add(outComeType); 
+            this.Context.Add(outComeType);
             this.Context.SaveChanges();
             OutComeTypeDto outeComeTypeDto = new OutComeTypeDto()
             {

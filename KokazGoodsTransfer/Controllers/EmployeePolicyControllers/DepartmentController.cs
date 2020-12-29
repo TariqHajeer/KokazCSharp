@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -72,7 +69,7 @@ namespace KokazGoodsTransfer.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteDepartment(int id)
         {
-            var departmnet= this.Context.Departments.Find(id);
+            var departmnet = this.Context.Departments.Find(id);
             if (departmnet == null || departmnet.Users.Count() > 0)
                 return Conflict();
             this.Context.Departments.Remove(departmnet);

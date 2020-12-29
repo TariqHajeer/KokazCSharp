@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+
     public class GroupController : AbstractEmployeePolicyController
     {
 
@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Controllers
             if (group.GroupPrivileges.Count() == totalPrivilegesCount)
             {
                 var anotherGroups = this.Context.Groups
-                    .Include(c=>c.GroupPrivileges)
+                    .Include(c => c.GroupPrivileges)
                     .Where(c => c.Id != id).ToList();
                 anotherGroups = anotherGroups.Where(c => c.GroupPrivileges.Count() == totalPrivilegesCount).ToList();
                 if (anotherGroups.Count == 0)
@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers
             this.Context.SaveChanges();
             return Ok();
         }
-        
+
         [HttpPost]
         public IActionResult Creat(CreateGroupDto createGroupDto)
         {
@@ -67,9 +67,9 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            
+
             var groups = this.Context.Groups
-                .Include(c=>c.GroupPrivileges)
+                .Include(c => c.GroupPrivileges)
                 .ToList();
             var groupsDto = new List<GroupDto>();
             foreach (var item in groups)
@@ -84,18 +84,18 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(groupsDto);
         }
-       
+
         [HttpGet("Privileges")]
         public IActionResult GetPrivileges()
         {
-            var privileges= this.Context.Privileges.ToList();
+            var privileges = this.Context.Privileges.ToList();
             List<PrivilegeDto> privilegeDtos = new List<PrivilegeDto>();
             foreach (var item in privileges)
             {
                 privilegeDtos.Add(new PrivilegeDto()
                 {
-                    Id= item.Id,
-                    Name=  item.Name
+                    Id = item.Id,
+                    Name = item.Name
                 });
             }
             return Ok(privilegeDtos);
@@ -113,7 +113,7 @@ namespace KokazGoodsTransfer.Controllers
                     return Conflict();
                 group.Name = group.Name;
                 this.Context.Update(group);
-                var groupPrivilges= this.Context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
+                var groupPrivilges = this.Context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
                 foreach (var item in groupPrivilges)
                 {
                     if (!updateGroupDto.Privileges.Contains(item.PrivilegId))
@@ -123,7 +123,7 @@ namespace KokazGoodsTransfer.Controllers
                 }
                 foreach (var item in updateGroupDto.Privileges)
                 {
-                    if (!groupPrivilges.Select(c=>c.PrivilegId).Contains(item))
+                    if (!groupPrivilges.Select(c => c.PrivilegId).Contains(item))
                     {
                         this.Context.Add(new GroupPrivilege()
                         {
@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers
             catch (Exception ex)
             {
                 return BadRequest();
-            }   
+            }
         }
 
     }

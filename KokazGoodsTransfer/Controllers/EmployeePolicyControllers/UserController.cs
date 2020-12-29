@@ -11,7 +11,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers
         }
 
         [HttpPost]
-        
+
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
             var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Controllers
             {
                 user.UserGroups.Add(new UserGroup()
                 {
-                    UserId = user. Id,
+                    UserId = user.Id,
                     GroupId = item
                 });
             }
@@ -60,7 +60,7 @@ namespace KokazGoodsTransfer.Controllers
                     UserId = user.Id
                 });
             }
-            Context.SaveChanges();           
+            Context.SaveChanges();
 
             return Ok(mapper.Map<UserDto>(user));
         }
@@ -68,8 +68,8 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetAll()
         {
             var users = this.Context.Users
-                .Include(c=>c.UserPhones)
-                .Include(c=>c.Department)
+                .Include(c => c.UserPhones)
+                .Include(c => c.Department)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }

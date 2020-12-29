@@ -6,7 +6,7 @@ using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace KokazGoodsTransfer.Controllers
+namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -49,10 +49,10 @@ namespace KokazGoodsTransfer.Controllers
                 {
                     Name = item.Name,
                     Id = item.Id,
-                    CanDelete =true
+                    CanDelete = true
                 });
             }
             return Ok(currencyDtos);
-        } 
+        }
     }
 }
