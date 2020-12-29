@@ -24,7 +24,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public IActionResult CreateClient(CreateClientDto createClientDto)
         {
-            var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower());
+            var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
             if (isExist)
             {
                 return Conflict();
@@ -100,5 +100,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpPatch]
+        public IActionResult UpdateClient([FromBody] UpdateClientDto updateClientDto)
+        {
+            try
+            {
+                var client = this.Context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
+                if (client == null)
+                    return NotFound();
+                client = mapper.Map<UpdateClientDto, Client>(updateClientDto, client);
+                this.Context.Update(client);
+                this.Context.SaveChanges();
+                client = this.Context.Clients
+                .Include(c => c.Region)
+                .Include(c => c.User)
+                .Single(c => c.Id == client.Id);
+                return Ok(mapper.Map<ClientDto>(client));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }

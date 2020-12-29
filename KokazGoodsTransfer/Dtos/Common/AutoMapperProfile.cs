@@ -73,6 +73,10 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<ClientPhoneDto[]>(client.ClientPhones);
                 }));
             CreateMap<CreateOutComeDto, OutCome>();
+            CreateMap<UpdateClientDto,Client>()
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+            CreateMap<CUpdateClientDto,Client>()
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
         }
     }
 }
