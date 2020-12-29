@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Dtos.Countries
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public decimal DeliveryCost { get; set; }
         public bool CanDelete { get; set; }
         public bool CanDeleteWithRegion { get; set; }
         public List<RegionDto> Regions { get; set; }

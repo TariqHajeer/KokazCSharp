@@ -27,7 +27,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             client = this.Context.Clients
                 .Include(c => c.Region)
-                .Include(c => c.User)
                 .Single(c => c.Id == client.Id);
             return Ok();
         }
@@ -67,5 +66,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest();
             }
         }
+        
     }
 }
