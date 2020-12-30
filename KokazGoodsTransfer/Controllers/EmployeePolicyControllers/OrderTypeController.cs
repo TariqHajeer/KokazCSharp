@@ -37,7 +37,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(orderTypeDtos);
         }
         [HttpPost]
-        public IActionResult Create(CreateOrderType orderTypeDto)
+        public IActionResult Create([FromBody] CreateOrderType orderTypeDto)
         {
             var similerOrderType = this.Context.OrderTypes.Where(c => c.Name.Equals(orderTypeDto.Name));
             if (similerOrderType != null)
@@ -58,8 +58,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             return Ok(response);
         }
-        //[HttpPatch]
-        //public IActionResult 
+        [HttpPatch]
+        public IActionResult Update([FromBody]UpdateOrderTypeDto updateOrderTypeDto)
+        {
+            try
+            {
+                var orderType = this.Context.OrderTypes.Find(updateOrderTypeDto.Id);
+                if (orderType == null)
+                    return NotFound();
+                if (this.Context.OrderTypes.Where(c => c.Id != updateOrderTypeDto.Id && c.Name == updateOrderTypeDto.Name).Any())
+                    return Conflict();
+                orderType.Name = updateOrderTypeDto.Name;
+                this.Context.Update(orderType);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -70,6 +88,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     .Where(c => c.Id == id).SingleOrDefault();
                 if (orderType == null)
                     return NotFound();
+                this.Context.Entry(orderType).Collection(c => c.OrderOrderTypes).Load();
+                if (orderType.OrderOrderTypes.Count() != 0)
+                    return Conflict();
                 this.Context.Remove(orderType);
                 this.Context.SaveChanges();
                 return Ok();

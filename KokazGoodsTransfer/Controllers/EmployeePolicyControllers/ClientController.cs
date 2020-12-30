@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpPost]
-
+        //[Authorize(Roles = "AddClient")]
         public IActionResult CreateClient(CreateClientDto createClientDto)
         {
             var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
@@ -55,6 +55,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Region)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
+                .Include(c=>c.Orders)
                 .ToList();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
@@ -122,6 +123,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-
+        [HttpDelete("{id}")]
+        public IActionResult DeleteClient(int id)
+        {
+            var client = this.Context.Clients
+                .Find(id);
+            if (client == null)
+                return NotFound();
+            this.Context.Entry(client).Collection(c => c.Orders).Load();
+            if (client.Orders.Count() != 0)
+                return Conflict();
+            this.Context.Remove(client);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }

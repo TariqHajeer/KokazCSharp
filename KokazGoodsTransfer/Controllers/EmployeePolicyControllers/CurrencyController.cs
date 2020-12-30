@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -16,6 +17,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
 
+        [HttpGet]
+        public IActionResult GetALl()
+        {
+            var currencies = this.Context.Currencies.ToList();
+            List<CurrencyDto> currencyDtos = new List<CurrencyDto>();
+            foreach (var item in currencies)
+            {
+                currencyDtos.Add(new CurrencyDto()
+                {
+                    Name = item.Name,
+                    Id = item.Id,
+                    CanDelete = true
+                });
+            }
+            return Ok(currencyDtos);
+        }
         [HttpPost]
         public IActionResult Create([FromBody] CreateCurrencyDto createCurrency)
         {
@@ -38,21 +55,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             return Ok(currencyDto);
         }
-        [HttpGet]
-        public IActionResult GetALl()
+        [HttpPatch]
+        public IActionResult Update([FromBody]UpdateCurrency updateCurrency)
         {
-            var currencies = this.Context.Currencies.ToList();
-            List<CurrencyDto> currencyDtos = new List<CurrencyDto>();
-            foreach (var item in currencies)
+            try
             {
-                currencyDtos.Add(new CurrencyDto()
-                {
-                    Name = item.Name,
-                    Id = item.Id,
-                    CanDelete = true
-                });
+                var currency = this.Context.Currencies.Find(updateCurrency.Id);
+                var similer = this.Context.Currencies.Where(c => c.Name == updateCurrency.Name && c.Id != updateCurrency.Id).Any();
+                if (similer)
+                    return Conflict();
+                currency.Name = updateCurrency.Name;
+                this.Context.Update(currency);
+                this.Context.SaveChanges();
+                return Ok();
             }
-            return Ok(currencyDtos);
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
         }
+        
     }
 }

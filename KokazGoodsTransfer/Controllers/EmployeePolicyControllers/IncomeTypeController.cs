@@ -60,5 +60,42 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             return Ok(response);
         }
+        [HttpPatch]
+        public IActionResult Update([FromBody]UpdateIncomeTypeDto updateIncomeTypeDto)
+        {
+            try
+            {
+                var incomeType = this.Context.IncomeTypes.Where(c => c.Id == updateIncomeTypeDto.Id).FirstOrDefault();
+                if (this.Context.IncomeTypes.Where(c => c.Name == updateIncomeTypeDto.Name && c.Id != updateIncomeTypeDto.Id).Any())
+                    return Conflict();
+                incomeType.Name = updateIncomeTypeDto.Name;
+                this.Context.Update(incomeType);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var incomeType = this.Context.IncomeTypes.Find(id);
+                if (incomeType == null)
+                    return NotFound();
+                this.Context.Entry(incomeType).Collection(c => c.Incomes).Load();
+                if (incomeType.Incomes.Count() != 0)
+                    return Conflict();
+                this.Context.Remove(incomeType);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
     }
 }

@@ -20,6 +20,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public GroupController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+
+            var groups = this.Context.Groups
+                .Include(c => c.GroupPrivileges)
+                .ToList();
+            var groupsDto = new List<GroupDto>();
+            foreach (var item in groups)
+            {
+                GroupDto groupDto = new GroupDto()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    PrivilegesId = item.GroupPrivileges.Select(c => c.PrivilegId).ToList()
+                };
+                groupsDto.Add(groupDto);
+            }
+            return Ok(groupsDto);
+        }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -64,26 +84,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             Context.SaveChanges();
             return Ok();
         }
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-
-            var groups = this.Context.Groups
-                .Include(c => c.GroupPrivileges)
-                .ToList();
-            var groupsDto = new List<GroupDto>();
-            foreach (var item in groups)
-            {
-                GroupDto groupDto = new GroupDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    PrivilegesId = item.GroupPrivileges.Select(c => c.PrivilegId).ToList()
-                };
-                groupsDto.Add(groupDto);
-            }
-            return Ok(groupsDto);
-        }
+        
 
         [HttpGet("Privileges")]
         public IActionResult GetPrivileges()
