@@ -54,11 +54,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
 
+        //[HttpGet]
+        //public IActionResult Get([FromQuery] )
+        //{
+        //    return Ok();
         //}
     }
 }

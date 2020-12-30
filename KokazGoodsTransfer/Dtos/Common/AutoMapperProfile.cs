@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
+using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
@@ -77,6 +78,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CUpdateClientDto,Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+            CreateMap<CreateIncomeDto, Income>();
         }
     }
 }
