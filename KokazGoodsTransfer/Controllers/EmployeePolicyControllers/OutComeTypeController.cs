@@ -66,7 +66,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (outComeType == null)
                     return NotFound();
                 
-                if (Context.OutComeTypes.Where(c=>c.Name==updateOutComeTypeDto.Name&&c.Id!=updateOutComeTypeDto.Id).Any)
+                if (Context.OutComeTypes.Where(c=>c.Name==updateOutComeTypeDto.Name&&c.Id!=updateOutComeTypeDto.Id).Any())
                     return Conflict();
                 outComeType.Name = updateOutComeTypeDto.Name;
                 this.Context.Update(outComeType);

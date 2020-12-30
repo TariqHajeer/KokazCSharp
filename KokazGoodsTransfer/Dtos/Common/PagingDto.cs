@@ -11,4 +11,5 @@ namespace KokazGoodsTransfer.Dtos.Common
         public int RowCount { get => rowCount; set => rowCount = Math.Min(50, value); }
         public int Page { get; set; } = 1;
     }
+    
 }

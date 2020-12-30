@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using KokazGoodsTransfer.Dtos.Common;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -73,5 +70,78 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
+        [HttpPut("AddPhone")]
+        public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
+        {
+            try
+            {
+                var user = this.Context.Users.Find(addPhoneDto.objectId);
+                if (user == null)
+                    return NotFound();
+                this.Context.Entry(user).Collection(c => c.UserPhones).Load();
+                if (user.UserPhones.Where(c => c.Phone == addPhoneDto.Phone).Any())
+                    return Conflict();
+                var userPhone = new UserPhone()
+                {
+                    UserId = user.Id,
+                    Phone = addPhoneDto.Phone
+                };
+                this.Context.Add(userPhone);
+                this.Context.SaveChanges();
+                return Ok(mapper.Map<PhoneDto>(userPhone));
+                //return Ok(mapper.Map<UserPhone>);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpPut("deletePhone/{id}")]
+        public IActionResult DeletePhone(int id)
+        {
+            try
+            {
+                var userPhone = this.Context.UserPhones.Find(id);
+                if (userPhone == null)
+                    return Conflict();
+                this.Context.Remove(userPhone);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpPut("deleteGroup/{userId}")]
+        public IActionResult DelteGroup(int userId,[FromForm] int groupId)
+        {
+            try
+            {
+                var userGroup = this.Context.UserGroups.Where(c => c.UserId == userId && c.GroupId == groupId).FirstOrDefault();
+                if (userGroup == null)
+                    return Conflict();
+                this.Context.Remove(userGroup);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpPut("AddToGroup/{userId}")]
+        public IActionResult AddToGroup(int userId,[FromForm] int groupId)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }

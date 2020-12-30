@@ -1,4 +1,5 @@
-﻿using KokazGoodsTransfer.Dtos.Regions;
+﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        //public int? RegionId { get; set; }
         public string Address { get; set; }
         public DateTime FirstDate { get; set; }
         public string Note { get; set; }
@@ -18,11 +18,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public RegionDto Region { get; set; }
         public string CreatedBy { get; set; }
         public bool CanDelete { get; set; } = true;
-        public List<ClientPhoneDto> Phnoes { get; set; }
+        public List<PhoneDto> Phnoes { get; set; }
     }
-    public class ClientPhoneDto 
-    {
-        public int Id { get; set; }
-        public string Phone { get; set; }
-    }
+    
 }

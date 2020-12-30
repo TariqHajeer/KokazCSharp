@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -64,7 +65,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var client = this.Context.Clients.Find(addPhoneDto.ClientId);
+                var client = this.Context.Clients.Find(addPhoneDto.objectId);
                 if (client == null)
                     return NotFound();
                 this.Context.Entry(client).Collection(c => c.ClientPhones).Load();
@@ -79,7 +80,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this.Context.Add(clientPhone);
                 this.Context.SaveChanges();
-                return Ok(mapper.Map<ClientPhoneDto>(clientPhone));
+                return Ok(mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
             {

@@ -61,9 +61,10 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(d => d.Phnoes, opt => opt.MapFrom((client, clientDto, i, context) =>
                      {
-                         return context.Mapper.Map<ClientPhoneDto[]>(client.ClientPhones);
+                         return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                      }));
-            CreateMap<ClientPhone, ClientPhoneDto>();
+            CreateMap<ClientPhone, PhoneDto>();
+            CreateMap<UserPhone, PhoneDto>();
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Region, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
@@ -71,7 +72,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
                 {
-                    return context.Mapper.Map<ClientPhoneDto[]>(client.ClientPhones);
+                    return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                 }));
             CreateMap<CreateOutComeDto, OutCome>();
             CreateMap<UpdateClientDto,Client>()

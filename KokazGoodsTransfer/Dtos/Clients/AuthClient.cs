@@ -1,4 +1,5 @@
-﻿using KokazGoodsTransfer.Dtos.Regions;
+﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Token { get; set; }
         public string Address { get; set; }
         public RegionDto Region { get; set; }
-        public List<ClientPhoneDto> Phones { get; set; }
+        public List<PhoneDto> Phones { get; set; }
     }
 }

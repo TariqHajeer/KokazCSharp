@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public OutComeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        //[HttpGet]
+        //public IActionResult Get([FromQuery]PagingDto pagingDto ,)
+        //{
+        //    return Ok();
+        //}
         [HttpPost]
         public IActionResult Create([FromBody] CreateOutComeDto createOutComeDto)
         {
@@ -54,11 +60,5 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-
-        //[HttpGet]
-        //public IActionResult Get([FromQuery] )
-        //{
-        //    return Ok();
-        //}
     }
 }
