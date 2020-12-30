@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetAll()
         {
             var orderTypes = Context.OrderTypes
+                .Include(c=>c.OrderOrderTypes)
                 .ToList();
             List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
             foreach (var item in orderTypes)
@@ -31,7 +30,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    CanDelete = true
+                    CanDelete = item.OrderOrderTypes.Count()==0
                 });
 
             }
@@ -59,5 +58,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             return Ok(response);
         }
+        //[HttpPatch]
+        //public IActionResult 
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var orderType = this.Context.OrderTypes
+                    .Include(c => c.OrderOrderTypes)
+                    .Where(c => c.Id == id).SingleOrDefault();
+                if (orderType == null)
+                    return NotFound();
+                this.Context.Remove(orderType);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+            
+        }
+
     }
 }
