@@ -93,9 +93,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
+        }
     }
 }
