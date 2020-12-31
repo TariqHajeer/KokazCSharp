@@ -18,11 +18,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public OutComeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        //[HttpGet]
-        //public IActionResult Get([FromQuery]PagingDto pagingDto ,)
-        //{
-        //    return Ok();
-        //}
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok();
+        }
         [HttpPost]
         public IActionResult Create([FromBody] CreateOutComeDto createOutComeDto)
         {

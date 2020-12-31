@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.IncomesDtos
         public decimal Earining { get; set; }
         public string Note { get; set; }
         public IncomeTypeDto IncomeType { get; set; }
-        public string UserName { get; set; }
+        public string CreatedBy { get; set; }
         public CurrencyDto Currency { get; set; }
     }
 }
