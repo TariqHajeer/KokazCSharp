@@ -24,18 +24,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var currencies = this.Context.Currencies
                 .Include(c=>c.Incomes)
                 .Include(c=>c.OutComes)
-                .ToList(); 
-            List<CurrencyDto> currencyDtos = new List<CurrencyDto>();
-            foreach (var item in currencies)
-            {
-                currencyDtos.Add(new CurrencyDto()
-                {
-                    Name = item.Name,
-                    Id = item.Id,
-                    CanDelete = true
-                });
-            }
-            return Ok(currencyDtos);
+                .ToList();
+            return Ok(mapper.Map<CurrencyDto[]>(currencies));
+            //List<CurrencyDto> currencyDtos = new List<CurrencyDto>();
+            //foreach (var item in currencies)
+            //{
+            //    currencyDtos.Add(new CurrencyDto()
+            //    {
+            //        Name = item.Name,
+            //        Id = item.Id,
+            //        CanDelete = true
+            //    });
+            //}
+            //return Ok(currencyDtos);
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateCurrencyDto createCurrency)
