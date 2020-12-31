@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
+            
             return Ok();
         }
         [HttpPost]

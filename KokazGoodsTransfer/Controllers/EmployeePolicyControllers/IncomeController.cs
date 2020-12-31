@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class IncomeController : AbstractEmployeePolicyController
     {
         [HttpGet]
-        public IActionResult Get([FromQuery]IncomeFiltering filtering)
+        public IActionResult Get([FromQuery]Filtering filtering)
         {
             var incomeIQ = (IQueryable<Income>)this.Context.Incomes
                    .Include(c => c.User)
@@ -26,14 +27,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 incomeIQ = incomeIQ.Where(c => c.Amount <= filtering.MaxAmount);
             if (filtering.MinAmount != null)
                 incomeIQ = incomeIQ.Where(c => c.Amount >= filtering.MaxAmount);
-            if (filtering.IncomeTypeId != null)
-                incomeIQ = incomeIQ.Where(c => c.IncomeTypeId == filtering.IncomeTypeId);
+            if (filtering.Type != null)
+                incomeIQ = incomeIQ.Where(c => c.IncomeTypeId == filtering.Type);
             if (filtering.UserId != null)
                 incomeIQ = incomeIQ.Where(c => c.UserId == filtering.UserId);
             if (filtering.FromDate != null)
                 incomeIQ = incomeIQ.Where(c => c.Date >= filtering.FromDate);
             if (filtering.ToDate != null)
                 incomeIQ = incomeIQ.Where(c => c.Date <= filtering.ToDate);
+            if (filtering.CurrencyId != null)
+                incomeIQ = incomeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
             return Ok(mapper.Map<IncomeDto[]>(incomeIQ.ToList()));
         }
         public IncomeController(KokazContext context, IMapper mapper) : base(context, mapper)
