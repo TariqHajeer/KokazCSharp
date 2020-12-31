@@ -33,6 +33,7 @@ namespace KokazGoodsTransfer.Models
         public virtual Country Country { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }
+        public virtual Region Region { get; set; }
         public virtual ICollection<OrderOrderType> OrderOrderTypes { get; set; }
     }
 }

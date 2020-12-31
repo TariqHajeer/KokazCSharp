@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
+using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
@@ -89,6 +90,10 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<IncomeTypeDto>(income.IncomeType);
                 }))
                 .ForMember(c=>c.UserName,opt=>opt.MapFrom(src=>src.User.Name));
+            CreateMap<OutComeType, OutComeTypeDto>()
+                .ForMember(d=>d.CanDelete,opt=>opt.MapFrom(src=>src.OutComes.Count()==0));
+                
+                
         }
     }
 }

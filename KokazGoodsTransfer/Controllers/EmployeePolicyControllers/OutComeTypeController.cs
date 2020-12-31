@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using KokazGoodsTransfer.Dtos.OutComeType;
+using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,17 +25,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var outComeTypes = this.Context.OutComeTypes
                 .Include(c => c.OutComes)
                 .ToList();
-            List<OutComeTypeDto> response = new List<OutComeTypeDto>();
-            foreach (var item in outComeTypes)
-            {
-                response.Add(new OutComeTypeDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    CanDelete = item.OutComes.Count() == 0
-                });
-            }
-            return Ok();
+            return Ok(mapper.Map<OutComeTypeDto[]>(outComeTypes));
+            //List<OutComeTypeDto> response = new List<OutComeTypeDto>();
+            //foreach (var item in outComeTypes)
+            //{
+            //    response.Add(new OutComeTypeDto()
+            //    {
+            //        Id = item.Id,
+            //        Name = item.Name,
+            //        CanDelete = item.OutComes.Count() == 0
+            //    });
+            //}
+
         }
         [HttpPost]
         public IActionResult Create([FromBody]CreateOutComeTypeDto createOutComeTypeDto)

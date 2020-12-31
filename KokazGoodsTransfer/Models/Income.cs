@@ -8,6 +8,7 @@ namespace KokazGoodsTransfer.Models
     public partial class Income
     {
         public int Id { get; set; }
+        public int CurrencyId { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public string Source { get; set; }
@@ -16,6 +17,7 @@ namespace KokazGoodsTransfer.Models
         public int UserId { get; set; }
         public int IncomeTypeId { get; set; }
 
+        public virtual Currency Currency { get; set; }
         public virtual IncomeType IncomeType { get; set; }
         public virtual User User { get; set; }
     }

@@ -1,4 +1,5 @@
-﻿using KokazGoodsTransfer.Dtos.IncomeTypes;
+﻿using KokazGoodsTransfer.Dtos.Currencies;
+using KokazGoodsTransfer.Dtos.IncomeTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace KokazGoodsTransfer.Dtos.IncomesDtos
         public string Note { get; set; }
         public IncomeTypeDto IncomeType { get; set; }
         public string UserName { get; set; }
+        public CurrencyDto Currency { get; set; }
     }
 }
