@@ -28,17 +28,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var incomeTypes = this.Context.IncomeTypes
                 .Include(c => c.Incomes)
                 .ToList();
-            List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
-            foreach (var item in incomeTypes)
-            {
-                incomeTypeDtos.Add(new IncomeTypeDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    CanDelete = item.Incomes.Count() == 0
-                });
-            }
-            return Ok(incomeTypeDtos);
+            return Ok(mapper.Map<IncomeTypeDto[]>(incomeTypes));
+            //List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
+            //foreach (var item in incomeTypes)
+            //{
+            //    incomeTypeDtos.Add(new IncomeTypeDto()
+            //    {
+            //        Id = item.Id,
+            //        Name = item.Name,
+            //        CanDelete = item.Incomes.Count() == 0
+            //    });
+            //}
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)

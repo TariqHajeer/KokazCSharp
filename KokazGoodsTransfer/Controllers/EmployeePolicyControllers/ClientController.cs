@@ -25,29 +25,36 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         //[Authorize(Roles = "AddClient")]
         public IActionResult CreateClient(CreateClientDto createClientDto)
         {
-            var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
-            if (isExist)
+            try
             {
-                return Conflict();
-            }
-            var client = mapper.Map<Client>(createClientDto);
-            client.UserId = (int)AuthoticateUserId();
-
-            foreach (var item in createClientDto.Phones)
-            {
-                client.ClientPhones.Add(new ClientPhone()
+                var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
+                if (isExist)
                 {
-                    ClientId = client.Id,
-                    Phone = item
-                });
+                    return Conflict();
+                }
+                var client = mapper.Map<Client>(createClientDto);
+                client.UserId = (int)AuthoticateUserId();
+
+                foreach (var item in createClientDto.Phones)
+                {
+                    client.ClientPhones.Add(new ClientPhone()
+                    {
+                        ClientId = client.Id,
+                        Phone = item
+                    });
+                }
+                this.Context.Set<Client>().Add(client);
+                this.Context.SaveChanges();
+                client = this.Context.Clients
+                    .Include(c => c.Region)
+                    .Include(c => c.User)
+                    .Single(c => c.Id == client.Id);
+                return Ok(mapper.Map<ClientDto>(client));
             }
-            this.Context.Set<Client>().Add(client);
-            this.Context.SaveChanges();
-            client = this.Context.Clients
-                .Include(c => c.Region)
-                .Include(c => c.User)
-                .Single(c => c.Id == client.Id);
-            return Ok(mapper.Map<ClientDto>(client));
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
         }
         [HttpGet]
         public IActionResult Get()

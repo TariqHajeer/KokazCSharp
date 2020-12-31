@@ -25,6 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        
 
         [HttpPost]
         public IActionResult Login([FromBody] LoginDto loginDto)

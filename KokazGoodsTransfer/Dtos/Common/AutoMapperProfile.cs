@@ -3,6 +3,7 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
+using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
@@ -27,6 +28,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return context.Mapper.Map<CountryDto>(region.Country);
                      })
                 ).MaxDepth(1);
+            CreateMap<IncomeType, IncomeTypeDto>()
+                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));
 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.Users.Count() == 0))
@@ -80,6 +83,12 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<CUpdateClientDto,Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();
+            CreateMap<Income, IncomeDto >()
+                .ForMember(c => c.IncomeType, opt => opt.MapFrom((income, incomeDto, i, context) =>
+                {
+                    return context.Mapper.Map<IncomeTypeDto>(income.IncomeType);
+                }))
+                .ForMember(c=>c.UserName,opt=>opt.MapFrom(src=>src.User.Name));
         }
     }
 }
