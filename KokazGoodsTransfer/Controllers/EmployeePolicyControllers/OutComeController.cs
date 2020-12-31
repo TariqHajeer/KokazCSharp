@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -19,9 +20,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] Filtering filtering)
         {
-            
+            var outComeIQ = (IQueryable<OutCome>)this.Context.OutComes
+                .Include(c => c.User)
+                .Include(c => c.OutComeType)
+                .Include(c => c.Currency);
+            if (filtering.MaxAmount != null)
+                outComeIQ = outComeIQ.Where(c => c.Amount <= filtering.MaxAmount);
+            if (filtering.MinAmount != null)
+                outComeIQ = outComeIQ.Where(c => c.Amount >= filtering.MaxAmount);
+            if (filtering.Type != null)
+                outComeIQ = outComeIQ.Where(c => c.OutComeTypeId == filtering.Type);
+            if (filtering.UserId != null)
+                outComeIQ = outComeIQ.Where(c => c.UserId == filtering.UserId);
+            if (filtering.FromDate != null)
+                outComeIQ = outComeIQ.Where(c => c.Date >= filtering.FromDate);
+            if (filtering.ToDate != null)
+                outComeIQ = outComeIQ.Where(c => c.Date <= filtering.ToDate);
+            if (filtering.CurrencyId != null)
+                outComeIQ = outComeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
             return Ok();
         }
         [HttpPost]
