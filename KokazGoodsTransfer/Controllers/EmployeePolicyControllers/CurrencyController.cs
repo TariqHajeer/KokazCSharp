@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -20,7 +21,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetALl()
         {
-            var currencies = this.Context.Currencies.ToList();
+            var currencies = this.Context.Currencies
+                .Include(c=>c.Incomes)
+                .Include(c=>c.OutComes)
+                .ToList(); 
             List<CurrencyDto> currencyDtos = new List<CurrencyDto>();
             foreach (var item in currencies)
             {

@@ -20,7 +20,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var incomeIQ = (IQueryable<Income>)this.Context.Incomes
                    .Include(c => c.User)
-                   .Include(c => c.IncomeType);
+                   .Include(c => c.IncomeType)
+                   .Include(c=>c.Currency);
             if (filtering.MaxAmount != null)
                 incomeIQ = incomeIQ.Where(c => c.Amount <= filtering.MaxAmount);
             if (filtering.MinAmount != null)
