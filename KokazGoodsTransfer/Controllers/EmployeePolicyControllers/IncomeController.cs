@@ -77,5 +77,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        //[HttpPatch]
+        //public IActionResult Update([FromBody])
     }
 }

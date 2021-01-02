@@ -63,9 +63,7 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Note)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Note).HasMaxLength(50);
 
                 entity.Property(e => e.Password)
                     .IsRequired()
@@ -217,21 +215,19 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Order");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.DiliveryDate).HasColumnType("date");
-
-                entity.Property(e => e.Note).HasMaxLength(50);
 
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 

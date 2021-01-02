@@ -68,6 +68,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var currency= this.Context.Currencies.Find(id);
+            this.Context.Remove(currency);
+            this.Context.SaveChanges();
+            return Ok();
+        }
         
     }
 }

@@ -17,6 +17,7 @@ namespace KokazGoodsTransfer.Models
         public int ClientId { get; set; }
         public int CountryId { get; set; }
         public decimal DeliveryCost { get; set; }
+        public decimal Cost { get; set; }
         public string RecipientName { get; set; }
         public int? RegionId { get; set; }
         public string Address { get; set; }
@@ -28,6 +29,7 @@ namespace KokazGoodsTransfer.Models
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
+        public int AgentId { get; set; }
 
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }

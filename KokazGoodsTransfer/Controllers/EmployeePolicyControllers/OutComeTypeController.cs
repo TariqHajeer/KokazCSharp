@@ -44,6 +44,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var similer = this.Context.OutComeTypes.Where(c => c.Name == createOutComeTypeDto.Name).Count();
             if (similer > 0)
                 return Conflict();
+            if (createOutComeTypeDto.Name == "")
+                return Conflict();
+
             OutComeType outComeType = new OutComeType()
             {
                 Name = createOutComeTypeDto.Name
