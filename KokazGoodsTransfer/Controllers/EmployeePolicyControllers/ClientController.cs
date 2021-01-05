@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpPost]
-        //[Authorize(Roles = "AddClient")]
+        [Authorize(Roles = "AddClient")]
         public IActionResult CreateClient(CreateClientDto createClientDto)
         {
             try
