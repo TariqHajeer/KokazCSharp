@@ -10,5 +10,6 @@ namespace KokazGoodsTransfer.Dtos.Groups
         public int Id { get; set; }
         public string Name { get; set; }
         public List<int> PrivilegesId { get; set; }
+        public string[] Users { get; set; }
     }
 }

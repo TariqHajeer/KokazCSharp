@@ -34,5 +34,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
         }
+
     }
 }

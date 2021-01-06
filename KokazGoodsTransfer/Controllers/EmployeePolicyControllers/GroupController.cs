@@ -26,6 +26,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var groups = this.Context.Groups
                 .Include(c => c.GroupPrivileges)
+                .Include(c=>c.UserGroups)
+                .ThenInclude(c=>c.User)
                 .ToList();
             var groupsDto = new List<GroupDto>();
             foreach (var item in groups)
@@ -34,7 +36,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    PrivilegesId = item.GroupPrivileges.Select(c => c.PrivilegId).ToList()
+                    PrivilegesId = item.GroupPrivileges.Select(c => c.PrivilegId).ToList(),
+                    Users = item.UserGroups.Select(c => c.User.Name).ToArray()
+                    
                 };
                 groupsDto.Add(groupDto);
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,7 +60,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     Phone = phone
                 };
                 this.Context.Add(clientPhone);
-                return Ok();
+                return Ok(mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
             {
