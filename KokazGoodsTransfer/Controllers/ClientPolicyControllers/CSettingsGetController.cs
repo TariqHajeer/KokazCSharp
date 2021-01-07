@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Models;
@@ -33,6 +34,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult GetRegions()
         {
             return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
+        }
+        [HttpGet("orderType")]
+        public IActionResult GetOrderType()
+        {
+            var ordertypes = this.Context.OrderTypes.ToList();
+            return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
         }
 
     }

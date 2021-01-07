@@ -25,11 +25,13 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
-        public List<CreateOrderOrderTypeDto> OrderTypeDtos { get; set; }
+        public List<CreateOrderItemDto> OrderTypeDtos { get; set; }
     }
-    public class CreateOrderOrderTypeDto
+    public class CreateOrderItemDto
     {
-        public int OrderTypeId { get; set; }
+        public int? OrderTypeId { get; set; }
+        public string OrderTypeName { get; set; }
+
         public int Count { get; set; }
     }
 }

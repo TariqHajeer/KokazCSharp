@@ -9,12 +9,12 @@ namespace KokazGoodsTransfer.Models
     {
         public OrderType()
         {
-            OrderOrderTypes = new HashSet<OrderOrderType>();
+            OrderItems = new HashSet<OrderItem>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<OrderOrderType> OrderOrderTypes { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

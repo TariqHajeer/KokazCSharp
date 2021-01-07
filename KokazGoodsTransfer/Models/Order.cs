@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public Order()
         {
-            OrderOrderTypes = new HashSet<OrderOrderType>();
+            OrderItems = new HashSet<OrderItem>();
         }
 
         public int Id { get; set; }
@@ -19,6 +19,7 @@ namespace KokazGoodsTransfer.Models
         public decimal DeliveryCost { get; set; }
         public decimal Cost { get; set; }
         public string RecipientName { get; set; }
+        public string RecipientPhones { get; set; }
         public int? RegionId { get; set; }
         public string Address { get; set; }
         public string ClientNote { get; set; }
@@ -35,6 +36,6 @@ namespace KokazGoodsTransfer.Models
         public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
-        public virtual ICollection<OrderOrderType> OrderOrderTypes { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

@@ -112,8 +112,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
             CreateMap<OrderPlaced, NameAndIdDto>();
             CreateMap<MoenyPlaced, NameAndIdDto>();
-            CreateMap<CreateOrderFromClient, Order>();
-
+            CreateMap<CreateOrderFromClient, Order>()
+                .ForMember(s=>s.RecipientPhones,opt=>opt.MapFrom(src=>String.Join(", ", src.RecipientPhones)));
+            CreateMap<OrderType, NameAndIdDto>();
         }
     }
 }

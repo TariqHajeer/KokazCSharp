@@ -28,12 +28,11 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<IncomeType> IncomeTypes { get; set; }
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
-        public virtual DbSet<OrderOrderType> OrderOrderTypes { get; set; }
+        public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
-        public virtual DbSet<PersonsPhone> PersonsPhones { get; set; }
         public virtual DbSet<Privilege> Privileges { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -229,6 +228,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 
+                entity.Property(e => e.RecipientPhones).IsRequired();
+
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.ClientId)
@@ -259,19 +260,20 @@ namespace KokazGoodsTransfer.Models
                     .HasConstraintName("FK_Order_Region");
             });
 
-            modelBuilder.Entity<OrderOrderType>(entity =>
+            modelBuilder.Entity<OrderItem>(entity =>
             {
-                entity.HasKey(e => new { e.OrderId, e.OrderTpyeId });
+                entity.HasKey(e => new { e.OrderId, e.OrderTpyeId })
+                    .HasName("PK_OrderOrderType");
 
-                entity.ToTable("OrderOrderType");
+                entity.ToTable("OrderItem");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany(p => p.OrderOrderTypes)
+                    .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK_OrderOrderType_Order");
 
                 entity.HasOne(d => d.OrderTpye)
-                    .WithMany(p => p.OrderOrderTypes)
+                    .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderTpyeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderOrderType_OrderType");
@@ -333,21 +335,6 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<PersonsPhone>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("PersonsPhone");
-
-                entity.Property(e => e.Phone).IsRequired();
-
-                entity.HasOne(d => d.Order)
-                    .WithMany()
-                    .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PersonsPhone_Order");
             });
 
             modelBuilder.Entity<Privilege>(entity =>

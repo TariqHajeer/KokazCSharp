@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetAll()
         {
             var orderTypes = Context.OrderTypes
-                .Include(c=>c.OrderOrderTypes)
+                .Include(c=>c.OrderItems)
                 .ToList();
             List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
             foreach (var item in orderTypes)
@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    CanDelete = item.OrderOrderTypes.Count()==0
+                    CanDelete = item.OrderItems.Count()==0
                 });
 
             }
@@ -84,12 +84,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var orderType = this.Context.OrderTypes
-                    .Include(c => c.OrderOrderTypes)
+                    .Include(c => c.OrderItems)
                     .Where(c => c.Id == id).SingleOrDefault();
                 if (orderType == null)
                     return NotFound();
-                this.Context.Entry(orderType).Collection(c => c.OrderOrderTypes).Load();
-                if (orderType.OrderOrderTypes.Count() != 0)
+                this.Context.Entry(orderType).Collection(c => c.OrderItems).Load();
+                if (orderType.OrderItems.Count() != 0)
                     return Conflict();
                 this.Context.Remove(orderType);
                 this.Context.SaveChanges();

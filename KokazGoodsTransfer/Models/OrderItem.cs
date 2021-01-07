@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderOrderType
+    public partial class OrderItem
     {
         public int OrderId { get; set; }
         public int OrderTpyeId { get; set; }
