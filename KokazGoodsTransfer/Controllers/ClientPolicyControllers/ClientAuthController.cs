@@ -19,6 +19,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public ClientAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        /// <summary>
+        /// Login form mobile application 
+        /// </summary>
+        /// <param name="loginDto"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Login([FromBody]LoginDto loginDto)
         {

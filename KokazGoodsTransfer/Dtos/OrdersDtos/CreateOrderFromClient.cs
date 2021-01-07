@@ -8,11 +8,14 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     public class CreateOrderFromClient
     {
         public string Code { get; set; }
+        public string Address { get; set; }
+        public string RecipientName { get; set; }
         public int CountryId { get; set; }
         public string RegioName { get; set; }
         public int? RegionId { get; set; }
         public string ClientNote { get; set; }
         public decimal Cost { get; set; }
+        
         public List<CreateOrderOrderTypeDto> OrderType { get; set; }
     }
 }

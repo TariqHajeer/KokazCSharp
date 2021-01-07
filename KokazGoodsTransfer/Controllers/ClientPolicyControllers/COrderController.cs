@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             var order = mapper.Map<Order>(createOrderFromClient);
             order.ClientId = AuthoticateUserId();
-             
+            
             return Ok();
         }
         [HttpGet("codeExist")]

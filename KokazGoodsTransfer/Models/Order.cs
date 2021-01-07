@@ -25,7 +25,6 @@ namespace KokazGoodsTransfer.Models
         public string CreatedBy { get; set; }
         public int MoenyPlacedId { get; set; }
         public int OrderplacedId { get; set; }
-        public decimal Amount { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
@@ -38,5 +37,4 @@ namespace KokazGoodsTransfer.Models
         public virtual Region Region { get; set; }
         public virtual ICollection<OrderOrderType> OrderOrderTypes { get; set; }
     }
-    
 }
