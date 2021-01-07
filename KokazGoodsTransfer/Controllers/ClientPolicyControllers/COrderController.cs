@@ -20,9 +20,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpPost]
         public IActionResult Create(CreateOrderFromClient createOrderFromClient)
         {
+
             var order = mapper.Map<Order>(createOrderFromClient);
             order.ClientId = AuthoticateUserId();
-            
+            order.CreatedBy = AuthoticateUserName();
             return Ok();
         }
         [HttpGet("codeExist")]

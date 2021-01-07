@@ -1,5 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
@@ -19,11 +22,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public ClientAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        /// <summary>
-        /// Login form mobile application 
-        /// </summary>
-        /// <param name="loginDto"></param>
-        /// <returns></returns>
         [HttpPost]
         public IActionResult Login([FromBody]LoginDto loginDto)
         {
@@ -36,10 +34,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 return Conflict();
             }
+            var climes = new List<Claim>();
+            climes.Add(new Claim("UserID", client.Id.ToString()));
+            climes.Add(new Claim("Type", "Client"));
+            climes.Add(new Claim(ClaimTypes.Name, client.Name));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                //Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication")), SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication")), SecurityAlgorithms.HmacSha256Signature),
+                Subject = new ClaimsIdentity(climes),
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
