@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,5 +23,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok();
         }
+        [HttpGet("orderPlace")]
+        public IActionResult GetOrderPalce()
+        {
+           return Ok(mapper.Map<NameAndIdDto[]>( this.Context.OrderPlaceds.ToList()));
+        }
+        [HttpGet("MoenyPlaced")]
+        public IActionResult GetMoenyPlaced()
+        {
+            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.MoenyPlaceds.ToList()));
+        }
+
     }
 }

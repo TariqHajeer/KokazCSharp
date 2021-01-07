@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
+using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
@@ -109,7 +110,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<CurrencyDto>(outcome.Currency);
                 }))
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
-
+            CreateMap<OrderPlaced, NameAndIdDto>();
+            CreateMap<MoenyPlaced, NameAndIdDto>();
+            CreateMap<CreateOrderFromClient, Order>();
 
         }
     }

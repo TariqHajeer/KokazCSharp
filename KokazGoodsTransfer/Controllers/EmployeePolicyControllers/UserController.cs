@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
-            var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
+            var similerUser = this.Context.Users.Where(c => c.UserName.Equals(createUserDto.UserName,StringComparison.CurrentCultureIgnoreCase)).Count();
             if (similerUser != 0)
                 return Conflict();
             User user = new User()

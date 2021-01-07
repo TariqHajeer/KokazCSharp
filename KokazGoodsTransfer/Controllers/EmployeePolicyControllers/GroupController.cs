@@ -77,6 +77,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             Group group = new Group();
             group.Name = createGroupDto.Name;
             Context.Add(group);
+            if (createGroupDto.PrivilegesId == null || createGroupDto.PrivilegesId.Count() == 0)
+                return Conflict();  
             foreach (var item in createGroupDto.PrivilegesId)
             {
                 group.GroupPrivileges.Add(new GroupPrivilege()

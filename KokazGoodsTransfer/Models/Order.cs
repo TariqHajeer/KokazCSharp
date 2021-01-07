@@ -38,4 +38,5 @@ namespace KokazGoodsTransfer.Models
         public virtual Region Region { get; set; }
         public virtual ICollection<OrderOrderType> OrderOrderTypes { get; set; }
     }
+    
 }

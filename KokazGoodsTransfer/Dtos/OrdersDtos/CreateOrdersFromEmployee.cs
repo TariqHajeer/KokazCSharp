@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int ClientId { get; set; }
         public int CountryId { get; set; }
         public int? RegionId { get; set; }
+        public string RegionName { get; set; }
         public string Address { get; set; }
         public int AgentId { get; set; }
         public int OrderplacedId { get; set; }
@@ -24,6 +25,11 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
-        
+        public List<CreateOrderOrderTypeDto> OrderTypeDtos { get; set; }
+    }
+    public class CreateOrderOrderTypeDto
+    {
+        public int OrderTypeId { get; set; }
+        public int Count { get; set; }
     }
 }
