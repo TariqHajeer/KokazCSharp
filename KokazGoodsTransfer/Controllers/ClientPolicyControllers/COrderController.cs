@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
@@ -115,8 +116,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
-            this.Context.Orders.ToList();
-            return Ok();
+            var orders= this.Context.Orders
+                .Include(c=>c.Region)
+                .Include(c=>c.Country)
+                .Include(c=>c.MoenyPlaced)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .ToList();
+            return Ok(mapper.Map< OrderTypeResponseClientDto[]>(orders));
         }
     }
 }

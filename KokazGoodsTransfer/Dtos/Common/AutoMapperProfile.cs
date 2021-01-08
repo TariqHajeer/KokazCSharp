@@ -81,25 +81,25 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                 }));
             CreateMap<CreateOutComeDto, OutCome>();
-            CreateMap<UpdateClientDto,Client>()
+            CreateMap<UpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
-            CreateMap<CUpdateClientDto,Client>()
+            CreateMap<CUpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();
-            CreateMap<Income, IncomeDto >()
+            CreateMap<Income, IncomeDto>()
                 .ForMember(c => c.IncomeType, opt => opt.MapFrom((income, incomeDto, i, context) =>
                 {
                     return context.Mapper.Map<IncomeTypeDto>(income.IncomeType);
                 }))
-                .ForMember(c=>c.CreatedBy,opt=>opt.MapFrom(src=>src.User.Name))
-                .ForMember(c=>c.Currency,opt=>opt.MapFrom((income,incomeDto,i,context)=>
-                {
-                    return context.Mapper.Map<CurrencyDto>(income.Currency);
-                }));
+                .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(c => c.Currency, opt => opt.MapFrom((income, incomeDto, i, context) =>
+                     {
+                         return context.Mapper.Map<CurrencyDto>(income.Currency);
+                     }));
             CreateMap<Currency, CurrencyDto>()
             .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0 && src.OutComes.Count() == 0));
             CreateMap<OutComeType, OutComeTypeDto>()
-                .ForMember(d=>d.CanDelete,opt=>opt.MapFrom(src=>src.OutComes.Count()==0));
+                .ForMember(d => d.CanDelete, opt => opt.MapFrom(src => src.OutComes.Count() == 0));
             CreateMap<OutCome, OutComeDto>()
                 .ForMember(d => d.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
@@ -113,8 +113,21 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<OrderPlaced, NameAndIdDto>();
             CreateMap<MoenyPlaced, NameAndIdDto>();
             CreateMap<CreateOrderFromClient, Order>()
-                .ForMember(s=>s.RecipientPhones,opt=>opt.MapFrom(src=>String.Join(", ", src.RecipientPhones)));
+                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)));
             CreateMap<OrderType, NameAndIdDto>();
+            CreateMap<Order, OrderTypeResponseClientDto>()
+                .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
+                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
+                .ForMember(c => c.RecipientPhones, opt => opt.MapFrom(src => src.RecipientPhones.Split(",", StringSplitOptions.None)))
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, response, i, context) =>
+                     {
+                         return context.Mapper.Map<RegionDto>(order.Region);
+                     }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, response, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c=>c.CanUpdateOrDelete,opt=>opt.MapFrom(src=>src.OrderplacedId<=2));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()
-        {
+        {   
             var ordertypes = this.Context.OrderTypes.ToList();
             return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
         }
