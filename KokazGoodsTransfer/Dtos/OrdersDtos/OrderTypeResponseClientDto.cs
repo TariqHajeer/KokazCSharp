@@ -24,4 +24,5 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public RegionDto  Region { get; set; }
         public bool CanUpdateOrDelete { get; set; }
     }
+
 }

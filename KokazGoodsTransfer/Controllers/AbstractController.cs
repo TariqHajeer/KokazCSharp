@@ -19,12 +19,14 @@ namespace KokazGoodsTransfer.Controllers
             this.mapper = mapper;
         }
         protected int AuthoticateUserId()
-        {       
+        {
+            
             var userIdClaim = User.Claims.ToList().Where(c => c.Type == "UserID").Single();
             return Convert.ToInt32(userIdClaim.Value);
         }
         protected string AuthoticateUserName()
         {
+            
             return User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
             
         }
