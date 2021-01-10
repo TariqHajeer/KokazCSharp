@@ -40,8 +40,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 outComeIQ = outComeIQ.Where(c => c.Date <= filtering.ToDate);
             if (filtering.CurrencyId != null)
                 outComeIQ = outComeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
-            return Ok();
+            return Ok(mapper.Map<OutComeDto[]>(outComeIQ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="createOutComeDto"></param>
+        /// <returns></returns>
+        /// <example>
+        // {
+        //   "amount": 10000,
+        //   "currencyId":2004 ,
+        //   "date": "2021-01-10T12:47:58.194Z",
+        //   "reason": "string",
+        //   "note": "string",
+        //   "outComeTypeId": 2055
+        //  }
+        /// </example>
+
         [HttpPost]
         public IActionResult Create([FromBody] CreateOutComeDto createOutComeDto)
         {
@@ -51,7 +67,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 outCome.UserId = AuthoticateUserId();
                 this.Context.Add(outCome);
                 this.Context.SaveChanges();
-                return Ok();
+                this.Context.Entry(outCome).Reference(c => c.User).Load();
+                this.Context.Entry(outCome).Reference(c => c.Currency).Load();
+                this.Context.Entry(outCome).Reference(c => c.OutComeType).Load();
+
+                return Ok(mapper.Map<OutComeDto>(outCome));
             }
             catch (Exception ex)
             {

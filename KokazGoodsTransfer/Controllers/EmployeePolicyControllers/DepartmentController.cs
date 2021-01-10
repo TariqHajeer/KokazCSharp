@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
@@ -39,20 +40,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var departments = this.Context.Departments
-                .Include(c => c.Users)
-                .ToList();
-            List<DepartmentDto> departmentDtos = new List<DepartmentDto>();
-            foreach (var item in departments)
+            try
             {
-                departmentDtos.Add(new DepartmentDto()
+                var departments = this.Context.Departments
+                    .Include(c => c.Users)
+                    .ToList();
+                List<DepartmentDto> departmentDtos = new List<DepartmentDto>();
+                foreach (var item in departments)
                 {
-                    Id = item.Id,
-                    Name = item.Name,
-                    UserCount = item.Users.Count()
-                });
+                    departmentDtos.Add(new DepartmentDto()
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        UserCount = item.Users.Count()
+                    });
+                }
+                return Ok(departmentDtos);
             }
-            return Ok(departmentDtos);
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
         }
         [HttpPatch]
         public IActionResult UpdateDepartment(UpdateDepartmentDto updateDepartmentDto)

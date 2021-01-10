@@ -81,6 +81,17 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                 }));
             CreateMap<CreateOutComeDto, OutCome>();
+            CreateMap<OutCome, OutComeDto>()
+                .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(c => c.Currency, opt => opt.MapFrom((outcome, dto, i, context) =>
+                     {
+                         return context.Mapper.Map<CurrencyDto>(outcome.Currency);
+                     }))
+                .ForMember(c => c.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
+                {
+
+                    return context.Mapper.Map<OutComeDto>(outcome);
+                }));
             CreateMap<UpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CUpdateClientDto, Client>()
@@ -128,6 +139,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<CountryDto>(order.Country);
                 }))
                 .ForMember(c=>c.CanUpdateOrDelete,opt=>opt.MapFrom(src=>src.OrderplacedId<=2));
+            
         }
     }
 }

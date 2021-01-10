@@ -12,3 +12,4 @@ namespace KokazGoodsTransfer.Dtos.OutComeTypeDtos
         public bool CanDelete { get; set; }
     }
 }
+        

@@ -44,7 +44,8 @@ namespace KokazGoodsTransfer.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
+                //optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Data Source = SQL5101.site4now.net; Initial Catalog = DB_A6C91F_Koka; User Id = DB_A6C91F_Koka_admin; Password = 1234qwer");
             }
         }
 
