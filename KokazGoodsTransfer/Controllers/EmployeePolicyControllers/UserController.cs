@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
-            var similerUser = this.Context.Users.Where(c => c.UserName.Equals(createUserDto.UserName, StringComparison.CurrentCultureIgnoreCase)).Count();
+            var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower() || c.Name.ToLower() == createUserDto.Name).Count();
             if (similerUser != 0)
                 return Conflict();
             User user = new User()
@@ -75,7 +75,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var user = this.Context.Users.Include(c => c.UserPhones)
                 .Include(c => c.Department)
-                .FirstOrDefault(c => c.Id == id);   
+                .FirstOrDefault(c => c.Id == id);
             return Ok(mapper.Map<UserDto>(user));
         }
         [HttpPut("AddPhone")]
@@ -99,7 +99,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Ok(mapper.Map<PhoneDto>(userPhone));
                 //return Ok(mapper.Map<UserPhone>);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -122,7 +122,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("deleteGroup/{userId}")]
-        public IActionResult DelteGroup(int userId,[FromForm] int groupId)
+        public IActionResult DelteGroup(int userId, [FromForm] int groupId)
         {
             try
             {
@@ -133,19 +133,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
         }
         [HttpPut("AddToGroup/{userId}")]
-        public IActionResult AddToGroup(int userId,[FromForm] int groupId)
+        public IActionResult AddToGroup(int userId, [FromForm] int groupId)
         {
             try
             {
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
