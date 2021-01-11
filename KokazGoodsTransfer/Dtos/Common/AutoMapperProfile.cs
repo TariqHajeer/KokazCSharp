@@ -114,7 +114,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<OutCome, OutComeDto>()
                 .ForMember(d => d.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
-                    return context.Mapper.Map<OutComeDto>(outcome.OutComeType);
+                    return context.Mapper.Map<OutComeTypeDto>(outcome.OutComeType);
                 }))
                 .ForMember(c => c.Currency, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
@@ -138,8 +138,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<CountryDto>(order.Country);
                 }))
-                .ForMember(c=>c.CanUpdateOrDelete,opt=>opt.MapFrom(src=>src.OrderplacedId<=2));
-            
+                .ForMember(c => c.CanUpdateOrDelete, opt => opt.MapFrom(src => src.OrderplacedId <= 2));
+
         }
     }
 }

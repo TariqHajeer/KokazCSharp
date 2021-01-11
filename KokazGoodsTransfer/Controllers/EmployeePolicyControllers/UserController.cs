@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
-            var similerUser = this.Context.Users.Where(c => c.UserName.Equals(createUserDto.UserName,StringComparison.CurrentCultureIgnoreCase)).Count();
+            var similerUser = this.Context.Users.Where(c => c.UserName.Equals(createUserDto.UserName, StringComparison.CurrentCultureIgnoreCase)).Count();
             if (similerUser != 0)
                 return Conflict();
             User user = new User()
@@ -69,6 +69,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Department)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
+        }
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var user = this.Context.Users.Include(c => c.UserPhones)
+                .Include(c => c.Department)
+                .FirstOrDefault(c => c.Id == id);   
+            return Ok(mapper.Map<UserDto>(user));
         }
         [HttpPut("AddPhone")]
         public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)

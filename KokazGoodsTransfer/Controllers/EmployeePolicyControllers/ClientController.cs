@@ -67,6 +67,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var client = this.Context.Clients.Include(c => c.Region)
+                .Include(c => c.User)
+                .Include(c => c.ClientPhones)
+                .Include(c => c.Orders)
+                .Where(c => c.Id == id).FirstOrDefault();
+            return Ok(mapper.Map<ClientDto>(client));
+        }
         [HttpPut("addPhone")]
         public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
         {
