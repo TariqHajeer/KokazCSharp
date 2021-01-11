@@ -36,6 +36,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             Context.Add(region);
             Context.SaveChanges();
+            this.Context.Entry(region).Reference(c => c.Country).Load();
 
             return Ok(mapper.Map<RegionDto>(region));
         }

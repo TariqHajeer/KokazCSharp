@@ -7,3 +7,4 @@ bin
 /.vs
 ScaffoldAndExport.bat
 KokazGoodsTransfer/obj
+PublishToHerohuBat.bat

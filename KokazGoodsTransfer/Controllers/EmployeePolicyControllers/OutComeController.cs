@@ -70,7 +70,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Entry(outCome).Reference(c => c.User).Load();
                 this.Context.Entry(outCome).Reference(c => c.Currency).Load();
                 this.Context.Entry(outCome).Reference(c => c.OutComeType).Load();
-
                 return Ok(mapper.Map<OutComeDto>(outCome));
             }
             catch (Exception ex)
