@@ -45,7 +45,10 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Department, DepartmentDto>()
                 .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
             CreateMap<User, UserDto>()
-                .ForMember(d => d.Phones, opt => opt.MapFrom(src => src.UserPhones.Select(c => c.Phone).ToList()))
+                .ForMember(d => d.Phones, opt => opt.MapFrom((user,dto,i,context)=>
+                {
+                    return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
+                }))
                 .ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
                      {
                          return context.Mapper.Map<DepartmentDto>(user.Department);

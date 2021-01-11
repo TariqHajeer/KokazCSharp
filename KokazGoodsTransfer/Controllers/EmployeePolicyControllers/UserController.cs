@@ -150,6 +150,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        //[HttpPatch]
+        //public IActionResult UpdateUser([FromBody] )
 
     }
 }

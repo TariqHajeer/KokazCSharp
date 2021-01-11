@@ -2,16 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
 namespace KokazGoodsTransfer.Dtos.Users
 {
     public class UserDto
     {
+
+        
         public int Id { get; set; }
         public string Name { get; set; }
+        public int DepartmentId { get; set; }
         public DepartmentDto Department { set; get; }
-        public string UserName { get; set; }
+        public string Experince { get; set; }
+        public string Address { get; set; }
+        public DateTime HireDate { get; set; }
+        public string Note { get; set; }
         public bool CanWorkAsAgent { get; set; }
-        public List<string> Phones{ get; set; }
+        public int? CountryId { get; set; }
+        public decimal Salary { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public int[] GroupsId { get; set; }
+        public PhoneDto[] Phones { get; set; }
+
     }
 }
