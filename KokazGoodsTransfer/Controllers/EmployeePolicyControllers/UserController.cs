@@ -22,9 +22,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
         {
-            var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower() || c.Name.ToLower() == createUserDto.Name).Count();
-            if (similerUser != 0)
-                return Conflict();
+            if (!createUserDto.CanWorkAsAgent)
+            {
+                var similerUser = this.Context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
+                if (similerUser != 0)
+                    return Conflict();
+            }
+            {
+                var similerUser = this.Context.Users.Where(c => c.Name.ToLower() == createUserDto.Name.ToLower()).Count();
+                if (similerUser != 0)
+                    return Conflict();
+            }
+
             User user = new User()
             {
                 Name = createUserDto.Name,
@@ -33,30 +42,34 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DepartmentId = createUserDto.DepartmentId,
                 HireDate = createUserDto.HireDate,
                 Note = createUserDto.Note,
-                UserName = createUserDto.UserName,
-                Password = MD5Hash.GetMd5Hash(createUserDto.Password),
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
                 CountryId = createUserDto.CountryId,
             };
+            if (!createUserDto.CanWorkAsAgent)
+            {
+                user.UserName = createUserDto.UserName;
+                user.Password = MD5Hash.GetMd5Hash(createUserDto.Password);
+            }
             Context.Add(user);
-
-            foreach (var item in createUserDto.GroupsId)
-            {
-                user.UserGroups.Add(new UserGroup()
+            if (createUserDto.GroupsId != null)
+                foreach (var item in createUserDto.GroupsId)
                 {
-                    UserId = user.Id,
-                    GroupId = item
-                });
-            }
-            foreach (var item in createUserDto.Phones)
-            {
-                user.UserPhones.Add(new UserPhone()
+                    user.UserGroups.Add(new UserGroup()
+                    {
+                        UserId = user.Id,
+                        GroupId = item
+                    });
+                }
+            if (createUserDto.Phones != null)
+                foreach (var item in createUserDto.Phones)
                 {
-                    Phone = item,
-                    UserId = user.Id
-                });
-            }
+                    user.UserPhones.Add(new UserPhone()
+                    {
+                        Phone = item,
+                        UserId = user.Id
+                    });
+                }
             Context.SaveChanges();
 
             return Ok(mapper.Map<UserDto>(user));
@@ -75,6 +88,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var user = this.Context.Users.Include(c => c.UserPhones)
                 .Include(c => c.Department)
+                .Include(c => c.UserGroups)
                 .FirstOrDefault(c => c.Id == id);
             return Ok(mapper.Map<UserDto>(user));
         }

@@ -68,7 +68,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<RegionDto>(client.Region);
                 }))
-                .ForMember(d => d.Phnoes, opt => opt.MapFrom((client, clientDto, i, context) =>
+                .ForMember(d => d.Phones, opt => opt.MapFrom((client, clientDto, i, context) =>
                      {
                          return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                      }));
