@@ -6,6 +6,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAx4i4DDAqeEmrOmC/BREo1wAAAAACAAAAAAAQZgAAAAEAACAAAAAKw1e6NLT+qPYMKmzDna20MTiur5zWOX8WpSISAZLKmgAAAAAOgAAAAAIAACAAAABp6EOf7aJV+WD2crpq5R4VCrtH1Y9NIhtmAjFWxFnZzyAAAABLEj7WNUg5SiWBuIYu/Wx8VOhP+mY3pb4NFe9mRBssNEAAAACE4FNOuZtrvwmLdqusdZN1Lvq4FlEFwYsq7Irb5UPQTeuFxeGmWNKa2JJdY94xVYgBALdxfSN70k8h0PIyqcCu</EncryptedPassword>
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAx4i4DDAqeEmrOmC/BREo1wAAAAACAAAAAAAQZgAAAAEAACAAAABYyDBtJEYWDdGbyBxtj8wBT1oSgkp/yXG5NVGet4ObYwAAAAAOgAAAAAIAACAAAAB94fuy44otzgJVtGw3+2i61WfqXVl3OBt2aKrf7s1XLyAAAACMcfYFr9PliE7qKb2WLcwTs6sdJqnCKEoIQZ2IDpUwekAAAAD8HQdA3vM2UU7uoT9jzfPbxuGTA5tgNB2xri7zmnQejBJDHfbcczHgK7qwyNsviT7BuGW8hHFHq1IM2l22VKPA</EncryptedPassword>
   </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="Online">
+      <Value>Data Source=SQL5101.site4now.net%3bInitial Catalog=DB_A6C91F_Quqaz%3bUser Id=DB_A6C91F_Quqaz_admin%3bPassword=1234qwer</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
 </Project>

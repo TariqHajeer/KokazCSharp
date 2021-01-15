@@ -18,11 +18,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public OrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpPost]
-        public IActionResult Creat()
+        [HttpGet]
+        public IActionResult Get()
         {
             return Ok();
         }
+        //[HttpPost]
+        //public IActionResult Creat()
+        //{
+        //    return Ok();
+        //}
         [HttpGet("orderPlace")]
         public IActionResult GetOrderPalce()
         {

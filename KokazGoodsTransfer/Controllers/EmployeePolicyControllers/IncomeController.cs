@@ -59,7 +59,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 income.UserId = AuthoticateUserId();
                 this.Context.Add(income);
                 this.Context.SaveChanges();
-                return Ok();
+                this.Context.Entry(income).Reference(c => c.User).Load();
+                this.Context.Entry(income).Reference(c => c.Currency).Load();
+                this.Context.Entry(income).Reference(c => c.IncomeType).Load();
+                return Ok(mapper.Map<IncomeDto>(income));
             }
             catch (Exception ex)
             {

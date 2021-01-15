@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -21,11 +23,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetALl()
         {
-            var currencies = this.Context.Currencies
-                .Include(c=>c.Incomes)
-                .Include(c=>c.OutComes)
-                .ToList();
-            return Ok(mapper.Map<CurrencyDto[]>(currencies));
+            return Ok(mapper.Map<CurrencyDto[]>(this.Context.Currencies.Include(c => c.Incomes).Include(c => c.OutComes).ToList()));
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateCurrencyDto createCurrency)
@@ -63,7 +61,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -71,11 +69,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var currency= this.Context.Currencies.Find(id);
+            var currency = this.Context.Currencies.Find(id);
             this.Context.Remove(currency);
             this.Context.SaveChanges();
             return Ok();
         }
-        
+
     }
 }

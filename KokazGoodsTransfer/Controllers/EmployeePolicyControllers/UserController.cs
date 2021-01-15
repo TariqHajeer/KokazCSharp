@@ -80,6 +80,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var users = this.Context.Users
                 .Include(c => c.UserPhones)
                 .Include(c => c.Department)
+                .Include(c => c.UserGroups)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
@@ -164,8 +165,51 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        //[HttpPatch]
-        //public IActionResult UpdateUser([FromBody] )
-
+        [HttpPatch]
+        public IActionResult UpdateUser([FromBody]UpdateUserDto updateUserDto)
+        {
+            var user = this.Context.Users.Find(updateUserDto.Id);
+            user.Adress = updateUserDto.Address;
+            user.Name = updateUserDto.Name;
+            user.DepartmentId = updateUserDto.DepartmentId;
+            user.HireDate = updateUserDto.HireDate;
+            user.Note = updateUserDto.Note;
+            {
+                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()).Count();
+                if (similerUserByname != 0)
+                {
+                    return Conflict();
+                }
+            }
+            if (updateUserDto.CanWorkAsAgent)
+            {
+                user.UserName = string.Empty;
+                user.Password = string.Empty;
+                user.UserGroups.Clear();
+                user.CanWorkAsAgent = true;
+                user.CountryId = updateUserDto.CountryId;
+                user.Salary = updateUserDto.Salary;
+            }
+            else
+            {
+                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()).Count();
+                if (similerUserByname != 0)
+                {
+                    return Conflict();
+                }
+                user.UserName = updateUserDto.UserName;
+                user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
+                user.CountryId = null;
+                user.Salary = null;
+            }
+            this.Context.Update(user);
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpGet("UsernameExist/{username}")]
+        public IActionResult UsernameExist(string username)
+        {
+            return Ok(this.Context.Users.Where(c => c.UserName == username).Count()!=0);
+        }
     }
 }

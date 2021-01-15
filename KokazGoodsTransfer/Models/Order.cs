@@ -31,6 +31,7 @@ namespace KokazGoodsTransfer.Models
         public string Note { get; set; }
         public int AgentId { get; set; }
 
+        public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }

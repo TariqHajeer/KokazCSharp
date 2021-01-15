@@ -45,14 +45,15 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Department, DepartmentDto>()
                 .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
             CreateMap<User, UserDto>()
-                .ForMember(d => d.Phones, opt => opt.MapFrom((user,dto,i,context)=>
+                .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
                 {
                     return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
                 }))
                 .ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
                      {
                          return context.Mapper.Map<DepartmentDto>(user.Department);
-                     }));
+                     }))
+                .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)));
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<Privilege, UserPrivilegeDto>();
@@ -129,6 +130,31 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<CreateOrderFromClient, Order>()
                 .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)));
             CreateMap<OrderType, NameAndIdDto>();
+            CreateMap<Order, OrderDto>()
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<RegionDto>(order.Region);
+                }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c => c.Client, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<ClientDto>(order.Client);
+                }))
+                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                }))
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                }))
+                .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<UserDto>(order.Agent);
+                }));
             CreateMap<Order, OrderTypeResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))

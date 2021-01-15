@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Models
         {
             Clients = new HashSet<Client>();
             Incomes = new HashSet<Income>();
+            Orders = new HashSet<Order>();
             OutComes = new HashSet<OutCome>();
             UserGroups = new HashSet<UserGroup>();
             UserPhones = new HashSet<UserPhone>();
@@ -33,6 +34,7 @@ namespace KokazGoodsTransfer.Models
         public virtual Department Department { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<Income> Incomes { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<OutCome> OutComes { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
         public virtual ICollection<UserPhone> UserPhones { get; set; }

@@ -67,6 +67,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest();
             }
         }
-        
+        //[HttpGet("GetByToken")]
+        //public IActionResult GetByToken()
+        //{
+        //    User.t
+        //}
     }
 }
