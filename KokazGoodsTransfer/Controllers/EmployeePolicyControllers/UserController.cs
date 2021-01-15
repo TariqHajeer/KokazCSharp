@@ -175,7 +175,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             user.HireDate = updateUserDto.HireDate;
             user.Note = updateUserDto.Note;
             {
-                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()).Count();
+                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()&&c.Id!=updateUserDto.Id).Count();
                 if (similerUserByname != 0)
                 {
                     return Conflict();
@@ -192,7 +192,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             else
             {
-                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()).Count();
+                var similerUserByname = this.Context.Users.Where(c => c.UserName.ToLower() == updateUserDto.UserName.ToLower()&&c.Id!=updateUserDto.Id).Count();
                 if (similerUserByname != 0)
                 {
                     return Conflict();

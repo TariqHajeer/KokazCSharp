@@ -51,7 +51,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     .Single(c => c.Id == client.Id);
                 return Ok(mapper.Map<ClientDto>(client));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Region)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
-                .Include(c=>c.Orders)
+                .Include(c => c.Orders)
                 .ToList();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
@@ -127,7 +127,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var client = this.Context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
                 if (client == null)
                     return NotFound();
+
+                var oldPassord = client.Password;
+
                 client = mapper.Map<UpdateClientDto, Client>(updateClientDto, client);
+                if (updateClientDto.Password == null)
+                    client.Password = oldPassord;
+
                 this.Context.Update(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients

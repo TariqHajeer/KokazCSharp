@@ -99,7 +99,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<UpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CUpdateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+                .ForMember(c => c.Password, opt => opt.MapFrom(src =>src.Password==null?"":MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();
             CreateMap<Income, IncomeDto>()
                 .ForMember(c => c.IncomeType, opt => opt.MapFrom((income, incomeDto, i, context) =>
