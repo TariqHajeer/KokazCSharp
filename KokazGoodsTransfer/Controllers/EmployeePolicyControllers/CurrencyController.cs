@@ -21,8 +21,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet]
+        //public IActionResult GetALl([FromQuery]PagingDto pagingDto)
         public IActionResult GetALl()
         {
+            //var total = 1000000;
+            //var data = mapper.Map<CurrencyDto[]>(this.Context.Currencies.Include(c => c.Incomes).Include(c => c.OutComes).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount));
+
+            //return Ok(new { total, data = data });
             return Ok(mapper.Map<CurrencyDto[]>(this.Context.Currencies.Include(c => c.Incomes).Include(c => c.OutComes).ToList()));
         }
         [HttpPost]

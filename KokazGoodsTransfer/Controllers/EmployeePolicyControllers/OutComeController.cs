@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] Filtering filtering)
+        public IActionResult Get([FromQuery] Filtering filtering, [FromQuery]PagingDto pagingDto)
         {
             var outComeIQ = (IQueryable<OutCome>)this.Context.OutComes
                 .Include(c => c.User)
@@ -40,7 +40,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 outComeIQ = outComeIQ.Where(c => c.Date <= filtering.ToDate);
             if (filtering.CurrencyId != null)
                 outComeIQ = outComeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
-            return Ok(mapper.Map<OutComeDto[]>(outComeIQ));
+            var total = outComeIQ.Count();
+            var outComes = outComeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount);
+
+            return Ok(new { data = mapper.Map<OutComeDto[]>(outComes), total });
         }
         /// <summary>
         /// 
