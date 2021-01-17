@@ -18,9 +18,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public OrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
+            if (createOrdersFromEmployee.RegionId == null)
+            {
+                var region = new Region()
+                {
+                    Name = createOrdersFromEmployee.RecipientName,
+                    CountryId = createOrdersFromEmployee.CountryId
+                };
+                this.Context.Add(region);
+            }
+            return Ok();
+        }
+        [HttpGet("{clinetId}/{code}")]
+        public IActionResult GetOrderByCode(int clientId, string code)
+        {
+            return Ok();
+        }
+        [HttpGet]
+        public IActionResult Get([FromQuery]PagingDto pagingDto)
+        {
+
             return Ok();
         }
         //[HttpPost]
@@ -31,7 +51,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("orderPlace")]
         public IActionResult GetOrderPalce()
         {
-           return Ok(mapper.Map<NameAndIdDto[]>( this.Context.OrderPlaceds.ToList()));
+            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
         }
         [HttpGet("MoenyPlaced")]
         public IActionResult GetMoenyPlaced()

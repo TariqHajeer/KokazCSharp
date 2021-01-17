@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpGet]
-        public IActionResult Get([FromQuery]Filtering filtering)
+        public IActionResult Get([FromQuery]Filtering filtering, [FromQuery]PagingDto pagingDto)
         {
             try
             {
@@ -42,6 +42,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     incomeIQ = incomeIQ.Where(c => c.Date <= filtering.ToDate);
                 if (filtering.CurrencyId != null)
                     incomeIQ = incomeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
+                var totla = incomeIQ.Count();
+                var incomes = incomeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
                 return Ok(mapper.Map<IncomeDto[]>(incomeIQ.ToList()));
             }
             catch (Exception ex)

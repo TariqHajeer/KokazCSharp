@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (filtering.CurrencyId != null)
                 outComeIQ = outComeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
             var total = outComeIQ.Count();
-            var outComes = outComeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount);
+            var outComes = outComeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
 
             return Ok(new { data = mapper.Map<OutComeDto[]>(outComes), total });
         }
