@@ -37,31 +37,44 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto,[FromQuery]OrderFilter orderFilter)
+        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {
-            var order = this.Context.Orders.AsQueryable();
+            var orderIQ = this.Context.Orders.AsQueryable();
             if (orderFilter.CountryId != null)
             {
-                order = order.Where(c => c.CountryId == orderFilter.CountryId);
+                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
             }
-            if (orderFilter.Code !=string.Empty)
+            if (orderFilter.Code != string.Empty)
             {
-                order = order.Where(c => c.Code.StartsWith(orderFilter.Code));
+                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
             }
             if (orderFilter.ClientId != null)
             {
-                order = order.Where(c => c.ClientId==orderFilter.ClientId);
+                orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
             }
             if (orderFilter.RegionId != null)
             {
-                order = order.Where(c => c.RegionId == orderFilter.RegionId);
+                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
             }
             if (orderFilter.RecipientName != string.Empty)
             {
-                order = order.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
             }
-            
-            return Ok();
+            if (orderFilter.MonePlacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+            }
+            if (orderFilter.OrderplacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+            }
+            if (orderFilter.Phone != string.Empty)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            var total = orderIQ.Count();
+            var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(new { data = mapper.Map<OrderDto>(orders), total });
         }
         //[HttpPost]
         //public IActionResult Creat()
