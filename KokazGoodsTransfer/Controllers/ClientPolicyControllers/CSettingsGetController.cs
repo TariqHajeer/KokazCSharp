@@ -24,7 +24,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult GetAll()
         {
             var countries = Context.Countries
-                .Include(c => c.Users)
                 .Include(c => c.Regions)
                     .ThenInclude(c => c.Clients)
                 .ToList();
