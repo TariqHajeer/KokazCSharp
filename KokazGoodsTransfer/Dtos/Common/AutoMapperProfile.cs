@@ -42,17 +42,17 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
                 .MaxDepth(2);
-            CreateMap<Department, DepartmentDto>()
-                .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
+            //CreateMap<Department, DepartmentDto>()
+            //    .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
             CreateMap<User, UserDto>()
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
                 {
                     return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
                 }))
-                .ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
-                     {
-                         return context.Mapper.Map<DepartmentDto>(user.Department);
-                     }))
+                //.ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
+                //     {
+                //         return context.Mapper.Map<DepartmentDto>(user.Department);
+                //     }))
                 .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)));
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
@@ -129,6 +129,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<MoenyPlaced, NameAndIdDto>();
             CreateMap<CreateOrderFromClient, Order>()
                 .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)));
+            CreateMap<CreateOrdersFromEmployee, Order>();
             CreateMap<OrderType, NameAndIdDto>();
             CreateMap<Order, OrderDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

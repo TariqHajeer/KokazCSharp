@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.Users
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int DepartmentId { get; set; }
+        //public int DepartmentId { get; set; }
         public string Experince { get; set; }
         public string Address { get; set; }
         public DateTime HireDate { get; set; }

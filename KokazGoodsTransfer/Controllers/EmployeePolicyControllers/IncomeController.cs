@@ -44,14 +44,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     incomeIQ = incomeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
                 var totla = incomeIQ.Count();
                 var incomes = incomeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-                return Ok(mapper.Map<IncomeDto[]>(incomeIQ.ToList()));
+                return Ok(new { data = mapper.Map<IncomeDto[]>(incomeIQ.ToList()), totla });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost]
         public IActionResult Create([FromBody] CreateIncomeDto creatrIncomeDto)
         {

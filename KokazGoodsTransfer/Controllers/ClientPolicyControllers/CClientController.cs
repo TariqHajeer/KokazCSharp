@@ -67,10 +67,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest();
             }
         }
-        //[HttpGet("GetByToken")]
-        //public IActionResult GetByToken()
-        //{
-        //    User.t
-        //}
+        [HttpGet("GetByToken")]
+        public IActionResult GetByToken()
+        {
+            var client = this.Context.Clients.Include(c=>c.ClientPhones).Include(c=>c.Region).Where(c=>c.Id==AuthoticateUserId()).First();
+            var authClient = mapper.Map<AuthClient>(client);
+            return Ok(authClient);
+        }
     }
 }

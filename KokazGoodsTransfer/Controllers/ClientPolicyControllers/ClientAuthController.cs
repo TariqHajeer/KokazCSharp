@@ -25,9 +25,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpPost]
         public IActionResult Login([FromBody]LoginDto loginDto)
         {
+
             var client = this.Context.Clients
                 .Include(c => c.Region)
-                .Where(c => c.UserName == loginDto.UserName).FirstOrDefault();
+                .Include(c=>c.ClientPhones)
+                .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
             if (client == null)
                 return Conflict();
             if (!MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))

@@ -21,7 +21,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
-        public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPrivilege> GroupPrivileges { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
@@ -119,15 +118,6 @@ namespace KokazGoodsTransfer.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Department>(entity =>
-            {
-                entity.ToTable("Department");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<Group>(entity =>
             {
                 entity.ToTable("Group");
@@ -156,8 +146,6 @@ namespace KokazGoodsTransfer.Models
             modelBuilder.Entity<Income>(entity =>
             {
                 entity.ToTable("Income");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
 
@@ -389,12 +377,6 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("FK_Users_Country");
-
-                entity.HasOne(d => d.Department)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.DepartmentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Users_Department");
             });
 
             modelBuilder.Entity<UserGroup>(entity =>

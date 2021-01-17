@@ -19,7 +19,6 @@ namespace KokazGoodsTransfer.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public int DepartmentId { get; set; }
         public string Experince { get; set; }
         public string Adress { get; set; }
         public DateTime HireDate { get; set; }
@@ -31,7 +30,6 @@ namespace KokazGoodsTransfer.Models
         public string Password { get; set; }
 
         public virtual Country Country { get; set; }
-        public virtual Department Department { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<Income> Incomes { get; set; }
         public virtual ICollection<Order> Orders { get; set; }

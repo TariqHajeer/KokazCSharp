@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
+            var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
             if (createOrdersFromEmployee.RegionId == null)
             {
                 var region = new Region()
@@ -29,18 +30,37 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     CountryId = createOrdersFromEmployee.CountryId
                 };
                 this.Context.Add(region);
+                order.RegionId = region.Id;
             }
-            return Ok();
-        }
-        [HttpGet("{clinetId}/{code}")]
-        public IActionResult GetOrderByCode(int clientId, string code)
-        {
+            this.Context.Add(order);
+            this.Context.SaveChanges();
             return Ok();
         }
         [HttpGet]
-        public IActionResult Get([FromQuery]PagingDto pagingDto)
+        public IActionResult Get([FromQuery] PagingDto pagingDto,[FromQuery]OrderFilter orderFilter)
         {
-
+            var order = this.Context.Orders.AsQueryable();
+            if (orderFilter.CountryId != null)
+            {
+                order = order.Where(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code !=string.Empty)
+            {
+                order = order.Where(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            if (orderFilter.ClientId != null)
+            {
+                order = order.Where(c => c.ClientId==orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                order = order.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty)
+            {
+                order = order.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            
             return Ok();
         }
         //[HttpPost]

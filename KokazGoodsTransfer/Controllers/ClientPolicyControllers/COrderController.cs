@@ -95,8 +95,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                         {
                             orderTypeId = similerOrderType.Id;
                         }
-
-
                     }
                     else
                     {
@@ -109,11 +107,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                         OrderId = order.Id
                     });
                     this.Context.SaveChanges();
-                    //order.OrderItems.Add(new OrderItem()
-                    //{
-                    //    OrderTpyeId = orderTypeId,
-                    //    Count = item.Count,
-                    //});
                 }
                 dbTransacrion.Commit();
                 return Ok(mapper.Map<OrderTypeResponseClientDto>(order));

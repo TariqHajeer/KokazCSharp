@@ -39,7 +39,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Name = createUserDto.Name,
                 Adress = createUserDto.Address,
                 Experince = createUserDto.Experince,
-                DepartmentId = createUserDto.DepartmentId,
                 HireDate = createUserDto.HireDate,
                 Note = createUserDto.Note,
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
@@ -79,7 +78,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var users = this.Context.Users
                 .Include(c => c.UserPhones)
-                .Include(c => c.Department)
                 .Include(c => c.UserGroups)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
@@ -88,7 +86,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetById(int id)
         {
             var user = this.Context.Users.Include(c => c.UserPhones)
-                .Include(c => c.Department)
                 .Include(c => c.UserGroups)
                 .FirstOrDefault(c => c.Id == id);
             return Ok(mapper.Map<UserDto>(user));
@@ -171,7 +168,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var user = this.Context.Users.Find(updateUserDto.Id);
             user.Adress = updateUserDto.Address;
             user.Name = updateUserDto.Name;
-            user.DepartmentId = updateUserDto.DepartmentId;
             user.HireDate = updateUserDto.HireDate;
             user.Note = updateUserDto.Note;
             {

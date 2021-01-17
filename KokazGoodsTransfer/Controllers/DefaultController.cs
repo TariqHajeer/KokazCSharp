@@ -40,12 +40,12 @@ namespace KokazGoodsTransfer.Controllers
                 return Ok("False");
             }
         }
-        [HttpGet("De")]
+        [HttpGet("Currencies")]
         public IActionResult GetDepartmnetsName()
         {
             try
             {
-                return Ok(this.Context.Departments.Select(c => c.Name));
+                return Ok(this.Context.Currencies.Select(c => c.Name));
             }
             catch (Exception ex)
             {
