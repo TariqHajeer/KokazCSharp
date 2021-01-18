@@ -88,7 +88,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(new { data = mapper.Map<OrderDto>(orders), total });
+            return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
         //[HttpPost]
         //public IActionResult Creat()
