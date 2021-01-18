@@ -28,7 +28,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     }
     public class OrderItemDto
     {
-        public int? OrderTypeId { get; set; }
+        public string OrderTypeName { get; set; }
+        public int OrderTypeId { get; set; }
         public int Count { get; set; }
     }
 }

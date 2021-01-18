@@ -33,11 +33,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.RegionId = region.Id;
             }
             this.Context.Add(order);
+            
+            if (createOrdersFromEmployee.OrderTypeDtos != null)
+            {
+                foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
+                {
+                    OrderItem orderItem = new OrderItem()
+                    {
+                        OrderId = order.Id,
+                        Count = item.Count,
+                        OrderTpyeId = item.OrderTypeId
+                    };
+                    this.Context.Add(orderItem);
+                }
+            }
             this.Context.SaveChanges();
-            //for (int i = 0; i < creat; i++)
-            //{
-
-            //}
             return Ok();
         }
         [HttpGet]
