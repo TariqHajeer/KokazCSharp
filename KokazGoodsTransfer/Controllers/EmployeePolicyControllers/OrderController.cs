@@ -34,6 +34,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             this.Context.Add(order);
             this.Context.SaveChanges();
+            //for (int i = 0; i < creat; i++)
+            //{
+
+            //}
             return Ok();
         }
         [HttpGet]

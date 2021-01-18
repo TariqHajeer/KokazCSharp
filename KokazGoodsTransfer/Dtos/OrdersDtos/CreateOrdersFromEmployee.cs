@@ -18,20 +18,17 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int MoenyPlacedId { get; set; }
         public decimal Cost { get; set; }
         public string RecipientName { get; set; }
-        public string ClientNote { get; set; }
         public string CreatedBy { get; set; }
         public decimal Amount { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
         public string[] RecipientPhones { set; get; } = new string[0];
-        //public List<OrderItemDto> OrderTypeDtos { get; set; }
+        public List<OrderItemDto> OrderTypeDtos { get; set; }
     }
     public class OrderItemDto
     {
         public int? OrderTypeId { get; set; }
-        public string OrderTypeName { get; set; }
-
         public int Count { get; set; }
     }
 }
