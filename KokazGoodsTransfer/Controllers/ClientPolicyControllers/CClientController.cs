@@ -22,14 +22,20 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpPatch]
         public IActionResult Update([FromBody] CUpdateClientDto updateClientDto)
         {
-            var client = this.Context.Clients.Find(AuthoticateUserId());
-            client = mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
-            this.Context.Update(client);
-            this.Context.SaveChanges();
-            client = this.Context.Clients
-                .Include(c => c.Region)
-                .Single(c => c.Id == client.Id);
-            return Ok();
+            try
+            {
+                var client = this.Context.Clients.Find(AuthoticateUserId());
+                var clientName = client.Name;
+                client = mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
+                client.Name = clientName;
+                this.Context.Update(client);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new {message="خطأ بالتعديل ",Ex=ex.Message});
+            }
         }
         [HttpPut("deletePhone/{id}")]
         public IActionResult DeletePhone(int id)

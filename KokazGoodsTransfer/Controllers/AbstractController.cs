@@ -20,7 +20,6 @@ namespace KokazGoodsTransfer.Controllers
         }
         protected int AuthoticateUserId()
         {
-            return 1;
             var userIdClaim = User.Claims.ToList().Where(c => c.Type == "UserID").Single();
             return Convert.ToInt32(userIdClaim.Value);
         }
