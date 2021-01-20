@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
             }
-            if (orderFilter.Code != string.Empty)
+            if (orderFilter.Code != string.Empty&&orderFilter.Code!=null)
             {
                 orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
             }

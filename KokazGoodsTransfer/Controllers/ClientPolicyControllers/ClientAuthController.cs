@@ -27,11 +27,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var client = this.Context.Clients
-                .Include(c => c.Region) 
-                .Include(c=>c.ClientPhones)
+                .Include(c => c.Region)
+                .Include(c => c.ClientPhones)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
             if (client == null)
-                return Conflict();
+            {
+                return Conflict(new { message = "وائييييييل " });
+            }
             if (!MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
             {
                 return Conflict();

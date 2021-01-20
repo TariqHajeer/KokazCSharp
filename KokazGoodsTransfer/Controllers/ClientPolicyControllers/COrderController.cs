@@ -19,18 +19,34 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public COrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        private IActionResult Validate(CreateOrderFromClient createOrderFromClient)
+        {
+            List<string> erros = new List<string>();
+            if (CodeExist(createOrderFromClient.Code))
+            {
+                erros.Add("الكود موجود مسبقاً");
+            }
+            
+
+            return Ok();
+        }
         [HttpPost]
         public IActionResult Create(CreateOrderFromClient createOrderFromClient)
         {
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
             {
-                
-                int? regionId = null;
-                if (CodeExist(createOrderFromClient.Code))
+
+                var validate = this.Validate(createOrderFromClient);
+                if (!(validate is OkResult))
                 {
-                    return Conflict();
+                    return validate;
                 }
+                int? regionId = null;
+                //if (CodeExist(createOrderFromClient.Code))
+                //{
+                //    return Conflict();
+                //}
                 if (createOrderFromClient.RegionId == null)
                 {
                     if (createOrderFromClient.RegioName != "")
@@ -89,7 +105,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                             this.Context.Add(orderType);
                             this.Context.SaveChanges();
                             orderTypeId = orderType.Id;
-                            
+
                         }
                         else
                         {
@@ -116,7 +132,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 dbTransacrion.Rollback();
                 return BadRequest();
-                
+
             }
         }
         [HttpGet("codeExist")]
