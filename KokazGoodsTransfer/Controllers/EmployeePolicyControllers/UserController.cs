@@ -17,7 +17,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public UserController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-
+        [HttpGet("Agent")]
+        public IActionResult GetAgent()
+        {
+            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
+            return Ok(mapper.Map<UserDto[]>(users));
+        }
         [HttpPost]
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
