@@ -21,34 +21,41 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
-            var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
-            if (createOrdersFromEmployee.RegionId == null)
+            try
             {
-                var region = new Region()
+                var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
+                if (createOrdersFromEmployee.RegionId == null)
                 {
-                    Name = createOrdersFromEmployee.RecipientName,
-                    CountryId = createOrdersFromEmployee.CountryId
-                };
-                this.Context.Add(region);
-                order.RegionId = region.Id;
-            }
-            this.Context.Add(order);
-
-            if (createOrdersFromEmployee.OrderTypeDtos != null)
-            {
-                foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
-                {
-                    OrderItem orderItem = new OrderItem()
+                    var region = new Region()
                     {
-                        OrderId = order.Id,
-                        Count = item.Count,
-                        OrderTpyeId = (int)item.OrderTypeId
+                        Name = createOrdersFromEmployee.RecipientName,
+                        CountryId = createOrdersFromEmployee.CountryId
                     };
-                    this.Context.Add(orderItem);
+                    this.Context.Add(region);
+                    order.RegionId = region.Id;
                 }
+                this.Context.Add(order);
+
+                if (createOrdersFromEmployee.OrderTypeDtos != null)
+                {
+                    foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
+                    {
+                        OrderItem orderItem = new OrderItem()
+                        {
+                            OrderId = order.Id,
+                            Count = item.Count,
+                            OrderTpyeId = (int)item.OrderTypeId
+                        };
+                        this.Context.Add(orderItem);
+                    }
+                }
+                this.Context.SaveChanges();
+                return Ok();
             }
-            this.Context.SaveChanges();
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
@@ -58,7 +65,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
             }
-            if (orderFilter.Code != string.Empty&&orderFilter.Code!=null)
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
             {
                 orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
             }
@@ -70,7 +77,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
             }
-            if (orderFilter.RecipientName != string.Empty)
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
             {
                 orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
             }
@@ -82,7 +89,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
             }
-            if (orderFilter.Phone != string.Empty)
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
             {
                 orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
             }
@@ -104,6 +111,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetMoenyPlaced()
         {
             return Ok(mapper.Map<NameAndIdDto[]>(this.Context.MoenyPlaceds.ToList()));
+        }
+        [HttpGet("chekcCode")]
+        public IActionResult CheckCode([FromQuery] string code, int clientid)
+        {
+            return Ok(this.Context.Orders.Where(c => c.ClientId == clientid && c.Code == code).Any());
         }
 
     }
