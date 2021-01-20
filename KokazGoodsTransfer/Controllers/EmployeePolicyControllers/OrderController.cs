@@ -21,8 +21,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
+            var dbContextTransaction = this.Context.Database.BeginTransaction();
             try
             {
+                
+
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 if (createOrdersFromEmployee.RegionId == null)
                 {
@@ -32,9 +35,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         CountryId = createOrdersFromEmployee.CountryId
                     };
                     this.Context.Add(region);
+                    this.Context.SaveChanges();
                     order.RegionId = region.Id;
                 }
                 this.Context.Add(order);
+                this.Context.SaveChanges();
 
                 if (createOrdersFromEmployee.OrderTypeDtos != null)
                 {
@@ -47,13 +52,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             OrderTpyeId = (int)item.OrderTypeId
                         };
                         this.Context.Add(orderItem);
+                        this.Context.SaveChanges();
                     }
                 }
-                this.Context.SaveChanges();
+                dbContextTransaction.Commit();
                 return Ok();
             }
             catch (Exception ex)
             {
+                dbContextTransaction.Rollback();
                 return BadRequest(ex.Message);
             }
         }
