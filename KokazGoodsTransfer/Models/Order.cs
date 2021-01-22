@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Models
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
         public int? AgentId { get; set; }
-        public bool Seen { get; set; }
+        public bool? Seen { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }

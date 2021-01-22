@@ -91,6 +91,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var income =this.Context.Incomes.Find(id);
+            this.Context.Remove(income);
+            this.Context.SaveChanges();
+            return Ok();
+        }
         //[HttpPatch]
         //public IActionResult Update([FromBody])
     }

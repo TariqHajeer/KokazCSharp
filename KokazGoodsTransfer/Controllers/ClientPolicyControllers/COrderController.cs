@@ -91,7 +91,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 
                 //this.Context.Entry(country).Collection(c => c.Users).Load();
                 var order = mapper.Map<Order>(createOrderFromClient);
-                order.Seen = false;
                 order.ClientId = AuthoticateUserId();
                 order.CreatedBy = AuthoticateUserName();
                 order.RegionId = regionId;

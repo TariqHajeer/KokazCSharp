@@ -101,5 +101,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var outCome = this.Context.OutComes.Find(id);
+            this.Context.Remove(outCome);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }

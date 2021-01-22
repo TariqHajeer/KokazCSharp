@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     var region = new Region()
                     {
-                        Name = createOrdersFromEmployee.RecipientName,
+                        Name = createOrdersFromEmployee.RegionName,
                         CountryId = createOrdersFromEmployee.CountryId
                     };
                     this.Context.Add(region);
@@ -159,8 +159,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
+                .Where(c => c.Seen == null)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+        [HttpPut("Accept/{id}")]
+        public IActionResult Accept(int id)
+        {
+            var order = this.Context.Orders.Find(id);
+            order.Seen = true;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpPut("DisAccept/{id}")]
+        public IActionResult DisAccept(int id)
+        {
+            var order = this.Context.Orders.Find(id);
+            order.Seen = false;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
+            return Ok();
         }
     }
 }

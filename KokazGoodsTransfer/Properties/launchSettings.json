@@ -16,7 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "nativeDebugging": false
+      "nativeDebugging": false    
     },
     "KokazGoodsTransfer": {
       "commandName": "Project",

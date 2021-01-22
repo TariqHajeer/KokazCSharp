@@ -394,7 +394,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserGroups)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserGroup_Users");
             });
 
