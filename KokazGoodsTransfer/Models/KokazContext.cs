@@ -218,6 +218,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.RecipientPhones).IsRequired();
 
+                entity.Property(e => e.Seen).HasColumnName("seen");
+
                 entity.HasOne(d => d.Agent)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.AgentId)

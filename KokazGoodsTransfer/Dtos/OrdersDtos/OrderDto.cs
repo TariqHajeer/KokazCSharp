@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Address { get; set; }
         public string ClientNote { get; set; }
         public string CreatedBy { get; set; }
+        public bool Seen { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }

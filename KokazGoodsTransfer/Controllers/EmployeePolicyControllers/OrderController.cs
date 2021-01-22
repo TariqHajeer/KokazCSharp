@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -24,8 +25,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var dbContextTransaction = this.Context.Database.BeginTransaction();
             try
             {
-                
-
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 if (createOrdersFromEmployee.RegionId == null)
                 {
@@ -37,24 +36,42 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.Add(region);
                     this.Context.SaveChanges();
                     order.RegionId = region.Id;
+                    order.Seen = true;
                 }
                 this.Context.Add(order);
                 this.Context.SaveChanges();
 
                 if (createOrdersFromEmployee.OrderTypeDtos != null)
                 {
+
                     foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
                     {
+                        int orderId;
+                        if (item.OrderTypeId != null)
+                        {
+                            orderId = (int)item.OrderTypeId;
+                        }
+                        else
+                        {
+                            OrderType orderType = new OrderType()
+                            {
+                                Name = item.OrderTypeName
+                            };
+                            this.Context.Add(orderType);
+                            this.Context.SaveChanges();
+                            orderId = orderType.Id;
+                        }
                         OrderItem orderItem = new OrderItem()
                         {
                             OrderId = order.Id,
                             Count = item.Count,
-                            OrderTpyeId = (int)item.OrderTypeId
+                            OrderTpyeId = orderId
                         };
                         this.Context.Add(orderItem);
                         this.Context.SaveChanges();
                     }
                 }
+
                 dbContextTransaction.Commit();
                 return Ok();
             }
@@ -67,7 +84,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {
-            var orderIQ = this.Context.Orders.AsQueryable();
+            var orderIQ = this.Context.Orders
+                .AsQueryable();
             if (orderFilter.CountryId != null)
             {
                 orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
@@ -101,7 +119,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
             }
             var total = orderIQ.Count();
-            var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
         //[HttpPost]
@@ -124,6 +149,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(this.Context.Orders.Where(c => c.ClientId == clientid && c.Code == code).Any());
         }
-
+        [HttpGet("NewOrders")]
+        public IActionResult GetNewOrders()
+        {
+            var orders = this.Context.Orders
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
     }
 }

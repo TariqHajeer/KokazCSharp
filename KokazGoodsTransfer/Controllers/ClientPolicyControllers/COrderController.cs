@@ -19,16 +19,30 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public COrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        private IActionResult Validate(CreateOrderFromClient createOrderFromClient)
+        private List<string> Validate(CreateOrderFromClient createOrderFromClient)
         {
             List<string> erros = new List<string>();
             if (CodeExist(createOrderFromClient.Code))
             {
                 erros.Add("الكود موجود مسبقاً");
             }
-            
-
-            return Ok();
+            if (this.Context.Countries.Find(createOrderFromClient.CountryId) == null)
+            {
+                erros.Add("المدينة غير موجودة");
+            }
+            if (createOrderFromClient.RegionId != null)
+            {
+                var region = this.Context.Regions.Find(createOrderFromClient.RegionId);
+                if (region == null || region.CountryId != createOrderFromClient.CountryId)
+                {
+                    erros.Add("المنطقة غير موجودة");
+                }
+            }
+            if (createOrderFromClient.RecipientPhones.Length == 0)
+            {
+                erros.Add("رقم الهاتف مطلوب");
+            }
+            return erros;
         }
         [HttpPost]
         public IActionResult Create(CreateOrderFromClient createOrderFromClient)
@@ -36,11 +50,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
             {
-
                 var validate = this.Validate(createOrderFromClient);
-                if (!(validate is OkResult))
+                if (validate.Count != 0)
                 {
-                    return validate;
+                    return Conflict(new { messages = validate });
                 }
                 int? regionId = null;
                 //if (CodeExist(createOrderFromClient.Code))
@@ -78,6 +91,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 
                 //this.Context.Entry(country).Collection(c => c.Users).Load();
                 var order = mapper.Map<Order>(createOrderFromClient);
+                order.Seen = false;
                 order.ClientId = AuthoticateUserId();
                 order.CreatedBy = AuthoticateUserName();
                 order.RegionId = regionId;
