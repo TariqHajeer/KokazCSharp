@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (filtering.MaxAmount != null)
                     incomeIQ = incomeIQ.Where(c => c.Amount <= filtering.MaxAmount);
                 if (filtering.MinAmount != null)
-                    incomeIQ = incomeIQ.Where(c => c.Amount >= filtering.MaxAmount);
+                    incomeIQ = incomeIQ.Where(c => c.Amount >= filtering.MinAmount);
                 if (filtering.Type != null)
                     incomeIQ = incomeIQ.Where(c => c.IncomeTypeId == filtering.Type);
                 if (filtering.UserId != null)

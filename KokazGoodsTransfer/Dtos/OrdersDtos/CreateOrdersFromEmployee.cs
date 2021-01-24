@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +24,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
-        public string[] RecipientPhones { set; get; } = new string[0];
+        [Required]
+        public string[] RecipientPhones { set; get; }
         public List<OrderItemDto> OrderTypeDtos { get; set; }
     }
     public class OrderItemDto
