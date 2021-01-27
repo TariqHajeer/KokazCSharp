@@ -112,7 +112,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateOuteComeDto dto)
         {
-            var outcome = this.Context.OutComes.Find(dto.Id);
+            var outcome = this.Context.OutComes.Find(dto.Id); 
             outcome = mapper.Map<UpdateOuteComeDto, OutCome>(dto, outcome);
             this.Context.Update(outcome);
             this.Context.SaveChanges();

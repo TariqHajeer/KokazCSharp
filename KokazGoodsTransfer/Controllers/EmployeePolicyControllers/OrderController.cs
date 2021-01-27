@@ -83,6 +83,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("createMultiple")]
+        public IActionResult Create([FromBody]List<CreateOrderFromClient> createOrderFromClients)
+        {
+            return Ok();
+        }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {

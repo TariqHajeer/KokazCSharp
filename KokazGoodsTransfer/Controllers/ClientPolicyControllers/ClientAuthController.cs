@@ -30,14 +30,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.Region)
                 .Include(c => c.ClientPhones)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
-            if (client == null)
+            List<string> errors = new List<string>();
+
+            if (client == null || !MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
             {
-                return Conflict(new { message = "وائييييييل " });
+                errors.Add("خطأ بأسم المستخدم و كلمة المرور");
+                return Conflict(new { messages = errors });
             }
-            if (!MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
-            {
-                return Conflict();
-            }
+            //if (!MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
+            //{
+            //    return Conflict();
+            //}
             var climes = new List<Claim>();
             climes.Add(new Claim("UserID", client.Id.ToString()));
             climes.Add(new Claim("Type", "Client"));

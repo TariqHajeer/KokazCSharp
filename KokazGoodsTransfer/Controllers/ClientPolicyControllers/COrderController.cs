@@ -42,6 +42,21 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 erros.Add("رقم الهاتف مطلوب");
             }
+            if (createOrderFromClient.OrderItem.Count > 0)
+            {
+                foreach (var item in createOrderFromClient.OrderItem)
+                {
+                    if (item.OrderTypeId != null)
+                    {
+                        var orderType = this.Context.OrderTypes.Find(item.OrderTypeId);
+                        if (orderType == null)
+                        {
+                            erros.Add("النوع غير موجود");
+                            break;
+                        }
+                    }
+                }
+            }
             return erros;
         }
         [HttpPost]
