@@ -94,12 +94,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var income =this.Context.Incomes.Find(id);
+            var income = this.Context.Incomes.Find(id);
             this.Context.Remove(income);
             this.Context.SaveChanges();
             return Ok();
         }
-        //[HttpPatch]
-        //public IActionResult Update([FromBody])
+        [HttpPatch]
+        public IActionResult UpdateIncome([FromBody]UpdateIncomeDto dto)
+        {
+            var income = this.Context.Incomes.Find(dto.Id);
+            income = mapper.Map<UpdateIncomeDto, Income>(dto, income);
+            this.Context.Update(income);
+            this.Context.SaveChanges();
+            return Ok(income);
+        }
     }
 }

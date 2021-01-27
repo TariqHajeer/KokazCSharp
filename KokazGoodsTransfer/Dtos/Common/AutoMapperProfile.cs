@@ -42,6 +42,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
                 .MaxDepth(2);
+            
             //CreateMap<Department, DepartmentDto>()
             //    .ForMember(d => d.UserCount, opt => opt.MapFrom(src => src.Users.Count()));
             CreateMap<User, UserDto>()
@@ -101,6 +102,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<CUpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src =>src.Password==null?"":MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();
+            CreateMap<UpdateIncomeDto, Income>();
             CreateMap<Income, IncomeDto>()
                 .ForMember(c => c.IncomeType, opt => opt.MapFrom((income, incomeDto, i, context) =>
                 {
@@ -115,6 +117,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0 && src.OutComes.Count() == 0));
             CreateMap<OutComeType, OutComeTypeDto>()
                 .ForMember(d => d.CanDelete, opt => opt.MapFrom(src => src.OutComes.Count() == 0));
+            
             CreateMap<OutCome, OutComeDto>()
                 .ForMember(d => d.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
@@ -125,6 +128,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<CurrencyDto>(outcome.Currency);
                 }))
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
+            CreateMap<UpdateOuteComeDto, OutCome>();
             CreateMap<OrderPlaced, NameAndIdDto>();
             CreateMap<MoenyPlaced, NameAndIdDto>();
             CreateMap<CreateOrderFromClient, Order>()
