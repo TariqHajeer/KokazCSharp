@@ -7,7 +7,7 @@ using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
 namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
@@ -16,6 +16,11 @@ namespace KokazGoodsTransfer.Controllers
     {
         public DefaultController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
+        }
+        [Authorize]
+        public IActionResult ChekcLogin()
+        {
+            return Ok();
         }
 
         [HttpGet]
