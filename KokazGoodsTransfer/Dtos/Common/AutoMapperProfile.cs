@@ -161,7 +161,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<UserDto>(order.Agent);
                 }));
-            CreateMap<Order, OrderTypeResponseClientDto>()
+            CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
                 .ForMember(c => c.RecipientPhones, opt => opt.MapFrom(src => src.RecipientPhones.Split(",", StringSplitOptions.None)))

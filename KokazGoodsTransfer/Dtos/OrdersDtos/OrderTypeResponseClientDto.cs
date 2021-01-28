@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
-    public class OrderTypeResponseClientDto
+    public class OrderResponseClientDto
     {
         public int Id { get; set; }
         public string Code { get; set; }

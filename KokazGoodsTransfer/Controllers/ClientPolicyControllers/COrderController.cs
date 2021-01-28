@@ -153,7 +153,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     this.Context.SaveChanges();
                 }
                 dbTransacrion.Commit();
-                return Ok(mapper.Map<OrderTypeResponseClientDto>(order));
+                return Ok(mapper.Map<OrderResponseClientDto>(order));
             }
 
             catch (Exception ex)
@@ -187,7 +187,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Where(c => c.ClientId == AuthoticateUserId())
                 .ToList();
-            return Ok(mapper.Map<OrderTypeResponseClientDto[]>(orders));
+            return Ok(mapper.Map<OrderResponseClientDto[]>(orders));
         }
     }
 }

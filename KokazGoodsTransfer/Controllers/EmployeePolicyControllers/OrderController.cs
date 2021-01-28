@@ -88,6 +88,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok();
         }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var order = this.Context.Orders.Find(id);
+                this.Context.Remove(order);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {
@@ -136,11 +151,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
-        //[HttpPost]
-        //public IActionResult Creat()
-        //{
-        //    return Ok();
-        //}
         [HttpGet("orderPlace")]
         public IActionResult GetOrderPalce()
         {
