@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Controllers
         {
         }
         [Authorize]
+        [HttpGet("Check")]
         public IActionResult ChekcLogin()
         {
             return Ok();

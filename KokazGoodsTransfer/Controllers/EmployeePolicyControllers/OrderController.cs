@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {   
-            var country = this.Context.Countries.Find(createOrdersFromEmployee.CountryId);
+            var country = this.Context.Countries.Find(createOrdersFromEmployee.CountryId);  
             var dbContextTransaction = this.Context.Database.BeginTransaction();
             try
             {
@@ -84,7 +84,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("createMultiple")]
-        public IActionResult Create([FromBody]List<CreateOrderFromClient> createOrderFromClients)
+        public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
         {
             return Ok();
         }

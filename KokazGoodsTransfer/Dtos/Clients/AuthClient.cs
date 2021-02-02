@@ -15,15 +15,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Address { get; set; }
         public RegionDto Region { get; set; }
         public List<PhoneDto> Phones { get; set; }
-        public virtual void TestFunction()
-        {
-            //do something
 
-        }
-
-    }
-     class VIPClient:AuthClient
-    {
-        
     }
 }
