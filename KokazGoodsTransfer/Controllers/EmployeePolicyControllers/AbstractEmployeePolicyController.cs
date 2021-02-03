@@ -15,6 +15,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public AbstractEmployeePolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        
+
     }
 }

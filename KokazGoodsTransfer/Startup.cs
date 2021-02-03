@@ -39,8 +39,8 @@ namespace KokazGoodsTransfer
 
             services.AddControllers();
 
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Online")));
-            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Online")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             services.AddTransient(typeof(KokazContext), typeof(KokazContext));
             services.AddCors(options =>
             {
@@ -76,6 +76,7 @@ namespace KokazGoodsTransfer
                     ClockSkew = TimeSpan.Zero
                 };
             });
+            
             services.AddAuthorization(option =>
             {
                 option.AddPolicy("Employee", policy =>
@@ -85,6 +86,7 @@ namespace KokazGoodsTransfer
                 option.AddPolicy("Client", policy =>
                 {
                     policy.RequireClaim("Type", "Client");
+
                 });
             });
             services.AddSwaggerGen(s =>
