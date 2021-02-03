@@ -86,6 +86,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("createMultiple")]
         public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
         {
+
             return Ok();
         }
         [HttpDelete("{id}")]
