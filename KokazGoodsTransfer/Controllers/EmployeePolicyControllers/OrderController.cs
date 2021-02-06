@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +22,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
-        {   
-            var country = this.Context.Countries.Find(createOrdersFromEmployee.CountryId);  
+        {
+            var country = this.Context.Countries.Find(createOrdersFromEmployee.CountryId);
             var dbContextTransaction = this.Context.Database.BeginTransaction();
             try
             {
@@ -86,10 +87,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("createMultiple")]
         public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
         {
+
             foreach (var item in createMultipleOrders)
             {
-
+                var order = mapper.Map<Order>(item);
+                var country = this.Context.Countries.Find(order.CountryId);
+                order.Seen = true;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.DeliveryCost = country.DeliveryCost;
+                this.Context.Add(order);
             }
+            this.Context.SaveChanges();
             return Ok();
         }
         [HttpDelete("{id}")]
@@ -102,7 +110,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -130,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
             {
-                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+                orderIQ = orderIQ.Where(c => c.RecipientName.StarسtsWith(orderFilter.RecipientName));
             }
             if (orderFilter.MonePlacedId != null)
             {
@@ -202,5 +210,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut]
+        public IActionResult MakeOrderInWay(int[] ids)
+        {
+            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
+            {
+                return Conflict();
+            }
+            foreach (var item in orders)
+            {
+                item.OrderplacedId = (int)OrderplacedEnum.Way;
+                this.Context.Update(orders);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+        }
+
     }
 }

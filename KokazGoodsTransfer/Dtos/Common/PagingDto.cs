@@ -7,8 +7,8 @@ namespace KokazGoodsTransfer.Dtos.Common
 {
     public class PagingDto
     {
-        int rowCount = 10;
-        public int RowCount { get => rowCount; set => rowCount = Math.Min(50, value); }
+        int rowCount = 100;
+        public int RowCount { get => rowCount; set => rowCount = Math.Min(100, value); }
         public int Page { get; set; } = 1;
     }
 
