@@ -21,20 +21,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetAll()
         {
             var orderTypes = Context.OrderTypes
-                .Include(c=>c.OrderItems)
+                .Include(c => c.OrderItems)
                 .ToList();
-            List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
-            foreach (var item in orderTypes)
-            {
-                orderTypeDtos.Add(new OrderTypeDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    CanDelete = item.OrderItems.Count()==0
-                });
+            //List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
+            //foreach (var item in orderTypes)
+            //{
+            //    orderTypeDtos.Add(new OrderTypeDto()
+            //    {
+            //        Id = item.Id,
+            //        Name = item.Name,
+            //        CanDelete = item.OrderItems.Count()==0
+            //    });
 
-            }
-            return Ok(orderTypeDtos);
+            //}
+            return Ok(mapper.Map<OrderTypeDto[]>(orderTypes));
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrderType orderTypeDto)
@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -95,11 +95,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
-            
+
         }
 
     }
