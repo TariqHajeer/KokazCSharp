@@ -227,7 +227,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             foreach (var item in orders)
             {
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
-                this.Context.Update(orders);
+                this.Context.Update(item);
             }
             this.Context.SaveChanges();
             return Ok();
