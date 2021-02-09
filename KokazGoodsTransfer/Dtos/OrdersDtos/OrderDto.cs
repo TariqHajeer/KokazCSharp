@@ -31,6 +31,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public NameAndIdDto MonePlaced { get; set; }
         public NameAndIdDto Orderplaced { get; set; }
         public UserDto Agent { get; set; }
+        public  List<ResponseOrderItemDto> OrderItems { get; set; }
 
     }
 }

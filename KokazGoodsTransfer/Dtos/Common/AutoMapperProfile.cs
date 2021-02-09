@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
+using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Dtos.Regions;
@@ -162,7 +163,11 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
                 {
                     return context.Mapper.Map<UserDto>(order.Agent);
-                }));
+                }))
+                .ForMember(c => c.OrderItems, opt => opt.MapFrom((order, response, i, context) =>
+                  {
+                      return context.Mapper.Map<ResponseOrderItemDto[]>(order.OrderItems);
+                  })) ;
             CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
@@ -176,6 +181,13 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<CountryDto>(order.Country);
                 }))
                 .ForMember(c => c.CanUpdateOrDelete, opt => opt.MapFrom(src => src.OrderplacedId <= 2));
+            CreateMap<OrderType, OrderTypeDto>()
+                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.OrderItems.Count() == 0));
+            CreateMap<OrderItem, ResponseOrderItemDto>()
+                .ForMember(c => c.OrderTpye, opt => opt.MapFrom((orderItem, response, i, context) =>
+                    {
+                        return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);   
+                    }));
 
         }
     }

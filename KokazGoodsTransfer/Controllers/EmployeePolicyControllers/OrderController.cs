@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
             {
-                orderIQ = orderIQ.Where(c => c.RecipientName.StarسtsWith(orderFilter.RecipientName));
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
             }
             if (orderFilter.MonePlacedId != null)
             {
@@ -152,6 +152,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
             }
+            if (orderFilter.AgentId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
+            }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
@@ -160,6 +164,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
