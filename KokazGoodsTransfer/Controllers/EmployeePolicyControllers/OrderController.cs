@@ -41,6 +41,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.Seen = true;
                 }
                 order.DeliveryCost = country.DeliveryCost;
+                if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                {
+                    order.IsClientDiliverdMoney = true;
+                }
+                else
+                {
+                    order.IsClientDiliverdMoney = false;
+                }
                 this.Context.Add(order);
                 this.Context.SaveChanges();
 
@@ -95,6 +103,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.Seen = true;
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                 order.DeliveryCost = country.DeliveryCost;
+                order.IsClientDiliverdMoney = false;
                 this.Context.Add(order);
             }
             this.Context.SaveChanges();
@@ -232,6 +241,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut]
+        public IActionResult UpdateOrdersStatusFromAgent(List<OrderState> orderStates)
+        {
 
+            foreach (var item in orderStates)
+            {
+                var order = this.Context.Orders.Find(item.Id);
+                order.OrderplacedId = item.OrderplacedId;
+                order.MoenyPlacedId = item.MoenyPlacedId;
+                if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                {
+                    order.IsClientDiliverdMoney = true;
+                }
+                this.Context.Update(order);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpPut]
+        public IActionResult DeleiverMoneyForClient(int [] ids)
+        {
+            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id));
+            foreach (var item in orders)
+            {
+                item.IsClientDiliverdMoney = true;
+                this.Context.Update(item);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }
