@@ -165,6 +165,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
             }
+            if (orderFilter.IsClientDiliverdMoney != null)
+            {
+                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney==orderFilter.IsClientDiliverdMoney);
+            }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
@@ -225,7 +229,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut]
+        [HttpPut("MakeOrderInWay")]
         public IActionResult MakeOrderInWay(int[] ids)
         {
             var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
@@ -241,7 +245,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut]
+        [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderState> orderStates)
         {
 
@@ -254,13 +258,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     order.IsClientDiliverdMoney = true;
                 }
+                if (item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                {
+                    order.Cost = item.Cost;
+                }
                 this.Context.Update(order);
             }
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut]
-        public IActionResult DeleiverMoneyForClient(int [] ids)
+        [HttpPut("DeleiverMoneyForClient")]
+        public IActionResult DeleiverMoneyForClient(int[] ids)
         {
             var orders = this.Context.Orders.Where(c => ids.Contains(c.Id));
             foreach (var item in orders)

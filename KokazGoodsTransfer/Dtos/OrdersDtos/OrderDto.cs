@@ -25,13 +25,15 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
+        public bool IsClientDiliverdMoney { get; set; }
         public ClientDto Client { get; set; }
         public CountryDto Country { get; set; }
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
         public NameAndIdDto Orderplaced { get; set; }
         public UserDto Agent { get; set; }
-        public  List<ResponseOrderItemDto> OrderItems { get; set; }
+        public List<ResponseOrderItemDto> OrderItems { get; set; }
+
 
     }
 }
