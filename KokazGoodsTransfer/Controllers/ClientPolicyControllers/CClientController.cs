@@ -26,8 +26,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 var client = this.Context.Clients.Find(AuthoticateUserId());
                 var clientName = client.Name;
+                var oldPassword = client.Password;
                 client = mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
                 client.Name = clientName;
+                if (client.Password == "")
+                    client.Password = oldPassword;
                 this.Context.Update(client);
                 this.Context.SaveChanges();
                 return Ok();
