@@ -69,6 +69,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     Phone = phone
                 };
                 this.Context.Add(clientPhone);
+                this.Context.SaveChanges);
                 return Ok(mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
