@@ -36,9 +36,7 @@ namespace KokazGoodsTransfer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
-
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Online")));
             services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             services.AddTransient(typeof(KokazContext), typeof(KokazContext));

@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public CClientController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpPatch]
+        [HttpPut("updateInformation")]
         public IActionResult Update([FromBody] CUpdateClientDto updateClientDto)
         {
             try
@@ -69,7 +69,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     Phone = phone
                 };
                 this.Context.Add(clientPhone);
-                this.Context.SaveChanges);
+                this.Context.SaveChanges();
                 return Ok(mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
