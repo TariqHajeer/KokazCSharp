@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
-    public class OrderState
+    public class OrderStateDto
     {
         public int Id { get; set; }
         public decimal Cost { get; set; }

@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             var user = this.Context.Users
-                .Include(c => c.UserGroups)
+                .Include(c => c.UserGroups) 
                 .ThenInclude(c => c.Group)
                 .ThenInclude(c => c.GroupPrivileges)
                 .ThenInclude(c => c.Privileg)

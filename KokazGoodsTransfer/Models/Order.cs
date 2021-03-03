@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         public int CountryId { get; set; }
         public decimal DeliveryCost { get; set; }
         public decimal Cost { get; set; }
+        public decimal? OldCost { get; set; }
         public string RecipientName { get; set; }
         public string RecipientPhones { get; set; }
         public int? RegionId { get; set; }
@@ -32,11 +33,16 @@ namespace KokazGoodsTransfer.Models
         public int? AgentId { get; set; }
         public bool? Seen { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
+        public bool IsSync { get; set; }
+        public int OrderStateId { get; set; }
+        public int? AgentPrintNumber { get; set; }
+        public int? ClientPrintNumber { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }
+        public virtual OrderState OrderState { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }

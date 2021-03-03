@@ -29,6 +29,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
+        public virtual DbSet<OrderState> OrderStates { get; set; }
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
@@ -214,6 +215,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.DiliveryDate).HasColumnType("date");
 
+                entity.Property(e => e.OldCost).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 
                 entity.Property(e => e.RecipientPhones).IsRequired();
@@ -242,6 +245,12 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.MoenyPlacedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_MoenyPlaced");
+
+                entity.HasOne(d => d.OrderState)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.OrderStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Order_OrderState");
 
                 entity.HasOne(d => d.Orderplaced)
                     .WithMany(p => p.Orders)
@@ -283,6 +292,15 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<OrderState>(entity =>
+            {
+                entity.ToTable("OrderState");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.State).IsRequired();
             });
 
             modelBuilder.Entity<OrderType>(entity =>
