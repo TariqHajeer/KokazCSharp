@@ -129,7 +129,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {
             var orderIQ = this.Context.Orders
-                .AsQueryable();
+            .AsQueryable();
             if (orderFilter.CountryId != null)
             {
                 orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
@@ -301,7 +301,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetClientPrintNumber")]
         public IActionResult GetClientPrintNumber()
         {
-            var x = this.Context.Orders.Max(c => c.ClientPrintNumber);
+            var x = this.Context.Orders.Max(c => c.ClientPrintNumber) ?? 0;
             if (x == 0)
                 return Ok(1);
             return Ok(x + 1);
@@ -309,7 +309,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetAgentPrintNumber")]
         public IActionResult GetAgnetPrintNumber()
         {
-            var x = this.Context.Orders.Max(c => c.AgentPrintNumber);
+            var x = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
             if (x == 0)
                 return Ok(1);
             return Ok(x + 1);
@@ -317,7 +317,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("SetClientPrintNumber")]
         public IActionResult SetClientPrintNumber([FromBody]PrintNumberOrder printNumberOrder)
         {
-            var orders= this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
+            var orders = this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
             foreach (var item in orders)
             {
                 item.ClientPrintNumber = printNumberOrder.PrintNumber;
@@ -336,5 +336,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("GetOrderByAgent/{agentId}/{{orderCode}")]
+        public IActionResult GetOrderByAgent(int agentId, string orderCode)
+        {
+            var order = this.Context.Orders.Where(c => c.AgentId == agentId && c.Code == orderCode).SingleOrDefault();
+            if (order == null)
+                return Conflict(new { message = "الشحنة غير موجودة" });
+            if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
+            {
+                return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+            }
+            return Ok(mapper.Map<OrderDto>(order));
+        }
+
     }
 }
