@@ -346,6 +346,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
             }
+            this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
+            this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
+            this.Context.Entry(order).Reference(c => c.Region).Load();
+            this.Context.Entry(order).Reference(c => c.Country).Load();
             return Ok(mapper.Map<OrderDto>(order));
         }
 
