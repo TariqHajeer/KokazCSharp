@@ -336,7 +336,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpGet("GetOrderByAgent/{agentId}/{{orderCode}")]
+        [HttpGet("GetOrderByAgent/{agentId}/{orderCode}")]
         public IActionResult GetOrderByAgent(int agentId, string orderCode)
         {
             var order = this.Context.Orders.Where(c => c.AgentId == agentId && c.Code == orderCode).SingleOrDefault();
