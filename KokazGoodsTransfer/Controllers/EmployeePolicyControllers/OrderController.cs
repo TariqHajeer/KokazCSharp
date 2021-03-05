@@ -270,6 +270,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.Cost = 0;
                     order.DeliveryCost = 0;
                 }
+                if (order.OrderplacedId == (int)OrderplacedEnum.Delivered && order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                {
+                    order.OrderStateId = (int)OrderStateEnum.Finished;
+                }
                 //if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
                 //{
                 //    order.IsClientDiliverdMoney = true;
@@ -295,7 +299,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             foreach (var item in orders)
             {
                 item.IsClientDiliverdMoney = true;
-                if (item.OrderplacedId == (int)OrderplacedEnum.Delivered)
+                if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
                 {
                     item.OrderStateId = (int)OrderStateEnum.Finished;
                 }
