@@ -39,6 +39,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.SaveChanges();
                     order.RegionId = region.Id;
                     order.Seen = true;
+                    order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 }
                 order.DeliveryCost = country.DeliveryCost;
                 if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
@@ -105,6 +106,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.DeliveryCost = country.DeliveryCost;
                 order.IsClientDiliverdMoney = false;
                 order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 this.Context.Add(order);
             }
             this.Context.SaveChanges();
@@ -293,6 +295,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             foreach (var item in orders)
             {
                 item.IsClientDiliverdMoney = true;
+                if (item.OrderplacedId == (int)OrderplacedEnum.Delivered)
+                {
+                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                }
                 this.Context.Update(item);
             }
             this.Context.SaveChanges();
