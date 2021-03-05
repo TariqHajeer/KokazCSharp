@@ -203,6 +203,8 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Order");
 
+                entity.Property(e => e.AgentCost).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);

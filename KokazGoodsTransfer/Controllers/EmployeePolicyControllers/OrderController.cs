@@ -352,6 +352,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.Entry(order).Reference(c => c.Country).Load();
             return Ok(mapper.Map<OrderDto>(order));
         }
+        [HttpGet("GetEarnings")]
+        public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
+        {
+            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished);
+            if (dateFiter.FromDate != null)
+                ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
+            if (dateFiter.ToDate != null)
+                ordersQuery = ordersQuery.Where(c => c.Date <= dateFiter.ToDate);
+            var totalRecord = ordersQuery.Count();
+            var totalEarinig = ordersQuery.Sum(c => c.DeliveryCost - c.AgentCost);
+            var orders = ordersQuery.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+
 
     }
 }

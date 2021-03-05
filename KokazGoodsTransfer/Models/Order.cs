@@ -19,6 +19,7 @@ namespace KokazGoodsTransfer.Models
         public decimal DeliveryCost { get; set; }
         public decimal Cost { get; set; }
         public decimal? OldCost { get; set; }
+        public decimal AgentCost { get; set; }
         public string RecipientName { get; set; }
         public string RecipientPhones { get; set; }
         public int? RegionId { get; set; }
