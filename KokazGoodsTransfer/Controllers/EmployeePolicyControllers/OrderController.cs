@@ -107,6 +107,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.IsClientDiliverdMoney = false;
                 order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
+                order.Date = DateTime.Now;
                 this.Context.Add(order);
             }
             this.Context.SaveChanges();
@@ -234,7 +235,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut("MakeOrderInWay")]
+        [HttpPut("MakeOrderInWay")] 
         public IActionResult MakeOrderInWay(int[] ids)
         {
             var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
