@@ -373,7 +373,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var totalRecord = ordersQuery.Count();
             var totalEarinig = ordersQuery.Sum(c => c.DeliveryCost - c.AgentCost);
             var orders = ordersQuery.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(new { data =new {orders= mapper.Map<OrderDto[]>(orders),totalEarinig}, total = totalRecord });
+            return Ok(new { data = new { orders = mapper.Map<OrderDto[]>(orders), totalEarinig }, total = totalRecord });
+        }
+        [HttpGet("ShipmentsNotReimbursedToTheClient/{clientId}")]
+        public IActionResult ShipmentsNotReimbursedToTheClient(int clientId)
+        {
+            var orders = this.Context.Orders.Where(c => c.ClientId == clientId && c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Way)
+                 .Include(c => c.Agent)
+                     .ThenInclude(c => c.UserPhones)
+                 .Include(c => c.Region)
+                 .Include(c => c.Country)
+                 .Include(c => c.Orderplaced)
+                 .Include(c => c.MoenyPlaced).ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders))
         }
 
 
