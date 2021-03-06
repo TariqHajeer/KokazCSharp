@@ -12,6 +12,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
     public class OrderDto
     {
+
         public int Id { get; set; }
         public string Code { get; set; }
         public decimal DeliveryCost { get; set; }
