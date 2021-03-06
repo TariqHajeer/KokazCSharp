@@ -246,7 +246,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             foreach (var item in orders)
             {
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
-                item.AgentPrintNumber = prinNumber;
+                item.AgentPrintNumber = ++prinNumber;
                 this.Context.Update(item);
             }
 
