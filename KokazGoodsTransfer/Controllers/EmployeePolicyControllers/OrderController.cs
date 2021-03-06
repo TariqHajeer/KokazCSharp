@@ -373,7 +373,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var totalRecord = ordersQuery.Count();
             var totalEarinig = ordersQuery.Sum(c => c.DeliveryCost - c.AgentCost);
             var orders = ordersQuery.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(mapper.Map<OrderDto[]>(orders));
+            return Ok(new { data =new {orders= mapper.Map<OrderDto[]>(orders),totalEarinig}, total = totalRecord });
         }
 
 
