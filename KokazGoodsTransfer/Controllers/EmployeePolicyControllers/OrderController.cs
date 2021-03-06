@@ -242,13 +242,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict();
             }
+            var prinNumber = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
             foreach (var item in orders)
             {
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
+                item.AgentPrintNumber = prinNumber;
                 this.Context.Update(item);
             }
+
             this.Context.SaveChanges();
-            return Ok();
+            return Ok(new{prinNumber});
         }
         [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderStateDto> orderStates)
