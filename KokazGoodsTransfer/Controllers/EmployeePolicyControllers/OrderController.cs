@@ -243,15 +243,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             }
             var prinNumber = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
+            ++prinNumber;
             foreach (var item in orders)
             {
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
-                item.AgentPrintNumber = ++prinNumber;
+                item.AgentPrintNumber = prinNumber;
                 this.Context.Update(item);
             }
 
             this.Context.SaveChanges();
-            return Ok(new{prinNumber});
+            return Ok(new { prinNumber });
         }
         [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderStateDto> orderStates)
@@ -298,10 +299,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
+
             var orders = this.Context.Orders.Where(c => ids.Contains(c.Id));
+            var printNumber = this.Context.Orders.Max(c => c.ClientPrintNumber) ?? 0;
+            ++printNumber;
             foreach (var item in orders)
             {
                 item.IsClientDiliverdMoney = true;
+                item.ClientPrintNumber = printNumber;
                 if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
                 {
                     item.OrderStateId = (int)OrderStateEnum.Finished;
@@ -309,45 +314,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Update(item);
             }
             this.Context.SaveChanges();
-            return Ok();
-        }
-        [HttpGet("GetClientPrintNumber")]
-        public IActionResult GetClientPrintNumber()
-        {
-            var x = this.Context.Orders.Max(c => c.ClientPrintNumber) ?? 0;
-            if (x == 0)
-                return Ok(1);
-            return Ok(x + 1);
-        }
-        [HttpGet("GetAgentPrintNumber")]
-        public IActionResult GetAgnetPrintNumber()
-        {
-            var x = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
-            if (x == 0)
-                return Ok(1);
-            return Ok(x + 1);
-        }
-        [HttpPut("SetClientPrintNumber")]
-        public IActionResult SetClientPrintNumber([FromBody]PrintNumberOrder printNumberOrder)
-        {
-            var orders = this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
-            foreach (var item in orders)
-            {
-                item.ClientPrintNumber = printNumberOrder.PrintNumber;
-            }
-            this.Context.SaveChanges();
-            return Ok();
-        }
-        [HttpPut("SetAgentPrintNumber")]
-        public IActionResult SetAgentPrintNumber([FromBody]PrintNumberOrder printNumberOrder)
-        {
-            var orders = this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
-            foreach (var item in orders)
-            {
-                item.AgentPrintNumber = printNumberOrder.PrintNumber;
-            }
-            this.Context.SaveChanges();
-            return Ok();
+            return Ok(new { printNumber });
         }
         [HttpGet("GetOrderByAgent/{agentId}/{orderCode}")]
         public IActionResult GetOrderByAgent(int agentId, string orderCode)
@@ -391,6 +358,46 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
 
+        #region oldPrintNumber
+        //[HttpGet("GetClientPrintNumber")]
+        //public IActionResult GetClientPrintNumber()
+        //{
+        //    var x = this.Context.Orders.Max(c => c.ClientPrintNumber) ?? 0;
+        //    if (x == 0)
+        //        return Ok(1);
+        //    return Ok(x + 1);
+        //}
+        //[HttpGet("GetAgentPrintNumber")]
+        //public IActionResult GetAgnetPrintNumber()
+        //{
+        //    var x = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
+        //    if (x == 0)
+        //        return Ok(1);
+        //    return Ok(x + 1);
+        //}
+        //[HttpPut("SetClientPrintNumber")]
+        //public IActionResult SetClientPrintNumber([FromBody]PrintNumberOrder printNumberOrder)
+        //{
+        //    var orders = this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
+        //    foreach (var item in orders)
+        //    {
+        //        item.ClientPrintNumber = printNumberOrder.PrintNumber;
+        //    }
+        //    this.Context.SaveChanges();
+        //    return Ok();
+        //}
+        //[HttpPut("SetAgentPrintNumber")]
+        //public IActionResult SetAgentPrintNumber([FromBody]PrintNumberOrder printNumberOrder)
+        //{
+        //    var orders = this.Context.Orders.Where(c => printNumberOrder.OrderId.Contains(c.Id));
+        //    foreach (var item in orders)
+        //    {
+        //        item.AgentPrintNumber = printNumberOrder.PrintNumber;
+        //    }
+        //    this.Context.SaveChanges();
+        //    return Ok();
+        //}
+        #endregion
 
     }
 }
