@@ -19,8 +19,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
 
-        public int OrderPlacedEnum { get; private set; }
-
         [HttpGet("MainStatics")]
         public IActionResult MainStatics()
         {

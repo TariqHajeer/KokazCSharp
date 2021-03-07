@@ -235,7 +235,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut("MakeOrderInWay")] 
+        [HttpPut("MakeOrderInWay")]
         public IActionResult MakeOrderInWay(int[] ids)
         {
             var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
@@ -264,34 +264,40 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var order = this.Context.Orders.Find(item.Id);
                 order.OrderplacedId = item.OrderplacedId;
                 order.MoenyPlacedId = item.MoenyPlacedId;
-                if (order.OrderplacedId == (int)OrderplacedEnum.Delivered)
+                if (order.IsClientDiliverdMoney == true)
                 {
-                    if (order.IsClientDiliverdMoney)
-                        order.OrderStateId = (int)OrderStateEnum.Finished;
+                    switch (order.OrderplacedId)
+                    {
+                        case (int)OrderplacedEnum.Delivered:
+                            {
+                                order.OrderStateId = (int)OrderStateEnum.Finished;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.CompletelyReturned:
+                            {
+                                order.OldCost = order.Cost;
+                                order.Cost = 0;
+                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Unacceptable:
+                            {
+                                order.OldCost = order.Cost;
+                                order.Cost = 0;
+                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.PartialReturned:
+                            {
+                                order.OldCost = order.Cost;
+                                order.Cost = item.Cost;
+                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
-                {
-                    order.OldCost = order.Cost;
-                    order.Cost = 0;
-                    order.DeliveryCost = 0;
-                }
-                if (order.OrderplacedId == (int)OrderplacedEnum.Delivered && order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
-                {
-                    order.OrderStateId = (int)OrderStateEnum.Finished;
-                }
-                //if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
-                //{
-                //    order.IsClientDiliverdMoney = true;
-                //    order.OrderStateId = (int)OrderStateEnum.Finished;
-                //}
-
-                //if (item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
-                //{
-
-                //    order.OrderStateId = (int)OrderStateEnum.Finished;
-                //    if (order.IsClientDiliverdMoney)
-                //        order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
-                //}
                 this.Context.Update(order);
             }
             this.Context.SaveChanges();
@@ -336,7 +342,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetEarnings")]
         public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
         {
-            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished);
+            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished&&c.OrderplacedId!=(int)OrderplacedEnum.CompletelyReturned);
             if (dateFiter.FromDate != null)
                 ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate != null)
