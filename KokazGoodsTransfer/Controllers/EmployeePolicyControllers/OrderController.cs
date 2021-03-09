@@ -370,10 +370,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("ShortageOfCash/{clientId}")]
+        [HttpGet("ShortageOfCash")]
         public IActionResult GetShortageOfCash([FromQuery] int clientId)
         {
-            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)
+            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash&&c.ClientId==clientId)
                 .Include(c => c.Client)
                     .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Agent)
@@ -387,8 +387,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("ReiveMoneyFromClient")]
-        public IActionResult ReiveMoneyFromClient([FromQuery] int[] ids)
+        [HttpPut("ReiveMoneyFromClient")]
+        public IActionResult ReiveMoneyFromClient([[FromBody] int[] ids)
         {
             var orders= this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
             orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
