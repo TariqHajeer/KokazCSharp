@@ -371,7 +371,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("ShortageOfCash/{clientId}")]
-        public IActionResult GetShortageOfCash(int clientId)
+        public IActionResult GetShortageOfCash([FromQuery] int clientId)
         {
             var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)
                 .Include(c => c.Client)
@@ -387,7 +387,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        
+        [HttpGet("ReiveMoneyFromClient")]
+        public IActionResult ReiveMoneyFromClient([FromQuery] int[] ids)
+        {
+            var orders= this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
+            this.Context.SaveChanges();
+            return Ok();
+        }
         #region oldPrintNumber
         //[HttpGet("GetClientPrintNumber")]
         //public IActionResult GetClientPrintNumber()
