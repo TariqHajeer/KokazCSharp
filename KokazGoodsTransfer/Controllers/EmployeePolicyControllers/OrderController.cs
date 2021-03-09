@@ -277,6 +277,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             {
                                 order.OldCost = order.Cost;
                                 order.Cost = 0;
+                                order.AgentCost = 0;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                             }
                             break;
@@ -289,7 +290,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.PartialReturned:
                             {
-                                order.OldCost = order.Cost;
+                                if(order.OldCost==null)
+                                    order.OldCost = order.Cost;
                                 order.Cost = item.Cost;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                             }
@@ -333,6 +335,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
             }
+            if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            {
+                return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+            }
             this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
             this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
             this.Context.Entry(order).Reference(c => c.Region).Load();
@@ -342,7 +348,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetEarnings")]
         public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
         {
-            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished&&c.OrderplacedId!=(int)OrderplacedEnum.CompletelyReturned);
+            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             if (dateFiter.FromDate != null)
                 ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate != null)
@@ -364,7 +370,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-
+        [HttpGet("ShortageOfCash/{clientId}")]
+        public IActionResult GetShortageOfCash(int clientId)
+        {
+            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)
+                .Include(c => c.Client)
+                    .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Agent)
+                    .ThenInclude(c => c.UserPhones)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+        
         #region oldPrintNumber
         //[HttpGet("GetClientPrintNumber")]
         //public IActionResult GetClientPrintNumber()
