@@ -290,10 +290,41 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.PartialReturned:
                             {
-                                if(order.OldCost==null)
+                                if (order.OldCost == null)
                                     order.OldCost = order.Cost;
                                 order.Cost = item.Cost;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (order.OrderplacedId)
+                    {
+
+                        case (int)OrderplacedEnum.CompletelyReturned:
+                            {
+                                if (order.OldCost != null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = 0;
+                                order.AgentCost = 0;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Unacceptable:
+                            {
+                                if (order.OldCost != null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = 0;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.PartialReturned:
+                            {
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = item.Cost;
                             }
                             break;
                         default:
@@ -316,7 +347,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 item.IsClientDiliverdMoney = true;
                 item.ClientPrintNumber = printNumber;
-                if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany||item.OrderplacedId>(int)OrderplacedEnum.Way)
                 {
                     item.OrderStateId = (int)OrderStateEnum.Finished;
                 }
@@ -373,7 +404,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ShortageOfCash")]
         public IActionResult GetShortageOfCash([FromQuery] int clientId)
         {
-            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash&&c.ClientId==clientId)
+            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == clientId)
                 .Include(c => c.Client)
                     .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Agent)
@@ -388,9 +419,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpPut("ReiveMoneyFromClient")]
-        public IActionResult ReiveMoneyFromClient([[FromBody] int[] ids)
+        public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
         {
-            var orders= this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
             orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
             this.Context.SaveChanges();
             return Ok();
