@@ -446,6 +446,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByClientPrintNumber")]
         public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
         {
+
             var orders = this.Context.Orders.Where(c => c.ClientPrintNumber== printNumber)
                 .Include(c => c.Client)
                     .ThenInclude(c => c.ClientPhones)
