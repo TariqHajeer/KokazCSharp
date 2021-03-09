@@ -426,6 +426,40 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("GetOrderByAgnetPrintNumber")]
+        public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
+        {
+           var orders= this.Context.Orders.Where(c=>c.AgentPrintNumber==printNumber)
+                .Include(c => c.Client)
+                    .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Agent)
+                    .ThenInclude(c => c.UserPhones)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .ToList();
+            return Ok( mapper.Map<OrderDto[]>(orders));
+        }
+        [HttpGet("GetOrderByClientPrintNumber")]
+        public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
+        {
+            var orders = this.Context.Orders.Where(c => c.ClientPrintNumber== printNumber)
+                .Include(c => c.Client)
+                    .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Agent)
+                    .ThenInclude(c => c.UserPhones)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
         #region oldPrintNumber
         //[HttpGet("GetClientPrintNumber")]
         //public IActionResult GetClientPrintNumber()
