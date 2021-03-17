@@ -29,6 +29,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
+        public int? AgentPrintNumber { get; set; }
+        public int? ClientPrintNumber { get; set; }
         public ClientDto Client { get; set; }
         public CountryDto Country { get; set; }
         public RegionDto Region { get; set; }

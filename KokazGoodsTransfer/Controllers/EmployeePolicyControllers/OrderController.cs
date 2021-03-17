@@ -173,6 +173,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
             }
+            if (orderFilter.AgentPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentPrintNumber == orderFilter.AgentPrintNumber);
+            }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.ClientPrintNumber == orderFilter.ClientPrintNumber);
+            }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
@@ -446,7 +454,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByClientPrintNumber")]
         public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
         {
-
             var orders = this.Context.Orders.Where(c => c.ClientPrintNumber== printNumber)
                 .Include(c => c.Client)
                     .ThenInclude(c => c.ClientPhones)
