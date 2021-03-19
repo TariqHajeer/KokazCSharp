@@ -370,10 +370,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(new { printNumber });
         }
-        [HttpGet("GetOrderByAgent/{agentId}/{orderCode}")]
-        public IActionResult GetOrderByAgent(int agentId, string orderCode)
+        [HttpGet("GetOrderByAgent/{orderCode}")]
+        public IActionResult GetOrderByAgent(string orderCode)
         {
-            var order = this.Context.Orders.Where(c => c.AgentId == agentId && c.Code == orderCode).SingleOrDefault();
+            var order = this.Context.Orders.Where(c => c.Code == orderCode).SingleOrDefault();
             if (order == null)
                 return Conflict(new { message = "الشحنة غير موجودة" });
             if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
