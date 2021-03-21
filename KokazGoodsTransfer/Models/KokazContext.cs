@@ -33,6 +33,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
+        public virtual DbSet<Printed> Printeds { get; set; }
         public virtual DbSet<Privilege> Privileges { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -230,11 +231,21 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.AgentId)
                     .HasConstraintName("FK_Order_Users");
 
+                entity.HasOne(d => d.AgentPrintNumberNavigation)
+                    .WithMany(p => p.OrderAgentPrintNumberNavigations)
+                    .HasForeignKey(d => d.AgentPrintNumber)
+                    .HasConstraintName("FK_Order_Printed");
+
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Clients");
+
+                entity.HasOne(d => d.ClientPrintNumberNavigation)
+                    .WithMany(p => p.OrderClientPrintNumberNavigations)
+                    .HasForeignKey(d => d.ClientPrintNumber)
+                    .HasConstraintName("FK_Order_Printed1");
 
                 entity.HasOne(d => d.Country)
                     .WithMany(p => p.Orders)
@@ -348,6 +359,29 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("OutComeType");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Printed>(entity =>
+            {
+                entity.ToTable("Printed");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.DestinationName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DestinationPhone)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.PrinterName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Type)
                     .IsRequired()
                     .HasMaxLength(50);
             });

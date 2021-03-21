@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
@@ -199,7 +200,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ClientDontDiliverdMoney")]
         public IActionResult Get([FromQuery]OrderClientDontDiliverdMoney orderClientDontDiliverdMoney)
         {
-            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderClientDontDiliverdMoney.ClientId && orderClientDontDiliverdMoney.OrderPlacedId.Contains(c.OrderplacedId)).ToList();
+            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderClientDontDiliverdMoney.ClientId && orderClientDontDiliverdMoney.OrderPlacedId.Contains(c.OrderplacedId))
+                .Include(c=>c.Region)
+                .Include(c=>c.Country)
+                .Include(c=>c.MoenyPlaced)
+                .Include(c => c.Orderplaced)
+                .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("orderPlace")]
@@ -252,22 +258,47 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("MakeOrderInWay")]
         public IActionResult MakeOrderInWay(int[] ids)
         {
-            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            var orders = this.Context.Orders
+                .Include(c => c.Agent)
+                .ThenInclude(c => c.UserPhones)
+                .Where(c => ids.Contains(c.Id)).ToList();
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
                 return Conflict();
             }
-            var printNumber = this.Context.Orders.Max(c => c.AgentPrintNumber) ?? 0;
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
-            foreach (var item in orders)
+            var agent = orders.FirstOrDefault().Agent;
+            var newPrint = new Printed()
             {
-                item.OrderplacedId = (int)OrderplacedEnum.Way;
-                item.AgentPrintNumber = printNumber;
-                this.Context.Update(item);
+                PrintNmber = printNumber,
+                Date = DateTime.Now,
+                Type = PrintType.Agent,
+                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                DestinationName = agent.Name,
+                DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
+            };
+            var transaction = this.Context.Database.BeginTransaction();
+            try
+            {
+                this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                foreach (var item in orders)
+                {
+                    item.OrderplacedId = (int)OrderplacedEnum.Way;
+                    item.AgentPrintNumber = newPrint.Id;
+                    this.Context.Update(item);
+                }
+                this.Context.SaveChanges();
+                transaction.Commit();
+                return Ok(new { printNumber });
             }
-
-            this.Context.SaveChanges();
-            return Ok(new { printNumber });
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return BadRequest();
+            }
         }
         [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderStateDto> orderStates)
@@ -435,7 +466,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("ReiveMoneyFromClient")]
         public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
         {
-            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id))
+                .ToList();
             orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
             this.Context.SaveChanges();
             return Ok();

@@ -40,7 +40,9 @@ namespace KokazGoodsTransfer.Models
         public int? ClientPrintNumber { get; set; }
 
         public virtual User Agent { get; set; }
+        public virtual Printed AgentPrintNumberNavigation { get; set; }
         public virtual Client Client { get; set; }
+        public virtual Printed ClientPrintNumberNavigation { get; set; }
         public virtual Country Country { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
