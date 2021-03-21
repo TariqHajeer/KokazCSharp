@@ -266,7 +266,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict();
             }
-            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Max(c => c.PrintNmber)).FirstOrDefault();
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c=>c.Type==PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
             var agent = orders.FirstOrDefault().Agent;
@@ -385,21 +385,49 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
 
-            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id));
-            var printNumber = this.Context.Orders.Max(c => c.ClientPrintNumber) ?? 0;
+            
+            var orders = this.Context.Orders
+                .Include(c=>c.Client)
+                .ThenInclude(c=>c.ClientPhones)
+                .Where(c => ids.Contains(c.Id));
+            var client = orders.FirstOrDefault().Client;
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
-            foreach (var item in orders)
+            var newPrint = new Printed()
             {
-                item.IsClientDiliverdMoney = true;
-                item.ClientPrintNumber = printNumber;
-                if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
+                PrintNmber = printNumber,
+                Date = DateTime.Now,
+                Type = PrintType.Agent,
+                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                DestinationName = client.Name,
+                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+            };
+            var transaction = this.Context.Database.BeginTransaction();
+            try
+            {
+                this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                foreach (var item in orders)
                 {
-                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                    item.IsClientDiliverdMoney = true;
+                    item.ClientPrintNumber = newPrint.Id;
+                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
+                    {
+                        item.OrderStateId = (int)OrderStateEnum.Finished;
+                    }
+                    this.Context.Update(item);
                 }
-                this.Context.Update(item);
+                this.Context.SaveChanges();
+                transaction.Commit();
+                return Ok(new { printNumber });
             }
-            this.Context.SaveChanges();
-            return Ok(new { printNumber });
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                return BadRequest();
+
+            }
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
