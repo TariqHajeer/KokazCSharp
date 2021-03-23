@@ -184,6 +184,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c=>c.AgentPrintNumberNavigation)
+                .Include(c => c.ClientPrintNumberNavigation)
                 .Include(c => c.Client)
                     .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Agent)
@@ -201,10 +203,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Get([FromQuery]OrderClientDontDiliverdMoney orderClientDontDiliverdMoney)
         {
             var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderClientDontDiliverdMoney.ClientId && orderClientDontDiliverdMoney.OrderPlacedId.Contains(c.OrderplacedId))
-                .Include(c=>c.Region)
-                .Include(c=>c.Country)
-                .Include(c=>c.MoenyPlaced)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.MoenyPlaced)
                 .Include(c => c.Orderplaced)
+                .Include(c => c.AgentPrintNumberNavigation)
+                .Include(c => c.ClientPrintNumberNavigation)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -266,7 +270,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict();
             }
-            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c=>c.Type==PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
             var agent = orders.FirstOrDefault().Agent;
@@ -316,11 +320,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         case (int)OrderplacedEnum.Delivered:
                             {
                                 order.OrderStateId = (int)OrderStateEnum.Finished;
+                                if (order.Cost != item.Cost)
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = item.Cost;
+                                }
                             }
                             break;
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
-                                order.OldCost = order.Cost;
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
+                                order.DeliveryCost = 0;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -353,8 +365,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
                                 if (order.OldCost != null)
+                                {
                                     order.OldCost = order.Cost;
+                                }
                                 order.Cost = 0;
+                                order.DeliveryCost = 0;
                                 order.AgentCost = 0;
                             }
                             break;
@@ -385,10 +400,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
 
-            
+
             var orders = this.Context.Orders
-                .Include(c=>c.Client)
-                .ThenInclude(c=>c.ClientPhones)
+                .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
                 .Where(c => ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
@@ -422,7 +437,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 transaction.Rollback();
                 return BadRequest();
@@ -452,7 +467,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetEarnings")]
         public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
         {
-            var ordersQuery = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
+            var ordersQuery = this.Context.Orders
+                .Include(c=>c.Orderplaced)
+                .Include(c=>c.MoenyPlaced)
+                .Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             if (dateFiter.FromDate != null)
                 ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate != null)
