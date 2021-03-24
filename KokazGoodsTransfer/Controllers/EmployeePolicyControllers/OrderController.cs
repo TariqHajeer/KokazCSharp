@@ -174,6 +174,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
             }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+            }
+            if (orderFilter.AgentPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+            }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
@@ -186,18 +194,37 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
-        [HttpGet("ClientDontDiliverdMoney")]
-        public IActionResult Get([FromQuery]OrderClientDontDiliverdMoney orderClientDontDiliverdMoney)
+        [HttpGet("OrdersDontFinished")]
+        public IActionResult Get([FromQuery]OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderClientDontDiliverdMoney.ClientId && orderClientDontDiliverdMoney.OrderPlacedId.Contains(c.OrderplacedId))
-                .Include(c => c.Region)
-                .Include(c => c.Country)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.Orderplaced)
-                .ToList();
+            List<Order> orders = new List<Order>();
+            if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
+            {
+                orders.AddRange(this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                   .Include(c => c.Region)
+                   .Include(c => c.Country)
+                   .Include(c => c.MoenyPlaced)
+                   .Include(c => c.Orderplaced)
+                   .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+                   .ToList());
+            }
+            if (orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+               var x= this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
+               .Include(c => c.Region)
+               .Include(c => c.Country)
+               .Include(c => c.Orderplaced)
+               .Include(c => c.MoenyPlaced)
+               .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+               .ToList();
+            }
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("orderPlace")]
@@ -254,7 +281,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Agent)
                 .ThenInclude(c => c.UserPhones)
                 .Include(c => c.Client)
-                .Include(c=>c.Country)
+                .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id)).ToList();
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
@@ -301,7 +328,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(AgentPrint);
-                    
+
                 }
                 this.Context.SaveChanges();
                 transaction.Commit();
@@ -477,8 +504,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
         {
             var ordersQuery = this.Context.Orders
-                .Include(c=>c.Orderplaced)
-                .Include(c=>c.MoenyPlaced)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
                 .Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             if (dateFiter.FromDate != null)
                 ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
@@ -501,43 +528,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("ShortageOfCash")]
-        public IActionResult GetShortageOfCash([FromQuery] int clientId)
-        {
-            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == clientId)
-                .Include(c => c.Client)
-                    .ThenInclude(c => c.ClientPhones)
-                .Include(c => c.Agent)
-                    .ThenInclude(c => c.UserPhones)
-                .Include(c => c.Region)
-                .Include(c => c.Country)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.OrderItems)
-                    .ThenInclude(c => c.OrderTpye)
-                .ToList();
-            return Ok(mapper.Map<OrderDto[]>(orders));
-        }
-        [HttpPut("ReiveMoneyFromClient")]
-        public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
-        {
-            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id))
-                .ToList();
-            orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
-            this.Context.SaveChanges();
-            return Ok();
-        }
-        [HttpGet("GetOrderByAgnetPrintNumber")]
-        public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
-        {
-            var orders = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
-                .Include(c => c.AgnetPrints).ToList();
-            return Ok(mapper.Map< PrintOrdersDto[]>(orders));
-        }
-        //[HttpGet("GetOrderByClientPrintNumber")]
-        //public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
+        //[HttpGet("ShortageOfCash")]
+        //public IActionResult GetShortageOfCash([FromQuery] int clientId)
         //{
-        //    var orders = this.Context.Orders.Where(c => c.ClientPrintNumber == printNumber)
+        //    var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == clientId)
         //        .Include(c => c.Client)
         //            .ThenInclude(c => c.ClientPhones)
         //        .Include(c => c.Agent)
@@ -550,6 +544,31 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         //            .ThenInclude(c => c.OrderTpye)
         //        .ToList();
         //    return Ok(mapper.Map<OrderDto[]>(orders));
-        //}
+        //}   
+        [HttpPut("ReiveMoneyFromClient")]
+        public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
+        {
+            var orders = this.Context.Orders.Where(c => ids.Contains(c.Id))
+                .ToList();
+            orders.ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpGet("GetOrderByAgnetPrintNumber")]
+        public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
+        {
+            var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
+                .Include(c => c.AgnetPrints)
+                .FirstOrDefault();
+            return Ok(mapper.Map<PrintOrdersDto>(printed));
+        }
+        [HttpGet("GetOrderByClientPrintNumber")]
+        public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
+        {
+            var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
+                .Include(c => c.ClientPrints)
+                .FirstOrDefault();
+            return Ok(mapper.Map<PrintOrdersDto>(printed));
+        }
     }
 }

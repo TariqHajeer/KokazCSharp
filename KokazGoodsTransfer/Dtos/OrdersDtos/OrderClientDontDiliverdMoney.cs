@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
-    public class OrderClientDontDiliverdMoney
+    public class OrderDontFinishedFilter
     {
         public int ClientId { get; set; }
-        public int[] OrderPlacedId { get; set; } 
+        public int[] OrderPlacedId { get; set; }
+        public bool IsClientDeleviredMoney { get; set; }
+        public bool ClientDoNotDeleviredMoney { get; set; }
     }
 }

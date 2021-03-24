@@ -13,6 +13,7 @@ using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,7 +165,12 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.OrderItems, opt => opt.MapFrom((order, response, i, context) =>
                   {
                       return context.Mapper.Map<ResponseOrderItemDto[]>(order.OrderItems);
-                  }));
+                  }))
+                .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                   {
+                       return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrinterName ?? null;
+                   }));
+            ;
             CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
