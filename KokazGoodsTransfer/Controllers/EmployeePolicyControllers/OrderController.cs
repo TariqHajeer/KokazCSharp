@@ -216,14 +216,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
-               var x= this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
+                orders.AddRange(this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
                .Include(c => c.MoenyPlaced)
                .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-               .ToList();
+               .ToList());
             }
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -432,54 +432,73 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        //[HttpPut("DeleiverMoneyForClient")]
-        //public IActionResult DeleiverMoneyForClient(int[] ids)
-        //{
+        [HttpPut("DeleiverMoneyForClient")]
+        public IActionResult DeleiverMoneyForClient(int[] ids)
+        {
 
 
-        //    var orders = this.Context.Orders
-        //        .Include(c => c.Client)
-        //        .ThenInclude(c => c.ClientPhones)
-        //        .Where(c => ids.Contains(c.Id));
-        //    var client = orders.FirstOrDefault().Client;
-        //    var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
-        //    var printNumber = oldPrint?.PrintNmber ?? 0;
-        //    ++printNumber;
-        //    var newPrint = new Printed()
-        //    {
-        //        PrintNmber = printNumber,
-        //        Date = DateTime.Now,
-        //        Type = PrintType.Agent,
-        //        PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
-        //        DestinationName = client.Name,
-        //        DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-        //    };
-        //    var transaction = this.Context.Database.BeginTransaction();
-        //    try
-        //    {
-        //        this.Context.Printeds.Add(newPrint);
-        //        this.Context.SaveChanges();
-        //        foreach (var item in orders)
-        //        {
-        //            item.IsClientDiliverdMoney = true;
-        //            item.ClientPrintNumber = newPrint.Id;
-        //            if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
-        //            {
-        //                item.OrderStateId = (int)OrderStateEnum.Finished;
-        //            }
-        //            this.Context.Update(item);
-        //        }
-        //        this.Context.SaveChanges();
-        //        transaction.Commit();
-        //        return Ok(new { printNumber });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        transaction.Rollback();
-        //        return BadRequest();
+            var orders = this.Context.Orders
+                .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Country)
+                .Where(c => ids.Contains(c.Id));
+            var client = orders.FirstOrDefault().Client;
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
+            ++printNumber;
+            var newPrint = new Printed()
+            {
+                PrintNmber = printNumber,
+                Date = DateTime.Now,
+                Type = PrintType.Agent,
+                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                DestinationName = client.Name,
+                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+            };
+            var transaction = this.Context.Database.BeginTransaction();
+            try
+            {
+                this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                foreach (var item in orders)
+                {
 
-        //    }
-        //}
+                    item.IsClientDiliverdMoney = true;
+
+                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
+                    {
+                        item.OrderStateId = (int)OrderStateEnum.Finished;
+                    }
+                    this.Context.Update(item);
+                    var orderPrint = new OrderPrint()
+                    {
+                        PrintId = newPrint.Id,
+                        OrderId = item.Id
+                    };
+
+                    var clientPrint = new ClientPrint()
+                    {
+                        Code = item.Code,
+                        Total = item.Cost,
+                        Country = item.Country.Name,
+                        PrintId = newPrint.Id,
+                        Phone = item.RecipientPhones,
+                        DeliveCost = item.DeliveryCost,
+                    };
+                    this.Context.Add(orderPrint);
+                    this.Context.Add(clientPrint);
+                }
+                this.Context.SaveChanges();
+                transaction.Commit();
+                return Ok(new { printNumber });
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return BadRequest();
+
+            }
+        }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
         {
