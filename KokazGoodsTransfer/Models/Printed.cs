@@ -9,8 +9,9 @@ namespace KokazGoodsTransfer.Models
     {
         public Printed()
         {
-            OrderAgentPrintNumberNavigations = new HashSet<Order>();
-            OrderClientPrintNumberNavigations = new HashSet<Order>();
+            AgnetPrints = new HashSet<AgnetPrint>();
+            ClientPrints = new HashSet<ClientPrint>();
+            OrderPrints = new HashSet<OrderPrint>();
         }
 
         public int Id { get; set; }
@@ -21,7 +22,8 @@ namespace KokazGoodsTransfer.Models
         public string DestinationPhone { get; set; }
         public string Type { get; set; }
 
-        public virtual ICollection<Order> OrderAgentPrintNumberNavigations { get; set; }
-        public virtual ICollection<Order> OrderClientPrintNumberNavigations { get; set; }
+        public virtual ICollection<AgnetPrint> AgnetPrints { get; set; }
+        public virtual ICollection<ClientPrint> ClientPrints { get; set; }
+        public virtual ICollection<OrderPrint> OrderPrints { get; set; }
     }
 }

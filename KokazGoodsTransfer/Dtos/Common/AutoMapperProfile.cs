@@ -164,15 +164,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.OrderItems, opt => opt.MapFrom((order, response, i, context) =>
                   {
                       return context.Mapper.Map<ResponseOrderItemDto[]>(order.OrderItems);
-                  }))
-                .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((order, dto, i, context) =>
-                {
-                    return order.AgentPrintNumberNavigation?.PrintNmber ?? null;
-                }))
-                .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((order, dto, i, context) =>
-                {
-                    return order.ClientPrintNumberNavigation?.PrintNmber ?? null;
-                }));
+                  }));
             CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
@@ -194,6 +186,19 @@ namespace KokazGoodsTransfer.Dtos.Common
                         return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);
                     }));
 
+            CreateMap<Printed, PrintOrdersDto>()
+                .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
+                     {
+
+                         var a1 = context.Mapper.Map<AgentPrintDto[]>(obj.AgnetPrints);
+                         var a2 = context.Mapper.Map<ClientprintDto[]>(obj.ClientPrints);
+                         List<PrintDto> x = new List<PrintDto>();
+                         x.AddRange(a1);
+                         x.AddRange(a2);
+                         return x;
+                     }));
+            CreateMap<AgnetPrint, AgentPrintDto>();
+            CreateMap<ClientPrint, ClientprintDto>();
         }
     }
 }
