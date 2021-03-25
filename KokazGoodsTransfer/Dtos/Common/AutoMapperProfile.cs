@@ -168,7 +168,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                   }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                    {
-                       return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrinterName ?? null;
+                       return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
                    }));
             ;
             CreateMap<Order, OrderResponseClientDto>()

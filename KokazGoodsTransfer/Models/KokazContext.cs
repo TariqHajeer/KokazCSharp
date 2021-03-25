@@ -72,8 +72,6 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Note).IsRequired();
-
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -83,7 +81,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.AgnetPrints)
                     .HasForeignKey(d => d.PrintId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AgnetPrint_Printed");
             });
 
@@ -159,7 +156,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.PrintId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ClientPrint_Printed");
             });
 
@@ -375,7 +371,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.OrderPrints)
                     .HasForeignKey(d => d.PrintId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderPrint_Printed1");
             });
 
