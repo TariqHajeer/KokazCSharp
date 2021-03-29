@@ -87,10 +87,6 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<CreateOutComeDto, OutCome>();
             CreateMap<OutCome, OutComeDto>()
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
-                .ForMember(c => c.Currency, opt => opt.MapFrom((outcome, dto, i, context) =>
-                     {
-                         return context.Mapper.Map<CurrencyDto>(outcome.Currency);
-                     }))
                 .ForMember(c => c.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
 
@@ -107,13 +103,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<IncomeTypeDto>(income.IncomeType);
                 }))
-                .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
-                .ForMember(c => c.Currency, opt => opt.MapFrom((income, incomeDto, i, context) =>
-                     {
-                         return context.Mapper.Map<CurrencyDto>(income.Currency);
-                     }));
-            CreateMap<Currency, CurrencyDto>()
-            .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0 && src.OutComes.Count() == 0));
+                .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
+            //CreateMap<Currency, CurrencyDto>()
+            //.ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0 && src.OutComes.Count() == 0));
             CreateMap<OutComeType, OutComeTypeDto>()
                 .ForMember(d => d.CanDelete, opt => opt.MapFrom(src => src.OutComes.Count() == 0));
 
@@ -121,10 +113,6 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(d => d.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
                 {
                     return context.Mapper.Map<OutComeTypeDto>(outcome.OutComeType);
-                }))
-                .ForMember(c => c.Currency, opt => opt.MapFrom((outcome, dto, i, context) =>
-                {
-                    return context.Mapper.Map<CurrencyDto>(outcome.Currency);
                 }))
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
             CreateMap<UpdateOuteComeDto, OutCome>();

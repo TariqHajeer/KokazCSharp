@@ -24,8 +24,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var outComeIQ = (IQueryable<OutCome>)this.Context.OutComes
                 .Include(c => c.User)
-                .Include(c => c.OutComeType)
-                .Include(c => c.Currency);
+                .Include(c => c.OutComeType);
             if (filtering.MaxAmount != null)
                 outComeIQ = outComeIQ.Where(c => c.Amount <= filtering.MaxAmount);
             if (filtering.MinAmount != null)
@@ -38,8 +37,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 outComeIQ = outComeIQ.Where(c => c.Date >= filtering.FromDate);
             if (filtering.ToDate != null)
                 outComeIQ = outComeIQ.Where(c => c.Date <= filtering.ToDate);
-            if (filtering.CurrencyId != null)
-                outComeIQ = outComeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
             var total = outComeIQ.Count();
             var outComes = outComeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
 
@@ -71,7 +68,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Add(outCome);
                 this.Context.SaveChanges();
                 this.Context.Entry(outCome).Reference(c => c.User).Load();
-                this.Context.Entry(outCome).Reference(c => c.Currency).Load();
                 this.Context.Entry(outCome).Reference(c => c.OutComeType).Load();
                 return Ok(mapper.Map<OutComeDto>(outCome));
             }

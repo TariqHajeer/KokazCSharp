@@ -16,7 +16,6 @@ namespace KokazGoodsTransfer.Dtos.OutComeDtos
         public string Reason { get; set; }
         public string Note { get; set; }
         public string CreatedBy { get; set; }
-        public CurrencyDto Currency { get; set; }
         public OutComeTypeDto OutComeType { get; set; }
     }
 }

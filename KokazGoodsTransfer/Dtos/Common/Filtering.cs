@@ -13,6 +13,5 @@ namespace KokazGoodsTransfer.Dtos.Common
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public int? Type { get; set; }
-        public int? CurrencyId { get; set; }
     }
 }

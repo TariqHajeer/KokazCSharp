@@ -26,8 +26,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 var incomeIQ = (IQueryable<Income>)this.Context.Incomes
                        .Include(c => c.User)
-                       .Include(c => c.IncomeType)
-                       .Include(c => c.Currency);
+                       .Include(c => c.IncomeType);
                 if (filtering.MaxAmount != null)
                     incomeIQ = incomeIQ.Where(c => c.Amount <= filtering.MaxAmount);
                 if (filtering.MinAmount != null)
@@ -40,8 +39,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     incomeIQ = incomeIQ.Where(c => c.Date >= filtering.FromDate);
                 if (filtering.ToDate != null)
                     incomeIQ = incomeIQ.Where(c => c.Date <= filtering.ToDate);
-                if (filtering.CurrencyId != null)
-                    incomeIQ = incomeIQ.Where(c => c.CurrencyId == filtering.CurrencyId);
                 var totla = incomeIQ.Count();
                 var incomes = incomeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
                 return Ok(new { data = mapper.Map<IncomeDto[]>(incomeIQ.ToList()), totla });
@@ -62,7 +59,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Add(income);
                 this.Context.SaveChanges();
                 this.Context.Entry(income).Reference(c => c.User).Load();
-                this.Context.Entry(income).Reference(c => c.Currency).Load();
                 this.Context.Entry(income).Reference(c => c.IncomeType).Load();
                 return Ok(mapper.Map<IncomeDto>(income));
             }

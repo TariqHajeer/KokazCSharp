@@ -220,12 +220,6 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
-                entity.HasOne(d => d.Currency)
-                    .WithMany(p => p.Incomes)
-                    .HasForeignKey(d => d.CurrencyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Income_Currency");
-
                 entity.HasOne(d => d.IncomeType)
                     .WithMany(p => p.Incomes)
                     .HasForeignKey(d => d.IncomeTypeId)
@@ -401,12 +395,6 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
-
-                entity.HasOne(d => d.Currency)
-                    .WithMany(p => p.OutComes)
-                    .HasForeignKey(d => d.CurrencyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_OutCome_Currency");
 
                 entity.HasOne(d => d.OutComeType)
                     .WithMany(p => p.OutComes)

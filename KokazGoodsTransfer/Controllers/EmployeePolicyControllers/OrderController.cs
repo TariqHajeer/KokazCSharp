@@ -550,23 +550,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        //[HttpGet("ShortageOfCash")]
-        //public IActionResult GetShortageOfCash([FromQuery] int clientId)
-        //{
-        //    var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == clientId)
-        //        .Include(c => c.Client)
-        //            .ThenInclude(c => c.ClientPhones)
-        //        .Include(c => c.Agent)
-        //            .ThenInclude(c => c.UserPhones)
-        //        .Include(c => c.Region)
-        //        .Include(c => c.Country)
-        //        .Include(c => c.Orderplaced)
-        //        .Include(c => c.MoenyPlaced)
-        //        .Include(c => c.OrderItems)
-        //            .ThenInclude(c => c.OrderTpye)
-        //        .ToList();
-        //    return Ok(mapper.Map<OrderDto[]>(orders));
-        //}   
+
+
         [HttpPut("ReiveMoneyFromClient")]
         public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
         {

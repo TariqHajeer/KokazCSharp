@@ -17,6 +17,5 @@ namespace KokazGoodsTransfer.Dtos.IncomesDtos
         public string Note { get; set; }
         public IncomeTypeDto IncomeType { get; set; }
         public string CreatedBy { get; set; }
-        public CurrencyDto Currency { get; set; }
     }
 }

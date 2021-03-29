@@ -33,5 +33,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             };
             return Ok(mainStatics);
         }
+        [HttpGet("GetAggregate")]
+        public IActionResult GetAggregate()
+        {
+            AggregateDto aggregateDto = new AggregateDto()
+            {
+                ShipmentTotal = this.Context.Orders.Sum(c => c.DeliveryCost - c.AgentCost),
+                TotalIncome = this.Context.Incomes.Sum(c => c.Amount),
+                TotalOutCome = this.Context.OutComes.Sum(c => c.Amount)
+            };
+            return Ok(aggregateDto);
+        }
     }
 }
