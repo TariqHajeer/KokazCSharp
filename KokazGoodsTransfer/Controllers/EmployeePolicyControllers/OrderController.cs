@@ -104,7 +104,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var country = this.Context.Countries.Find(order.CountryId);
                 order.Seen = true;
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.DeliveryCost = country.DeliveryCost;
+                //order.DeliveryCost = country.DeliveryCost;
                 order.IsClientDiliverdMoney = false;
                 order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
@@ -581,6 +581,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             return Ok(mapper.Map<PrintOrdersDto>(printed));
         }
-        
+
     }
 }
