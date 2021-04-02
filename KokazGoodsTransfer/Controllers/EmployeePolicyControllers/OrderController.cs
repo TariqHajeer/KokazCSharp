@@ -516,6 +516,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
             }
+            if (order.OrderplacedId == (int)OrderplacedEnum.Store)
+            {
+                return Conflict(new { message = "الشحنة ما زالت في المخزن" });
+            }
             this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
             this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
             this.Context.Entry(order).Reference(c => c.Region).Load();
@@ -581,6 +585,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             return Ok(mapper.Map<PrintOrdersDto>(printed));
         }
-
+        
     }
 }
