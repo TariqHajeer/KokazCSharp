@@ -64,5 +64,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             authenticatedUserDto.Token = token;
             return Ok(authenticatedUserDto);
         }
+        
     }
 }

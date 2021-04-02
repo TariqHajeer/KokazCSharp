@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Helpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Models.Static;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -90,10 +91,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = this.Context.Users.Include(c => c.UserPhones)
+            var dbuser = this.Context.Users.Include(c => c.UserPhones)
                 .Include(c => c.UserGroups)
                 .FirstOrDefault(c => c.Id == id);
-            return Ok(mapper.Map<UserDto>(user));
+            var user = mapper.Map<UserDto>(dbuser);
+            user.UserStatics = new UserStatics();
+            if (user.CanWorkAsAgent)
+            {
+                user.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
+                user.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
+            }
+            return Ok(user);
         }
         [HttpPut("AddPhone")]
         public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)

@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int AgentId { get; set; }
         public int OrderplacedId { get; set; }
         public string RecipientName { get; set; }
-        public decimal Amount { get; set; }
+        public decimal Cost { get; set; }
         public string RecipientPhones { set; get; }
 
     }

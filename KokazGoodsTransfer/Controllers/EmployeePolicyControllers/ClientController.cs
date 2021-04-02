@@ -43,6 +43,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Phone = item
                     });
                 }
+                client.Total = 0;
                 this.Context.Set<Client>().Add(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients

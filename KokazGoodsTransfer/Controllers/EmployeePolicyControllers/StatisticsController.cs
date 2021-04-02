@@ -35,7 +35,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpGet("GetAggregate")]
         public IActionResult GetAggregate()
-        {
+        {   
             AggregateDto aggregateDto = new AggregateDto()
             {
                 ShipmentTotal = this.Context.Orders.Sum(c => c.DeliveryCost - c.AgentCost),

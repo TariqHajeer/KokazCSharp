@@ -100,6 +100,8 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(50);
