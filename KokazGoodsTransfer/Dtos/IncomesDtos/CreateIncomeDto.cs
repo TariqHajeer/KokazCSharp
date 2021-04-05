@@ -10,7 +10,6 @@ namespace KokazGoodsTransfer.Dtos.IncomesDtos
         
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
-        public string Source { get; set; }
         public decimal Earining { get; set; }
         public string Note { get; set; }
         public int IncomeTypeId { get; set; }

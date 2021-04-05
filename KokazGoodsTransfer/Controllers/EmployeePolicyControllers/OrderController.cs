@@ -109,6 +109,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 order.Date = DateTime.Now;
+                var client = this.Context.Clients.Find(order.ClientId);
+                client.Total += (order.Cost-order.DeliveryCost);
+                this.Context.Update(client);
                 this.Context.Add(order);
             }
             this.Context.SaveChanges();

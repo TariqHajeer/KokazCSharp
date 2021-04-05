@@ -216,10 +216,6 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Earining).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.Source)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
                 entity.HasOne(d => d.IncomeType)
