@@ -56,6 +56,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.UserStatics = new UserStatics();
                 user.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
                 user.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
+                userDtos.Add(user);
             }
             return Ok(userDtos);
         }
