@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.Statics;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
@@ -35,13 +36,33 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mainStatics);
         }
         [HttpGet("GetAggregate")]
-        public IActionResult GetAggregate()
-        {   
+        public IActionResult GetAggregate([FromBody] DateFiter dateFiter)
+        {
+            //            AggregateDto aggregateDto = new AggregateDto();
+
+            //var ShipmentTotal = this.Context.Orders.Sum(c => c.DeliveryCost - c.AgentCost);
+            //var TotalIncome = this.Context.Incomes.Sum(c => c.Amount);
+            //var TotalOutCome = this.Context.OutComes.Sum(c => c.Amount);
+            var ShipmentTotal = this.Context.Orders.AsQueryable();
+            var TotalIncome = this.Context.Incomes.AsQueryable();
+            var TotalOutCome = this.Context.OutComes.AsQueryable();
+            if (dateFiter.FromDate != null)
+            {
+                ShipmentTotal = ShipmentTotal.Where(c => c.Date >= dateFiter.FromDate);
+                TotalIncome = TotalIncome.Where(c => c.Date >= dateFiter.FromDate);
+                TotalOutCome = TotalOutCome.Where(c => c.Date >= dateFiter.FromDate);
+            }
+            if (dateFiter.ToDate != null)
+            {
+                ShipmentTotal = ShipmentTotal.Where(c => c.Date <= dateFiter.ToDate);
+                TotalIncome = TotalIncome.Where(c => c.Date <= dateFiter.ToDate);
+                TotalOutCome = TotalOutCome.Where(c => c.Date <= dateFiter.ToDate);
+            }
             AggregateDto aggregateDto = new AggregateDto()
             {
-                ShipmentTotal = this.Context.Orders.Sum(c => c.DeliveryCost - c.AgentCost),
-                TotalIncome = this.Context.Incomes.Sum(c => c.Amount),
-                TotalOutCome = this.Context.OutComes.Sum(c => c.Amount)
+                ShipmentTotal = ShipmentTotal.Sum(c => c.DeliveryCost - c.AgentCost),
+                TotalIncome = TotalIncome.Sum(c=>c.Amount),
+                TotalOutCome = TotalOutCome.Sum(c=>c.Amount)
             };
             return Ok(aggregateDto);
         }
