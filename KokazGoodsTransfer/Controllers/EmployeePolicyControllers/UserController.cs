@@ -92,8 +92,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 item.UserStatics = new UserStatics();
                 if (item.CanWorkAsAgent)
                 {
-                    item.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
-                    item.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
+                    item.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
+                    item.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
                 }
             }
             return Ok(usersDto);
