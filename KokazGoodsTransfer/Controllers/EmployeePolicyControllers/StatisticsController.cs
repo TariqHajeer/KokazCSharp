@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mainStatics);
         }
         [HttpGet("GetAggregate")]
-        public IActionResult GetAggregate([FromBody] DateFiter dateFiter)
+        public IActionResult GetAggregate([FromQuery] DateFiter dateFiter)
         {
             //            AggregateDto aggregateDto = new AggregateDto();
 
