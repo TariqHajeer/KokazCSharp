@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Statics;
+using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalOutCome = this.Context.OutComes.Sum(c => c.Amount)
             };
             return Ok(aggregateDto);
+        }
+        [HttpGet("AgnetStatics")]
+        public IActionResult AgnetStatics()
+        {
+            var agent = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
+            List<UserDto> userDtos = new List<UserDto>();
+            foreach (var item in agent)
+            {
+                var user = mapper.Map<UserDto>(item);
+                user.UserStatics = new UserStatics();
+                user.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
+                user.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
+            }
+            return Ok(userDtos);
         }
     }
 }

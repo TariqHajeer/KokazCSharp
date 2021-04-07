@@ -91,7 +91,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var dbuser = this.Context.Users.Include(c => c.UserPhones)
+            var dbuser = this.Context.Users
+                .Include(c => c.UserPhones)
                 .Include(c => c.UserGroups)
                 .FirstOrDefault(c => c.Id == id);
             var user = mapper.Map<UserDto>(dbuser);
