@@ -168,6 +168,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var client = this.Context.Clients.Find(accountDto.ClinetId);
             client.Total += accountDto.Amount;
             this.Context.Update(client);
+            this.Context.SaveChanges();
             return Ok();
         }
         
