@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
-        public int? RegionId { get; set; }
+        public int? Countryid { get; set; }
         public string Address { get; set; }
         public DateTime FirstDate { get; set; }
         public string Note { get; set; }

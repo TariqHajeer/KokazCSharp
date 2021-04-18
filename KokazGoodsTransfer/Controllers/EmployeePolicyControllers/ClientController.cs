@@ -47,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Set<Client>().Add(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients
-                    .Include(c => c.Region)
+                    .Include(c => c.Country)
                     .Include(c => c.User)
                     .Single(c => c.Id == client.Id);
                 return Ok(mapper.Map<ClientDto>(client));
@@ -61,7 +61,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Get()
         {
             var clients = this.Context.Clients
-                .Include(c => c.Region)
+                .Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Orders)
@@ -71,7 +71,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var client = this.Context.Clients.Include(c => c.Region)
+            var client = this.Context.Clients.Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Orders)
@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Update(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients
-                .Include(c => c.Region)
+                .Include(c => c.Country)
                 .Include(c => c.User)
                 .Single(c => c.Id == client.Id);
                 return Ok(mapper.Map<ClientDto>(client));

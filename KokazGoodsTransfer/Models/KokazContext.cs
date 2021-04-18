@@ -106,10 +106,10 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.HasOne(d => d.Region)
+                entity.HasOne(d => d.Country)
                     .WithMany(p => p.Clients)
-                    .HasForeignKey(d => d.RegionId)
-                    .HasConstraintName("FK_Clients_Reginos");
+                    .HasForeignKey(d => d.CountryId)
+                    .HasConstraintName("FK_Clients_Country");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Clients)

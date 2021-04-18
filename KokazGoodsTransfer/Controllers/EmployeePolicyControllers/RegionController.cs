@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
+            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
@@ -48,10 +48,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var region = this.Context.Regions.Find(id);
                 if (region == null)
                     return NotFound();
-                if (region.Clients.Any())
-                {
-                    return Conflict();
-                }
+                //if (region.Clients.Any())
+                //{
+                //    return Conflict();
+                //}
 
                 this.Context.Regions.Remove(region);
                 this.Context.SaveChanges();

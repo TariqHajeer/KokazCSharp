@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var client = this.Context.Clients
-                .Include(c => c.Region)
+                .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
             List<string> errors = new List<string>();

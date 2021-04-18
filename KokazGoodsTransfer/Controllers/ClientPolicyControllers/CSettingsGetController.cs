@@ -24,15 +24,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult GetAll()
         {
             var countries = Context.Countries
+                .Include(c=>c.Clients)
                 .Include(c => c.Regions)
-                    .ThenInclude(c => c.Clients)
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
         [HttpGet("GetRegions")]
         public IActionResult GetRegions()
         {
-            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country).Include(c => c.Clients)));
+            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()

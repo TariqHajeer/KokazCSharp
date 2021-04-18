@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public DateTime FirstDate { get; set; }
         public string Note { get; set; }
         public string UserName { get; set; }
-        public RegionDto Region { get; set; }
+        public CountryDto Country { get; set; }
         public string CreatedBy { get; set; }
         public bool CanDelete { get; set; } = true;
         public decimal Total { get; set; }

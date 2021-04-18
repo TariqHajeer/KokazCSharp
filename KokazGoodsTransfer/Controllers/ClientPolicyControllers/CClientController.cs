@@ -80,7 +80,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("GetByToken")]
         public IActionResult GetByToken()
         {
-            var client = this.Context.Clients.Include(c=>c.ClientPhones).Include(c=>c.Region).Where(c=>c.Id==AuthoticateUserId()).First();
+            var client = this.Context.Clients.Include(c=>c.ClientPhones).Include(c=>c.Country).Where(c=>c.Id==AuthoticateUserId()).First();
             var authClient = mapper.Map<AuthClient>(client);
             return Ok(authClient);
         }

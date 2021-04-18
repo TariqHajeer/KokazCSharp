@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.Users.Count() == 0))
-                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.Users.Count() == 0 && src.Regions.All(c => c.CanDelete)))
+                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.Users.Count() == 0 &&src.Clients.Count()==0))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
@@ -65,9 +65,9 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Client, ClientDto>()
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
 
-                .ForMember(d => d.Region, opt => opt.MapFrom((client, clientDto, i, context) =>
+                .ForMember(d => d.Country, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {
-                    return context.Mapper.Map<RegionDto>(client.Region);
+                    return context.Mapper.Map<CountryDto>(client.Country);
                 }))
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, clientDto, i, context) =>
                      {
@@ -76,9 +76,9 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<ClientPhone, PhoneDto>();
             CreateMap<UserPhone, PhoneDto>();
             CreateMap<Client, AuthClient>()
-                .ForMember(d => d.Region, opt => opt.MapFrom((client, authclient, i, context) =>
+                .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
-                    return context.Mapper.Map<RegionDto>(client.Region);
+                    return context.Mapper.Map<Country>(client.Country);
                 }))
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
                 {

@@ -23,9 +23,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetAll()
         {
             var countries = Context.Countries
+                .Include(c=>c.Clients)
                 .Include(c => c.Users)
                 .Include(c => c.Regions)
-                    .ThenInclude(c => c.Clients)
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
@@ -74,8 +74,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 //test find instade of that
                 var country = this.Context.Countries
+                    .Include(c=>c.Clients)
                     .Include(c => c.Regions)
-                    .ThenInclude(c => c.Clients)
                     .Where(c => c.Id == id)
                     .SingleOrDefault();
 
@@ -83,10 +83,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return NotFound();
                 if (country.Users.Any())
                     return Conflict();
-                if (country.Regions.Any(c => c.Clients.Any()))
+                if (country.Clients.Count() > 0)
                 {
                     return Conflict();
                 }
+                //if (country.Regions.Any(c => c.Clients.Any()))
+                //{
+                //    return Conflict();
+                //}
                 foreach (var item in country.Regions)
                 {
                     this.Context.Regions.Remove(item);
