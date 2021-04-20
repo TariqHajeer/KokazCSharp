@@ -24,6 +24,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
+        [HttpGet("EnalbedAgent")]
+        public IActionResult GetEnalbedAgent()
+        {
+            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true&&c.IsActive==true).ToList();
+            return Ok(mapper.Map<UserDto[]>(users));
+        }
         [HttpPost]
 
         public IActionResult Create([FromBody]CreateUserDto createUserDto)
@@ -50,6 +56,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
                 CountryId = createUserDto.CountryId,
+                IsActive = true,
             };
             if (!createUserDto.CanWorkAsAgent)
             {
@@ -231,7 +238,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(this.Context.Users.Where(c => c.UserName == username).Count()!=0);
         }
-        
+        [HttpDelete]
+        public IActionResult DeleteUser(int id)
+        {
+            var user = this.Context.Users.Find(id);
+            if (user == null)
+                return NotFound();
+            this.Context.Entry(user).Collection(c => c.Orders).Load();
+            this.Context.Entry(user).Collection(c => c.OutComes).Load();
+            this.Context.Entry(user).Collection(c => c.Incomes).Load();
+            this.Context.Entry(user).Collection(c => c.Clients).Load();
+            int x = user.Orders.Count() + user.OutComes.Count() + user.Incomes.Count() + user.Clients.Count();
+
+            if (x > 0)
+            {
+                return Conflict();
+            }
+            try
+            {
+                user.UserPhones.Clear();
+                user.UserGroups.Clear();
+                this.Context.Remove(user);
+                this.Context.SaveChanges();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
 
     }
 }
