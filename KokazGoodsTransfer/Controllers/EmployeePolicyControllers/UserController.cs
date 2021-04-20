@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpGet("Agent")]
         public IActionResult GetAgent()
-        {
+        {   
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
@@ -238,7 +238,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(this.Context.Users.Where(c => c.UserName == username).Count()!=0);
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
             var user = this.Context.Users.Find(id);
