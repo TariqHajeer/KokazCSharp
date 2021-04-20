@@ -29,6 +29,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
+                if (this.Context.Orders.Where(c => c.Code == order.Code && c.ClientId == order.ClientId).Any())
+                {
+                    return Conflict();
+                }
+
                 if (createOrdersFromEmployee.RegionId == null)
                 {
                     var region = new Region()
@@ -40,17 +45,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.SaveChanges();
                     order.RegionId = region.Id;
                     order.Seen = true;
+
                     order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 }
+                order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.DeliveryCost = country.DeliveryCost;
                 if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
                 {
                     order.IsClientDiliverdMoney = true;
+
                 }
                 else
                 {
                     order.IsClientDiliverdMoney = false;
                 }
+
                 this.Context.Add(order);
                 this.Context.SaveChanges();
 
@@ -110,7 +119,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 order.Date = DateTime.Now;
                 var client = this.Context.Clients.Find(order.ClientId);
-                client.Total += (order.Cost-order.DeliveryCost);
+                client.Total += (order.Cost - order.DeliveryCost);
                 this.Context.Update(client);
                 this.Context.Add(order);
             }
@@ -588,6 +597,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             return Ok(mapper.Map<PrintOrdersDto>(printed));
         }
-        
+
     }
 }
