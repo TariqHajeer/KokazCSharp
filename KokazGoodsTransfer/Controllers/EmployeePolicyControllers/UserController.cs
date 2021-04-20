@@ -24,7 +24,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
-        [HttpGet("EnalbedAgent")]
+        [HttpGet("ActiveAgent")]
         public IActionResult GetEnalbedAgent()
         {
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true&&c.IsActive==true).ToList();
