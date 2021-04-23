@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers
         }
         [Authorize]
         [HttpGet("Check")]
-        public IActionResult ChekcLogin()
+        public IActionResult ChekcLogin()   
         {
             return Ok();
         }
@@ -28,6 +28,11 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult Get()
         {
             return Ok("it's work");
+        }
+        [HttpGet("string")]
+        public string Getstring()
+        {
+            return "x";
         }
         [HttpGet("connection")]
         public IActionResult GetConnectonString()

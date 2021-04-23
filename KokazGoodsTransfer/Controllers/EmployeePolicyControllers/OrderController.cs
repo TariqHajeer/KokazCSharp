@@ -517,26 +517,54 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
         {
-            var order = this.Context.Orders.Where(c => c.Code == orderCode).SingleOrDefault();
-            if (order == null)
+            //var order = this.Context.Orders.Where(c => c.Code == orderCode).SingleOrDefault();
+            //if (order == null)
+            //    return Conflict(new { message = "الشحنة غير موجودة" });
+            //if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
+            //{
+            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+            //}
+            //if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            //{
+            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+            //}
+            //if (order.OrderplacedId == (int)OrderplacedEnum.Store)
+            //{
+            //    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
+            //}
+            //this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
+            //this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
+            //this.Context.Entry(order).Reference(c => c.Region).Load();
+            //this.Context.Entry(order).Reference(c => c.Country).Load();
+            var orders = this.Context.Orders.Where(c => c.Code == orderCode)
+                .Include(c => c.OrderplacedId)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.Region)
+                .Include(c => c.Country).ToList();
+            if (orders.Count() == 0)
+            {
                 return Conflict(new { message = "الشحنة غير موجودة" });
-            if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
-            {
-                return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
             }
-            if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            var lastOrderAdded = orders.Last();
+            var orderInStor = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).ToList();
+            orders = orders.Except(orderInStor).ToList();
+
+            //var fOrder = orders.Where(c => (c.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent) || c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
+            var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
+            orders = orders.Except(fOrder).ToList();
+
+            if (orders.Count() == 0)
             {
-                return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+                if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
+                {
+                    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
+                }
+                if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                {
+                    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+                }
             }
-            if (order.OrderplacedId == (int)OrderplacedEnum.Store)
-            {
-                return Conflict(new { message = "الشحنة ما زالت في المخزن" });
-            }
-            this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
-            this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
-            this.Context.Entry(order).Reference(c => c.Region).Load();
-            this.Context.Entry(order).Reference(c => c.Country).Load();
-            return Ok(mapper.Map<OrderDto>(order));
+            return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetEarnings")]
         public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
