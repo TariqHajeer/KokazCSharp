@@ -539,7 +539,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.Region)
-                .Include(c => c.Country).ToList();
+                .Include(c => c.Country)
+                .Include(c=>c.Client)
+                .Include(c=>c.Agent)
+                .ToList();
             if (orders.Count() == 0)
             {
                 return Conflict(new { message = "الشحنة غير موجودة" });
