@@ -536,7 +536,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             //this.Context.Entry(order).Reference(c => c.Region).Load();
             //this.Context.Entry(order).Reference(c => c.Country).Load();
             var orders = this.Context.Orders.Where(c => c.Code == orderCode)
-                .Include(c => c.OrderplacedId)
+                .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.Region)
                 .Include(c => c.Country).ToList();
