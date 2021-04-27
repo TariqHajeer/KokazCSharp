@@ -117,9 +117,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                 order.Date = DateTime.Now;
-                var client = this.Context.Clients.Find(order.ClientId);
-                client.Total += (order.Cost - order.DeliveryCost);
-                this.Context.Update(client);
+                //var client = this.Context.Clients.Find(order.ClientId);
+                //client.Total += (order.Cost - order.DeliveryCost);
+                //this.Context.Update(client);    
                 this.Context.Add(order);
             }
             this.Context.SaveChanges();
@@ -223,25 +223,34 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             List<Order> orders = new List<Order>();
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
-                orders.AddRange(this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Orderplaced)
                    .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                   .ToList());
+                   .ToList();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
             }
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
-                orders.AddRange(this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
+
+                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
                .Include(c => c.MoenyPlaced)
                .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-               .ToList());
+               .ToList();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
             }
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -449,14 +458,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
-
-
             var orders = this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
+
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
@@ -473,6 +481,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                client.Total = 0;
+                this.Context.Update(client);
                 this.Context.SaveChanges();
                 foreach (var item in orders)
                 {
@@ -503,6 +514,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.Add(clientPrint);
                 }
                 this.Context.SaveChanges();
+
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
@@ -540,8 +552,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
-                .Include(c=>c.Client)
-                .Include(c=>c.Agent)
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
                 .ToList();
             if (orders.Count() == 0)
             {
@@ -552,7 +564,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             orders = orders.Except(orderInStor).ToList();
 
             //var fOrder = orders.Where(c => (c.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent) || c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
-            var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
+            var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered))).ToList();
             orders = orders.Except(fOrder).ToList();
 
             if (orders.Count() == 0)
@@ -561,7 +573,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict(new { message = "الشحنة ما زالت في المخزن" });
                 }
-                if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                    //if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                    //{
+                    //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+                    //}
+                else
                 {
                     return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
                 }

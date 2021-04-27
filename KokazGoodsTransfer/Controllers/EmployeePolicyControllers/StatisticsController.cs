@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.Statics;
 using KokazGoodsTransfer.Dtos.Users;
@@ -10,7 +11,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
@@ -80,6 +81,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 userDtos.Add(user);
             }
             return Ok(userDtos);
+        }
+        [HttpGet("ClientBalance")] 
+        public IActionResult ClientBalance()
+        {
+            var clients = this.Context.Clients.ToList();
+            List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
+            foreach (var item in clients)
+            {
+                clientBlanaceDtos.Add(new ClientBlanaceDto()
+                {
+                    ClientName = item.Name,
+                    Account = item.Total,
+                    TotalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && c.OrderStateId != (int)OrderStateEnum.Finished).Sum(c => c.Cost - c.DeliveryCost)
+                });
+            }
+            return Ok(clientBlanaceDtos);
         }
     }
 }

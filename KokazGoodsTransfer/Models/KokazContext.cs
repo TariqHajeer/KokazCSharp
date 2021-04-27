@@ -357,7 +357,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderPrints)
                     .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderPrint_Order");
 
                 entity.HasOne(d => d.Print)
