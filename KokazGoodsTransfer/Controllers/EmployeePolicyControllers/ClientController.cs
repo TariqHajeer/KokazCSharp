@@ -166,11 +166,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Account([FromBody] AccountDto accountDto)
         {
             var client = this.Context.Clients.Find(accountDto.ClinetId);
-            client.Total += accountDto.Amount;
+            if (!accountDto.IsPay)
+            {
+                client.Total += accountDto.Amount;
+            }
+            else
+            {
+                client.Total -= accountDto.Amount;
+            }
+            //var transaction = this.Context.Database.BeginTransaction();
+            //try
+            //{
             this.Context.Update(client);
+            
+            Receipt receipt = new Receipt()
+            {
+                IsPay = accountDto.IsPay,
+                About = accountDto.About,
+                CreatedBy = AuthoticateUserName(),
+                ClientId = accountDto.ClinetId,
+                Date = DateTime.Now,
+                Amount = accountDto.Amount,
+                Manager = accountDto.Manager,
+                Note = accountDto.Note,
+            };
+            this.Context.Add(receipt);
             this.Context.SaveChanges();
-            return Ok();
+            return Ok(receipt.Id);
         }
-        
+
+
     }
 }

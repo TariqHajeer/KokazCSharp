@@ -38,6 +38,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
         public virtual DbSet<Printed> Printeds { get; set; }
         public virtual DbSet<Privilege> Privileges { get; set; }
+        public virtual DbSet<Receipt> Receipts { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserGroup> UserGroups { get; set; }
@@ -449,6 +450,29 @@ namespace KokazGoodsTransfer.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.SysName).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Receipt>(entity =>
+            {
+                entity.ToTable("Receipt");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.CreatedBy).IsRequired();
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.Manager).IsRequired();
+
+                entity.Property(e => e.Note).IsRequired();
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.Receipts)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Receipt_Clients");
             });
 
             modelBuilder.Entity<Region>(entity =>

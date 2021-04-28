@@ -573,10 +573,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict(new { message = "الشحنة ما زالت في المخزن" });
                 }
-                    //if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-                    //{
-                    //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-                    //}
+                //if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                //{
+                //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+                //}
                 else
                 {
                     return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });

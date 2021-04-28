@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Models
         {
             ClientPhones = new HashSet<ClientPhone>();
             Orders = new HashSet<Order>();
+            Receipts = new HashSet<Receipt>();
         }
 
         public int Id { get; set; }
@@ -28,5 +29,6 @@ namespace KokazGoodsTransfer.Models
         public virtual User User { get; set; }
         public virtual ICollection<ClientPhone> ClientPhones { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Receipt> Receipts { get; set; }
     }
 }
