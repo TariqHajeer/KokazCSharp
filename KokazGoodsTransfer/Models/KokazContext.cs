@@ -456,8 +456,6 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Receipt");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.CreatedBy).IsRequired();
