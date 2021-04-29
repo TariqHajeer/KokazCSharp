@@ -20,14 +20,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpGet("Agent")]
         public IActionResult GetAgent()
-        {   
+        {
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
         [HttpGet("ActiveAgent")]
         public IActionResult GetEnalbedAgent()
         {
-            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true&&c.IsActive==true).ToList();
+            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true && c.IsActive == true).ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
         [HttpPost]
@@ -202,7 +202,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             user.HireDate = updateUserDto.HireDate;
             user.Note = updateUserDto.Note;
             {
-                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower()&&c.Id!=updateUserDto.Id).Count();
+                var similerUserByname = this.Context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower() && c.Id != updateUserDto.Id).Count();
                 if (similerUserByname != 0)
                 {
                     return Conflict();
@@ -219,7 +219,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             else
             {
-                var similerUserByname = this.Context.Users.Where(c => c.UserName.ToLower() == updateUserDto.UserName.ToLower()&&c.Id!=updateUserDto.Id).Count();
+                var similerUserByname = this.Context.Users.Where(c => c.UserName.ToLower() == updateUserDto.UserName.ToLower() && c.Id != updateUserDto.Id).Count();
                 if (similerUserByname != 0)
                 {
                     return Conflict();
@@ -236,7 +236,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("UsernameExist/{username}")]
         public IActionResult UsernameExist(string username)
         {
-            return Ok(this.Context.Users.Where(c => c.UserName == username).Count()!=0);
+            return Ok(this.Context.Users.Where(c => c.UserName == username).Count() != 0);
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
@@ -256,13 +256,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             try
             {
-                user.UserPhones.Clear();
+                //   user.UserPhones.Clear();
                 user.UserGroups.Clear();
                 this.Context.Remove(user);
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }

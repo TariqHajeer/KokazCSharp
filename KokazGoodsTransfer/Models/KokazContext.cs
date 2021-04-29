@@ -536,7 +536,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserPhones)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserPhone_Users");
             });
 
