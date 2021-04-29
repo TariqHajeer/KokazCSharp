@@ -32,7 +32,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
                 TotlaOrder = this.Context.Orders.Count(),
                 TotalOrderOutStore = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
-                //TotalOrderDiliverd = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
+                TotalOrderCountInProccess = this.Context.Orders.Where(c=>c.OrderStateId==(int)OrderStateEnum.Processing).Count(),
+                TotalOrderCountInProccessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c=>c.Cost)
+
             };
             return Ok(mainStatics);
         }
@@ -98,5 +100,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(clientBlanaceDtos);
         }
+        //[HttpGet("ClientClearing")]
+        //public IActionResult ClientClearing()
+        //{
+
+        //    return Ok();
+        //}
     }
 }

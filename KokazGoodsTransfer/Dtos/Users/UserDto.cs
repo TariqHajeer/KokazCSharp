@@ -31,6 +31,7 @@ namespace KokazGoodsTransfer.Dtos.Users
     {
         public int OrderInStore { get; set; }
         public int OrderInWay { get; set; }
+
     }
 
 }

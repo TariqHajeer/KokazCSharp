@@ -612,8 +612,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-
-
         [HttpPut("ReiveMoneyFromClient")]
         public IActionResult ReiveMoneyFromClient([FromBody] int[] ids)
         {
@@ -642,6 +640,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (printed == null)
                 return Conflict();
             return Ok(mapper.Map<PrintOrdersDto>(printed));
+        }
+        [HttpGet("OrderVicdanAgent/{agnetId}")]
+        public IActionResult OrderVicdanAgent(int agnetId)
+        {
+            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == true && c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId <= 4 && c.AgentId == agnetId)
+                .Include(c=>c.Client)
+                 .Include(c => c.Region)
+                 .Include(c => c.Country)
+                 .Include(c => c.Orderplaced)
+                 .Include(c => c.MoenyPlaced).ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
         }
 
     }
