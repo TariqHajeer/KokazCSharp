@@ -33,8 +33,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotlaOrder = this.Context.Orders.Count(),
                 TotalOrderOutStore = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
                 TotalOrderCountInProccess = this.Context.Orders.Where(c=>c.OrderStateId==(int)OrderStateEnum.Processing).Count(),
-                TotalOrderCountInProccessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c=>c.Cost)
-
+                TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c=>c.Cost),
+                
             };
             return Ok(mainStatics);
         }

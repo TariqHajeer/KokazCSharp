@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
     {
         public int ClinetId { get; set; }
         public decimal Amount { get; set; }
-        public string Note { get; set; }
+        public string Note { get; set; } = "";
         public string About { get; set; }
         public string Manager { get; set; }
         public bool IsPay { get; set; }
