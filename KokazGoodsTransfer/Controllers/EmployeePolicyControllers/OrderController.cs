@@ -644,8 +644,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderVicdanAgent/{agnetId}")]
         public IActionResult OrderVicdanAgent(int agnetId)
         {
-            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == true && c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId <= 4 && c.AgentId == agnetId)
-                .Include(c=>c.Client)
+            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == true && c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
+                .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)
                  .Include(c => c.Orderplaced)

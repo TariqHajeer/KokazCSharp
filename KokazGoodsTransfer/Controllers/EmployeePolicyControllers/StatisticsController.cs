@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalClient = this.Context.Clients.Count(),
                 TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
                 TotlaOrder = this.Context.Orders.Count(),
-                TotalOrderOutStore = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
+                TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
                 TotalOrderCountInProccess = this.Context.Orders.Where(c=>c.OrderStateId==(int)OrderStateEnum.Processing).Count(),
                 TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c=>c.Cost),
                 
@@ -91,11 +91,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
+                var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId != (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == true) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
+                if (totalOrder + item.Total == 0)
+                    continue;
                 clientBlanaceDtos.Add(new ClientBlanaceDto()
                 {
                     ClientName = item.Name,
                     Account = item.Total,
-                    TotalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && c.OrderStateId != (int)OrderStateEnum.Finished).Sum(c => c.Cost - c.DeliveryCost)
+                    TotalOrder = totalOrder
                 });
             }
             return Ok(clientBlanaceDtos);
