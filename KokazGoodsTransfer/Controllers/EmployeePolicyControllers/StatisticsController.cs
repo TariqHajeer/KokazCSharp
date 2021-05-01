@@ -32,9 +32,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
                 TotlaOrder = this.Context.Orders.Count(),
                 TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
-                TotalOrderCountInProccess = this.Context.Orders.Where(c=>c.OrderStateId==(int)OrderStateEnum.Processing).Count(),
-                TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c=>c.Cost),
-                
+                TotalOrderCountInProcess = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Count(),
+                TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c => c.Cost - c.DeliveryCost),
+
             };
             return Ok(mainStatics);
         }
@@ -64,8 +64,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             AggregateDto aggregateDto = new AggregateDto()
             {
                 ShipmentTotal = ShipmentTotal.Sum(c => c.DeliveryCost - c.AgentCost),
-                TotalIncome = TotalIncome.Sum(c=>c.Amount),
-                TotalOutCome = TotalOutCome.Sum(c=>c.Amount)
+                TotalIncome = TotalIncome.Sum(c => c.Amount),
+                TotalOutCome = TotalOutCome.Sum(c => c.Amount)
             };
             return Ok(aggregateDto);
         }
@@ -84,7 +84,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(userDtos);
         }
-        [HttpGet("ClientBalance")] 
+        [HttpGet("ClientBalance")]
         public IActionResult ClientBalance()
         {
             var clients = this.Context.Clients.ToList();
