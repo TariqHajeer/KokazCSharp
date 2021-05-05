@@ -7,6 +7,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
     public class PrintOrdersDto
     {
+        public int Id { get; set; }
         public int PrintNmber { get; set; }
         public string PrinterName { get; set; }
         public DateTime Date { get; set; }

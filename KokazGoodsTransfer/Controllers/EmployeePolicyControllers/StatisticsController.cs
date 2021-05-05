@@ -91,7 +91,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
-                var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId != (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == true) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
+                //var clientOrders = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
+                var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId == (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == false) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
+                
                 if (totalOrder + item.Total == 0)
                     continue;
                 clientBlanaceDtos.Add(new ClientBlanaceDto()

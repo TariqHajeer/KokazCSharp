@@ -455,6 +455,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("GetClientprint")]
+        public IActionResult GetClientprint([FromQuery]PagingDto pagingDto)
+        {
+            var ordersPint = this.Context.Printeds.Where(c => c.Type == PrintType.Client).OrderBy(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
+        }
+        [HttpGet("GetAgentPrint")]
+        public IActionResult GetAgentPrint([FromQuery]PagingDto pagingDto)
+        {
+            var ordersPint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
+        }
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
