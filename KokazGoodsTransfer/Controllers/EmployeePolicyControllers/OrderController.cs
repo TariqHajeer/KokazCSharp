@@ -676,8 +676,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderInCompany/{{clientId}}/{{code}}")]
         public IActionResult OrderInCompany(int clientId, string code)
         {
-            
-            return Ok(); 
+            var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code).FirstOrDefault();
+            return Ok(mapper.Map<OrderDto>(order)); 
         }
         
     }
