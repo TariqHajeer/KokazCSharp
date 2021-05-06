@@ -476,7 +476,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
-
+            if (orders.Any(c => c.ClientId != client.Id))
+            {
+                return Conflict();
+            }
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
             ++printNumber;
@@ -494,8 +497,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this.Context.Printeds.Add(newPrint);
                 this.Context.SaveChanges();
-                client.Total = 0;
-                this.Context.Update(client);
+                //client.Total = 0;
+                //this.Context.Update(client);
+                var recepits= this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                recepits.ForEach(c =>
+                {
+                    c.PrintId = newPrint.Id;
+                    this.Context.Update(c);
+                });
                 this.Context.SaveChanges();
                 foreach (var item in orders)
                 {
@@ -664,6 +673,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-
+        [HttpGet("OrderInCompany/{{clientId}}/{{code}}")]
+        public IActionResult OrderInCompany(int clientId, string code)
+        {
+            
+            return Ok(); 
+        }
+        
     }
 }

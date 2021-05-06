@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
+using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
@@ -38,7 +39,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.Users.Count() == 0))
-                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.Users.Count() == 0 &&src.Clients.Count()==0))
+                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.Users.Count() == 0 && src.Clients.Count() == 0))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
@@ -192,6 +193,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                      }));
             CreateMap<AgnetPrint, AgentPrintDto>();
             CreateMap<ClientPrint, ClientprintDto>();
+            CreateMap<Receipt, ReceiptDto>()
+                .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
+
         }
     }
 }

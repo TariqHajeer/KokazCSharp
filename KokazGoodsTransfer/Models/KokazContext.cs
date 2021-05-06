@@ -101,8 +101,6 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -471,6 +469,11 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Receipt_Clients");
+
+                entity.HasOne(d => d.Print)
+                    .WithMany(p => p.Receipts)
+                    .HasForeignKey(d => d.PrintId)
+                    .HasConstraintName("FK_Receipt_Printed");
             });
 
             modelBuilder.Entity<Region>(entity =>

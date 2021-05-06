@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -43,7 +44,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Phone = item
                     });
                 }
-                client.Total = 0;
                 this.Context.Set<Client>().Add(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients
@@ -162,23 +162,46 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("Account")]
+        public IActionResult Account([FromQuery] PagingDto pagingDto, [FromQuery]AccountFilterDto accountFilterDto)
+        {
+            var repiq = this.Context.Receipts.AsQueryable();
+            if (accountFilterDto.ClientId != null)
+            {
+                repiq = repiq.Where(c => c.ClientId == accountFilterDto.ClientId);
+            }
+            if (accountFilterDto.IsPay != null)
+            {
+                repiq = repiq.Where(c => c.IsPay == (bool)accountFilterDto.IsPay);
+            }
+            if (accountFilterDto.Date != null)
+            {
+                repiq = repiq.Where(c => c.Date == accountFilterDto.Date);
+            }
+            var totalRreq = repiq.Count();
+            var replist = repiq.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c => c.Client)
+                .ToList();
+
+            return Ok(new { data = mapper.Map<ReceiptDto[]>(replist), total = totalRreq });
+        }
         [HttpPost("Account")]
         public IActionResult Account([FromBody] AccountDto accountDto)
         {
             var client = this.Context.Clients.Find(accountDto.ClinetId);
-            if (!accountDto.IsPay)
-            {
-                client.Total += accountDto.Amount;
-            }
-            else
-            {
-                client.Total -= accountDto.Amount;
-            }
-            //var transaction = this.Context.Database.BeginTransaction();
-            //try
+            //if (!accountDto.IsPay)
             //{
-            this.Context.Update(client);
-            
+            //    client.Total += accountDto.Amount;
+            //}
+            //else
+            //{
+            //    client.Total -= accountDto.Amount;
+            //}
+            ////var transaction = this.Context.Database.BeginTransaction();
+            ////try
+            ////{
+            //this.Context.Update(client);
+
             Receipt receipt = new Receipt()
             {
                 IsPay = accountDto.IsPay,
@@ -194,6 +217,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(receipt.Id);
         }
+
 
 
     }

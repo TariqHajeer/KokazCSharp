@@ -84,6 +84,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(userDtos);
         }
+
         [HttpGet("ClientBalance")]
         public IActionResult ClientBalance()
         {
@@ -93,23 +94,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 //var clientOrders = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
                 var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId == (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == false) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
-                
-                if (totalOrder + item.Total == 0)
+                var totalAccount = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c=>c.Amount);
+                if (totalOrder + totalAccount == 0)
                     continue;
                 clientBlanaceDtos.Add(new ClientBlanaceDto()
                 {
                     ClientName = item.Name,
-                    Account = item.Total,
+                    Account = totalAccount,
                     TotalOrder = totalOrder
                 });
             }
             return Ok(clientBlanaceDtos);
         }
-        //[HttpGet("ClientClearing")]
-        //public IActionResult ClientClearing()
-        //{
-
-        //    return Ok();
-        //}
+        
     }
 }

@@ -23,7 +23,6 @@ namespace KokazGoodsTransfer.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public int UserId { get; set; }
-        public decimal Total { get; set; }
 
         public virtual Country Country { get; set; }
         public virtual User User { get; set; }

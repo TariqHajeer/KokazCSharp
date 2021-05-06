@@ -12,6 +12,7 @@ namespace KokazGoodsTransfer.Models
             AgnetPrints = new HashSet<AgnetPrint>();
             ClientPrints = new HashSet<ClientPrint>();
             OrderPrints = new HashSet<OrderPrint>();
+            Receipts = new HashSet<Receipt>();
         }
 
         public int Id { get; set; }
@@ -25,5 +26,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<AgnetPrint> AgnetPrints { get; set; }
         public virtual ICollection<ClientPrint> ClientPrints { get; set; }
         public virtual ICollection<OrderPrint> OrderPrints { get; set; }
+        public virtual ICollection<Receipt> Receipts { get; set; }
     }
 }

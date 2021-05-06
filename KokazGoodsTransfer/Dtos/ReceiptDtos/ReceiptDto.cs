@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace KokazGoodsTransfer.Models
+namespace KokazGoodsTransfer.Dtos.ReceiptDtos
 {
-    public partial class Receipt
+    public class ReceiptDto
     {
         public int Id { get; set; }
-        public int ClientId { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public string Note { get; set; }
@@ -17,8 +16,6 @@ namespace KokazGoodsTransfer.Models
         public string Manager { get; set; }
         public bool IsPay { get; set; }
         public int? PrintId { get; set; }
-
-        public virtual Client Client { get; set; }
-        public virtual Printed Print { get; set; }
+        public string ClientName { get; set; }
     }
 }
