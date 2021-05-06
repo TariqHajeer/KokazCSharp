@@ -673,7 +673,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("OrderInCompany/{{clientId}}/{{code}}")]
+        [HttpGet("OrderInCompany/{clientId}/{code}")]
         public IActionResult OrderInCompany(int clientId, string code)
         {
             var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code).FirstOrDefault();
