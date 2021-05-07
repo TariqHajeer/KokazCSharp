@@ -288,7 +288,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        
+
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
@@ -505,7 +505,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 //client.Total = 0;
                 //this.Context.Update(client);
-                var recepits= this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
                 recepits.ForEach(c =>
                 {
                     c.PrintId = newPrint.Id;
@@ -555,25 +555,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
         {
-            //var order = this.Context.Orders.Where(c => c.Code == orderCode).SingleOrDefault();
-            //if (order == null)
-            //    return Conflict(new { message = "الشحنة غير موجودة" });
-            //if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
-            //{
-            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-            //}
-            //if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-            //{
-            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-            //}
-            //if (order.OrderplacedId == (int)OrderplacedEnum.Store)
-            //{
-            //    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
-            //}
-            //this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
-            //this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
-            //this.Context.Entry(order).Reference(c => c.Region).Load();
-            //this.Context.Entry(order).Reference(c => c.Country).Load();
+
             var orders = this.Context.Orders.Where(c => c.Code == orderCode)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
@@ -680,14 +662,43 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("OrderInCompany/{clientId}/{code}")]
-        public IActionResult OrderInCompany(int clientId, string code)
+        public IActionResult OrderInCompany(string code)
         {
-            var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
-                .Include(c=>c.MoenyPlaced)
-                .Include(c=>c.Orderplaced)
-                .FirstOrDefault();
-            return Ok(mapper.Map<OrderDto>(order)); 
+
+
+
+            var orders = this.Context.Orders.Where(c => c.Code == code)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .ToList();
+            if (orders.Count() == 0)
+            {
+                return Conflict(new { message = "الشحنة غير موجودة" });
+            }
+            var lastOrderAdded = orders.Last();
+            var exceptOrder = orders.Where(c => c.OrderplacedId < (int)OrderplacedEnum.Delivered || c.IsClientDiliverdMoney == true).ToList();
+            orders = orders.Except(exceptOrder).ToList();
+
+            if (lastOrderAdded.IsClientDiliverdMoney == true)
+            {
+                return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
+            }
+            if (lastOrderAdded.OrderplacedId < (int)OrderplacedEnum.Delivered)
+            {
+                return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
+            }
+            return Ok(mapper.Map<OrderDto[]>(orders));
+
         }
-        
+        [HttpPost("DeleiverMoneyForClientWithStatus")]
+        public IActionResult DeleiverMoneyForClientWithStatus(int[] ids)
+        {
+            return Ok();
+        }
+
     }
 }
