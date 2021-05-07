@@ -113,24 +113,31 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("createMultiple")]
         public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
         {
-
-            foreach (var item in createMultipleOrders)
+            try
             {
-                var order = mapper.Map<Order>(item);
-                var country = this.Context.Countries.Find(order.CountryId);
-                order.Seen = true;
-                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.IsClientDiliverdMoney = false;
-                order.OrderStateId = (int)OrderStateEnum.Processing;
-                order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
-                order.Date = DateTime.Now;
-                //var client = this.Context.Clients.Find(order.ClientId);
-                //client.Total += (order.Cost - order.DeliveryCost);
-                //this.Context.Update(client);    
-                this.Context.Add(order);
+                foreach (var item in createMultipleOrders)
+                {
+                    var order = mapper.Map<Order>(item);
+                    var country = this.Context.Countries.Find(order.CountryId);
+                    order.Seen = true;
+                    order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                    order.IsClientDiliverdMoney = false;
+                    order.OrderStateId = (int)OrderStateEnum.Processing;
+                    order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
+                    order.Date = DateTime.Now;
+
+                    //var client = this.Context.Clients.Find(order.ClientId);
+                    //client.Total += (order.Cost - order.DeliveryCost);
+                    //this.Context.Update(client);    
+                    this.Context.Add(order);
+                }
+                this.Context.SaveChanges();
+                return Ok();
             }
-            this.Context.SaveChanges();
-            return Ok();
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
