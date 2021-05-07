@@ -146,7 +146,7 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.DeliveCost).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.LastTotal).HasMaxLength(50);
+                entity.Property(e => e.LastTotal).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()

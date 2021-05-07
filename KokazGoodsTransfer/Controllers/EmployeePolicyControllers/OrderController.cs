@@ -103,7 +103,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPatch]
         public IActionResult Edit([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
@@ -134,7 +134,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -297,7 +297,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        
+
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
@@ -514,7 +514,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 //client.Total = 0;
                 //this.Context.Update(client);
-                var recepits= this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
                 recepits.ForEach(c =>
                 {
                     c.PrintId = newPrint.Id;
@@ -545,6 +545,89 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PrintId = newPrint.Id,
                         Phone = item.RecipientPhones,
                         DeliveCost = item.DeliveryCost,
+
+
+                    };
+                    this.Context.Add(orderPrint);
+                    this.Context.Add(clientPrint);
+                }
+                this.Context.SaveChanges();
+
+                transaction.Commit();
+                return Ok(new { printNumber });
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return BadRequest();
+
+            }
+        }
+        [HttpPut("DeleiverMoneyForClientWithStatus")]
+        public IActionResult DeleiverMoneyForClientWithStatus(int[] ids)
+        {
+            var orders = this.Context.Orders
+                .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Country)
+                .Where(c => ids.Contains(c.Id));
+            var client = orders.FirstOrDefault().Client;
+            if (orders.Any(c => c.ClientId != client.Id))
+            {
+                return Conflict();
+            }
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
+            ++printNumber;
+            var newPrint = new Printed()
+            {
+                PrintNmber = printNumber,
+                Date = DateTime.Now,
+                Type = PrintType.Client,
+                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                DestinationName = client.Name,
+                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+            };
+            var transaction = this.Context.Database.BeginTransaction();
+            try
+            {
+                this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                //client.Total = 0;
+                //this.Context.Update(client);
+                var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                recepits.ForEach(c =>
+                {
+                    c.PrintId = newPrint.Id;
+                    this.Context.Update(c);
+                });
+                this.Context.SaveChanges();
+                foreach (var item in orders)
+                {
+
+                    item.IsClientDiliverdMoney = true;
+
+                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
+                    {
+                        item.OrderStateId = (int)OrderStateEnum.Finished;
+                    }
+                    this.Context.Update(item);
+                    var orderPrint = new OrderPrint()
+                    {
+                        PrintId = newPrint.Id,
+                        OrderId = item.Id
+                    };
+
+                    var clientPrint = new ClientPrint()
+                    {
+                        Code = item.Code,
+                        Total = item.Cost,
+                        Country = item.Country.Name,
+                        PrintId = newPrint.Id,
+                        Phone = item.RecipientPhones,
+                        DeliveCost = item.DeliveryCost,
+                        MoneyPlacedId = item.MoenyPlacedId,
+                        OrderPlacedId = item.OrderplacedId
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
@@ -692,20 +775,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult OrderInCompany(int clientId, string code)
         {
             var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
-                .Include(c=>c.MoenyPlaced)
-                .Include(c=>c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.Orderplaced)
                 .FirstOrDefault();
             if (order.IsClientDiliverdMoney)
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
             }
-            if (order.OrderplacedId >= (int)OrderplacedEnum.Delivered)
+            if (order.OrderplacedId < (int)OrderplacedEnum.Delivered)
             {
                 return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
             }
-            return Ok(mapper.Map<OrderDto>(order)); 
+            return Ok(mapper.Map<OrderDto>(order));
         }
-        
-        
+
+
     }
 }
