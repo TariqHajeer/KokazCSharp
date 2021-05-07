@@ -104,6 +104,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("createMultiple")]
+        [HttpPatch]
+        public IActionResult Edit()
+        {
+            return Ok();
+        }
         public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
         {
 
@@ -283,6 +288,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
@@ -676,7 +682,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderInCompany/{clientId}/{code}")]
         public IActionResult OrderInCompany(int clientId, string code)
         {
-            var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code).FirstOrDefault();
+            var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
+                .Include(c=>c.MoenyPlaced)
+                .Include(c=>c.Orderplaced)
+                .FirstOrDefault();
             return Ok(mapper.Map<OrderDto>(order)); 
         }
         

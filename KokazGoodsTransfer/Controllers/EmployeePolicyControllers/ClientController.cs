@@ -189,7 +189,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("Account")]
         public IActionResult Account([FromBody] AccountDto accountDto)
         {
-            var client = this.Context.Clients.Find(accountDto.ClinetId);
+            //var client = this.Context.Clients.Find(accountDto.ClinetId);
 
             Receipt receipt = new Receipt()
             {
