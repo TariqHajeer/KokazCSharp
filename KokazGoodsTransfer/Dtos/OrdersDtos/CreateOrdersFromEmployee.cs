@@ -8,6 +8,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
     public class CreateOrdersFromEmployee
     {
+
         public string Code { get; set; }
         public int ClientId { get; set; }
         public int CountryId { get; set; }
@@ -19,7 +20,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int MoenyPlacedId { get; set; }
         public decimal Cost { get; set; }
         public string RecipientName { get; set; }
-        //public decimal Amount { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
@@ -29,6 +29,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     }
     public class OrderItemDto
     {
+
         public string OrderTypeName { get; set; }
         public int? OrderTypeId { get; set; }
         public int Count { get; set; }
