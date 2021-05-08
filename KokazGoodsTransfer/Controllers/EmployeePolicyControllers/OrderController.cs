@@ -456,24 +456,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 }
                             }
                             break;
-                            //case (int)OrderplacedEnum.CompletelyReturned:
-                            //    {
-                            //        //if (order.OldCost != null)
-                            //        //{
-                            //        //    order.OldCost = order.Cost;
-                            //        //}
-                            //        //order.Cost = 0;
-                            //        //order.DeliveryCost = 0;
-                            //        //order.AgentCost = 0;
-                            //    }
-                            //    break;
-                            //case (int)OrderplacedEnum.Unacceptable:
-                            //    {
-                            //        //if (order.OldCost != null)
-                            //        //    order.OldCost = order.Cost;
-                            //        //order.Cost = 0;
-                            //    }
-                            //    break;
+                        case (int)OrderplacedEnum.CompletelyReturned:
+                            {
+                                if (order.OldCost != null)
+                                {
+                                    order.OldCost = order.Cost;
+                                }
+                                order.Cost = 0;
+                                order.DeliveryCost = 0;
+                                order.AgentCost = 0;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Unacceptable:
+                            {
+                                //if (order.OldCost != null)
+                                //    order.OldCost = order.Cost;
+                                //order.Cost = 0;
+                            }
+                            break;
 
                     }
                 }

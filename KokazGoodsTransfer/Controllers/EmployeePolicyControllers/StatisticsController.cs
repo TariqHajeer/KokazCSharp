@@ -61,6 +61,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalIncome = TotalIncome.Where(c => c.Date <= dateFiter.ToDate);
                 TotalOutCome = TotalOutCome.Where(c => c.Date <= dateFiter.ToDate);
             }
+            ShipmentTotal = ShipmentTotal.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             AggregateDto aggregateDto = new AggregateDto()
             {
                 ShipmentTotal = ShipmentTotal.Sum(c => c.DeliveryCost - c.AgentCost),
