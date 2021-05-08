@@ -408,11 +408,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
-                                //if (order.OldCost == null)
-                                //    order.OldCost = order.Cost;
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
                                 //order.DeliveryCost = 0;
-                                //order.Cost = 0;
+                                order.Cost = 0;
                                 order.AgentCost = 0;
+
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                             }
                             break;
@@ -442,6 +443,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 if (order.OldCost == null)
                                     order.OldCost = order.Cost;
                                 order.Cost = item.Cost;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Delivered:
+                            {
+                                order.OrderStateId = (int)OrderStateEnum.Finished;
+                                if (order.Cost != item.Cost)
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = item.Cost;
+                                }
                             }
                             break;
                             //case (int)OrderplacedEnum.CompletelyReturned:
