@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
     {
 
         public string ClientName { get; set; }
-        public decimal Account { get; set; }
-        public decimal TotalOrder { get; set; }
+        public decimal Amount { get; set; }
+        //public decimal TotalOrder { get; set; }
     }
 }

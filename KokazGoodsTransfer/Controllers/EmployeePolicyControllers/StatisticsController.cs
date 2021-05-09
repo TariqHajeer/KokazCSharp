@@ -89,23 +89,57 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ClientBalance")]
         public IActionResult ClientBalance()
         {
+
             var clients = this.Context.Clients.ToList();
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
-                //var clientOrders = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
-                var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId == (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == false) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
-                var totalAccount = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c=>c.Amount);
-                if (totalOrder + totalAccount == 0)
-                    continue;
+
+                var clientOrder = this.Context.Orders.Where(c => c.ClientId == item.Id);
+
+                var orderInNigative = (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash).Sum(c => c.Cost - c.DeliveryCost)) * -1;
+                var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId <= (int)OrderplacedEnum.Delayed).Sum(c => c.Cost - c.DeliveryCost));
+
+                var totalAccount = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c => c.Amount);
+
                 clientBlanaceDtos.Add(new ClientBlanaceDto()
                 {
                     ClientName = item.Name,
-                    Account = totalAccount,
-                    TotalOrder = totalOrder
+                    Amount = totalAccount+orderInNigative+orderInPositve
                 });
             }
             return Ok(clientBlanaceDtos);
+            //var clients = this.Context.Clients.ToList();
+            //List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
+            //foreach (var item in clients)
+            //{
+            //    //var clientOrders = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
+            //    var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id && ((c.OrderStateId == (int)OrderStateEnum.Processing && c.IsClientDiliverdMoney == false) || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)).Sum(c => c.Cost - c.DeliveryCost);
+            //    var totalAccount = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c=>c.Amount);
+            //    if (totalOrder + totalAccount == 0)
+            //        continue;
+            //    clientBlanaceDtos.Add(new ClientBlanaceDto()
+            //    {
+            //        ClientName = item.Name,
+            //        Account = totalAccount,
+            //        TotalOrder = totalOrder
+            //    });
+            //}
+            //return Ok(clientBlanaceDtos);
+            //var clients = this.Context.Clients.ToList();
+            //List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
+            //foreach (var item in clients)
+            //{
+
+            //    var totalOrder = this.Context.Orders.Where(c => c.ClientId == item.Id &&c.OrderplacedId==(int)OrderplacedEnum.Delivered).Sum(c => c.Cost - c.DeliveryCost);
+            //    clientBlanaceDtos.Add(new ClientBlanaceDto()
+            //    {
+            //        ClientName = item.Name,
+            //        Account = totalAccount,
+            //        TotalOrder = totalOrder
+            //    });
+            //}
+            //return Ok(clientBlanaceDtos);
         }
         
     }
