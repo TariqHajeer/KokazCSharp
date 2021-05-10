@@ -595,8 +595,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(int[] ids)
+        public IActionResult DeleiverMoneyForClientWithStatus(List<IdAmount> idAmounts)
         {
+            var ids = idAmounts.Select(c => c.Id);
             var orders = this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
@@ -637,7 +638,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
 
                     item.IsClientDiliverdMoney = true;
-
+                    //if(item.c)
                     if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
