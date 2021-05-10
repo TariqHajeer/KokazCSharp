@@ -390,6 +390,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        /// <summary>
+        /// <!--استلام حالة شحنة-->
+        /// </summary>
+        /// <param name="orderStates"></param>
+        /// 
+        /// <returns></returns>
         [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderStateDto> orderStates)
         {
@@ -583,6 +589,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
         public IActionResult DeleiverMoneyForClientWithStatus(int[] ids)
         {
@@ -705,7 +716,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             //var fOrder = orders.Where(c => (c.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent) || c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
             var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered))).ToList();
             orders = orders.Except(fOrder).ToList();
-
+            var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany).ToList();
+            orders = orders.Except(orderInCompany).ToList();
             if (orders.Count() == 0)
             {
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
@@ -716,11 +728,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 //{
                 //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
                 //}
+                if (lastOrderAdded.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                {
+                    return Conflict(new { message = "الشحنة داخل الشركة" });
+                }
                 else
                 {
                     return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
                 }
+                
             }
+            
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetEarnings")]
@@ -804,16 +822,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
             }
-            if (order.OrderplacedId < (int)OrderplacedEnum.Delivered)
+            //if (order.OrderplacedId < (int)OrderplacedEnum.Delivered)
+            //{
+            //    return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
+            //}
+            if (order.MoenyPlacedId != (int)MoneyPalcedEnum.InsideCompany)
             {
-                return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
-            }
-            if (order.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-            {
-                return Conflict(new { Message = "الشحنة داخل الشركة" });
+                return Conflict(new { Message = "الشحنة ليست داخل الشركة" });
             }
             return Ok(mapper.Map<OrderDto>(order));
         }
-
+        
     }
 }
