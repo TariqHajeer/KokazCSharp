@@ -105,9 +105,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPatch]
-        public IActionResult Edit([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
+        public IActionResult Edit([FromBody] UpdateOrder updateOrder)
         {
-
+            var order = this.Context.Orders.Find(updateOrder.Id);
+            if (order.Code != updateOrder.Code)
+            {
+                if( this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                {
+                    return Conflict(new { Message = "الكود مستخدم سابقاً" });
+                }
+            }
+            
             return Ok();
         }
         [HttpPost("createMultiple")]
@@ -789,6 +797,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.Orderplaced)
+                .Include(c=>c.Country)
+                .ThenInclude(c=>c.Regions)
                 .FirstOrDefault();
             if (order.IsClientDiliverdMoney)
             {
@@ -800,6 +810,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(mapper.Map<OrderDto>(order));
         }
-         
+
     }
 }

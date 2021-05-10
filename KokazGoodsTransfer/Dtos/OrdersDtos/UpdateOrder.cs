@@ -8,6 +8,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
     public class UpdateOrder
     {
+        public int Id { get; set; }
         public string Code { get; set; }
         public int ClientId { get; set; }
         public int CountryId { get; set; }
@@ -15,8 +16,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string RegionName { get; set; }
         public string Address { get; set; }
         public int AgentId { get; set; }
-        //public int OrderplacedId { get; set; }
-        //public int MoenyPlacedId { get; set; }
+        public int OrderplacedId { get; set; }
+        public int MoenyPlacedId { get; set; }
         public decimal Cost { get; set; }
         public string RecipientName { get; set; }
         public DateTime? Date { get; set; }
