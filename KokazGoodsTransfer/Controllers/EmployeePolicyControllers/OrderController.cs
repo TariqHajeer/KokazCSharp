@@ -595,16 +595,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(List<IdAmount> idAmounts)
+        public IActionResult DeleiverMoneyForClientWithStatus(List<IdCost> idCosts)
         {
-            var ids = idAmounts.Select(c => c.Id);
+            var ids = idCosts.Select(c => c.Id);
             var orders = this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
-            if (orders.Any(c => c.ClientId != client.Id))
+            if (orders.Any(c => c.ClientId != client.Id))   
             {
                 return Conflict();
             }
@@ -619,6 +619,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+                
             };
             var transaction = this.Context.Database.BeginTransaction();
             try
@@ -638,7 +639,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
 
                     item.IsClientDiliverdMoney = true;
-                    //if(item.c)
+                    var newCost = idCosts.Find(c => c.Id == item.Id);
+                    if (item.OldCost != null)
+                    {
+                        if (item.Cost != newCost.Cost)
+                        {
+                            item.OldCost = item.Cost;
+                            item.Cost = newCost.Cost;
+                        }
+                    }
                     if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
@@ -659,7 +668,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Phone = item.RecipientPhones,
                         DeliveCost = item.DeliveryCost,
                         MoneyPlacedId = item.MoenyPlacedId,
-                        OrderPlacedId = item.OrderplacedId
+                        OrderPlacedId = item.OrderplacedId,
+                        LastTotal = item.OldCost
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
