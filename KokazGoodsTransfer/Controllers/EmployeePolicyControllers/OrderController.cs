@@ -107,40 +107,50 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public IActionResult Edit([FromBody] UpdateOrder updateOrder)
         {
-            var order = this.Context.Orders.Find(updateOrder.Id);
-            order.DeliveryCost = updateOrder.DeliveryCost;
-            order.Cost = updateOrder.Cost;
-            if (order.Code != updateOrder.Code)
+            try
             {
-                if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                var order = this.Context.Orders.Find(updateOrder.Id);
+                order.DeliveryCost = updateOrder.DeliveryCost;
+                order.Cost = updateOrder.Cost;
+                if (order.Code != updateOrder.Code)
                 {
-                    return Conflict(new { Message = "الكود مستخدم سابقاً" });
+                    if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                    {
+                        return Conflict(new { Message = "الكود مستخدم سابقاً" });
+                    }
                 }
+                Order original = this.Context.Orders.Find(updateOrder.Id);
+                order.Code = updateOrder.Code;
+                //Client
+
+                //country and Agent
+
+                if (order.AgentId != updateOrder.OrderplacedId)
+                {
+                    order.OrderStateId = (int)OrderStateEnum.Processing;
+                    order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                    order.OrderplacedId = (int)OrderplacedEnum.Store;
+                }
+                if (order.ClientId != updateOrder.ClientId)
+                {
+
+                }
+                order.ClientId = updateOrder.ClientId;
+                order.AgentId = updateOrder.AgentId;
+                order.CountryId = updateOrder.CountryId;
+                order.RegionId = updateOrder.RegionId;
+                order.Address = updateOrder.Address;
+                order.RecipientName = updateOrder.RecipientName;
+                order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+                order.Note = updateOrder.Note;
+                this.Context.Update(order);
+                this.Context.SaveChanges();
+                return Ok();
             }
-            Order original = this.Context.Orders.Find(updateOrder.Id);
-            order.Code = updateOrder.Code;
-            //Client
-
-            //country and Agent
-
-            if (order.AgentId != updateOrder.OrderplacedId)
+            catch(Exception ex)
             {
-                order.OrderStateId = (int)OrderStateEnum.Processing;
-                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                return BadRequest(ex.Message);
             }
-            order.ClientId = updateOrder.ClientId;
-            order.AgentId = updateOrder.AgentId;
-            order.CountryId = updateOrder.CountryId;
-            order.RegionId = updateOrder.RegionId;
-            order.Address = updateOrder.Address;
-            //order.Date = updateOrder.Date;
-            order.RecipientName = updateOrder.RecipientName;
-            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
-            order.Note = updateOrder.Note;
-            this.Context.Update(order);
-            this.Context.SaveChanges();
-            return Ok();
         }
         [HttpPost("createMultiple")]
         public IActionResult Create([FromBody]List<CreateMultipleOrder> createMultipleOrders)
