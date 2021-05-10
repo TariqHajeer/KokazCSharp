@@ -108,14 +108,38 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Edit([FromBody] UpdateOrder updateOrder)
         {
             var order = this.Context.Orders.Find(updateOrder.Id);
+            order.DeliveryCost = updateOrder.DeliveryCost;
+            order.Cost = updateOrder.Cost;
             if (order.Code != updateOrder.Code)
             {
-                if( this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
                 {
                     return Conflict(new { Message = "الكود مستخدم سابقاً" });
                 }
             }
-            
+            Order original = this.Context.Orders.Find(updateOrder.Id);
+            order.Code = updateOrder.Code;
+            //Client
+
+            //country and Agent
+
+            if (order.AgentId != updateOrder.OrderplacedId)
+            {
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+            }
+            order.ClientId = updateOrder.ClientId;
+            order.AgentId = updateOrder.AgentId;
+            order.CountryId = updateOrder.CountryId;
+            order.RegionId = updateOrder.RegionId;
+            order.Address = updateOrder.Address;
+            //order.Date = updateOrder.Date;
+            order.RecipientName = updateOrder.RecipientName;
+            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+            order.Note = updateOrder.Note;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
             return Ok();
         }
         [HttpPost("createMultiple")]
@@ -604,7 +628,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
-            if (orders.Any(c => c.ClientId != client.Id))   
+            if (orders.Any(c => c.ClientId != client.Id))
             {
                 return Conflict();
             }
@@ -619,7 +643,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-                
+
             };
             var transaction = this.Context.Database.BeginTransaction();
             try
@@ -747,9 +771,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
                 }
-                
+
             }
-            
+
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetEarnings")]
@@ -826,8 +850,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var order = this.Context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.Orderplaced)
-                .Include(c=>c.Country)
-                .ThenInclude(c=>c.Regions)
+                .Include(c => c.Country)
+                .ThenInclude(c => c.Regions)
                 .FirstOrDefault();
             if (order.IsClientDiliverdMoney)
             {
@@ -843,6 +867,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(mapper.Map<OrderDto>(order));
         }
-        
+
     }
 }
