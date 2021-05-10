@@ -808,6 +808,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
             }
+            if (order.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+            {
+                return Conflict(new { Message = "الشحنة داخل الشركة" });
+            }
             return Ok(mapper.Map<OrderDto>(order));
         }
 
