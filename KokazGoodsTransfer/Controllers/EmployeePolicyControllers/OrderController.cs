@@ -109,6 +109,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
+
                 var order = this.Context.Orders.Find(updateOrder.Id);
                 order.DeliveryCost = updateOrder.DeliveryCost;
                 order.Cost = updateOrder.Cost;
@@ -119,11 +120,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         return Conflict(new { Message = "الكود مستخدم سابقاً" });
                     }
                 }
-                Order original = this.Context.Orders.Find(updateOrder.Id);
                 order.Code = updateOrder.Code;
-                //Client
-
-                //country and Agent
 
                 if (order.AgentId != updateOrder.OrderplacedId)
                 {
@@ -133,8 +130,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (order.ClientId != updateOrder.ClientId)
                 {
-
+                    if (order.IsClientDiliverdMoney)
+                    {
+                        order.IsClientDiliverdMoney = false;
+                        Receipt receipt = new Receipt()
+                        {
+                            IsPay = true,
+                            ClientId = order.ClientId,
+                            Amount =((order.Cost-order.DeliveryCost)*-1),
+                            CreatedBy ="النظام",
+                            Manager="",
+                            Date=DateTime.Now,
+                            About="",
+                            Note=" بعد تعديل طلب بكود "+order.Code,
+                        };
+                        this.Context.Add(receipt);
+                    }
                 }
+                
                 order.ClientId = updateOrder.ClientId;
                 order.AgentId = updateOrder.AgentId;
                 order.CountryId = updateOrder.CountryId;
@@ -150,6 +163,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch(Exception ex)
             {
                 return BadRequest(ex.Message);
+                //return BadRequest(new { ex.Message, errorLine });
             }
         }
         [HttpPost("createMultiple")]
