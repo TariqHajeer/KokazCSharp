@@ -122,7 +122,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 order.Code = updateOrder.Code;
 
-                if (order.AgentId != updateOrder.OrderplacedId)
+                if (order.AgentId != updateOrder.AgentId)
                 {
                     order.OrderStateId = (int)OrderStateEnum.Processing;
                     order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
