@@ -111,8 +111,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var order = this.Context.Orders.Find(updateOrder.Id);
-                order.DeliveryCost = updateOrder.DeliveryCost;
-                order.Cost = updateOrder.Cost;
+                
                 if (order.Code != updateOrder.Code)
                 {
                     if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
@@ -147,7 +146,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         this.Context.Add(receipt);
                     }
                 }
-                
+                order.DeliveryCost = updateOrder.DeliveryCost;
+                order.Cost = updateOrder.Cost;
                 order.ClientId = updateOrder.ClientId;
                 order.AgentId = updateOrder.AgentId;
                 order.CountryId = updateOrder.CountryId;
