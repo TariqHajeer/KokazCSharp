@@ -181,18 +181,17 @@ namespace KokazGoodsTransfer.Dtos.Common
                     }));
 
             CreateMap<Printed, PrintOrdersDto>()
+
                 .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
-
-                         var a1 = context.Mapper.Map<AgentPrintDto[]>(obj.AgnetPrints);
-                         var a2 = context.Mapper.Map<ClientprintDto[]>(obj.ClientPrints);
                          List<PrintDto> x = new List<PrintDto>();
-                         x.AddRange(a1);
-                         x.AddRange(a2);
+                         x.AddRange(context.Mapper.Map<PrintDto[]>(obj.AgnetPrints));
+                         x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
                          return x;
                      }));
-            CreateMap<AgnetPrint, AgentPrintDto>();
-            CreateMap<ClientPrint, ClientprintDto>();
+            CreateMap<AgnetPrint, PrintDto>();
+            CreateMap<ClientPrint, PrintDto>();
+            
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
 

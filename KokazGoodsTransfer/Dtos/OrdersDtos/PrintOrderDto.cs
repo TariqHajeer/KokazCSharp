@@ -20,20 +20,26 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     {
         public string Code { get; set; }
         public decimal Total { get; set; }
+        
         public string Phone { get; set; }
         public string Country { get; set; }
-    }
-    public class AgentPrintDto : PrintDto
-    {   
+        public string LastTotal { get; set; }
+
+        public decimal DeliveCost { get; set; }
         public string ClientName { get; set; }
         public string Note { get; set; }
 
     }
-    public class ClientprintDto: PrintDto
-    {
-        public string LastTotal { get; set; }
+    //public class AgentPrintDto : PrintDto
+    //{   
+        
 
-        public decimal DeliveCost { get; set; }
+    //}   
+    //public class ClientprintDto: PrintDto
+    //{
+    //    public string LastTotal { get; set; }
 
-    }
+    //    public decimal DeliveCost { get; set; }
+
+    //}
 }
