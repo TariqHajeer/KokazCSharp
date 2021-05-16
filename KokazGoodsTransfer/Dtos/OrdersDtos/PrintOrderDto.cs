@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public List<PrintDto> Orders { get; set; }
 
     }
-    public abstract class PrintDto
+    public  class PrintDto
     {
         public string Code { get; set; }
         public decimal Total { get; set; }
@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 
     }
     //public class AgentPrintDto : PrintDto
-    //{   
+    //{     
         
 
     //}   
