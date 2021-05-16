@@ -891,6 +891,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             return Ok(mapper.Map<OrderDto>(order));
         }
+        [HttpPut("ReSend")]
+        public IActionResult ReSend([FromBody]OrderReSend orderReSend)
+        {
+            var order = this.Context.Orders.Find(orderReSend.Id);
+            order.CountryId = orderReSend.CountryId;
+            order.RegionId = orderReSend.RegionId;
+            order.AgentId = order.AgentId;
+            order.OrderStateId = (int)OrderStateEnum.Processing;
+            order.OrderplacedId = (int)OrderplacedEnum.Store;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
+            return Ok();
+        }
 
     }
 }
