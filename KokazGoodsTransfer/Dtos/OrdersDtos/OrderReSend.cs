@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int CountryId { get; set; }
         public int RegionId { get; set; }
         public int AgnetId { get; set; }
+        public decimal DeliveryCost { get; set; }
 
     }
 }

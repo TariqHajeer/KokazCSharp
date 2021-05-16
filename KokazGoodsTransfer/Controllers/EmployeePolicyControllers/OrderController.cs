@@ -556,6 +556,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var ordersPint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent).OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
             return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
         }
+        /// <summary>
+        /// تسليم العميل
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient(int[] ids)
         {
@@ -638,7 +643,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         /// <summary>
-        /// 
+        /// تسليم الشركات
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
@@ -900,6 +905,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.AgentId = order.AgentId;
             order.OrderStateId = (int)OrderStateEnum.Processing;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
+            order.DeliveryCost = orderReSend.DeliveryCost;
             this.Context.Update(order);
             this.Context.SaveChanges();
             return Ok();

@@ -32,6 +32,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? AgentPrintNumber { get; set; }
         public int? ClientPrintNumber { get; set; }
         public int OrderStateId { get; set; }
+        public string CanResned { get; set; }
         public ClientDto Client { get; set; }
         public CountryDto Country { get; set; }
         public RegionDto Region { get; set; }
