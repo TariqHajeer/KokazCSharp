@@ -111,7 +111,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var order = this.Context.Orders.Find(updateOrder.Id);
-                
+
                 if (order.Code != updateOrder.Code)
                 {
                     if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
@@ -136,12 +136,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             IsPay = true,
                             ClientId = order.ClientId,
-                            Amount =((order.Cost-order.DeliveryCost)*-1),
-                            CreatedBy ="النظام",
-                            Manager="",
-                            Date=DateTime.Now,
-                            About="",
-                            Note=" بعد تعديل طلب بكود "+order.Code,
+                            Amount = ((order.Cost - order.DeliveryCost) * -1),
+                            CreatedBy = "النظام",
+                            Manager = "",
+                            Date = DateTime.Now,
+                            About = "",
+                            Note = " بعد تعديل طلب بكود " + order.Code,
                         };
                         this.Context.Add(receipt);
                     }
@@ -160,7 +160,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
                 //return BadRequest(new { ex.Message, errorLine });
@@ -481,6 +481,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.Unacceptable:
                             {
+                                if (order.OldCost == null)
+                                {
+                                    order.OldCost = order.Cost;
+                                }
                                 //order.OldCost = order.Cost;
                                 //order.Cost = 0;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -520,7 +524,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
-                                if (order.OldCost != null)
+                                if (order.OldCost == null)
                                 {
                                     order.OldCost = order.Cost;
                                 }
@@ -903,9 +907,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.CountryId = orderReSend.CountryId;
             order.RegionId = orderReSend.RegionId;
             order.AgentId = order.AgentId;
+            if (order.OldCost != null)
+            {
+                order.Cost = (decimal)order.OldCost;
+                order.OldCost = null;
+            }
+
             order.OrderStateId = (int)OrderStateEnum.Processing;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
+            order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
             this.Context.Update(order);
             this.Context.SaveChanges();
             return Ok();
