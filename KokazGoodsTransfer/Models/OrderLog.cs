@@ -5,15 +5,8 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Order
+    public partial class OrderLog
     {
-        public Order()
-        {
-            OrderItems = new HashSet<OrderItem>();
-            OrderLogs = new HashSet<OrderLog>();
-            OrderPrints = new HashSet<OrderPrint>();
-        }
-
         public int Id { get; set; }
         public string Code { get; set; }
         public int ClientId { get; set; }
@@ -38,16 +31,15 @@ namespace KokazGoodsTransfer.Models
         public bool IsClientDiliverdMoney { get; set; }
         public bool IsSync { get; set; }
         public int OrderStateId { get; set; }
+        public string UpdatedBy { get; set; }
+        public int OrderId { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }
-        public virtual OrderState OrderState { get; set; }
+        public virtual Order Order { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
-        public virtual ICollection<OrderLog> OrderLogs { get; set; }
-        public virtual ICollection<OrderPrint> OrderPrints { get; set; }
     }
 }

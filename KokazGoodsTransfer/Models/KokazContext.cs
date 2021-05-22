@@ -30,6 +30,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
+        public virtual DbSet<OrderLog> OrderLogs { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
         public virtual DbSet<OrderPrint> OrderPrints { get; set; }
         public virtual DbSet<OrderState> OrderStates { get; set; }
@@ -334,6 +335,75 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.OrderTpyeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderOrderType_OrderType");
+            });
+
+            modelBuilder.Entity<OrderLog>(entity =>
+            {
+                entity.ToTable("OrderLog");
+
+                entity.Property(e => e.AgentCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.DiliveryDate).HasColumnType("date");
+
+                entity.Property(e => e.OldCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.RecipientName).HasMaxLength(50);
+
+                entity.Property(e => e.RecipientPhones).IsRequired();
+
+                entity.Property(e => e.Seen).HasColumnName("seen");
+
+                entity.Property(e => e.UpdatedBy).IsRequired();
+
+                entity.HasOne(d => d.Agent)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.AgentId)
+                    .HasConstraintName("FK_OrderLog_Users");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderLog_Clients");
+
+                entity.HasOne(d => d.Country)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.CountryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderLog_Country");
+
+                entity.HasOne(d => d.MoenyPlaced)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.MoenyPlacedId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderLog_MoenyPlaced");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderLog_Order");
+
+                entity.HasOne(d => d.Orderplaced)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.OrderplacedId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderLog_OrderPlaced");
+
+                entity.HasOne(d => d.Region)
+                    .WithMany(p => p.OrderLogs)
+                    .HasForeignKey(d => d.RegionId)
+                    .HasConstraintName("FK_OrderLog_Region");
             });
 
             modelBuilder.Entity<OrderPlaced>(entity =>

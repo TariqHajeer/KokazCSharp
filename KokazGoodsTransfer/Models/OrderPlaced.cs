@@ -9,12 +9,14 @@ namespace KokazGoodsTransfer.Models
     {
         public OrderPlaced()
         {
+            OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

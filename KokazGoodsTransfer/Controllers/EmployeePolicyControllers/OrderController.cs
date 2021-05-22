@@ -921,6 +921,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut("MakeStoreOrderCompletelyReturned/{id}")]
+        public IActionResult MakeOrderCompletelyReturned(int id)
+        {
+            var order = this.Context.Orders.Find(id);
+            if (order.OrderplacedId != (int)OrderplacedEnum.Store)
+            {
+                return Conflict();
+            }
+            order.OrderplacedId = (int)OrderplacedEnum.CompletelyReturned;
+            order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
+            order.OldCost = order.Cost;
+            order.Cost = 0;
+            order.DeliveryCost = 0;
+            order.AgentCost = 0;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
+            return Ok(mapper.Map<OrderDto>(order));
+        }
+
 
     }
 }

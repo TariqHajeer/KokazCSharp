@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public Region()
         {
+            OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
         }
 
@@ -17,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         public int CountryId { get; set; }
 
         public virtual Country Country { get; set; }
+        public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }
