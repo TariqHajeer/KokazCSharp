@@ -535,9 +535,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.Unacceptable:
                             {
-                                //if (order.OldCost != null)
-                                //    order.OldCost = order.Cost;
-                                //order.Cost = 0;
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = 0;
                             }
                             break;
 
@@ -921,8 +921,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut("MakeStoreOrderCompletelyReturned/{id}")]
-        public IActionResult MakeOrderCompletelyReturned(int id)
+        [HttpPut("MakeStoreOrderCompletelyReturned")]
+        public IActionResult MakeOrderCompletelyReturned([FromBody] int id)
         {
             var order = this.Context.Orders.Find(id);
             if (order.OrderplacedId != (int)OrderplacedEnum.Store)

@@ -25,13 +25,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        
 
+        [HttpGet("HetHash/{str}")]
+        public IActionResult GetHash(string str)
+        {
+            return Ok(MD5Hash.GetMd5Hash(str));
+        }
         [HttpPost]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             var user = this.Context.Users
-                .Include(c => c.UserGroups) 
+                .Include(c => c.UserGroups)
                 .ThenInclude(c => c.Group)
                 .ThenInclude(c => c.GroupPrivileges)
                 .ThenInclude(c => c.Privileg)
@@ -50,7 +54,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             climes.Add(new Claim("UserID", user.Id.ToString()));
             climes.Add(new Claim("Type", "Employee"));
-            climes.Add(new Claim(ClaimTypes.Name,user.Name));
+            climes.Add(new Claim(ClaimTypes.Name, user.Name));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(climes),
@@ -64,6 +68,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             authenticatedUserDto.Token = token;
             return Ok(authenticatedUserDto);
         }
-        
+
     }
 }

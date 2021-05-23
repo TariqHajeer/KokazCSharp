@@ -154,10 +154,15 @@ namespace KokazGoodsTransfer.Dtos.Common
                   {
                       return context.Mapper.Map<ResponseOrderItemDto[]>(order.OrderItems);
                   }))
+                .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Agent).LastOrDefault()?.Print?.PrintNmber ?? null;
+                }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                    {
                        return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
                    }));
+
             ;
             CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
@@ -191,7 +196,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      }));
             CreateMap<AgnetPrint, PrintDto>();
             CreateMap<ClientPrint, PrintDto>();
-            
+
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
 
