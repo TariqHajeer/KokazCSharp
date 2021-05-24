@@ -181,7 +181,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.OrderStateId = (int)OrderStateEnum.Processing;
                     order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                     order.Date = DateTime.Now;
-
+                    order.OrderplacedId = (int)OrderplacedEnum.Store;
                     //var client = this.Context.Clients.Find(order.ClientId);
                     //client.Total += (order.Cost - order.DeliveryCost);
                     //this.Context.Update(client);    
@@ -338,6 +338,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult CheckCode([FromQuery] string code, int clientid)
         {
             return Ok(this.Context.Orders.Where(c => c.ClientId == clientid && c.Code == code).Any());
+        }
+        [HttpGet("CheckMulieCode")]
+        public IActionResult CheckMulieCode([FromQuery]string[] codes, int clientId)
+        {
+            List<CodeStatus> codeStatuses = new List<CodeStatus>();
+            var nonAvilableCode = this.Context.Orders.Where(c => c.ClientId == clientId && codes.Contains(c.Code)).Select(c => c.Code).ToArray();
+            codeStatuses.AddRange(codes.Except(nonAvilableCode).Select(c => new CodeStatus()
+            {
+                Code = c,
+                Avilabe = true
+            }));
+            codeStatuses.AddRange(nonAvilableCode.Select(c=>new CodeStatus()
+            {
+                Avilabe =false,
+                Code = c
+            }));
+
+            return Ok(codeStatuses);
         }
         [HttpGet("NewOrders")]
         public IActionResult GetNewOrders()
@@ -906,7 +924,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var order = this.Context.Orders.Find(orderReSend.Id);
             order.CountryId = orderReSend.CountryId;
             order.RegionId = orderReSend.RegionId;
-            order.AgentId = order.AgentId;
+            order.AgentId = orderReSend.AgnetId;
             if (order.OldCost != null)
             {
                 order.Cost = (decimal)order.OldCost;
