@@ -339,8 +339,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(this.Context.Orders.Where(c => c.ClientId == clientid && c.Code == code).Any());
         }
-        [HttpGet("CheckMulieCode")]
-        public IActionResult CheckMulieCode([FromQuery]string[] codes, int clientId)
+        [HttpPost("CheckMulieCode/{clientId}")]
+        public IActionResult CheckMulieCode(int clientId, [FromBody]string[] codes)
         {
             List<CodeStatus> codeStatuses = new List<CodeStatus>();
             var nonAvilableCode = this.Context.Orders.Where(c => c.ClientId == clientId && codes.Contains(c.Code)).Select(c => c.Code).ToArray();

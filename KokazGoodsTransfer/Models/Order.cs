@@ -38,6 +38,7 @@ namespace KokazGoodsTransfer.Models
         public bool IsClientDiliverdMoney { get; set; }
         public bool IsSync { get; set; }
         public int OrderStateId { get; set; }
+        public bool IsDollar { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
