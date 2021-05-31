@@ -309,7 +309,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
-                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId)
+                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
