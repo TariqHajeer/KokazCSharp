@@ -371,7 +371,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
@@ -935,6 +934,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+            order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
             this.Context.Update(order);
             this.Context.SaveChanges();
             return Ok();
@@ -957,7 +957,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(mapper.Map<OrderDto>(order));
         }
-
+        
 
     }
-}
+}   

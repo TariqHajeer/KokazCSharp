@@ -188,6 +188,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
+                var userGroup = new UserGroup()
+                {
+                    UserId = userId,
+                    GroupId = groupId
+                };
+                this.Context.Add(userGroup);
+                this.Context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
