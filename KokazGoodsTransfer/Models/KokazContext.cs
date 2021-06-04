@@ -17,6 +17,7 @@ namespace KokazGoodsTransfer.Models
         {
         }
 
+        public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
         public virtual DbSet<AgnetPrint> AgnetPrints { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
@@ -57,6 +58,25 @@ namespace KokazGoodsTransfer.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "Latin1_General_CI_AS");
+
+            modelBuilder.Entity<AgentCountr>(entity =>
+            {
+                entity.HasKey(e => new { e.AgentId, e.CountryId });
+
+                entity.ToTable("AgentCountr");
+
+                entity.HasOne(d => d.Agent)
+                    .WithMany(p => p.AgentCountrs)
+                    .HasForeignKey(d => d.AgentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AgentCountr_Users");
+
+                entity.HasOne(d => d.Country)
+                    .WithMany(p => p.AgentCountrs)
+                    .HasForeignKey(d => d.CountryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AgentCountr_Country");
+            });
 
             modelBuilder.Entity<AgnetPrint>(entity =>
             {
@@ -574,11 +594,6 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Salary).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.UserName).HasMaxLength(50);
-
-                entity.HasOne(d => d.Country)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.CountryId)
-                    .HasConstraintName("FK_Users_Country");
             });
 
             modelBuilder.Entity<UserGroup>(entity =>

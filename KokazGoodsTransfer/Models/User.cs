@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public User()
         {
+            AgentCountrs = new HashSet<AgentCountr>();
             Clients = new HashSet<Client>();
             Incomes = new HashSet<Income>();
             OrderLogs = new HashSet<OrderLog>();
@@ -25,13 +26,12 @@ namespace KokazGoodsTransfer.Models
         public DateTime HireDate { get; set; }
         public string Note { get; set; }
         public bool CanWorkAsAgent { get; set; }
-        public int? CountryId { get; set; }
         public decimal? Salary { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual Country Country { get; set; }
+        public virtual ICollection<AgentCountr> AgentCountrs { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<Income> Incomes { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }

@@ -57,7 +57,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Note = createUserDto.Note,
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
-                CountryId = createUserDto.CountryId,
+                //CountryId = createUserDto.CountryId,
                 IsActive = true,
             };
             if (!createUserDto.CanWorkAsAgent)
@@ -84,6 +84,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         UserId = user.Id
                     });
                 }
+            if (createUserDto.CanWorkAsAgent)
+            {
+                foreach (var item in createUserDto.Countries)
+                {
+                    AgentCountr agentCountr = new AgentCountr()
+                    {
+                        AgentId = user.Id,
+                        CountryId = item
+                    };
+                    this.Context.Add(agentCountr);
+                }
+            }
             Context.SaveChanges();
 
             return Ok(mapper.Map<UserDto>(user));
@@ -206,6 +218,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult UpdateUser([FromBody]UpdateUserDto updateUserDto)
         {
             var user = this.Context.Users.Find(updateUserDto.Id);
+            this.Context.Entry(user).Collection(c => c.AgentCountrs).Load();
             user.Adress = updateUserDto.Address;
             user.Name = updateUserDto.Name;
             user.HireDate = updateUserDto.HireDate;
@@ -223,8 +236,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.Password = string.Empty;
                 user.UserGroups.Clear();
                 user.CanWorkAsAgent = true;
-                user.CountryId = updateUserDto.CountryId;
+                //user.CountryId = updateUserDto.CountryId;
                 user.Salary = updateUserDto.Salary;
+               //user.AgentCountrs =
             }
             else
             {
@@ -235,7 +249,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 user.UserName = updateUserDto.UserName;
                 user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
-                user.CountryId = null;
+                //user.CountryId = null;
                 user.Salary = null;
             }
             this.Context.Update(user);

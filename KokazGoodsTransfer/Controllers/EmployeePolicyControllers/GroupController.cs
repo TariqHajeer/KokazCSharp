@@ -102,7 +102,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 privilegeDtos.Add(new PrivilegeDto()
                 {
                     Id = item.Id,
-                    Name = item.Name
+                    Name = item.Name,
+                    SysName= item.SysName
                 });
             }
             return Ok(privilegeDtos);
@@ -136,6 +137,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             GroupId = updateGroupDto.Id,
                             PrivilegId = item
+                           
                         });
                     }
                 }
@@ -147,6 +149,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        
 
     }
 }

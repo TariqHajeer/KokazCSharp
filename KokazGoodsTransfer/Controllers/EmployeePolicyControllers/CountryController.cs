@@ -24,8 +24,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var countries = Context.Countries
                 .Include(c=>c.Clients)
-                .Include(c => c.Users)
+                //.Include(c => c.Users)
                 .Include(c => c.Regions)
+                .Include(c=>c.AgentCountrs)
+                    .ThenInclude(c=>c.Agent)
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
@@ -76,12 +78,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var country = this.Context.Countries
                     .Include(c=>c.Clients)
                     .Include(c => c.Regions)
+                    .Include(c=>c.AgentCountrs)
                     .Where(c => c.Id == id)
                     .SingleOrDefault();
 
                 if (country == null)
                     return NotFound();
-                if (country.Users.Any())
+                if (country.AgentCountrs.Any())
                     return Conflict();
                 if (country.Clients.Count() > 0)
                 {
