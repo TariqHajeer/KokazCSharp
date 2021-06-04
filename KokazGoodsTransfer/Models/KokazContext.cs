@@ -68,13 +68,11 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Agent)
                     .WithMany(p => p.AgentCountrs)
                     .HasForeignKey(d => d.AgentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AgentCountr_Users");
 
                 entity.HasOne(d => d.Country)
                     .WithMany(p => p.AgentCountrs)
                     .HasForeignKey(d => d.CountryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AgentCountr_Country");
             });
 
