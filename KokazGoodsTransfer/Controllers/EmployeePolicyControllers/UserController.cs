@@ -32,6 +32,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true && c.IsActive == true)
                 .Include(c=>c.UserPhones)
+                .Include(c=>c.AgentCountrs)
+                    .ThenInclude(c=>c.Country)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
@@ -251,6 +253,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     user.AgentCountrs.Add(new AgentCountr()
                     {
+                        AgentId = user.Id,
                         CountryId =item
                     });
                 } 
@@ -264,7 +267,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 user.UserName = updateUserDto.UserName;
                 user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
-                //user.CountryId = null;
+                user.AgentCountrs= null;
                 user.Salary = null;
             }
             this.Context.Update(user);
