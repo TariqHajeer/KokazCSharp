@@ -57,7 +57,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Note = createUserDto.Note,
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
-                //CountryId = createUserDto.CountryId,
                 IsActive = true,
             };
             if (!createUserDto.CanWorkAsAgent)
@@ -88,12 +87,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 foreach (var item in createUserDto.Countries)
                 {
-                    AgentCountr agentCountr = new AgentCountr()
+                    user.AgentCountrs.Add(new AgentCountr()
                     {
-                        AgentId = user.Id,
-                        CountryId = item
-                    };
-                    this.Context.Add(agentCountr);
+                        CountryId = item,
+                        AgentId = user.Id
+                    });
                 }
             }
             Context.SaveChanges();
@@ -238,7 +236,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.CanWorkAsAgent = true;
                 //user.CountryId = updateUserDto.CountryId;
                 user.Salary = updateUserDto.Salary;
-               //user.AgentCountrs =
+                user.AgentCountrs = null;
+                foreach (var item in updateUserDto.Countries)
+                {
+                    user.AgentCountrs.Add(new AgentCountr()
+                    {
+                        CountryId =item
+                    });
+                } 
             }
             else
             {
