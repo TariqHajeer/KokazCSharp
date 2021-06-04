@@ -50,11 +50,13 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
                 }))
-                //.ForMember(d => d.Department, opt => opt.MapFrom((user, userDto, i, context) =>
-                //     {
-                //         return context.Mapper.Map<DepartmentDto>(user.Department);
-                //     }))
-                .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)));
+                .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)))
+                .ForMember(c=>c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
+                }));
+
+
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<Privilege, UserPrivilegeDto>();

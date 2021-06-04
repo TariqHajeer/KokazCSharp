@@ -21,7 +21,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("Agent")]
         public IActionResult GetAgent()
         {
-            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
+            var users = this.Context.Users.Where(c => c.CanWorkAsAgent == true)
+                .Include(c => c.AgentCountrs)
+                    .ThenInclude(c => c.Country)
+                .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }
         [HttpGet("ActiveAgent")]
@@ -95,7 +98,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
             }
             Context.SaveChanges();
-
+            this.Context.Entry(user).Collection(c => c.AgentCountrs).Load();
+            foreach (var item in user.AgentCountrs)
+            {
+                this.Context.Entry(item).Reference(c => c.Country).Load();
+            }
             return Ok(mapper.Map<UserDto>(user));
         }
         [HttpGet]
@@ -104,6 +111,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var users = this.Context.Users
                 .Include(c => c.UserPhones)
                 .Include(c => c.UserGroups)
+                .Include(c=>c.AgentCountrs)
+                    .ThenInclude(c=>c.Country)
                 .ToList();
             var usersDto = mapper.Map<UserDto[]>(users);
             foreach (var item in usersDto)
@@ -123,6 +132,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var dbuser = this.Context.Users
                 .Include(c => c.UserPhones)
                 .Include(c => c.UserGroups)
+                .Include(c => c.AgentCountrs)
+                    .ThenInclude(c => c.Country)
                 .FirstOrDefault(c => c.Id == id);
             var user = mapper.Map<UserDto>(dbuser);
             user.UserStatics = new UserStatics();
@@ -234,7 +245,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.Password = string.Empty;
                 user.UserGroups.Clear();
                 user.CanWorkAsAgent = true;
-                //user.CountryId = updateUserDto.CountryId;
                 user.Salary = updateUserDto.Salary;
                 user.AgentCountrs = null;
                 foreach (var item in updateUserDto.Countries)
