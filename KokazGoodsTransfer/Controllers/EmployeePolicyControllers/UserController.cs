@@ -248,7 +248,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.UserGroups.Clear();
                 user.CanWorkAsAgent = true;
                 user.Salary = updateUserDto.Salary;
-                user.AgentCountrs = null;
+                user.AgentCountrs.Clear();
                 foreach (var item in updateUserDto.Countries)
                 {
                     user.AgentCountrs.Add(new AgentCountr()

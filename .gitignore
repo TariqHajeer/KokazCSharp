@@ -5,6 +5,6 @@ bin
 ./bin
 .vs
 /.vs
-ScaffoldAndExport.bat
+Export.bat
 KokazGoodsTransfer/obj
 PublishToHerohuBat.bat
