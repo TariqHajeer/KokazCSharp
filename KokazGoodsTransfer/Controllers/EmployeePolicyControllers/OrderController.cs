@@ -29,6 +29,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
+                order.CreatedBy = AuthoticateUserName();
                 if (this.Context.Orders.Where(c => c.Code == order.Code && c.ClientId == order.ClientId).Any())
                 {
                     return Conflict();
@@ -182,9 +183,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                     order.Date = DateTime.Now;
                     order.OrderplacedId = (int)OrderplacedEnum.Store;
-                    //var client = this.Context.Clients.Find(order.ClientId);
-                    //client.Total += (order.Cost - order.DeliveryCost);
-                    //this.Context.Update(client);    
+                    order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
                 }
                 this.Context.SaveChanges();
@@ -298,8 +297,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Orderplaced)
+                   .Include(c=>c.Agent)
                    .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
+                    
                    .ToList();
                 if (list != null && list.Count() > 0)
                 {
@@ -314,6 +315,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
                .Include(c => c.MoenyPlaced)
+               .Include(c => c.Agent)
                .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
                .ToList();
@@ -322,7 +324,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     orders.AddRange(list);
                 }
             }
-            return Ok(mapper.Map<OrderDto[]>(orders));
+            var o = mapper.Map<OrderDto[]>(orders);
+            return Ok(o);
         }
         [HttpGet("orderPlace")]
         public IActionResult GetOrderPalce()
