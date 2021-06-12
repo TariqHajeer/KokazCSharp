@@ -17,5 +17,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string RecipientPhones { set; get; }
         public decimal DeliveryCost { set; get; }
         public string Note { get; set; }
+        public DateTime Date { get; set; }
     }
 }

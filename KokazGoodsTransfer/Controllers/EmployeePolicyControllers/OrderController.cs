@@ -29,6 +29,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
+
                 order.CreatedBy = AuthoticateUserName();
                 if (this.Context.Orders.Where(c => c.Code == order.Code && c.ClientId == order.ClientId).Any())
                 {
@@ -108,6 +109,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public IActionResult Edit([FromBody] UpdateOrder updateOrder)
         {
+
             try
             {
 
@@ -181,7 +183,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.IsClientDiliverdMoney = false;
                     order.OrderStateId = (int)OrderStateEnum.Processing;
                     order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
-                    order.Date = DateTime.Now;
+                    order.Date = item.Date;
                     order.OrderplacedId = (int)OrderplacedEnum.Store;
                     order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
@@ -425,7 +427,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Printeds.Add(newPrint);
                 this.Context.SaveChanges();
                 foreach (var item in orders)
-                {
+                {   
                     item.OrderplacedId = (int)OrderplacedEnum.Way;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
@@ -433,7 +435,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PrintId = newPrint.Id,
                         OrderId = item.Id
                     };
-
                     var AgentPrint = new AgnetPrint()
                     {
                         Code = item.Code,
