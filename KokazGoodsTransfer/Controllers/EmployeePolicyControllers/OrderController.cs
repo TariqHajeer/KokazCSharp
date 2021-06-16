@@ -638,6 +638,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
+                        item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
                     }
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
