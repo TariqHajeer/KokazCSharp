@@ -39,6 +39,9 @@ namespace KokazGoodsTransfer.Models
         public bool IsSync { get; set; }
         public int OrderStateId { get; set; }
         public bool IsDollar { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string SystemNote { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }

@@ -20,7 +20,6 @@ namespace KokazGoodsTransfer.Models
         public int? RegionId { get; set; }
         public string Address { get; set; }
         public string ClientNote { get; set; }
-        public string CreatedBy { get; set; }
         public int MoenyPlacedId { get; set; }
         public int OrderplacedId { get; set; }
         public DateTime? Date { get; set; }
@@ -33,6 +32,9 @@ namespace KokazGoodsTransfer.Models
         public int OrderStateId { get; set; }
         public string UpdatedBy { get; set; }
         public int OrderId { get; set; }
+        public bool? IsDollar { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string SystemNote { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }

@@ -57,7 +57,7 @@ namespace KokazGoodsTransfer.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "Latin1_General_CI_AS");
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<AgentCountr>(entity =>
             {
@@ -295,6 +295,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Seen).HasColumnName("seen");
 
+                entity.Property(e => e.UpdatedDate).HasColumnType("date");
+
                 entity.HasOne(d => d.Agent)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.AgentId)
@@ -381,7 +383,7 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Seen).HasColumnName("seen");
 
-                entity.Property(e => e.UpdatedBy).IsRequired();
+                entity.Property(e => e.UpdatedDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Agent)
                     .WithMany(p => p.OrderLogs)
@@ -409,7 +411,6 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderLogs)
                     .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderLog_Order");
 
                 entity.HasOne(d => d.Orderplaced)

@@ -427,7 +427,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Printeds.Add(newPrint);
                 this.Context.SaveChanges();
                 foreach (var item in orders)
-                {   
+                {
+                    
+                    
                     item.OrderplacedId = (int)OrderplacedEnum.Way;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
@@ -447,7 +449,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(AgentPrint);
-
                 }
                 this.Context.SaveChanges();
                 transaction.Commit();
@@ -472,8 +473,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             foreach (var item in orderStates)
             {
                 var order = this.Context.Orders.Find(item.Id);
+                OrderLog log = order;
+                this.Context.Add(log);
                 order.OrderplacedId = item.OrderplacedId;
                 order.MoenyPlacedId = item.MoenyPlacedId;
+                order.SystemNote = "UpdateOrdersStatusFromAgent";
                 if (order.IsClientDiliverdMoney)
                 {
                     switch (order.OrderplacedId)
@@ -535,6 +539,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         case (int)OrderplacedEnum.Delivered:
                             {
                                 order.OrderStateId = (int)OrderStateEnum.Finished;
+                                
                                 if (order.Cost != item.Cost)
                                 {
                                     if (order.OldCost == null)
@@ -947,6 +952,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult MakeOrderCompletelyReturned([FromBody] int id)
         {
             var order = this.Context.Orders.Find(id);
+            OrderLog log = order;
+            this.Context.Add(log);
             if (order.OrderplacedId != (int)OrderplacedEnum.Store)
             {
                 return Conflict();
@@ -957,7 +964,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.Cost = 0;
             order.DeliveryCost = 0;
             order.AgentCost = 0;
+            order.UpdatedDate = DateTime.Now;
+            order.UpdatedBy = AuthoticateUserName();
+            order.SystemNote = "MakeStoreOrderCompletelyReturned";
             this.Context.Update(order);
+            OrderLog orderLog = new OrderLog();
             this.Context.SaveChanges();
             return Ok(mapper.Map<OrderDto>(order));
         }
