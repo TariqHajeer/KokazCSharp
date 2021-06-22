@@ -189,5 +189,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderResponseClientDto[]>(orders));
         }
+            
     }
 }

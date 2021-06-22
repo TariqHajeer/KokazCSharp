@@ -33,7 +33,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotlaOrder = this.Context.Orders.Count(),
                 TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
                 TotalOrderCountInProcess = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Count(),
-                TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c => c.Cost - c.DeliveryCost),
+                //TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c => c.Cost - c.DeliveryCost),
+                TotalMoneyInComapny = (this.Context.Incomes.Sum(c => c.Earining) - this.Context.OutComes.Sum(c => c.Amount) + this.Context.Orders.Sum(c => c.Cost))
+
 
             };
             return Ok(mainStatics);
@@ -65,7 +67,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             AggregateDto aggregateDto = new AggregateDto()
             {
                 ShipmentTotal = ShipmentTotal.Sum(c => c.DeliveryCost - c.AgentCost),
-                TotalIncome = TotalIncome.Sum(c => c.Amount),
+                TotalIncome = TotalIncome.Sum(c => c.Earining),
                 TotalOutCome = TotalOutCome.Sum(c => c.Amount)
             };
             return Ok(aggregateDto);

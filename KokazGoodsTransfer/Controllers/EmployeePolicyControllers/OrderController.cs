@@ -112,9 +112,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             try
             {
-
                 var order = this.Context.Orders.Find(updateOrder.Id);
-
+                OrderLog log = order;
+                this.Context.Add(log);
                 if (order.Code != updateOrder.Code)
                 {
                     if (this.Context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
@@ -735,6 +735,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
+                        item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
                     }
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
@@ -893,10 +894,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             return Ok(mapper.Map<PrintOrdersDto>(printed));
         }
+        /// <summary>
+        /// طلبات في ذمة المندوب
+        /// </summary>
+        /// <param name="agnetId"></param>
+        /// <returns></returns>
         [HttpGet("OrderVicdanAgent/{agnetId}")]
         public IActionResult OrderVicdanAgent(int agnetId)
         {
-            var orders = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == true && c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
+            var orders = this.Context.Orders.Where(c =>  c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
                 .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)

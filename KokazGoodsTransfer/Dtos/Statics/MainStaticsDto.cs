@@ -15,6 +15,7 @@ namespace KokazGoodsTransfer.Dtos.Statics
         public int TotalOrderOutStore { get; set; }
         public int TotalOrderDiliverd { get; set; }
         public int TotalOrderCountInProcess { get; set; }
-        public decimal TotalOrderCountInProcessAmount { get; set; }
+        //public decimal TotalOrderCountInProcessAmount { get; set; }
+        public decimal TotalMoneyInComapny { get; set; }
     }
 }
