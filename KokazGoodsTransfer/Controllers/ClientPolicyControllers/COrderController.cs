@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -177,17 +178,58 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return false;
         }
         [HttpGet]
-        public IActionResult Get()
+        
+        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]COrderFilter orderFilter)
         {
-            var orders = this.Context.Orders
+            var orderIQ = this.Context.Orders
+                .Where(c => c.ClientId == AuthoticateUserId());
+            if (orderFilter.CountryId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            
+            if (orderFilter.RegionId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.MonePlacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+            }
+            if (orderFilter.OrderplacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.IsClientDiliverdMoney != null)
+            {
+                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
+            }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+            }
+            var total = orderIQ.Count();
+            var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
-                .Include(c => c.MoenyPlaced)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
-                .Where(c => c.ClientId == AuthoticateUserId())
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
                 .ToList();
-            return Ok(mapper.Map<OrderResponseClientDto[]>(orders));
+            return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
             
     }
