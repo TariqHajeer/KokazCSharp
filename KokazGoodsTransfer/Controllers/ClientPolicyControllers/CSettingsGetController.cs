@@ -40,6 +40,16 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var ordertypes = this.Context.OrderTypes.ToList();
             return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
         }
+        [HttpGet("orderPlace")]
+        public IActionResult GetOrderPalce()
+        {
+            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+        }
+        [HttpGet("MoenyPlaced")]
+        public IActionResult GetMoenyPlaced()
+        {
+            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.MoenyPlaceds.ToList()));
+        }
 
     }
 }
