@@ -17,6 +17,7 @@ namespace KokazGoodsTransfer.Controllers
         public HomeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        [HttpGet("Country")]
         public IActionResult GetCountry()
         {
             var countries = Context.Countries
