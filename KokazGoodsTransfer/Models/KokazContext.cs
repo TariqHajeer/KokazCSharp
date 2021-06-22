@@ -96,6 +96,8 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Region).HasMaxLength(50);
+
                 entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
 
                 entity.HasOne(d => d.Print)
@@ -162,6 +164,8 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Country)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.DeliveCost).HasColumnType("decimal(18, 2)");
 

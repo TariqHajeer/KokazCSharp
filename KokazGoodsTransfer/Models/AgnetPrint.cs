@@ -15,6 +15,7 @@ namespace KokazGoodsTransfer.Models
         public string Phone { get; set; }
         public string ClientName { get; set; }
         public string Note { get; set; }
+        public string Region { get; set; }
 
         public virtual Printed Print { get; set; }
     }

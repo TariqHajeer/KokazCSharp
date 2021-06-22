@@ -299,10 +299,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Orderplaced)
-                   .Include(c=>c.Agent)
+                   .Include(c => c.Agent)
                    .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                    
+
                    .ToList();
                 if (list != null && list.Count() > 0)
                 {
@@ -354,9 +354,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Code = c,
                 Avilabe = true
             }));
-            codeStatuses.AddRange(nonAvilableCode.Select(c=>new CodeStatus()
+            codeStatuses.AddRange(nonAvilableCode.Select(c => new CodeStatus()
             {
-                Avilabe =false,
+                Avilabe = false,
                 Code = c
             }));
 
@@ -428,8 +428,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 foreach (var item in orders)
                 {
-                    
-                    
+
+
                     item.OrderplacedId = (int)OrderplacedEnum.Way;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
@@ -446,6 +446,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Country = item.Country.Name,
                         PrintId = newPrint.Id,
                         Phone = item.RecipientPhones,
+                        Region = item.Region?.Name
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(AgentPrint);
@@ -539,7 +540,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         case (int)OrderplacedEnum.Delivered:
                             {
                                 order.OrderStateId = (int)OrderStateEnum.Finished;
-                                
+
                                 if (order.Cost != item.Cost)
                                 {
                                     if (order.OldCost == null)
@@ -592,13 +593,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient(int[] ids)
+        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId dateWithId)
         {
             var orders = this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Country)
-                .Where(c => ids.Contains(c.Id));
+                .Where(c => dateWithId.Ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -610,7 +611,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = DateTime.Now,
+                Date = dateWithId.Date,
                 Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
@@ -655,8 +656,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PrintId = newPrint.Id,
                         Phone = item.RecipientPhones,
                         DeliveCost = item.DeliveryCost,
-
-
+                        Date = item.Date
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
@@ -882,7 +882,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .FirstOrDefault();
             if (printed == null)
                 return Conflict();
-            return Ok(mapper.Map<PrintOrdersDto>(printed));
+            var x = mapper.Map<PrintOrdersDto>(printed);
+            return Ok(x);
         }
         [HttpGet("GetOrderByClientPrintNumber")]
         public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
@@ -892,7 +893,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .FirstOrDefault();
             if (printed == null)
                 return Conflict();
-            return Ok(mapper.Map<PrintOrdersDto>(printed));
+            var x = mapper.Map<PrintOrdersDto>(printed);
+            return Ok(x);
         }
         /// <summary>
         /// طلبات في ذمة المندوب
@@ -902,7 +904,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderVicdanAgent/{agnetId}")]
         public IActionResult OrderVicdanAgent(int agnetId)
         {
-            var orders = this.Context.Orders.Where(c =>  c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
+            var orders = this.Context.Orders.Where(c => c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
                 .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)
@@ -979,7 +981,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(mapper.Map<OrderDto>(order));
         }
-        
+
 
     }
-}   
+}

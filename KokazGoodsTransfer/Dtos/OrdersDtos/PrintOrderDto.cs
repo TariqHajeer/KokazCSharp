@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
+    
     public class PrintOrdersDto
     {
         public int Id { get; set; }
@@ -28,6 +29,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public decimal DeliveCost { get; set; }
         public string ClientName { get; set; }
         public string Note { get; set; }
+        public string Region { get; set; }
+        public DateTime? Date { get; set; }
 
     }
     //public class AgentPrintDto : PrintDto
