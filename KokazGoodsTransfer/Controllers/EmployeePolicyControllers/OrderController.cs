@@ -905,12 +905,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderVicdanAgent/{agnetId}")]
         public IActionResult OrderVicdanAgent(int agnetId)
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId >= (int)OrderplacedEnum.Way && c.OrderplacedId < (int)OrderplacedEnum.Delivered && c.AgentId == agnetId)
+            var orders = this.Context.Orders.
+                Where(c => c.AgentId == agnetId)
+                .Where(c => (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
                 .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)
                  .Include(c => c.Orderplaced)
-                 .Include(c => c.MoenyPlaced).ToList();
+                 .Include(c => c.MoenyPlaced);
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("OrderInCompany/{clientId}/{code}")]
