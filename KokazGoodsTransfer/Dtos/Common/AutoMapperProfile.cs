@@ -51,10 +51,10 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
                 }))
                 .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)))
-                .ForMember(c=>c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
-                {
-                    return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
-                }));
+                .ForMember(c => c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
+                  {
+                      return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
+                  }));
 
 
             CreateMap<CreateClientDto, Client>()
@@ -196,7 +196,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                          x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
                          return x;
                      }));
-            CreateMap<AgnetPrint, PrintDto>();
+            CreateMap<AgnetPrint, PrintDto>();  
             CreateMap<ClientPrint, PrintDto>();
 
             CreateMap<Receipt, ReceiptDto>()

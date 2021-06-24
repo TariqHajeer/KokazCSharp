@@ -432,6 +432,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                     item.OrderplacedId = (int)OrderplacedEnum.Way;
                     this.Context.Update(item);
+                    this.Context.Entry(item).Reference(c => c.Region).Load();
                     var orderPrint = new OrderPrint()
                     {
                         PrintId = newPrint.Id,
