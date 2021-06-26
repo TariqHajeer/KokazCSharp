@@ -211,6 +211,83 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpGet("WithoutPaging")]
+        public IActionResult Get([FromQuery]OrderFilter orderFilter)
+        {
+            try
+            {
+                var orderIQ = this.Context.Orders
+                .AsQueryable();
+                if (orderFilter.CountryId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
+                }
+                if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
+                }
+                if (orderFilter.ClientId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
+                }
+                if (orderFilter.RegionId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
+                }
+                if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+                }
+                if (orderFilter.MonePlacedId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+                }
+                if (orderFilter.OrderplacedId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+                }
+                if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+                }
+                if (orderFilter.AgentId != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
+                }
+                if (orderFilter.IsClientDiliverdMoney != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
+                }
+                if (orderFilter.ClientPrintNumber != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+                }
+                if (orderFilter.AgentPrintNumber != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+                }
+                var total = orderIQ.Count();
+                var orders = orderIQ
+                    .Include(c => c.Client)
+                        .ThenInclude(c => c.ClientPhones)
+                    .Include(c => c.Agent)
+                        .ThenInclude(c => c.UserPhones)
+                    .Include(c => c.Region)
+                    .Include(c => c.Country)
+                    .Include(c => c.Orderplaced)
+                    .Include(c => c.MoenyPlaced)
+                    .Include(c => c.OrderItems)
+                        .ThenInclude(c => c.OrderTpye)
+                    .Include(c => c.OrderPrints)
+                        .ThenInclude(c => c.Print)
+                    .ToList();
+                return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]OrderFilter orderFilter)
         {
@@ -657,13 +734,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PrintId = newPrint.Id,
                         Phone = item.RecipientPhones,
                         DeliveCost = item.DeliveryCost,
-                        Date = item.Date
+                        Date = item.Date,
+                        LastTotal = item.OldCost,
+                        Note = item.Note
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
                 }
                 this.Context.SaveChanges();
-
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
@@ -924,6 +1002,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .ThenInclude(c => c.Regions)
                 .FirstOrDefault();
+
+            if (order == null)
+            {
+                return Conflict(new { Message = "الشحنة غير موجودة" });
+            }
+
             if (order.IsClientDiliverdMoney)
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });

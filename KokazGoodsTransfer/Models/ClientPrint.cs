@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         public int MoneyPlacedId { get; set; }
         public int OrderPlacedId { get; set; }
         public DateTime? Date { get; set; }
+        public string Note { get; set; }
 
         public virtual Printed Print { get; set; }
     }
