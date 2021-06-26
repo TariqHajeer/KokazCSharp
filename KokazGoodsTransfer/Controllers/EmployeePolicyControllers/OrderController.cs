@@ -674,10 +674,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult DeleiverMoneyForClient([FromBody] DateWithId dateWithId)
         {
             var orders = this.Context.Orders
-                .Include(c => c.Client)
-                .ThenInclude(c => c.ClientPhones)
-                .Include(c => c.Country)
-                .Where(c => dateWithId.Ids.Contains(c.Id));
+            .Include(c => c.Client)
+            .ThenInclude(c => c.ClientPhones)
+            .Include(c => c.Country)
+            .Where(c => dateWithId.Ids.Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -1008,7 +1008,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(new { Message = "الشحنة غير موجودة" });
             }
 
-            if (order.IsClientDiliverdMoney)
+            if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
             }

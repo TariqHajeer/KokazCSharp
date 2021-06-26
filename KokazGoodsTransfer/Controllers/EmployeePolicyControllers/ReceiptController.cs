@@ -20,6 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public ReceiptController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]AccountFilterDto accountFilterDto)
         {
@@ -41,6 +42,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Client)
                 .ToList();
             return Ok(new { data = mapper.Map<ReceiptDto[]>(replist), total = totalRreq });
+        }
+        [HttpGet("UnPaidRecipt/{clientId}")]
+        public IActionResult UnPaidRecipt(int clientId)
+        {
+            var repiq = this.Context.Receipts.Where(c => c.ClientId == clientId && c.PrintId == null).ToList();
+            return Ok(mapper.Map<ReceiptDto[]>(repiq));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
