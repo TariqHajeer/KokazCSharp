@@ -34,13 +34,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
                 TotalOrderCountInProcess = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Count(),
                 //TotalOrderCountInProcessAmount = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Sum(c => c.Cost - c.DeliveryCost),
-                TotalMoneyInComapny = (this.Context.Incomes.Sum(c => c.Earining) - this.Context.OutComes.Sum(c => c.Amount) + this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished).Sum(c => c.Cost - c.AgentCost))
-
+                //TotalMoneyInComapny = (this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished).Sum(c => c.Cost - c.AgentCost))
+                TotalMoneyInComapny = 0
 
             };
-            mainStatics.TotalMoneyInComapny += (this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).Sum(c => c.Cost - c.DeliveryCost)) * -1;
-            mainStatics.TotalMoneyInComapny += (this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed).Sum(c => c.Cost - c.DeliveryCost));
-            mainStatics.TotalMoneyInComapny += this.Context.Receipts.Where(c => c.PrintId == null).Sum(c => c.Amount);
+            var totalEariningIncome = this.Context.Incomes.Sum(c => c.Earining);
+            var totalOutCome = this.Context.OutComes.Sum(c => c.Amount);
+
+            var clientOrder = this.Context.Orders;
+            var orderInNigative = (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).Sum(c => c.Cost - c.DeliveryCost)) * -1;
+            var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed).Sum(c => c.Cost - c.DeliveryCost));
+
+            var totalAccount = this.Context.Receipts.Where(c=>c.PrintId == null).Sum(c => c.Amount);
+
+            var sumClientMone = totalAccount + orderInNigative + orderInPositve;
+
+            var totalOrderEarinig = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished).Sum(c => c.DeliveryCost - c.AgentCost);
+
+
+            mainStatics.TotalMoneyInComapny += totalEariningIncome;
+            mainStatics.TotalMoneyInComapny -= totalOutCome;
+            mainStatics.TotalMoneyInComapny += sumClientMone;
+            mainStatics.TotalMoneyInComapny += totalOrderEarinig;
+            
 
             return Ok(mainStatics);
         }
