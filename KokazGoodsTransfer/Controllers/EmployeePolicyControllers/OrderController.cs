@@ -556,6 +556,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.Add(log);
                 order.OrderplacedId = item.OrderplacedId;
                 order.MoenyPlacedId = item.MoenyPlacedId;
+                order.Note = item.Note;
+                order.DeliveryCost = item.DeliveryCost;
+                order.AgentCost = item.AgentCost;
                 order.SystemNote = "UpdateOrdersStatusFromAgent";
                 if (order.IsClientDiliverdMoney)
                 {

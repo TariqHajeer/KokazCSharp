@@ -11,6 +11,9 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public decimal Cost { get; set; }
         public int MoenyPlacedId { get; set; }
         public int OrderplacedId { get; set; }
+        public string Note { get; set; }
+        public decimal DeliveryCost { get; set; }
+        public decimal AgentCost { get; set; }
 
     }
 }
