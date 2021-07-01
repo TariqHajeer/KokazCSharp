@@ -493,7 +493,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = dateWithId.Date ,
+                Date = dateWithId.Date,
                 Type = PrintType.Agent,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = agent.Name,
@@ -658,16 +658,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpGet("GetClientprint")]
-        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto)
+        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number)
         {
-            var ordersPint = this.Context.Printeds.Where(c => c.Type == PrintType.Client).OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
+            var orderPrintIq = this.Context.Printeds.Where(c => c.Type == PrintType.Client);
+            if (number != null)
+            {
+                orderPrintIq = orderPrintIq.Where(c => c.PrintNmber == number);
+            }
+            var total = orderPrintIq.Count();
+            var orders = orderPrintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(new { data = mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         [HttpGet("GetAgentPrint")]
-        public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto)
+        public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number)
         {
-            var ordersPint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent).OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
+            var ordersPintIq = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
+            if (number != null)
+            {
+                ordersPintIq = ordersPintIq.Where(c => c.PrintNmber == number);
+            }
+            var total = ordersPintIq.Count();
+            var orders = ordersPintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            return Ok(new { data = mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         /// <summary>
         /// تسديد العميل
