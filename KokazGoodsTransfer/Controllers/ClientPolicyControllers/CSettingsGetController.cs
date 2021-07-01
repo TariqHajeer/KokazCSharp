@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public CSettingsGetController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpGet("GetCountries")]
+        [HttpGet("Countries")]
         public IActionResult GetAll()
         {
             var countries = Context.Countries
@@ -29,7 +29,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
-        [HttpGet("GetRegions")]
+        [HttpGet("Regions")]
         public IActionResult GetRegions()
         {
             return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
@@ -40,7 +40,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var ordertypes = this.Context.OrderTypes.ToList();
             return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
         }
-        [HttpGet("orderPlace")]
+        [HttpGet("OrderPlaced")]
         public IActionResult GetOrderPalce()
         {
             return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
