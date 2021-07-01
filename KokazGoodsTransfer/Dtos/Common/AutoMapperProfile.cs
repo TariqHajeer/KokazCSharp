@@ -195,9 +195,17 @@ namespace KokazGoodsTransfer.Dtos.Common
                          x.AddRange(context.Mapper.Map<PrintDto[]>(obj.AgnetPrints));
                          x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
                          return x;
-                     }));
-            CreateMap<AgnetPrint, PrintDto>();  
-            CreateMap<ClientPrint, PrintDto>();
+                     }))
+                .ForMember(c => c.Receipts, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<ReceiptDto>(obj.Receipts);
+                }));
+            CreateMap<AgnetPrint, PrintDto>();
+            CreateMap<ClientPrint, PrintDto>()
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.OrderPlaced);
+                }));
 
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
