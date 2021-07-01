@@ -669,7 +669,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<PrintOrdersDto[]>(ordersPint));
         }
         /// <summary>
-        /// تسليم العميل
+        /// تسديد العميل
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
@@ -772,12 +772,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DeleiverMoneyForClientWithStatus")]
         public IActionResult DeleiverMoneyForClientWithStatus(List<IdCost> idCosts)
         {
-            var ids = idCosts.Select(c => c.Id);
+            var ids = idCosts.Select(c => c.Id).ToList();
             var orders = this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Country)
-                .Where(c => ids.Contains(c.Id));
+                .Where(c => ids.Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -803,12 +803,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 //client.Total = 0;
                 //this.Context.Update(client);
-                var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
-                recepits.ForEach(c =>
-                {
-                    c.PrintId = newPrint.Id;
-                    this.Context.Update(c);
-                });
+                //var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                //recepits.ForEach(c =>
+                //{
+                //    c.PrintId = newPrint.Id;
+                //    this.Context.Update(c);
+                //});
                 this.Context.SaveChanges();
                 foreach (var item in orders)
                 {
@@ -981,6 +981,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
                 .Include(c => c.ClientPrints)
+                    .ThenInclude(c=>c.MoneyPlaced)
+                .Include(c => c.ClientPrints)
+                    .ThenInclude(c => c.OrderPlaced)
                 .FirstOrDefault();
             if (printed == null)
                 return Conflict();

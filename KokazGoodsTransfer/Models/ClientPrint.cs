@@ -15,11 +15,13 @@ namespace KokazGoodsTransfer.Models
         public decimal DeliveCost { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
-        public int MoneyPlacedId { get; set; }
-        public int OrderPlacedId { get; set; }
+        public int? MoneyPlacedId { get; set; }
+        public int? OrderPlacedId { get; set; }
         public DateTime? Date { get; set; }
         public string Note { get; set; }
 
+        public virtual MoenyPlaced MoneyPlaced { get; set; }
+        public virtual OrderPlaced OrderPlaced { get; set; }
         public virtual Printed Print { get; set; }
     }
 }

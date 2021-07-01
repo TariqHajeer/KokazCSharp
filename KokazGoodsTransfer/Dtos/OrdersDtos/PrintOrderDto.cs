@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
         public List<PrintDto> Orders { get; set; }
-
+        
     }
     public  class PrintDto
     {
@@ -31,6 +31,9 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Note { get; set; }
         public string Region { get; set; }
         public DateTime? Date { get; set; }
+        public int? MoneyPlacedId { get; set; }
+        public int? OrderPlacedId { get; set; }
+
 
     }
     //public class AgentPrintDto : PrintDto
