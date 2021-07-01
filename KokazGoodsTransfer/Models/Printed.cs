@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.Models
         public int Id { get; set; }
         public int PrintNmber { get; set; }
         public string PrinterName { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
         public string Type { get; set; }

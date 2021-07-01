@@ -365,6 +365,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            return Ok();
+        }
         [HttpGet("OrdersDontFinished")]
         public IActionResult Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
         {

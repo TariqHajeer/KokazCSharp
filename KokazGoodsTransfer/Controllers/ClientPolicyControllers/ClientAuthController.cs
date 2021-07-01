@@ -37,10 +37,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 errors.Add("خطأ بأسم المستخدم و كلمة المرور");
                 return Conflict(new { messages = errors });
             }
-            //if (!MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
-            //{
-            //    return Conflict();
-            //}
             var climes = new List<Claim>();
             climes.Add(new Claim("UserID", client.Id.ToString()));
             climes.Add(new Claim("Type", "Client"));
