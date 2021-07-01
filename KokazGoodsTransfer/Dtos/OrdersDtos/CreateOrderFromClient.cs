@@ -16,6 +16,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? RegionId { get; set; }
         public string ClientNote { get; set; }
         public decimal Cost { get; set; }
+        public DateTime Date { get; set; }
         public List<OrderItemDto> OrderItem { get; set; }
         public string[] RecipientPhones { set; get; } = new string[0];
     }
