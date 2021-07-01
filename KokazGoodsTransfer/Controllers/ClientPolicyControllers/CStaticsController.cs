@@ -21,12 +21,20 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
-            var  orders= this.Context.Orders.Where(c => c.ClientId == AuthoticateUserId()); 
-
-            StaticsDto staticsDto = new StaticsDto();
-            staticsDto.TotalOrder = orders.Count();
-            staticsDto.OrderWithClient = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Client).Count();
-
+            var orders = this.Context.Orders.Where(c => c.ClientId == AuthoticateUserId());
+            var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.OrderplacedId != (int)OrderplacedEnum.Delayed);
+            StaticsDto staticsDto = new StaticsDto
+            {
+                TotalOrder = orders.Count(),
+                OrderWithClient = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Client).Count(),
+                OrderInWay = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
+                OrderInCompany = orderInCompany.Count(),
+                DeliveredOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered).Count(),
+                UnacceptableOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Unacceptable).Count(),
+                CompletelyReturnedOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned).Count(),
+                PartialReturnedOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.PartialReturned).Count(),
+                DelayedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed).Count(),
+            };
             return Ok(staticsDto);
         }
     }
