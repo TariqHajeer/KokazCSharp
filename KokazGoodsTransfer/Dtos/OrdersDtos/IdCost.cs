@@ -10,4 +10,9 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int Id { get; set; }
         public decimal Cost { get; set; }
     }
+    public class DateIdCost
+    {
+        public DateTime Date { get; set; }
+        public List<IdCost> IdCosts { get; set; }
+    }
 }

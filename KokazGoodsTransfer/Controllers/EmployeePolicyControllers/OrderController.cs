@@ -472,8 +472,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("MakeOrderInWay")]
-        public IActionResult MakeOrderInWay(int[] ids)
+        public IActionResult MakeOrderInWay([FromBody] DateWithId dateWithId)
         {
+            var ids = dateWithId.Ids;
             var orders = this.Context.Orders
                 .Include(c => c.Agent)
                 .ThenInclude(c => c.UserPhones)
@@ -492,7 +493,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = DateTime.Now,
+                Date = dateWithId.Date ,
                 Type = PrintType.Agent,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = agent.Name,
@@ -770,8 +771,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(List<IdCost> idCosts)
+        public IActionResult DeleiverMoneyForClientWithStatus(DateIdCost dateIdCost)
         {
+            var idCosts = dateIdCost.IdCosts;
             var ids = idCosts.Select(c => c.Id).ToList();
             var orders = this.Context.Orders
                 .Include(c => c.Client)
@@ -789,7 +791,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = DateTime.Now,
+                Date = dateIdCost.Date,
                 Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
