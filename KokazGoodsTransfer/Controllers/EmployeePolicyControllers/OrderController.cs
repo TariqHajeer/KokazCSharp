@@ -343,6 +343,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
                 }
+                if (orderFilter.CreatedDate != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.Date == orderFilter.CreatedDate);
+                }
                 var total = orderIQ.Count();
                 var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .Include(c => c.Client)
@@ -1101,7 +1105,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(mapper.Map<OrderDto>(order));
         }
-
 
     }
 }

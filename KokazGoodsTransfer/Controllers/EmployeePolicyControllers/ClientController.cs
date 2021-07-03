@@ -64,9 +64,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
-                .Include(c => c.Orders)
-                .ThenInclude(c=>c.OrderPrints)
-                .Include(c=>c.Receipts)
+                //.Include(c => c.Orders)
+                //.ThenInclude(c=>c.OrderPrints)
+                //.Include(c=>c.Receipts)
                 .ToList();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
