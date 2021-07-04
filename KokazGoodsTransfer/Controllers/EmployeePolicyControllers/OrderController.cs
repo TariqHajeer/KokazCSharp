@@ -297,7 +297,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var orderIQ = this.Context.Orders
+                 var orderIQ = this.Context.Orders
                 .AsQueryable();
                 if (orderFilter.CountryId != null)
                 {

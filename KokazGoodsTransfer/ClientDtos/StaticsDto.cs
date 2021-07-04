@@ -7,14 +7,35 @@ namespace KokazGoodsTransfer.ClientDtos
 {
     public class StaticsDto
     {
+        /// <summary>
+        /// إجمالي الطرود
+        /// </summary>
         public int TotalOrder { get; set; }
-        public int OrderWithClient { get; set; }
-        public int OrderInWay { get; set; }
-        public int OrderInCompany { get; set; }
-        public int DeliveredOrder { get; set; }
-        public int CompletelyReturnedOrder { get; set; }
-        public int PartialReturnedOrder { get; set; }
-        public int UnacceptableOrder { get; set; }
-        public int DelayedOrder { get; set; }
+        /// <summary>
+        /// طلبات مبالغها داخل الشركة
+        /// </summary>
+        public int OrderMoneyInCompany { get; set; }
+        /// <summary>
+        /// طرود تم تسليمها للزبون
+        /// </summary>
+        public int OrderDeliverdToClient { get; set; }
+
+        /// <summary>
+        /// طرود تم إستلام مبالغها
+        /// </summary>
+        public int OrderMoneyDelived { get; set; }
+        /// <summary>
+        /// طرود في الطريق
+        /// </summary>
+        public int OrderInWat { get; set; }
+        /// <summary>
+        /// طرود في المخزن
+        /// </summary>
+        public int OrderInStore { get; set; }
+        /// <summary>
+        /// في إنتظار استلامها من الشركة 
+        /// </summary>
+        public int OrderWait { get; set; }
+        
     }
 }
