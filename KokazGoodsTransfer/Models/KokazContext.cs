@@ -180,12 +180,12 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPri__Money__2739D489");
+                    .HasConstraintName("FK__ClientPri__Money__4E88ABD4");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPri__Order__282DF8C2");
+                    .HasConstraintName("FK__ClientPri__Order__4F7CD00D");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.ClientPrints)
@@ -302,6 +302,8 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.DiliveryDate).HasColumnType("date");
 
                 entity.Property(e => e.OldCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.OldDeliveryCost).HasColumnType("money");
 
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 

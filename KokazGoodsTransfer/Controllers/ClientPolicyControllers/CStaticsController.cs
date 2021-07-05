@@ -30,8 +30,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 OrderDeliverdToClient = orders.Where(c => c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true).Count(),
                 OrderInWat = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.Way).Count(),
                 OrderInStore = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
-
-
+                OrderReurnedInCompany = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.CompletelyReturned|| c.OrderplacedId == (int)OrderplacedEnum.Unacceptable&&c.MoenyPlacedId==(int)MoneyPalcedEnum.InsideCompany).Count(),
+                DelayedOrder = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.Delayed).Count()
             };
             //var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.OrderplacedId != (int)OrderplacedEnum.Delayed&&c.OrderplacedId!=(int)OrderplacedEnum.CompletelyReturned);
             //StaticsDto staticsDto = new StaticsDto

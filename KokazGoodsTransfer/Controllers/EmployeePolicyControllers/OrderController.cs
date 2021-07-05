@@ -651,6 +651,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                     order.OldCost = order.Cost;
                                 }
                                 order.Cost = 0;
+                                if (order.OldDeliveryCost == null)
+                                    order.OldDeliveryCost = order.DeliveryCost;
                                 order.DeliveryCost = 0;
                                 order.AgentCost = 0;
                             }
@@ -1099,6 +1101,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
             order.OldCost = order.Cost;
             order.Cost = 0;
+            if (order.OldDeliveryCost == null)
+                order.OldDeliveryCost = order.DeliveryCost;
             order.DeliveryCost = 0;
             order.AgentCost = 0;
             order.UpdatedDate = DateTime.Now;
