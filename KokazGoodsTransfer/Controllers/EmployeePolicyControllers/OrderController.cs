@@ -775,8 +775,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Date = item.Date,
                         LastTotal = item.OldCost,
                         Note = item.Note,
-                        MoneyPlacedId = item.MoenyPlacedId,
-                        OrderPlacedId = item.OrderplacedId,
+                        //MoneyPlacedId = item.MoenyPlacedId,
+                        //OrderPlacedId = item.OrderplacedId,
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
