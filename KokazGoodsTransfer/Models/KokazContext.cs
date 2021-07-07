@@ -45,6 +45,8 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<UserPhone> UserPhones { get; set; }
+        public virtual DbSet<VOrderClientPrnitRepeate> VOrderClientPrnitRepeates { get; set; }
+        public virtual DbSet<VOrderclientPrintReportWithOrderDeital> VOrderclientPrintReportWithOrderDeitals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -171,6 +173,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.LastTotal).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.PayForClient).HasColumnType("money");
+
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -180,12 +184,12 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPri__Money__4E88ABD4");
+                    .HasConstraintName("FK__ClientPri__Money__4F7CD00D");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPri__Order__4F7CD00D");
+                    .HasConstraintName("FK__ClientPri__Order__5070F446");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.ClientPrints)
@@ -640,6 +644,40 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.UserPhones)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_UserPhone_Users");
+            });
+
+            modelBuilder.Entity<VOrderClientPrnitRepeate>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("v_OrderClientPrnitRepeate");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Ocount).HasColumnName("OCount");
+            });
+
+            modelBuilder.Entity<VOrderclientPrintReportWithOrderDeital>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("v_OrderclientPrintReportWithOrderDeitals");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Ocount).HasColumnName("OCount");
+
+                entity.Property(e => e.OldCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.OldDeliveryCost).HasColumnType("money");
             });
 
             OnModelCreatingPartial(modelBuilder);

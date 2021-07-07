@@ -5,9 +5,14 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.Common
 {
-    public class DateWithId
+    public class DateWithId<T>
     {
         public DateTime Date { get; set; }
-        public int[] Ids { get; set; }
+        public T[] Ids { get; set; }
+    }
+    public class IdWithCost
+    {
+        public int Id { get; set; }
+        public decimal Cost { get; set; }
     }
 }

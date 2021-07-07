@@ -297,8 +297,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                 var orderIQ = this.Context.Orders
-                .AsQueryable();
+                var orderIQ = this.Context.Orders
+               .AsQueryable();
                 if (orderFilter.CountryId != null)
                 {
                     orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
@@ -485,7 +485,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("MakeOrderInWay")]
-        public IActionResult MakeOrderInWay([FromBody] DateWithId dateWithId)
+        public IActionResult MakeOrderInWay([FromBody] DateWithId<int> dateWithId)
         {
             var ids = dateWithId.Ids;
             var orders = this.Context.Orders
@@ -596,7 +596,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 //order.DeliveryCost = 0;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
-
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                             }
                             break;
@@ -702,13 +701,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId dateWithId)
+        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId<IdWithCost> dateWithId)
         {
             var orders = this.Context.Orders
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
             .Include(c => c.Country)
-            .Where(c => dateWithId.Ids.Contains(c.Id));
+            .Where(c => dateWithId.Ids.Select(c=>c.Id).Contains(c.Id));
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -775,8 +774,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Date = item.Date,
                         LastTotal = item.OldCost,
                         Note = item.Note,
-                        //MoneyPlacedId = item.MoenyPlacedId,
-                        //OrderPlacedId = item.OrderplacedId,
+                        MoneyPlacedId = item.MoenyPlacedId,
+                        OrderPlacedId = item.OrderplacedId,
+                        PayForClient = dateWithId.Ids.First(c => c.Id == item.Id).Cost
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);

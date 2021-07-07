@@ -36,6 +36,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? Date { get; set; }
         public int? MoneyPlacedId { get; set; }
         public int? OrderPlacedId { get; set; }
+        public decimal PayForClient { get; set; }
         public NameAndIdDto Orderplaced { get; set; }
 
     }
