@@ -823,7 +823,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-
             };
             var transaction = this.Context.Database.BeginTransaction();
             try
@@ -874,7 +873,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         DeliveCost = item.DeliveryCost,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        LastTotal = item.OldCost
+                        LastTotal = item.OldCost,
+                        PayForClient = dateIdCost.IdCosts.Single(c => c.Id == item.Id).PayForClient
+
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
