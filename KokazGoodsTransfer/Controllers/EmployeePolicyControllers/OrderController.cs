@@ -392,7 +392,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .Include(c => c.Agent)
                    .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-
                    .ToList();
                 if (list != null && list.Count() > 0)
                 {
@@ -707,7 +706,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
             .Include(c => c.Country)
-            .Where(c => dateWithId.Ids.Select(c=>c.Id).Contains(c.Id));
+            .Where(c => dateWithId.Ids.Select(c=>c.Id).Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -797,7 +796,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        [HttpPut("DeleiverMoneyForClientWithStatus")]
+        [HttpPut("DeleiverMoneyForClientWithStatus")] 
         public IActionResult DeleiverMoneyForClientWithStatus(DateIdCost dateIdCost)
         {
             var idCosts = dateIdCost.IdCosts;
@@ -874,8 +873,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         LastTotal = item.OldCost,
-                        PayForClient = dateIdCost.IdCosts.Single(c => c.Id == item.Id).PayForClient
-
+                        PayForClient = dateIdCost.IdCosts.Single(c => c.Id == item.Id).PayForClient,
+                        Date = item.Date,
+                        Note = item.Note
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);

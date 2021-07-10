@@ -26,12 +26,18 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             StaticsDto staticsDto = new StaticsDto
             {
                 TotalOrder = orders.Count(),
-                OrderMoneyInCompany = ordersInsiedCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned).Count(),
-                OrderDeliverdToClient = orders.Where(c => c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true).Count(),
-                OrderInWat = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.Way).Count(),
+                //OrderMoneyInCompany = ordersInsiedCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned).Count(),
+                OrderMoneyInCompany = ordersInsiedCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash).Count(),
+                //OrderDeliverdToClient = orders.Where(c => c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true).Count(),
+                OrderDeliverdToClient = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent && (c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Delivered)).Count(),
+                OrderMoneyDelived = orders.Where(c => c.IsClientDiliverdMoney == true && (c.OrderplacedId == (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delivered)).Count(),
+                OrderInWat = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
                 OrderInStore = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
-                OrderReurnedInCompany = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.CompletelyReturned|| c.OrderplacedId == (int)OrderplacedEnum.Unacceptable&&c.MoenyPlacedId==(int)MoneyPalcedEnum.InsideCompany).Count(),
-                DelayedOrder = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.Delayed).Count()
+                OrderWithClient = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Client).Count(),
+                OrderComplitlyReutrndInCompany = ordersInsiedCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable).Count(),
+                OrderComplitlyReutrndDeliverd = orders.Where(c => (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned|| c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered).Count(),
+                DelayedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed).Count(),
+                OrderPartialReturned = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.PartialReturned).Count()
             };
             //var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.OrderplacedId != (int)OrderplacedEnum.Delayed&&c.OrderplacedId!=(int)OrderplacedEnum.CompletelyReturned);
             //StaticsDto staticsDto = new StaticsDto

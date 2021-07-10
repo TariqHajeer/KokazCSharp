@@ -40,16 +40,4 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public NameAndIdDto Orderplaced { get; set; }
 
     }
-    //public class AgentPrintDto : PrintDto
-    //{     
-        
-
-    //}   
-    //public class ClientprintDto: PrintDto
-    //{
-    //    public string LastTotal { get; set; }
-
-    //    public decimal DeliveCost { get; set; }
-
-    //}
 }

@@ -32,11 +32,16 @@ namespace KokazGoodsTransfer.ClientDtos
         /// طرود في المخزن
         /// </summary>
         public int OrderInStore { get; set; }
-        
+        /// <summary>
+        /// طرود في إنتظار استلامها من الشركة
+        /// </summary>
+        public int OrderWithClient { get; set; }
         /// <summary>
         /// طرود  مرتجعة داخل الشركة
         /// </summary>
-        public int OrderReurnedInCompany { get; set; }
+        public int OrderComplitlyReutrndInCompany{ get; set; }
+        public int OrderComplitlyReutrndDeliverd { get; set; }
         public int DelayedOrder { get; set; }
+        public int OrderPartialReturned { get; set; }
     }
 }
