@@ -461,7 +461,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
-                .Where(c => c.Seen == null)
+                .Where(c => c.IsSend == true&&c.OrderplacedId==(int)OrderplacedEnum.Client)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -469,7 +469,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Accept(int id)
         {
             var order = this.Context.Orders.Find(id);
-            order.Seen = true;
+            order.OrderplacedId = (int)OrderplacedEnum.Store;
             this.Context.Update(order);
             this.Context.SaveChanges();
             return Ok();
