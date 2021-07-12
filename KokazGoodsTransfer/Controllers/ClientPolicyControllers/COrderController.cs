@@ -114,6 +114,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 order.CreatedBy = AuthoticateUserName();
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                 order.OrderplacedId = (int)OrderplacedEnum.Client;
+                order.IsSend = false;
                 this.Context.Add(order);
                 this.Context.SaveChanges();
                 var orderItem = createOrderFromClient.OrderItem;
@@ -231,6 +232,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
-            
+        [HttpGet("NonSendOrder")]
+        public IActionResult NonSendOrder()
+        {
+            var orders= this.Context.Orders.Where(c => c.IsSend == false && c.ClientId == AuthoticateUserId()).ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+
+
     }
 }

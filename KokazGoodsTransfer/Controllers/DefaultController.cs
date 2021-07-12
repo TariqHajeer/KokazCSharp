@@ -22,46 +22,46 @@ namespace KokazGoodsTransfer.Controllers
         [Authorize]
         [HttpGet("Check")]
         public IActionResult ChekcLogin()
-        {
+        {       
             return Ok();
         }
 
-        [HttpGet]
-        public IActionResult Get()
-        {
+        //[HttpGet]
+        //public IActionResult Get()
+        //{
 
-            var clientPrints = this.Context.ClientPrints
-                .Include(c => c.Print)
-                    .ThenInclude(c => c.OrderPrints)
-                        .ThenInclude(c => c.Order)
-                 .Where(c => c.Print.PrintNmber == 654 || c.Print.PrintNmber == 655)
-                 .ToList();
-            clientPrints.ForEach(c =>
-            {
-                c.PayForClient = GetPayForClient(c);
-            });
-            return Ok("it's work");
-        }
-        public decimal GetPayForClient(ClientPrint clientPrint)
-        {
-            var order = clientPrint.Print.OrderPrints.Select(c => c.Order).Where(c => c.Code == clientPrint.Code).Single();
+        //    var clientPrints = this.Context.ClientPrints
+        //        .Include(c => c.Print)
+        //            .ThenInclude(c => c.OrderPrints)
+        //                .ThenInclude(c => c.Order)
+        //         .Where(c => c.Print.PrintNmber == 654 || c.Print.PrintNmber == 655)
+        //         .ToList();
+        //    clientPrints.ForEach(c =>
+        //    {
+        //        c.PayForClient = GetPayForClient(c);
+        //    });
+        //    return Ok("it's work");
+        //}         
+        //public decimal GetPayForClient(ClientPrint clientPrint)
+        //{
+        //    var order = clientPrint.Print.OrderPrints.Select(c => c.Order).Where(c => c.Code == clientPrint.Code).Single();
             
-            if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.Way)
-            {
-                var origlnalCost = order.OldCost == null ? order.Cost : order.OldCost;
-                var orignalDeliverCost = order.OldDeliveryCost == null ? order.DeliveryCost : order.OldDeliveryCost;
-                return (decimal)(origlnalCost - orignalDeliverCost);
-            }
-            if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.Delivered)
-            {
-                return order.Cost - order.DeliveryCost;
-            }
-            if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.CompletelyReturned)
-            {
+        //    if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.Way)
+        //    {
+        //        var origlnalCost = order.OldCost == null ? order.Cost : order.OldCost;
+        //        var orignalDeliverCost = order.OldDeliveryCost == null ? order.DeliveryCost : order.OldDeliveryCost;
+        //        return (decimal)(origlnalCost - orignalDeliverCost);
+        //    }
+        //    if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.Delivered)
+        //    {
+        //        return order.Cost - order.DeliveryCost;
+        //    }
+        //    if (clientPrint.OrderPlacedId == (int)OrderplacedEnum.CompletelyReturned)
+        //    {
 
-            }
-            return 0;
-        }
+        //    }
+        //    return 0;
+        //}
         [HttpGet("string")]
         public string Getstring()
         {

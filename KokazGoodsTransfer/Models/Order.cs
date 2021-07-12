@@ -43,6 +43,7 @@ namespace KokazGoodsTransfer.Models
         public DateTime? UpdatedDate { get; set; }
         public string SystemNote { get; set; }
         public decimal? OldDeliveryCost { get; set; }
+        public bool? IsSend { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
