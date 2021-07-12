@@ -180,7 +180,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return false;
         }
         [HttpGet]
-        
+
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]COrderFilter orderFilter)
         {
             var orderIQ = this.Context.Orders
@@ -193,7 +193,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
             }
-            
+
             if (orderFilter.RegionId != null)
             {
                 orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
@@ -236,14 +236,18 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("NonSendOrder")]
         public IActionResult NonSendOrder()
         {
-            var orders= this.Context.Orders.Where(c => c.IsSend == false && c.ClientId == AuthoticateUserId()).ToList();
+            var orders = this.Context.Orders
+                .Include(c => c.Country)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.Orderplaced)
+                .Where(c => c.IsSend == false && c.ClientId == AuthoticateUserId()).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpPost("Sned")]
-        public IActionResult Send([FromBody] int[]ids)
+        public IActionResult Send([FromBody] int[] ids)
         {
             var sendOrder = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
-            sendOrder.ForEach(c => c.IsSend =true);
+            sendOrder.ForEach(c => c.IsSend = true);
             this.Context.SaveChanges();
             return Ok();
         }
