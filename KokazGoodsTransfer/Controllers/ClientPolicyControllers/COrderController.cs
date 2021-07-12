@@ -71,37 +71,37 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 {
                     return Conflict(new { messages = validate });
                 }
-                int? regionId = null;
+                //int? regionId = null;
                 //if (CodeExist(createOrderFromClient.Code))
                 //{
                 //    return Conflict();
                 //}
-                if (createOrderFromClient.RegionId == null)
-                {
-                    if (createOrderFromClient.RegioName != "")
-                    {
-                        var similerRegion = this.Context.Regions.Where(c => c.CountryId == createOrderFromClient.CountryId && c.Name == createOrderFromClient.RegioName).FirstOrDefault();
-                        if (similerRegion != null)
-                        {
-                            regionId = similerRegion.Id;
-                        }
-                        else
-                        {
-                            var region = new Region()
-                            {
-                                Name = createOrderFromClient.RegioName,
-                                CountryId = createOrderFromClient.CountryId
-                            };
-                            this.Context.Add(region);
-                            this.Context.SaveChanges();
-                            regionId = region.Id;
-                        }
-                    }
-                }
-                else
-                {
-                    regionId = createOrderFromClient.RegionId;
-                }
+                //if (createOrderFromClient.RegionId == null)
+                //{
+                //    if (createOrderFromClient.RegioName != ""||)
+                //    {
+                //        var similerRegion = this.Context.Regions.Where(c => c.CountryId == createOrderFromClient.CountryId && c.Name == createOrderFromClient.RegioName).FirstOrDefault();
+                //        if (similerRegion != null)
+                //        {
+                //            regionId = similerRegion.Id;
+                //        }
+                //        else
+                //        {
+                //            var region = new Region()
+                //            {
+                //                Name = createOrderFromClient.RegioName,
+                //                CountryId = createOrderFromClient.CountryId
+                //            };
+                //            this.Context.Add(region);
+                //            this.Context.SaveChanges();
+                //            regionId = region.Id;
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    regionId = createOrderFromClient.RegionId;
+                //}
 
                 var country = this.Context.Countries.Find(createOrderFromClient.CountryId);
 
@@ -109,7 +109,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 var order = mapper.Map<Order>(createOrderFromClient);
                 order.ClientId = AuthoticateUserId();
                 order.CreatedBy = AuthoticateUserName();
-                order.RegionId = regionId;
+                //order.RegionId = regionId;
                 order.DeliveryCost = country.DeliveryCost;
                 order.CreatedBy = AuthoticateUserName();
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
