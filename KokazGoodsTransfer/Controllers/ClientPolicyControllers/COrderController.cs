@@ -31,14 +31,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 erros.Add("المدينة غير موجودة");
             }
-            if (createOrderFromClient.RegionId != null)
-            {
-                var region = this.Context.Regions.Find(createOrderFromClient.RegionId);
-                if (region == null || region.CountryId != createOrderFromClient.CountryId)
-                {
-                    erros.Add("المنطقة غير موجودة");
-                }
-            }
+            //if (createOrderFromClient.RegionId != null)
+            //{
+            //    var region = this.Context.Regions.Find(createOrderFromClient.RegionId);
+            //    if (region == null || region.CountryId != createOrderFromClient.CountryId)
+            //    {
+            //        erros.Add("المنطقة غير موجودة");
+            //    }
+            //}
             if (createOrderFromClient.RecipientPhones.Length == 0)
             {
                 erros.Add("رقم الهاتف مطلوب");
@@ -114,6 +114,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 order.CreatedBy = AuthoticateUserName();
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                 order.OrderplacedId = (int)OrderplacedEnum.Client;
+                order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.IsSend = false;
                 this.Context.Add(order);
                 this.Context.SaveChanges();
