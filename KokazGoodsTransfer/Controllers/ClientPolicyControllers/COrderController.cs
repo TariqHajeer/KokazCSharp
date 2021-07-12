@@ -166,7 +166,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
         }
         [HttpGet("codeExist")]
-        public IActionResult CheckCodeExist(string code)
+        public IActionResult CheckCodeExist([FromQuery] string code)
         {
             return Ok(CodeExist(code));
         }
