@@ -238,6 +238,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var orders= this.Context.Orders.Where(c => c.IsSend == false && c.ClientId == AuthoticateUserId()).ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        [HttpPost("Sned")]
+        public IActionResult Send([FromBody] int[]ids)
+        {
+            var sendOrder = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            sendOrder.ForEach(c => c.IsSend =true);
+            this.Context.SaveChanges();
+            return Ok();
+        }
 
 
     }
