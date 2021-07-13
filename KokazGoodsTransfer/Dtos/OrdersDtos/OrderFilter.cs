@@ -20,5 +20,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? AgentPrintNumber { get; set; }
         public int? ClientPrintNumber { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string Note { get; set; }
     }
 }

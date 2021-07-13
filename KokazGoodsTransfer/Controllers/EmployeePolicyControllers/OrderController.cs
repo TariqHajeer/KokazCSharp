@@ -351,6 +351,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     orderIQ = orderIQ.Where(c => c.Date == orderFilter.CreatedDate);
                 }
+                if (orderFilter.Note != "" && orderFilter.Note != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.Note.Contains(orderFilter.Note));
+                }
                 var total = orderIQ.Count();
                 var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .Include(c => c.Client)
@@ -671,24 +675,33 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpGet("GetClientprint")]
-        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number)
+        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number,string clientName)
         {
             var orderPrintIq = this.Context.Printeds.Where(c => c.Type == PrintType.Client);
             if (number != null)
             {
                 orderPrintIq = orderPrintIq.Where(c => c.PrintNmber == number);
             }
+            if (clientName != null)
+            {
+                orderPrintIq = orderPrintIq.Where(c => c.DestinationName==clientName);
+            }
+            
             var total = orderPrintIq.Count();
             var orders = orderPrintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
             return Ok(new { data = mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         [HttpGet("GetAgentPrint")]
-        public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number)
+        public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number,string agnetName)
         {
             var ordersPintIq = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
             if (number != null)
             {
                 ordersPintIq = ordersPintIq.Where(c => c.PrintNmber == number);
+            }
+            if (agnetName != null)
+            {
+                ordersPintIq = ordersPintIq.Where(c => c.DestinationName == agnetName);
             }
             var total = ordersPintIq.Count();
             var orders = ordersPintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
