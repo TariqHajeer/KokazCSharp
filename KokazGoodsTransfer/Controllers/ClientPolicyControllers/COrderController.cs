@@ -297,7 +297,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("UnPaidRecipt")]
         public IActionResult UnPaidRecipt()
         {
-            var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
+            var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();           
             return Ok(mapper.Map<ReceiptDto[]>(repiq));
         }
 

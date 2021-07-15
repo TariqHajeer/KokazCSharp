@@ -7,6 +7,5 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
     public class ClientBalanceDto
     {
-
     }
 }

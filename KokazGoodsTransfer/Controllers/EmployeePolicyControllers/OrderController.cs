@@ -376,21 +376,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-             var order=  this.Context.Orders
-                .Include(c => c.Client)
-                        .ThenInclude(c => c.ClientPhones)
-                    .Include(c => c.Agent)
-                        .ThenInclude(c => c.UserPhones)
-                    .Include(c => c.Region)
-                    .Include(c => c.Country)
-                    .Include(c => c.Orderplaced)
-                    .Include(c => c.MoenyPlaced)
-                    .Include(c => c.OrderItems)
-                        .ThenInclude(c => c.OrderTpye)
-                    .Include(c => c.OrderPrints)
-                        .ThenInclude(c => c.Print)
-                    .Include(c=>c.OrderLogs)
-                .FirstOrDefault(c => c.Id == id);
+            var order = this.Context.Orders
+               .Include(c => c.Client)
+                       .ThenInclude(c => c.ClientPhones)
+                   .Include(c => c.Agent)
+                       .ThenInclude(c => c.UserPhones)
+                   .Include(c => c.Region)
+                   .Include(c => c.Country)
+                   .Include(c => c.Orderplaced)
+                   .Include(c => c.MoenyPlaced)
+                   .Include(c => c.OrderItems)
+                       .ThenInclude(c => c.OrderTpye)
+                   .Include(c => c.OrderPrints)
+                       .ThenInclude(c => c.Print)
+                   .Include(c => c.OrderLogs)
+               .FirstOrDefault(c => c.Id == id);
             return Ok(mapper.Map<OrderDto>(order));
         }
         [HttpGet("OrdersDontFinished")]
@@ -755,13 +755,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 //client.Total = 0;
                 //this.Context.Update(client);
-                var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
-                recepits.ForEach(c =>
+                if (orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
-                    c.PrintId = newPrint.Id;
-                    this.Context.Update(c);
-                });
-                this.Context.SaveChanges();
+                    var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                    recepits.ForEach(c =>
+                    {
+                        c.PrintId = newPrint.Id;
+                        this.Context.Update(c);
+                    });
+
+                    this.Context.SaveChanges();
+                }
                 foreach (var item in orders)
                 {
 
