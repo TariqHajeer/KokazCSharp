@@ -20,6 +20,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Note { get; set; }
         
         public string[] Phones { get; set; }
+        public string Mail { get; set; }
 
     }
 }

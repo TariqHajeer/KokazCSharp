@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public bool CanDelete { get; set; } = true;
         public decimal Total { get; set; }
         public List<PhoneDto> Phones { get; set; }
+        public int Mail { get; set; }
     }
     
 }
