@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
+using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -259,7 +260,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
             {
-                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId)&&c.ClientId==AuthoticateUserId())
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
@@ -276,7 +277,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             if (orderDontFinishFilter.IsClientDeleviredMoney)
             {
 
-                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId)&& c.ClientId == AuthoticateUserId())
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
@@ -293,6 +294,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var o = mapper.Map<OrderDto[]>(orders);
             return Ok(o);
         }
+        [HttpGet("UnPaidRecipt")]
+        public IActionResult UnPaidRecipt()
+        {
+            var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
+            return Ok(mapper.Map<ReceiptDto[]>(repiq));
+        }
+
 
     }
 }
