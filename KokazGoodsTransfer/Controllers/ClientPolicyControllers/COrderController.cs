@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
@@ -251,7 +252,47 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("OrdersDontFinished")]
+        public IActionResult OrdersDontFinished([FromQuery]OrderDontFinishFilter  orderDontFinishFilter )
+        {
+            List<Order> orders = new List<Order>();
 
+            if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
+            {
+                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                   .Include(c => c.Region)
+                   .Include(c => c.Country)
+                   .Include(c => c.MoenyPlaced)
+                   .Include(c => c.Orderplaced)
+                   .Include(c => c.Agent)
+                   .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+                   .ToList();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
+            }
+            if (orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+
+                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId))
+               .Include(c => c.Region)
+               .Include(c => c.Country)
+               .Include(c => c.Orderplaced)
+               .Include(c => c.MoenyPlaced)
+               .Include(c => c.Agent)
+               .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+               .ToList();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
+            }
+            var o = mapper.Map<OrderDto[]>(orders);
+            return Ok(o);
+        }
 
     }
 }
