@@ -163,9 +163,38 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                    {
                        return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
-                   }));
+                   }))
+                .ForMember(c=>c.OrderLogs,opt=>opt.MapFrom((obj,dto,i,context)=>
+                {
+                    return context.Mapper.Map<OrderLogDto[]>(obj.OrderLogs);
+                });
 
-            ;
+            CreateMap<OrderLog, OrderLogDto>()
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
+            {
+                return context.Mapper.Map<RegionDto>(order.Region);
+            }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c => c.Client, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<ClientDto>(order.Client);
+                }))
+                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                }))
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                }))
+                .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<UserDto>(order.Agent);
+                }));
+
             CreateMap<Order, OrderResponseClientDto>()
                 .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))

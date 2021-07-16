@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public NameAndIdDto Orderplaced { get; set; }
         public UserDto Agent { get; set; }
         public List<ResponseOrderItemDto> OrderItems { get; set; }
-        public List<OrderLogDto> OrderLogDto { get; set; }
+        public List<OrderLogDto> OrderLogs { get; set; }
 
 
 
