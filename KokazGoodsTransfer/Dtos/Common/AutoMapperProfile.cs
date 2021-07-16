@@ -167,7 +167,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c=>c.OrderLogs,opt=>opt.MapFrom((obj,dto,i,context)=>
                 {
                     return context.Mapper.Map<OrderLogDto[]>(obj.OrderLogs);
-                });
+                }));
 
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
