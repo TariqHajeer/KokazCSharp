@@ -476,6 +476,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
+                .Include(c=>c.OrderItems)
+                    .ThenInclude(c=>c.OrderTpye)
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));

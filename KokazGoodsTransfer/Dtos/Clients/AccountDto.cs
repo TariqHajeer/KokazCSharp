@@ -13,5 +13,6 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string About { get; set; }
         public string Manager { get; set; }
         public bool IsPay { get; set; }
+        public string Mail { get; set; }
     }
 }
