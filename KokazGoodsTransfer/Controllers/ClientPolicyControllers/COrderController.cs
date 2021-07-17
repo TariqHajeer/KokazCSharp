@@ -173,6 +173,19 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             return Ok(CodeExist(code));
         }
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var order = this.Context.Orders
+            .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+            .FirstOrDefault(c => c.Id == id);
+            return Ok(mapper.Map<OrderDto>(order));
+
+        }
         bool CodeExist(string code)
         {
             if (this.Context.Orders.Where(c => c.Code == code).Any())
@@ -226,7 +239,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                .Include(c => c.Region)
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
@@ -254,13 +266,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]
-        public IActionResult OrdersDontFinished([FromQuery]OrderDontFinishFilter  orderDontFinishFilter )
+        public IActionResult OrdersDontFinished([FromQuery]OrderDontFinishFilter orderDontFinishFilter)
         {
             List<Order> orders = new List<Order>();
 
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
             {
-                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId)&&c.ClientId==AuthoticateUserId())
+                var list = this.Context.Orders.Where(c => c.IsClientDiliverdMoney == false && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
@@ -277,7 +289,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             if (orderDontFinishFilter.IsClientDeleviredMoney)
             {
 
-                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash &&  orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId)&& c.ClientId == AuthoticateUserId())
+                var list = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
@@ -297,9 +309,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("UnPaidRecipt")]
         public IActionResult UnPaidRecipt()
         {
-            var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();           
+            var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
             return Ok(mapper.Map<ReceiptDto[]>(repiq));
         }
+
 
 
     }
