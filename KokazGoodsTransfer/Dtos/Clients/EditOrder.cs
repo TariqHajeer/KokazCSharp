@@ -1,13 +1,14 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Dtos.OrdersDtos;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KokazGoodsTransfer.Dtos.OrdersDtos
+namespace KokazGoodsTransfer.Dtos.Clients
 {
-    public class CreateOrderFromClient
+    public class EditOrder
     {
+        public int Id { get; set; }
         public string Code { get; set; }
         public int CountryId { get; set; }
         public string Address { get; set; }

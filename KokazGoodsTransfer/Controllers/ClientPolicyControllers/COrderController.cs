@@ -73,50 +73,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 {
                     return Conflict(new { messages = validate });
                 }
-                //int? regionId = null;
-                //if (CodeExist(createOrderFromClient.Code))
-                //{
-                //    return Conflict();
-                //}
-                //if (createOrderFromClient.RegionId == null)
-                //{
-                //    if (createOrderFromClient.RegioName != ""||)
-                //    {
-                //        var similerRegion = this.Context.Regions.Where(c => c.CountryId == createOrderFromClient.CountryId && c.Name == createOrderFromClient.RegioName).FirstOrDefault();
-                //        if (similerRegion != null)
-                //        {
-                //            regionId = similerRegion.Id;
-                //        }
-                //        else
-                //        {
-                //            var region = new Region()
-                //            {
-                //                Name = createOrderFromClient.RegioName,
-                //                CountryId = createOrderFromClient.CountryId
-                //            };
-                //            this.Context.Add(region);
-                //            this.Context.SaveChanges();
-                //            regionId = region.Id;
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    regionId = createOrderFromClient.RegionId;
-                //}
 
                 var country = this.Context.Countries.Find(createOrderFromClient.CountryId);
-
-                //this.Context.Entry(country).Collection(c => c.Users).Load();
                 var order = mapper.Map<Order>(createOrderFromClient);
                 order.ClientId = AuthoticateUserId();
                 order.CreatedBy = AuthoticateUserName();
-                //order.RegionId = regionId;
                 order.DeliveryCost = country.DeliveryCost;
                 order.CreatedBy = AuthoticateUserName();
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                 order.OrderplacedId = (int)OrderplacedEnum.Client;
                 order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.RecipientPhones = String.Join(',', createOrderFromClient.RecipientPhones);
                 order.IsSend = false;
                 this.Context.Add(order);
                 this.Context.SaveChanges();
@@ -185,6 +152,22 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             .FirstOrDefault(c => c.Id == id);
             return Ok(mapper.Map<OrderDto>(order));
 
+        }
+        [HttpPut]
+        public IActionResult Edit([FromBody] EditOrder  editOrder)
+        {
+             var order= this.Context.Orders.Find(editOrder.Id);
+            order.Code = editOrder.Code;
+            order.CountryId = editOrder.CountryId;
+            order.Address = editOrder.Address;
+            order.RecipientName = editOrder.RecipientName;
+            order.ClientNote = editOrder.ClientNote;
+            order.Cost = editOrder.Cost;
+            order.Date = editOrder.Date;
+            var country = this.Context.Countries.Find(editOrder.CountryId);
+            order.DeliveryCost = country.DeliveryCost;
+            order.RecipientPhones = String.Join(',',editOrder.RecipientPhones);
+            return Ok();
         }
         bool CodeExist(string code)
         {
