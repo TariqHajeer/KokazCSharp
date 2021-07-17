@@ -157,6 +157,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult Edit([FromBody] EditOrder  editOrder)
         {
              var order= this.Context.Orders.Find(editOrder.Id);
+
+            this.Context.Entry(order).Collection(c => c.OrderItems).Load();
             order.Code = editOrder.Code;
             order.CountryId = editOrder.CountryId;
             order.Address = editOrder.Address;
@@ -167,6 +169,42 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var country = this.Context.Countries.Find(editOrder.CountryId);
             order.DeliveryCost = country.DeliveryCost;
             order.RecipientPhones = String.Join(',',editOrder.RecipientPhones);
+            order.OrderItems.Clear();
+            foreach (var item in editOrder.OrderItem)
+            {
+                int orderTypeId;
+                if (item.OrderTypeId == null)
+                {
+                    if (item.OrderTypeName == "")
+                        return Conflict();
+                    var similerOrderType = this.Context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
+                    if (similerOrderType == null)
+                    {
+                        var orderType = new OrderType()
+                        {
+                            Name = item.OrderTypeName,
+                        };
+                        this.Context.Add(orderType);
+                        this.Context.SaveChanges();
+                        orderTypeId = orderType.Id;
+
+                    }
+                    else
+                    {
+                        orderTypeId = similerOrderType.Id;
+                    }
+                }
+                else
+                {
+                    orderTypeId = (int)item.OrderTypeId;
+                }
+                this.Context.Add(new OrderItem()
+                {
+                    OrderTpyeId = orderTypeId,
+                    Count = item.Count,
+                    OrderId = order.Id
+                });
+            }
             return Ok();
         }
         bool CodeExist(string code)

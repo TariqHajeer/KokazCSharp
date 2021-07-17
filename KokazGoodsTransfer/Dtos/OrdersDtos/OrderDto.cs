@@ -34,6 +34,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int OrderStateId { get; set; }
         public string CanResned { get; set; }
         public decimal? OldDeliveryCost { get; set; }
+        public bool? IsSend { get; set; }
         public ClientDto Client { get; set; }
         public CountryDto Country { get; set; }
         public RegionDto Region { get; set; }
