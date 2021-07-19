@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 //OrderDeliverdToClient = orders.Where(c => c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true).Count(),
                 OrderDeliverdToClient = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent && (c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Delivered)).Count(),
                 OrderMoneyDelived = orders.Where(c => c.IsClientDiliverdMoney == true && (c.OrderplacedId == (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delivered)).Count(),
-                OrderInWat = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
+                OrderInWat = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way&&c.IsClientDiliverdMoney!=true).Count(),
                 OrderInStore = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
                 OrderWithClient = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Client).Count(),
                 OrderComplitlyReutrndInCompany = ordersInsiedCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable).Count(),
