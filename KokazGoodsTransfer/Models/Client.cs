@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Models
         public Client()
         {
             ClientPhones = new HashSet<ClientPhone>();
+            Markets = new HashSet<Market>();
             OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
             Receipts = new HashSet<Receipt>();
@@ -29,6 +30,7 @@ namespace KokazGoodsTransfer.Models
         public virtual Country Country { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<ClientPhone> ClientPhones { get; set; }
+        public virtual ICollection<Market> Markets { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }

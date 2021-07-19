@@ -28,6 +28,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<GroupPrivilege> GroupPrivileges { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
         public virtual DbSet<IncomeType> IncomeTypes { get; set; }
+        public virtual DbSet<Market> Markets { get; set; }
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
@@ -274,6 +275,18 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Market>(entity =>
+            {
+                entity.ToTable("Market");
+
+                entity.Property(e => e.IsActive).HasColumnName("isActive");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.Markets)
+                    .HasForeignKey(d => d.ClientId)
+                    .HasConstraintName("FK__Market__isActive__339FAB6E");
             });
 
             modelBuilder.Entity<MoenyPlaced>(entity =>

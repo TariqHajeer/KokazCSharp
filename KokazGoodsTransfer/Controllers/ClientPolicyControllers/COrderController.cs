@@ -45,7 +45,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 erros.Add("رقم الهاتف مطلوب");
             }
-            if (createOrderFromClient.OrderItem.Count > 0)
+            if (createOrderFromClient.OrderItem != null && createOrderFromClient.OrderItem.Count > 0)
             {
                 foreach (var item in createOrderFromClient.OrderItem)
                 {
@@ -143,6 +143,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+
             var order = this.Context.Orders
             .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
@@ -150,13 +151,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
             .FirstOrDefault(c => c.Id == id);
+            //if(order.ClientId!=AuthoticateUserId())
             return Ok(mapper.Map<OrderDto>(order));
 
         }
         [HttpPut]
-        public IActionResult Edit([FromBody] EditOrder  editOrder)
+        public IActionResult Edit([FromBody] EditOrder editOrder)
         {
-             var order= this.Context.Orders.Find(editOrder.Id);
+            var order = this.Context.Orders.Find(editOrder.Id);
 
             this.Context.Entry(order).Collection(c => c.OrderItems).Load();
             order.Code = editOrder.Code;
@@ -168,7 +170,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             order.Date = editOrder.Date;
             var country = this.Context.Countries.Find(editOrder.CountryId);
             order.DeliveryCost = country.DeliveryCost;
-            order.RecipientPhones = String.Join(',',editOrder.RecipientPhones);
+            order.RecipientPhones = String.Join(',', editOrder.RecipientPhones);
             order.OrderItems.Clear();
             foreach (var item in editOrder.OrderItem)
             {
