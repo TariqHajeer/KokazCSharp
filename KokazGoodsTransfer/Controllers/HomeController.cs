@@ -31,16 +31,26 @@ namespace KokazGoodsTransfer.Controllers
             List<MarketDto> markets = new List<MarketDto>();
             foreach (var item in this.Context.Markets.Where(c=>c.IsActive==true).ToList())
             {
-                markets.Add(new MarketDto()
+                var temp = new MarketDto()
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ClientId = item.ClientId,
                     Description = item.Description,
                     IsActive = item.IsActive,
                     MarketUrl = item.MarketUrl,
                     LogoPath = "MarketLogo/" + item.LogoPath
-                });
+                };
+                if (item.ClientId != null)
+                {
+                    var client = this.Context.Clients.Find(item.ClientId);
+                    temp.Client = new Dtos.Clients.ClientDto()
+                    {
+                        Name = client.Name,
+                        Id = client.Id
+                    };
+                }
+                markets.Add(temp);
+
             }
             return Ok(markets);
         }
