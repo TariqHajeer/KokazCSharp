@@ -171,43 +171,58 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var country = this.Context.Countries.Find(editOrder.CountryId);
             order.DeliveryCost = country.DeliveryCost;
             order.RecipientPhones = String.Join(',', editOrder.RecipientPhones);
-            order.OrderItems.Clear();
-            foreach (var item in editOrder.OrderItem)
+            var transaction = this.Context.Database.BeginTransaction();
+            try
             {
-                int orderTypeId;
-                if (item.OrderTypeId == null)
-                {
-                    if (item.OrderTypeName == "")
-                        return Conflict();
-                    var similerOrderType = this.Context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
-                    if (similerOrderType == null)
-                    {
-                        var orderType = new OrderType()
-                        {
-                            Name = item.OrderTypeName,
-                        };
-                        this.Context.Add(orderType);
-                        this.Context.SaveChanges();
-                        orderTypeId = orderType.Id;
+                this.Context.Update(order);
+                this.Context.SaveChanges();
+                order.OrderItems.Clear();
+                this.Context.SaveChanges();
 
+                foreach (var item in editOrder.OrderItem)
+                {
+                    int orderTypeId;
+                    if (item.OrderTypeId == null)
+                    {
+                        if (item.OrderTypeName == "")
+                            return Conflict();
+                        var similerOrderType = this.Context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
+                        if (similerOrderType == null)
+                        {
+                            var orderType = new OrderType()
+                            {
+                                Name = item.OrderTypeName,
+                            };
+                            this.Context.Add(orderType);
+                            this.Context.SaveChanges();
+                            orderTypeId = orderType.Id;
+
+                        }
+                        else
+                        {
+                            orderTypeId = similerOrderType.Id;
+                        }
                     }
                     else
                     {
-                        orderTypeId = similerOrderType.Id;
+                        orderTypeId = (int)item.OrderTypeId;
                     }
+                    this.Context.Add(new OrderItem()
+                    {
+                        OrderTpyeId = orderTypeId,
+                        Count = item.Count,
+                        OrderId = order.Id
+                    });
+                    this.Context.SaveChanges();
                 }
-                else
-                {
-                    orderTypeId = (int)item.OrderTypeId;
-                }
-                this.Context.Add(new OrderItem()
-                {
-                    OrderTpyeId = orderTypeId,
-                    Count = item.Count,
-                    OrderId = order.Id
-                });
+                transaction.Commit();
+                return Ok();
             }
-            return Ok();
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                return Conflict();
+            }
         }
         bool CodeExist(string code)
         {

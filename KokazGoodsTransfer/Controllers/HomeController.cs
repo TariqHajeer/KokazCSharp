@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.MarketDtos;
+using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -53,6 +55,18 @@ namespace KokazGoodsTransfer.Controllers
 
             }
             return Ok(markets);
+        }
+        [HttpGet("TrackOrder/{code}/{phone}")]
+        public IActionResult TrackingOrder(string code, string phone)
+        {
+            var orders = this.Context.Orders
+                .Include(c=>c.Orderplaced)
+                .Where(c => c.Code == code);
+            if (!String.IsNullOrEmpty(phone))
+            {
+                orders = orders.Where(c => c.RecipientPhones.Contains(phone));
+            }
+            return Ok(mapper.Map<OrderDto[]>(orders));
         }
     }
 }
