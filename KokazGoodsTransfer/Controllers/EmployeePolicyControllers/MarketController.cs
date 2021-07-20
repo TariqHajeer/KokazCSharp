@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this.Context.Add(market);
                 this.Context.SaveChanges();
-                var fileName = createMarket.Logo.FileName.Split('.');
+                var fileName = createMarket.Logo.FileName.Split('.');   
                 var folderDir = Path.Combine(env.WebRootPath, "MarketLogo");
                 if (!Directory.Exists(Path.Combine(env.WebRootPath, "MarketLogo")))
                 {
