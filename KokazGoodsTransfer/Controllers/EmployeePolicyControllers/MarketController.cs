@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this.Context.Add(market);
                 this.Context.SaveChanges();
-                var fileName = createMarket.Logo.FileName.Split('.');   
+                var fileName = createMarket.Logo.FileName.Split('.');
                 var folderDir = Path.Combine(env.WebRootPath, "MarketLogo");
                 if (!Directory.Exists(Path.Combine(env.WebRootPath, "MarketLogo")))
                 {
@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
-                return Conflict();
+                return Conflict(new  { ex.Message,inner = ex.InnerException.Message});
             }
             return Ok();
         }
@@ -68,16 +68,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             List<MarketDto> markets = new List<MarketDto>();
             foreach (var item in this.Context.Markets.ToList())
             {
-                markets.Add(new MarketDto()
+                var temp = new MarketDto()
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ClientId = item.ClientId,
                     Description = item.Description,
                     IsActive = item.IsActive,
                     MarketUrl = item.MarketUrl,
                     LogoPath = "MarketLogo/" + item.LogoPath
-                });
+                };
+                if (item.ClientId != null)
+                {
+                    var client = this.Context.Clients.Find(item.ClientId);
+                    temp.Client = new Dtos.Clients.ClientDto()
+                    {
+                        Name = client.Name,
+                        Id = client.Id
+                    };
+                }
+                markets.Add(temp);
             }
             return Ok(markets);
         }
