@@ -56,8 +56,8 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(markets);
         }
-        [HttpGet("TrackOrder/{code}/{phone}")]
-        public IActionResult TrackingOrder(string code, string phone)
+        [HttpGet("TrackOrder")]
+        public IActionResult TrackingOrder([FromQuery] string code, string phone)
         {
             var orders = this.Context.Orders
                 .Include(c=>c.Orderplaced)
