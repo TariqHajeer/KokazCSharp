@@ -596,13 +596,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         case (int)OrderplacedEnum.Delivered:
                             {
-                                order.OrderStateId = (int)OrderStateEnum.Finished;
+
+                                //order.OrderStateId = (int)OrderStateEnum.Finished;
                                 if (order.Cost != item.Cost)
                                 {
                                     if (order.OldCost == null)
                                         order.OldCost = order.Cost;
                                     order.Cost = item.Cost;
                                 }
+                                if (order.PayForClient() != order.ClientPaied)
+                                {
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                    if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                                    {
+                                        order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
+                                    }
+                                }
+                                else
+                                {
+                                    order.OrderStateId = (int)OrderStateEnum.Finished;
+                                }
+                                
                             }
                             break;
                         case (int)OrderplacedEnum.CompletelyReturned:
@@ -649,7 +663,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.Delivered:
                             {
-                                order.OrderStateId = (int)OrderStateEnum.Finished;
+                               order.OrderStateId = (int)OrderStateEnum.Finished;
 
                                 if (order.Cost != item.Cost)
                                 {
