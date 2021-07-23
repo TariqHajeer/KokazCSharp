@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Models
         public string LogoPath { get; set; }
         public string Description { get; set; }
         public int? ClientId { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         public virtual Client Client { get; set; }
     }

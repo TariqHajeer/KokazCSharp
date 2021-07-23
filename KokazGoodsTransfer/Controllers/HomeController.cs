@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Controllers
                     Id = item.Id,
                     Name = item.Name,
                     Description = item.Description,
-                    IsActive = item.IsActive,
+                    IsActive =(bool) item.IsActive,
                     MarketUrl = item.MarketUrl,
                     LogoPath = "MarketLogo/" + item.LogoPath
                 };

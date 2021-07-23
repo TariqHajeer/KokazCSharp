@@ -164,11 +164,61 @@ namespace KokazGoodsTransfer.Dtos.Common
                    {
                        return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
                    }))
-                .ForMember(c=>c.OrderLogs,opt=>opt.MapFrom((obj,dto,i,context)=>
+                .ForMember(c => c.OrderLogs, opt => opt.MapFrom((obj, dto, i, context) =>
+                     {
+                         return context.Mapper.Map<OrderLogDto[]>(obj.OrderLogs);
+                     }));
+            CreateMap<Order, PayForClientDto>()
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<OrderLogDto[]>(obj.OrderLogs);
-                }));
+                    return context.Mapper.Map<RegionDto>(order.Region);
+                }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Agent).LastOrDefault()?.Print?.PrintNmber ?? null;
+                }))
+                .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
+                }))
+                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                }))
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                }))
+                .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<UserDto>(order.Agent);
+                }))
+                .ForMember(c => c.PayForClient, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    //if (!order.IsClientDiliverdMoney)
+                    //{
+                    //    if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                    //        return 0;
+                    //    return order.Cost - order.DeliveryCost;
+                    //}
+                    //else
+                    //{
 
+                    //    if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                    //        return (order.ClientPaied) * -1;
+                    //    if (order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                    //        return order.ClientPaied*-1;
+                    //    //if (order.OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+                    //    //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
+                    //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
+
+                    //}
+                    return order.PayForClient();
+                }));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
             {

@@ -430,7 +430,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     orders.AddRange(list);
                 }
             }
-            var o = mapper.Map<OrderDto[]>(orders);
+            var o = mapper.Map<PayForClientDto[]>(orders);
             return Ok(o);
         }
         [HttpGet("orderPlace")]
@@ -732,6 +732,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
             .Include(c => c.Country)
+            .Include(c=>c.Orderplaced)
+            .Include(c => c.MoenyPlaced)
             .Where(c => dateWithId.Ids.Select(c => c.Id).Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -787,6 +789,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
+                    item.ClientPaied = item.PayForClient();
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -807,10 +810,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        PayForClient = dateWithId.Ids.First(c => c.Id == item.Id).Cost
+                        PayForClient = item.PayForClient()
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
+                    
                 }
                 this.Context.SaveChanges();
                 transaction.Commit();

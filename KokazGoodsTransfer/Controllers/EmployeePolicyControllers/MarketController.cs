@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     Id = item.Id,
                     Name = item.Name,
                     Description = item.Description,
-                    IsActive = item.IsActive,
+                    //IsActive = item.IsActive,
                     MarketUrl = item.MarketUrl,
                     LogoPath = "MarketLogo/" + item.LogoPath
                 };

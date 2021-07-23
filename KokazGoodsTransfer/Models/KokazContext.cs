@@ -185,12 +185,12 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPri__Money__4F7CD00D");
+                    .HasConstraintName("FK__ClientPri__Money__5535A963");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPri__Order__5070F446");
+                    .HasConstraintName("FK__ClientPri__Order__5629CD9C");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.ClientPrints)
@@ -281,12 +281,12 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Market");
 
-                entity.Property(e => e.IsActive).HasColumnName("isActive");
+                entity.Property(e => e.IsActive).HasDefaultValueSql("((0))");
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Markets)
                     .HasForeignKey(d => d.ClientId)
-                    .HasConstraintName("FK__Market__isActive__339FAB6E");
+                    .HasConstraintName("FK__Market__ClientId__5DCAEF64");
             });
 
             modelBuilder.Entity<MoenyPlaced>(entity =>
@@ -305,6 +305,8 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("Order");
 
                 entity.Property(e => e.AgentCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.ClientPaied).HasColumnType("money");
 
                 entity.Property(e => e.Code)
                     .IsRequired()

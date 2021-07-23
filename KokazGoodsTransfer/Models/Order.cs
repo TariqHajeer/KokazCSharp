@@ -44,6 +44,7 @@ namespace KokazGoodsTransfer.Models
         public string SystemNote { get; set; }
         public decimal? OldDeliveryCost { get; set; }
         public bool? IsSend { get; set; }
+        public decimal? ClientPaied { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
