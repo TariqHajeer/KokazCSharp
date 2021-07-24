@@ -379,6 +379,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var order = this.Context.Orders
                .Include(c => c.Client)
                        .ThenInclude(c => c.ClientPhones)
+                       .Include(c => c.Client)
+                       .ThenInclude(c => c.Country)
                    .Include(c => c.Agent)
                        .ThenInclude(c => c.UserPhones)
                    .Include(c => c.Region)
@@ -471,13 +473,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var orders = this.Context.Orders
                 .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Client)
+                .ThenInclude(c => c.Country)
                 .Include(c => c.Agent)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
-                .Include(c=>c.OrderItems)
-                    .ThenInclude(c=>c.OrderTpye)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
@@ -587,6 +592,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.OrderplacedId = item.OrderplacedId;
                 order.MoenyPlacedId = item.MoenyPlacedId;
                 order.Note = item.Note;
+                if (item.DeliveryCost != order.OldDeliveryCost)
+                    if (order.OldDeliveryCost == null)
+                        order.OldDeliveryCost = order.DeliveryCost;
                 order.DeliveryCost = item.DeliveryCost;
                 order.AgentCost = item.AgentCost;
                 order.SystemNote = "UpdateOrdersStatusFromAgent";
@@ -596,7 +604,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         case (int)OrderplacedEnum.Delivered:
                             {
-
                                 //order.OrderStateId = (int)OrderStateEnum.Finished;
                                 if (order.Cost != item.Cost)
                                 {
@@ -616,7 +623,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 {
                                     order.OrderStateId = (int)OrderStateEnum.Finished;
                                 }
-                                
+
                             }
                             break;
                         case (int)OrderplacedEnum.CompletelyReturned:
@@ -663,7 +670,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             break;
                         case (int)OrderplacedEnum.Delivered:
                             {
-                               order.OrderStateId = (int)OrderStateEnum.Finished;
+                                order.OrderStateId = (int)OrderStateEnum.Finished;
 
                                 if (order.Cost != item.Cost)
                                 {
@@ -746,7 +753,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
             .Include(c => c.Country)
-            .Include(c=>c.Orderplaced)
+            .Include(c => c.Orderplaced)
             .Include(c => c.MoenyPlaced)
             .Where(c => dateWithId.Ids.Select(c => c.Id).Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
@@ -803,7 +810,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
-                    item.ClientPaied = item.PayForClient();
+                    item.ClientPaied += item.PayForClient();
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -828,7 +835,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
-                    
+
                 }
                 this.Context.SaveChanges();
                 transaction.Commit();
@@ -840,7 +847,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
 
             }
-         }
+        }
         /// <summary>
         /// تسليم الشركات
         /// </summary>
