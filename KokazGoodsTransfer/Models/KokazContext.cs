@@ -24,6 +24,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<ClientPrint> ClientPrints { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
+        public virtual DbSet<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPrivilege> GroupPrivileges { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
@@ -216,6 +217,48 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<DisAcceptOrder>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("DisAcceptOrder");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.RecipientName).HasMaxLength(50);
+
+                entity.Property(e => e.RecipientPhones).IsRequired();
+
+                entity.Property(e => e.UpdatedDate).HasColumnType("date");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany()
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__DisAccept__Clien__05D8E0BE");
+
+                entity.HasOne(d => d.Country)
+                    .WithMany()
+                    .HasForeignKey(d => d.CountryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__DisAccept__Count__06CD04F7");
+
+                entity.HasOne(d => d.Region)
+                    .WithMany()
+                    .HasForeignKey(d => d.RegionId)
+                    .HasConstraintName("FK__DisAccept__Regio__07C12930");
             });
 
             modelBuilder.Entity<Group>(entity =>
