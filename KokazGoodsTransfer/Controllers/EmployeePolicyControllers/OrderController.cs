@@ -489,9 +489,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpPut("Accept")]
-        public IActionResult Accept(int id)
+        public IActionResult Accept([FromBody] IdsDto idsDto)
         {
-            var order = this.Context.Orders.Find(id);
+            var order = this.Context.Orders.Find(idsDto.OrderId);
+            order.AgentId = idsDto.AgentId;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             this.Context.Update(order);
             this.Context.SaveChanges();
