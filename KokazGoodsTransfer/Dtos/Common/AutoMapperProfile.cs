@@ -44,7 +44,11 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
-                .MaxDepth(2);
+                .MaxDepth(2)
+                .ForMember(c=>c.Agnets,opt=>opt.MapFrom((obj,dto,i,context)=>
+                {
+                    return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
+                }));
             CreateMap<User, UserDto>()
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
                 {

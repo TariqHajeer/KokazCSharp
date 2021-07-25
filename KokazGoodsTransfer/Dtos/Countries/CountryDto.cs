@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.Dtos.Regions;
+using KokazGoodsTransfer.Dtos.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace KokazGoodsTransfer.Dtos.Countries
         public bool CanDelete { get; set; }
         public bool CanDeleteWithRegion { get; set; }
         public List<RegionDto> Regions { get; set; }
+        public List<UserDto> Agnets { get; set; }
 
     }   
 }

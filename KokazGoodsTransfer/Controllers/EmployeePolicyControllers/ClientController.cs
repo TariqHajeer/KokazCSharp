@@ -208,6 +208,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(receipt.Id);
         }
-        
+
     }
 }

@@ -476,9 +476,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Client)
                 .ThenInclude(c => c.Country)
-                .Include(c => c.Agent)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
+                    .ThenInclude(c=>c.AgentCountrs)
+                        .ThenInclude(c=>c.Agent)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
@@ -487,7 +488,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpPut("Accept/{id}")]
+        [HttpPut("Accept")]
         public IActionResult Accept(int id)
         {
             var order = this.Context.Orders.Find(id);
@@ -565,7 +566,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
         [HttpPut("MakeOrderInWay")]
-        public IActionResult MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
+           public IActionResult MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
         {
             var ids = dateWithId.Ids;
             var orders = this.Context.Orders
@@ -642,132 +643,138 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("UpdateOrdersStatusFromAgent")]
         public IActionResult UpdateOrdersStatusFromAgent(List<OrderStateDto> orderStates)
         {
-
-            foreach (var item in orderStates)
+            try
             {
-                var order = this.Context.Orders.Find(item.Id);
-                OrderLog log = order;
-                this.Context.Add(log);
-                order.OrderplacedId = item.OrderplacedId;
-                order.MoenyPlacedId = item.MoenyPlacedId;
-                order.Note = item.Note;
-
-                if (item.DeliveryCost != item.DeliveryCost)
-                    if (order.OldDeliveryCost == null)
-                        order.OldDeliveryCost = order.DeliveryCost;
-                order.DeliveryCost = item.DeliveryCost;
-                order.AgentCost = item.AgentCost;
-                order.SystemNote = "UpdateOrdersStatusFromAgent";
-                if (order.IsClientDiliverdMoney)
+                foreach (var item in orderStates)
                 {
-                    switch (order.OrderplacedId)
+                    var order = this.Context.Orders.Find(item.Id);
+                    OrderLog log = order;
+                    this.Context.Add(log);
+                    order.OrderplacedId = item.OrderplacedId;
+                    order.MoenyPlacedId = item.MoenyPlacedId;
+                    order.Note = item.Note;
+
+                    if (item.DeliveryCost != item.DeliveryCost)
+                        if (order.OldDeliveryCost == null)
+                            order.OldDeliveryCost = order.DeliveryCost;
+                    order.DeliveryCost = item.DeliveryCost;
+                    order.AgentCost = item.AgentCost;
+                    order.SystemNote = "UpdateOrdersStatusFromAgent";
+                    if (order.IsClientDiliverdMoney)
                     {
-                        case (int)OrderplacedEnum.Delivered:
-                            {
-                                //order.OrderStateId = (int)OrderStateEnum.Finished;
-                                if (order.Cost != item.Cost)
+                        switch (order.OrderplacedId)
+                        {
+                            case (int)OrderplacedEnum.Delivered:
+                                {
+                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    if (order.Cost != item.Cost)
+                                    {
+                                        if (order.OldCost == null)
+                                            order.OldCost = order.Cost;
+                                        order.Cost = item.Cost;
+                                    }
+
+                                    if (order.PayForClient() != order.ClientPaied)
+                                    {
+                                        order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                        if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                                        {
+                                            order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    }
+
+                                }
+                                break;
+                            case (int)OrderplacedEnum.CompletelyReturned:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    //order.DeliveryCost = 0;
+                                    order.Cost = 0;
+                                    order.AgentCost = 0;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.Unacceptable:
+                                {
+                                    if (order.OldCost == null)
+                                    {
+                                        order.OldCost = order.Cost;
+                                    }
+                                    //order.OldCost = order.Cost;
+                                    //order.Cost = 0;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.PartialReturned:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = item.Cost;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (order.OrderplacedId)
+                        {
+                            case (int)OrderplacedEnum.PartialReturned:
                                 {
                                     if (order.OldCost == null)
                                         order.OldCost = order.Cost;
                                     order.Cost = item.Cost;
                                 }
-
-                                if (order.PayForClient() != order.ClientPaied)
-                                {
-                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
-                                    if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
-                                    {
-                                        order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
-                                    }
-                                }
-                                else
+                                break;
+                            case (int)OrderplacedEnum.Delivered:
                                 {
                                     order.OrderStateId = (int)OrderStateEnum.Finished;
-                                }
 
-                            }
-                            break;
-                        case (int)OrderplacedEnum.CompletelyReturned:
-                            {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
-                                //order.DeliveryCost = 0;
-                                order.Cost = 0;
-                                order.AgentCost = 0;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
-                            }
-                            break;
-                        case (int)OrderplacedEnum.Unacceptable:
-                            {
-                                if (order.OldCost == null)
+                                    if (order.Cost != item.Cost)
+                                    {
+                                        if (order.OldCost == null)
+                                            order.OldCost = order.Cost;
+                                        order.Cost = item.Cost;
+                                    }
+                                }
+                                break;
+                            case (int)OrderplacedEnum.CompletelyReturned:
                                 {
-                                    order.OldCost = order.Cost;
+                                    if (order.OldCost == null)
+                                    {
+                                        order.OldCost = order.Cost;
+                                    }
+                                    order.Cost = 0;
+                                    if (order.OldDeliveryCost == null)
+                                        order.OldDeliveryCost = order.DeliveryCost;
+                                    order.DeliveryCost = 0;
+                                    order.AgentCost = 0;
                                 }
-                                //order.OldCost = order.Cost;
-                                //order.Cost = 0;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
-                            }
-                            break;
-                        case (int)OrderplacedEnum.PartialReturned:
-                            {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
-                                order.Cost = item.Cost;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
-                            }
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (order.OrderplacedId)
-                    {
-                        case (int)OrderplacedEnum.PartialReturned:
-                            {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
-                                order.Cost = item.Cost;
-                            }
-                            break;
-                        case (int)OrderplacedEnum.Delivered:
-                            {
-                                order.OrderStateId = (int)OrderStateEnum.Finished;
-
-                                if (order.Cost != item.Cost)
+                                break;
+                            case (int)OrderplacedEnum.Unacceptable:
                                 {
                                     if (order.OldCost == null)
                                         order.OldCost = order.Cost;
-                                    order.Cost = item.Cost;
+                                    order.Cost = 0;
                                 }
-                            }
-                            break;
-                        case (int)OrderplacedEnum.CompletelyReturned:
-                            {
-                                if (order.OldCost == null)
-                                {
-                                    order.OldCost = order.Cost;
-                                }
-                                order.Cost = 0;
-                                if (order.OldDeliveryCost == null)
-                                    order.OldDeliveryCost = order.DeliveryCost;
-                                order.DeliveryCost = 0;
-                                order.AgentCost = 0;
-                            }
-                            break;
-                        case (int)OrderplacedEnum.Unacceptable:
-                            {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
-                                order.Cost = 0;
-                            }
-                            break;
+                                break;
 
+                        }
                     }
+                    this.Context.Update(order);
                 }
-                this.Context.Update(order);
+                this.Context.SaveChanges();
+                return Ok();
             }
-            this.Context.SaveChanges();
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
         [HttpGet("GetClientprint")]
         public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName)
