@@ -496,17 +496,76 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut("DisAccept/{id}")]
-        public IActionResult DisAccept(int id)
+        [HttpPut("DisAccept")]
+        public IActionResult DisAccept([FromBody] DateWithId<int> dateWithId)
         {
-            var order = this.Context.Orders.Find(id);
-            order.Seen = false;
-            this.Context.Update(order);
+            var order = this.Context.Orders.Find(dateWithId.Ids);
+            DisAcceptOrder disAcceptOrder = new DisAcceptOrder()
+            {
+                Code = order.Code,
+                CountryId = order.CountryId,
+                Cost = order.Cost,
+                ClientNote = order.ClientNote,
+                CreatedBy = order.CreatedBy,
+                Date = order.Date,
+                Address = order.Address,
+                ClientId = order.ClientId,
+                DeliveryCost = order.DeliveryCost,
+                IsDollar = order.IsDollar,
+                RecipientName = order.RecipientName,
+                RecipientPhones = order.RecipientPhones,
+                RegionId = order.RegionId,
+                UpdatedBy = AuthoticateUserName(),
+                UpdatedDate = dateWithId.Date
+            };
+            this.Context.Orders.Remove(order);
+            this.Context.Add(disAcceptOrder);
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("DisAccept")]
+        public IActionResult DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
+        {
+            var query = this.Context.DisAcceptOrders.
+                AsQueryable();
+            if (orderFilter.CountryId != null)
+            {
+                query = query.Where(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+            {
+                query = query.Where(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            if (orderFilter.ClientId != null)
+            {
+                query = query.Where(c => c.ClientId == orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                query = query.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                query = query.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                query = query.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.CreatedDate != null)
+            {
+                query = query.Where(c => c.Date == orderFilter.CreatedDate);
+            }
+            var total = query.Count();
+            var orders = query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .ToList();
+            return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
+        }
         [HttpPut("MakeOrderInWay")]
-        public IActionResult MakeOrderInWay([FromBody] DateWithId<int> dateWithId)
+        public IActionResult MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
         {
             var ids = dateWithId.Ids;
             var orders = this.Context.Orders
@@ -529,7 +588,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 PrintNmber = printNumber,
                 Date = dateWithId.Date,
                 Type = PrintType.Agent,
-                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                PrinterName = this.AuthoticateUserName(),
                 DestinationName = agent.Name,
                 DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
             };
@@ -592,7 +651,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.OrderplacedId = item.OrderplacedId;
                 order.MoenyPlacedId = item.MoenyPlacedId;
                 order.Note = item.Note;
-                if (item.DeliveryCost != order.OldDeliveryCost)
+
+                if (item.DeliveryCost != item.DeliveryCost)
                     if (order.OldDeliveryCost == null)
                         order.OldDeliveryCost = order.DeliveryCost;
                 order.DeliveryCost = item.DeliveryCost;
@@ -611,6 +671,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                         order.OldCost = order.Cost;
                                     order.Cost = item.Cost;
                                 }
+
                                 if (order.PayForClient() != order.ClientPaied)
                                 {
                                     order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -747,7 +808,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId<IdWithCost> dateWithId)
+        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId<IdWithCost[]> dateWithId)
         {
             var orders = this.Context.Orders
             .Include(c => c.Client)
@@ -780,7 +841,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.Context.SaveChanges();
                 //client.Total = 0;
                 //this.Context.Update(client);
-                if (orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
+                if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
                     var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
                     recepits.ForEach(c =>
@@ -810,7 +871,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
-                    item.ClientPaied += item.PayForClient();
+                    var PayForClient = item.PayForClient();
+                    item.ClientPaied = (item.ClientPaied ?? 0) + PayForClient;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -831,7 +893,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        PayForClient = item.PayForClient()
+                        PayForClient = PayForClient
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);

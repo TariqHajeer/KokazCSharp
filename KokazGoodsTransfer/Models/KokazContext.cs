@@ -221,8 +221,6 @@ namespace KokazGoodsTransfer.Models
 
             modelBuilder.Entity<DisAcceptOrder>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("DisAcceptOrder");
 
                 entity.Property(e => e.Code)
@@ -235,8 +233,6 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 
                 entity.Property(e => e.RecipientPhones).IsRequired();
@@ -244,21 +240,21 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.UpdatedDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Client)
-                    .WithMany()
+                    .WithMany(p => p.DisAcceptOrders)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__DisAccept__Clien__05D8E0BE");
+                    .HasConstraintName("FK__DisAccept__Clien__0C85DE4D");
 
                 entity.HasOne(d => d.Country)
-                    .WithMany()
+                    .WithMany(p => p.DisAcceptOrders)
                     .HasForeignKey(d => d.CountryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__DisAccept__Count__06CD04F7");
+                    .HasConstraintName("FK__DisAccept__Count__0D7A0286");
 
                 entity.HasOne(d => d.Region)
-                    .WithMany()
+                    .WithMany(p => p.DisAcceptOrders)
                     .HasForeignKey(d => d.RegionId)
-                    .HasConstraintName("FK__DisAccept__Regio__07C12930");
+                    .HasConstraintName("FK__DisAccept__Regio__0E6E26BF");
             });
 
             modelBuilder.Entity<Group>(entity =>

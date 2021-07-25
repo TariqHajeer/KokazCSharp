@@ -19,9 +19,9 @@ namespace KokazGoodsTransfer.Models.Static
             {
 
                 if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
-                    return ((decimal)order.ClientPaied) * -1;
+                    return (order.ClientPaied??0) * -1;
                 if (order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-                    return (decimal)order.ClientPaied * -1;
+                    return (order.ClientPaied??0) * -1;
                 //if (order.OrderplacedId == (int)OrderplacedEnum.PartialReturned)
                 //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
                 return (order.Cost - order.DeliveryCost) - ((decimal)(order.ClientPaied == null ? 0: order.ClientPaied)) ;
