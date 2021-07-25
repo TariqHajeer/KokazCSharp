@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Name { get; set; }
         [Required]
         public string UserName { get; set; }
-        [Required]
+        [Required]  
         public string Password { get; set; }
         public int? Countryid { get; set; }
         public string Address { get; set; }
