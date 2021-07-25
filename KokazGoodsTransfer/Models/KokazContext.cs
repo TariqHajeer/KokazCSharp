@@ -25,6 +25,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<DisAcceptOrder> DisAcceptOrders { get; set; }
+        public virtual DbSet<EditRequest> EditRequests { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPrivilege> GroupPrivileges { get; set; }
         public virtual DbSet<Income> Incomes { get; set; }
@@ -255,6 +256,39 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.DisAcceptOrders)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK__DisAccept__Regio__0E6E26BF");
+            });
+
+            modelBuilder.Entity<EditRequest>(entity =>
+            {
+                entity.ToTable("EditRequest");
+
+                entity.Property(e => e.NewName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NewUserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.OldName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.OldUserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.EditRequests)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__EditReque__Accep__17F790F9");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.EditRequests)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__EditReque__UserI__18EBB532");
             });
 
             modelBuilder.Entity<Group>(entity =>
