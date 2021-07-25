@@ -19,6 +19,16 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public CClientController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        [HttpGet("CheckUserName/{{username}}")]
+        public IActionResult CheckUserName(string username)
+        {
+            return Ok(this.Context.Clients.Any(c => c.UserName == username && c.Id != AuthoticateUserId()));
+        }
+        [HttpGet("CheckUserName/{{name}}")]
+        public IActionResult CheckName(string name)
+        {
+            return Ok(this.Context.Clients.Any(c => c.Name== name && c.Id != AuthoticateUserId()));
+        }
         [HttpPut("updateInformation")]
         public IActionResult Update([FromBody] CUpdateClientDto updateClientDto)
         {
@@ -35,9 +45,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 this.Context.SaveChanges();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(new {message="خطأ بالتعديل ",Ex=ex.Message});
+                return BadRequest(new { message = "خطأ بالتعديل ", Ex = ex.Message });
             }
         }
         [HttpPut("deletePhone/{id}")]
@@ -80,7 +90,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("GetByToken")]
         public IActionResult GetByToken()
         {
-            var client = this.Context.Clients.Include(c=>c.ClientPhones).Include(c=>c.Country).Where(c=>c.Id==AuthoticateUserId()).First();
+            var client = this.Context.Clients.Include(c => c.ClientPhones).Include(c => c.Country).Where(c => c.Id == AuthoticateUserId()).First();
             var authClient = mapper.Map<AuthClient>(client);
             return Ok(authClient);
         }
