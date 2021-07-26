@@ -44,9 +44,22 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 if (client.Password == "")
                     client.Password = oldPassword;
                 this.Context.Update(client);
-                if (clientName != updateClientDto.Name)
+                if (clientName != updateClientDto.Name||clientUserName!=updateClientDto.UserName)
                 {
-
+                    EditRequest editRequest = new EditRequest();
+                    if(clientName != updateClientDto.Name)
+                    {
+                        editRequest.OldName = clientName;
+                        editRequest.NewName = updateClientDto.Name;
+                    }
+                    if (clientUserName != updateClientDto.UserName)
+                    {
+                        editRequest.OldUserName = clientUserName;
+                        editRequest.NewUserName = updateClientDto.UserName;
+                    }
+                    editRequest.Accept = null;
+                    editRequest.ClientId = AuthoticateUserId();
+                    this.Context.Add(editRequest);
                 }
                 this.Context.SaveChanges();
                 return Ok();
