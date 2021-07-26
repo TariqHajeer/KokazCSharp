@@ -24,7 +24,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             return Ok(this.Context.Clients.Any(c => c.UserName == username && c.Id != AuthoticateUserId()));
         }
-        [HttpGet("CheckUserName/{{name}}")]
+        [HttpGet("CheckName/{{name}}")]
         public IActionResult CheckName(string name)
         {
             return Ok(this.Context.Clients.Any(c => c.Name== name && c.Id != AuthoticateUserId()));
@@ -44,7 +44,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 if (client.Password == "")
                     client.Password = oldPassword;
                 this.Context.Update(client);
-                if(clientName!=updateClientDto.Name)
+                if (clientName != updateClientDto.Name)
+                {
+
+                }
                 this.Context.SaveChanges();
                 return Ok();
             }
