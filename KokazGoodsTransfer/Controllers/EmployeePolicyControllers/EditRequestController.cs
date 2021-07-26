@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("NewEditReuqet")]
         public IActionResult NewEditRequest()
         {
-            var newEditRquest = this.Context.EditRequests.Where(c => c.Accept == null).ToList();
+            var newEditRquests = this.Context.EditRequests.Where(c => c.Accept == null).ToList();
+            return Ok(mapper.Map<EditRequestDto[]>(newEditRquests));
+        }
+        [HttpPut("DisAccpet/{id}")]
+        public IActionResult DisAccpet(int id)
+        {
+            var editRequest = this.Context.EditRequests.Find(id);
+            editRequest.Accept = false;
+            this.Context.SaveChanges();
             return Ok();
         }
     }

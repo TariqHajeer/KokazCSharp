@@ -3,6 +3,7 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Currencies;
 using KokazGoodsTransfer.Dtos.DepartmentDtos;
+using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
@@ -292,6 +293,11 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
+            CreateMap<EditRequest, EditRequestDto>()
+                .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<ClientDto>(obj.Client);
+                }));
 
         }
     }
