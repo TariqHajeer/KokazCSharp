@@ -19,6 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("NewEditReuqet")]
         public IActionResult NewEditRequest()
         {
+            var newEditRquest = this.Context.EditRequests.Where(c => c.Accept == null).ToList();
             return Ok();
         }
     }

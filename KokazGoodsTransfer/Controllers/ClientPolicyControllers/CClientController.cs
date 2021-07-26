@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
@@ -27,7 +28,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("CheckName/{{name}}")]
         public IActionResult CheckName(string name)
         {
-            return Ok(this.Context.Clients.Any(c => c.Name== name && c.Id != AuthoticateUserId()));
+            return Ok(this.Context.Clients.Any(c => c.Name == name && c.Id != AuthoticateUserId()));
         }
         [HttpPut("updateInformation")]
         public IActionResult Update([FromBody] CUpdateClientDto updateClientDto)
@@ -41,13 +42,29 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 client = mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
                 client.Name = clientName;
                 client.UserName = clientUserName;
+
                 if (client.Password == "")
                     client.Password = oldPassword;
                 this.Context.Update(client);
-                if (clientName != updateClientDto.Name||clientUserName!=updateClientDto.UserName)
+                this.Context.Entry(client).Collection(c => c.ClientPhones).Load();
+                client.ClientPhones.Clear();
+                if (updateClientDto.Phones != null)
+                {
+                    foreach (var item in updateClientDto.Phones)
+                    {
+                        var clientPhone = new ClientPhone()
+                        {
+                            ClientId = AuthoticateUserId(),
+                            Phone = item,
+                        };
+                        this.Context.Add(clientPhone);
+                    }
+                }
+
+                if (clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName)
                 {
                     EditRequest editRequest = new EditRequest();
-                    if(clientName != updateClientDto.Name)
+                    if (clientName != updateClientDto.Name)
                     {
                         editRequest.OldName = clientName;
                         editRequest.NewName = updateClientDto.Name;
@@ -69,47 +86,50 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest(new { message = "خطأ بالتعديل ", Ex = ex.Message });
             }
         }
-        [HttpPut("deletePhone/{id}")]
-        public IActionResult DeletePhone(int id)
-        {
-            try
-            {
-                var clientPhone = this.Context.ClientPhones.Find(id);
-                this.Context.Remove(clientPhone);
-                this.Context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest();
-            }
-        }
-        [HttpPut("addPhone/{phone}")]
-        public IActionResult AddPhone(string phone)
-        {
-            try
-            {
-                var clientId = AuthoticateUserId();
-                this.Context.Clients.Find(clientId);
+        //[HttpPut("deletePhone/{id}")]
+        //public IActionResult DeletePhone(int id)
+        //{
+        //    try
+        //    {
+        //        var clientPhone = this.Context.ClientPhones.Find(id);
+        //        this.Context.Remove(clientPhone);
+        //        this.Context.SaveChanges();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
+        //[HttpPut("addPhone/{phone}")]
+        //public IActionResult AddPhone(string phone)
+        //{
+        //    try
+        //    {
+        //        var clientId = AuthoticateUserId();
+        //        this.Context.Clients.Find(clientId);
 
-                ClientPhone clientPhone = new ClientPhone()
-                {
-                    ClientId = clientId,
-                    Phone = phone
-                };
-                this.Context.Add(clientPhone);
-                this.Context.SaveChanges();
-                return Ok(mapper.Map<PhoneDto>(clientPhone));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest();
-            }
-        }
+        //        ClientPhone clientPhone = new ClientPhone()
+        //        {
+        //            ClientId = clientId,
+        //            Phone = phone
+        //        };
+        //        this.Context.Add(clientPhone);
+        //        this.Context.SaveChanges();
+        //        return Ok(mapper.Map<PhoneDto>(clientPhone));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
         [HttpGet("GetByToken")]
         public IActionResult GetByToken()
         {
-            var client = this.Context.Clients.Include(c => c.ClientPhones).Include(c => c.Country).Where(c => c.Id == AuthoticateUserId()).First();
+            var client = this.Context.Clients
+                .Include(c => c.ClientPhones)
+                .Include(c => c.Country)
+                .Where(c => c.Id == AuthoticateUserId()).First();
             var authClient = mapper.Map<AuthClient>(client);
             return Ok(authClient);
         }

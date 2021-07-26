@@ -88,41 +88,45 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 this.Context.Add(order);
                 this.Context.SaveChanges();
                 var orderItem = createOrderFromClient.OrderItem;
-                foreach (var item in orderItem)
+                
+                if (orderItem != null)
                 {
-                    int orderTypeId;
-                    if (item.OrderTypeId == null)
+                    foreach (var item in orderItem)
                     {
-                        if (item.OrderTypeName == "")
-                            return Conflict();
-                        var similerOrderType = this.Context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
-                        if (similerOrderType == null)
+                        int orderTypeId;
+                        if (item.OrderTypeId == null)
                         {
-                            var orderType = new OrderType()
+                            if (item.OrderTypeName == "")
+                                return Conflict();
+                            var similerOrderType = this.Context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
+                            if (similerOrderType == null)
                             {
-                                Name = item.OrderTypeName,
-                            };
-                            this.Context.Add(orderType);
-                            this.Context.SaveChanges();
-                            orderTypeId = orderType.Id;
+                                var orderType = new OrderType()
+                                {
+                                    Name = item.OrderTypeName,
+                                };
+                                this.Context.Add(orderType);
+                                this.Context.SaveChanges();
+                                orderTypeId = orderType.Id;
 
+                            }
+                            else
+                            {
+                                orderTypeId = similerOrderType.Id;
+                            }
                         }
                         else
                         {
-                            orderTypeId = similerOrderType.Id;
+                            orderTypeId = (int)item.OrderTypeId;
                         }
+                        this.Context.Add(new OrderItem()
+                        {
+                            OrderTpyeId = orderTypeId,
+                            Count = item.Count,
+                            OrderId = order.Id
+                        });
+                        this.Context.SaveChanges();
                     }
-                    else
-                    {
-                        orderTypeId = (int)item.OrderTypeId;
-                    }
-                    this.Context.Add(new OrderItem()
-                    {
-                        OrderTpyeId = orderTypeId,
-                        Count = item.Count,
-                        OrderId = order.Id
-                    });
-                    this.Context.SaveChanges();
                 }
                 dbTransacrion.Commit();
                 return Ok(mapper.Map<OrderResponseClientDto>(order));
