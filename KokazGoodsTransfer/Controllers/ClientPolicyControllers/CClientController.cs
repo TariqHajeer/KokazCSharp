@@ -20,12 +20,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public CClientController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpGet("CheckUserName/{{username}}")]
+        [HttpGet("CheckUserName/{username}")]
         public IActionResult CheckUserName(string username)
         {
             return Ok(this.Context.Clients.Any(c => c.UserName == username && c.Id != AuthoticateUserId()));
         }
-        [HttpGet("CheckName/{{name}}")]
+        [HttpGet("CheckName/{name}")]
         public IActionResult CheckName(string name)
         {
             return Ok(this.Context.Clients.Any(c => c.Name == name && c.Id != AuthoticateUserId()));
