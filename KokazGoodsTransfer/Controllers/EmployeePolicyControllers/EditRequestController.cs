@@ -38,6 +38,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var editRequest = this.Context.EditRequests.Find(id);
             editRequest.Accept = true;
             editRequest.UserId = AuthoticateUserId();
+            var client = this.Context.Clients.Find(editRequest.ClientId);
+            client.Name = editRequest.NewName;
+            client.UserName = editRequest.NewUserName;
+            this.Context.Update(client);
+            this.Context.Update(editRequest);
             this.Context.SaveChanges();
             return Ok();
         }
