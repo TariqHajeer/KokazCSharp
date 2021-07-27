@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpPut("Accept/{id}")]
+        [HttpPut("Accept")]
         public IActionResult Accept([FromBody]int id)
         {
             var editRequest = this.Context.EditRequests.Find(id);
