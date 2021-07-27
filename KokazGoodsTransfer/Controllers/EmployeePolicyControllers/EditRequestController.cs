@@ -23,17 +23,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newEditRquests = this.Context.EditRequests.Where(c => c.Accept == null).ToList();
             return Ok(mapper.Map<EditRequestDto[]>(newEditRquests));
         }
-        [HttpPut("DisAccpet/{id}")]
-        public IActionResult DisAccpet(int id)
+        [HttpPut("DisAccpet")]
+        public IActionResult DisAccpet([FromBody] int id)
         {
             var editRequest = this.Context.EditRequests.Find(id);
             editRequest.Accept = false;
+            editRequest.UserId = AuthoticateUserId();
             this.Context.SaveChanges();
             return Ok();
         }
         [HttpPut("Accept/{id}")]
-        public IActionResult Accept(int id)
+        public IActionResult Accept([FromBody]int id)
         {
+            var editRequest = this.Context.EditRequests.Find(id);
+            editRequest.Accept = true;
+            editRequest.UserId = AuthoticateUserId();
+            this.Context.SaveChanges();
             return Ok();
         }
     }
