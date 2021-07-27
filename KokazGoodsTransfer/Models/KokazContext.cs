@@ -32,6 +32,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<IncomeType> IncomeTypes { get; set; }
         public virtual DbSet<Market> Markets { get; set; }
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
+        public virtual DbSet<Notfication> Notfications { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
@@ -262,33 +263,24 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("EditRequest");
 
-                entity.Property(e => e.NewName)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.NewName).HasMaxLength(50);
 
-                entity.Property(e => e.NewUserName)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.NewUserName).HasMaxLength(50);
 
-                entity.Property(e => e.OldName)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.OldName).HasMaxLength(50);
 
-                entity.Property(e => e.OldUserName)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.OldUserName).HasMaxLength(50);
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditReque__Accep__17F790F9");
+                    .HasConstraintName("FK__EditReque__Accep__29221CFB");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditReque__UserI__18EBB532");
+                    .HasConstraintName("FK__EditReque__UserI__2A164134");
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -371,6 +363,17 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Notfication>(entity =>
+            {
+                entity.ToTable("Notfication");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.Notfications)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Notficati__Clien__3C34F16F");
             });
 
             modelBuilder.Entity<Order>(entity =>

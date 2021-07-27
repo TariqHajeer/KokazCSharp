@@ -31,5 +31,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut("Accept/{id}")]
+        public IActionResult Accept(int id)
+        {
+            return Ok();
+        }
     }
 }

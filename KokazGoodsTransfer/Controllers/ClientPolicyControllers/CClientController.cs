@@ -76,6 +76,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     }
                     editRequest.Accept = null;
                     editRequest.ClientId = AuthoticateUserId();
+                    editRequest.UserId = null;
                     this.Context.Add(editRequest);
                 }
                 this.Context.SaveChanges();

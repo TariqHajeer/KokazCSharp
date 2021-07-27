@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.Models
             DisAcceptOrders = new HashSet<DisAcceptOrder>();
             EditRequests = new HashSet<EditRequest>();
             Markets = new HashSet<Market>();
+            Notfications = new HashSet<Notfication>();
             OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
             Receipts = new HashSet<Receipt>();
@@ -35,6 +36,7 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual ICollection<EditRequest> EditRequests { get; set; }
         public virtual ICollection<Market> Markets { get; set; }
+        public virtual ICollection<Notfication> Notfications { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }

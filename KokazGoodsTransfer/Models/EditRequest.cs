@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Models
         public string NewName { get; set; }
         public string OldUserName { get; set; }
         public string NewUserName { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public bool? Accept { get; set; }
 
         public virtual Client Client { get; set; }
