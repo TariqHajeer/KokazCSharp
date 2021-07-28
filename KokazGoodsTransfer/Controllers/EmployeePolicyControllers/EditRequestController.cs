@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -20,7 +21,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("NewEditReuqet")]
         public IActionResult NewEditRequest()
         {
-            var newEditRquests = this.Context.EditRequests.Where(c => c.Accept == null).ToList();
+            var newEditRquests = this.Context.EditRequests.Where(c => c.Accept == null)
+                .Include(c=>c.Client)
+                .ToList();
             return Ok(mapper.Map<EditRequestDto[]>(newEditRquests));
         }
         [HttpPut("DisAccpet")]

@@ -230,7 +230,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         }
         bool CodeExist(string code)
         {
-            if (this.Context.Orders.Where(c => c.Code == code).Any())
+            if (this.Context.Orders.Where(c => c.Code == code&&c.ClientId==AuthoticateUserId()).Any())
             {
                 return true;
             }
