@@ -88,7 +88,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 this.Context.Add(order);
                 this.Context.SaveChanges();
                 var orderItem = createOrderFromClient.OrderItem;
-                
+
                 if (orderItem != null)
                 {
                     foreach (var item in orderItem)
@@ -222,7 +222,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 transaction.Commit();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 transaction.Rollback();
                 return Conflict();
@@ -230,7 +230,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         }
         bool CodeExist(string code)
         {
-            if (this.Context.Orders.Where(c => c.Code == code&&c.ClientId==AuthoticateUserId()).Any())
+            if (this.Context.Orders.Where(c => c.Code == code && c.ClientId == AuthoticateUserId()).Any())
             {
                 return true;
             }
@@ -354,8 +354,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
             return Ok(mapper.Map<ReceiptDto[]>(repiq));
         }
-
-
-
+        
+        [HttpGet("NewNotfiaction")]
+        public IActionResult NewNotfiaction()
+        {
+            return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId()).Count());
+        }
     }
 }

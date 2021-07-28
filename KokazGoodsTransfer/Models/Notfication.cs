@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.Models
         public int? OrderCount { get; set; }
         public int? OrderPlacedId { get; set; }
         public int? MoneyPlacedId { get; set; }
+        public bool? IsSeen { get; set; }
 
         public virtual Client Client { get; set; }
     }

@@ -369,6 +369,8 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("Notfication");
 
+                entity.Property(e => e.IsSeen).HasDefaultValueSql("((0))");
+
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.ClientId)

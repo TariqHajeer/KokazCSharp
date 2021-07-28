@@ -820,7 +820,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             {
                                 ClientId = order.ClientId,
                                 OrderPlacedId = item.OrderplacedId,
-                                MoneyPlacedId = item.OrderplacedId
+                                MoneyPlacedId = item.OrderplacedId,
+                                IsSeen =false
                             };
                             notfications.Add(clientNotigaction);
                         }
@@ -1079,7 +1080,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
-            catch (Exception ex)
+            catch (Exception 
+            ex)
             {
                 transaction.Rollback();
                 return BadRequest();
