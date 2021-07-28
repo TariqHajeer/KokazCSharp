@@ -206,13 +206,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
                     this.Context.SaveChanges();
+                    transaction.Commit();
                 }
 
                 return Ok();
             }
             catch (Exception ex)
             {
-
+                transaction.Rollback();
                 return BadRequest(ex.Message);
             }
         }
