@@ -206,9 +206,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
                     this.Context.SaveChanges();
-                    transaction.Commit();
                 }
-
+                transaction.Commit();
                 return Ok();
             }
             catch (Exception ex)
@@ -698,7 +697,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     order.Note = item.Note;
 
-                    if (item.DeliveryCost != item.DeliveryCost)
+                    if (order.DeliveryCost != item.DeliveryCost)
                         if (order.OldDeliveryCost == null)
                             order.OldDeliveryCost = order.DeliveryCost;
                     order.DeliveryCost = item.DeliveryCost;
@@ -710,6 +709,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             case (int)OrderplacedEnum.Delivered:
                                 {
+                                    var payForClient = order.PayForClient();
                                     //order.OrderStateId = (int)OrderStateEnum.Finished;
                                     if (order.Cost != item.Cost)
                                     {
@@ -718,7 +718,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                         order.Cost = item.Cost;
                                     }
 
-                                    if (order.PayForClient() != order.ClientPaied)
+                                    if (payForClient != order.ClientPaied)
                                     {
                                         order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                                         if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
@@ -945,7 +945,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
-                    var PayForClient = item.PayForClient();
+                    var PayForClient = item.PayForClient() - item.ClientPaied ?? 0;
                     item.ClientPaied = (item.ClientPaied ?? 0) + PayForClient;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
