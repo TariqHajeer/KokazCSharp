@@ -16,5 +16,7 @@ namespace KokazGoodsTransfer.Models
         public bool? IsSeen { get; set; }
 
         public virtual Client Client { get; set; }
+        public virtual MoenyPlaced MoneyPlaced { get; set; }
+        public virtual OrderPlaced OrderPlaced { get; set; }
     }
 }

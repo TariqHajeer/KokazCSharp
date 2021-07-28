@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
@@ -297,6 +298,15 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<ClientDto>(obj.Client);
+                }));
+            CreateMap<Notfication, NotficationDto>()
+                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                }))
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
                 }));
 
         }

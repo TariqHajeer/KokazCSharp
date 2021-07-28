@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Models;
@@ -354,11 +355,18 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var repiq = this.Context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
             return Ok(mapper.Map<ReceiptDto[]>(repiq));
         }
-        
+
         [HttpGet("NewNotfiaction")]
         public IActionResult NewNotfiaction()
         {
             return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId()).Count());
+        }
+        [HttpGet("Notifcation/{pageNumber}")]
+        public IActionResult Notifcation(int pageNumber)
+        {
+            var notifactions = this.Context.Notfications.OrderByDescending(c => c.Id)
+                .Skip(pageNumber - 1).Take(20);
+            return Ok(mapper.Map<NotficationDto[]>(notifactions));
         }
     }
 }
