@@ -24,7 +24,9 @@ namespace KokazGoodsTransfer.Models.Static
                     return (order.ClientPaied??0) * -1;
                 //if (order.OrderplacedId == (int)OrderplacedEnum.PartialReturned)
                 //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
-                return (order.Cost - order.DeliveryCost) - ((decimal)(order.ClientPaied == null ? 0: order.ClientPaied)) ;
+                var shouldToPay = order.Cost - order.DeliveryCost;
+                var lastPaied = order.ClientPaied ?? 0;
+                return shouldToPay - lastPaied;
 
             }
         }

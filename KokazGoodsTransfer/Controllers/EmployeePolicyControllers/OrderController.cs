@@ -711,7 +711,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 {
                                     var payForClient = order.PayForClient();
                                     //order.OrderStateId = (int)OrderStateEnum.Finished;
-                                    if (order.Cost != item.Cost)
+                                    
+                                    if (Decimal.Compare(order.Cost, item.Cost)==0)
                                     {
                                         if (order.OldCost == null)
                                             order.OldCost = order.Cost;
@@ -820,8 +821,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             {
                                 ClientId = order.ClientId,
                                 OrderPlacedId = item.OrderplacedId,
-                                MoneyPlacedId = item.OrderplacedId,
-                                IsSeen =false
+                                MoneyPlacedId = item.MoenyPlacedId,
+                                IsSeen = false
                             };
                             notfications.Add(clientNotigaction);
                         }
@@ -946,8 +947,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
-                    var PayForClient = item.PayForClient() - item.ClientPaied ?? 0;
-                    item.ClientPaied = (item.ClientPaied ?? 0) + PayForClient;
+                    var PayForClient = item.PayForClient() + (item.ClientPaied ?? 0);
+                    item.ClientPaied = PayForClient;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -1080,7 +1081,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
-            catch (Exception 
+            catch (Exception
             ex)
             {
                 transaction.Rollback();
