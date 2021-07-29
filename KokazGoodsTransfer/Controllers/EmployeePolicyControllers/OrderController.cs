@@ -822,7 +822,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 ClientId = order.ClientId,
                                 OrderPlacedId = item.OrderplacedId,
                                 MoneyPlacedId = item.MoenyPlacedId,
-                                IsSeen = false
+                                IsSeen = false,
+                                OrderCount =1
                             };
                             notfications.Add(clientNotigaction);
                         }
