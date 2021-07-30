@@ -223,7 +223,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
 
                     //}
-                    return order.PayForClient();
+                    return order.ShouldToPay()-order.ClientPaied;
                 }));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

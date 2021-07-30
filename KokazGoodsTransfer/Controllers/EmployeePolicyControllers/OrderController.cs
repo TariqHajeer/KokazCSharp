@@ -709,17 +709,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             case (int)OrderplacedEnum.Delivered:
                                 {
-                                    var payForClient = order.PayForClient();
-                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
-                                    
-                                    if (Decimal.Compare(order.Cost, item.Cost)==0)
+                                    if (Decimal.Compare(order.Cost, item.Cost) != 0)
                                     {
                                         if (order.OldCost == null)
                                             order.OldCost = order.Cost;
                                         order.Cost = item.Cost;
                                     }
+                                    var payForClient = order.ShouldToPay();
+                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
 
-                                    if (payForClient != order.ClientPaied)
+
+                                    if (Decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                     {
                                         order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                                         if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
@@ -823,7 +823,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 OrderPlacedId = item.OrderplacedId,
                                 MoneyPlacedId = item.MoenyPlacedId,
                                 IsSeen = false,
-                                OrderCount =1
+                                OrderCount = 1
                             };
                             notfications.Add(clientNotigaction);
                         }
@@ -948,8 +948,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
-                    var PayForClient = item.PayForClient() + (item.ClientPaied ?? 0);
-                    item.ClientPaied = PayForClient;
+                    var PayForClient = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                    item.ClientPaied = item.ShouldToPay();
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {

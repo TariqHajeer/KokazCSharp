@@ -7,6 +7,13 @@ namespace KokazGoodsTransfer.Models.Static
 {
     public static class OrderHelper
     {
+        public static decimal ShouldToPay(this Order order)
+        {
+            if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                return 0;
+            return order.Cost - order.DeliveryCost; 
+
+        }
         public static decimal PayForClient(this Order order)
         {
             if (!order.IsClientDiliverdMoney)
@@ -25,8 +32,8 @@ namespace KokazGoodsTransfer.Models.Static
                 //if (order.OrderplacedId == (int)OrderplacedEnum.PartialReturned)
                 //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
                 var shouldToPay = order.Cost - order.DeliveryCost;
-                var lastPaied = order.ClientPaied ?? 0;
-                return shouldToPay - lastPaied;
+                //var lastPaied = order.ClientPaied ?? 0;
+                return shouldToPay  ;
 
             }
         }
