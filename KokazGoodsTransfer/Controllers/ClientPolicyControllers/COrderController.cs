@@ -364,7 +364,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Notifcation/{pageNumber}")]
         public IActionResult Notifcation(int pageNumber)
         {
-            var notifactions = this.Context.Notfications.OrderByDescending(c => c.Id)
+            var notifactions = this.Context.Notfications
+                .Include(c=>c.MoneyPlaced)
+                .Include(c => c.OrderPlaced)
+                .OrderByDescending(c => c.Id)
                 .Where(c=>c.ClientId == AuthoticateUserId())
                 .Skip(pageNumber - 1).Take(20);
             return Ok(mapper.Map<NotficationDto[]>(notifactions));
