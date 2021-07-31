@@ -372,7 +372,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Skip(pageNumber - 1).Take(20);
             return Ok(mapper.Map<NotficationDto[]>(notifactions));
         }
-        public IActionResult SeeNotifaction(int[] ids)
+        [HttpPut("SeeNotifactions")]
+        public IActionResult SeeNotifactions(int[] ids)
         {
             var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
             notfications.ForEach(c =>
