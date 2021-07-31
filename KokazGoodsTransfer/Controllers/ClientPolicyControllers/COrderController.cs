@@ -359,18 +359,30 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("NewNotfiaction")]
         public IActionResult NewNotfiaction()
         {
-            return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId()).Count());
+            return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true).Count());
         }
         [HttpGet("Notifcation/{pageNumber}")]
         public IActionResult Notifcation(int pageNumber)
         {
             var notifactions = this.Context.Notfications
-                .Include(c=>c.MoneyPlaced)
+                .Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
                 .OrderByDescending(c => c.Id)
-                .Where(c=>c.ClientId == AuthoticateUserId())
+                .Where(c => c.ClientId == AuthoticateUserId())
                 .Skip(pageNumber - 1).Take(20);
             return Ok(mapper.Map<NotficationDto[]>(notifactions));
+        }
+        public IActionResult SeeNotifaction(int[] ids)
+        {
+            var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
+            notfications.ForEach(c =>
+            {
+
+                c.IsSeen = true;
+                this.Context.Update(c);
+            });
+            this.Context.SaveChanges();
+            return Ok();
         }
     }
 }

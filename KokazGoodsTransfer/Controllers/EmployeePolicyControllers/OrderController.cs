@@ -778,9 +778,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
-                                    order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
 
-                                    if (order.Cost != item.Cost)
+                                       if (order.Cost != item.Cost)
                                     {
                                         if (order.OldCost == null)
                                             order.OldCost = order.Cost;
@@ -812,7 +812,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         }
                     }
                     this.Context.Update(order);
-                    if (order.OrderStateId != (int)OrderStateEnum.Finished)
+                    if (order.OrderStateId != (int)OrderStateEnum.Finished&&order.OrderplacedId!=(int)OrderplacedEnum.Way) 
                     {
                         var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
                         if (clientNotigaction == null)
@@ -949,7 +949,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         //    item.OrderStateId = (int)OrderStateEnum.Finished;
                     }
                     var PayForClient = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                    item.ClientPaied = item.ShouldToPay();
+                    item.ClientPaied = PayForClient;
                     this.Context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -970,7 +970,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        PayForClient = PayForClient
+                        PayForClient = item.ShouldToPay()
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
