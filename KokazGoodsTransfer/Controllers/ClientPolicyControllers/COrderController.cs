@@ -150,11 +150,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var order = this.Context.Orders
-            .Include(c => c.Country)
+                .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
+                .Include(c=>c.OrderPrints)
+                    .ThenInclude(c=>c.Print)
+                        .ThenInclude(c=>c.ClientPrints)
             .FirstOrDefault(c => c.Id == id);
             //if(order.ClientId!=AuthoticateUserId())
             return Ok(mapper.Map<OrderDto>(order));
