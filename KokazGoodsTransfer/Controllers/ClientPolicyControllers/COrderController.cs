@@ -287,6 +287,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
+                .Include(c=>c.OrderPrints)
+                    .ThenInclude(c=>c.Print)
+                    .ThenInclude(c=>c.ClientPrints)
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
@@ -373,7 +376,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(mapper.Map<NotficationDto[]>(notifactions));
         }
         [HttpPut("SeeNotifactions")]
-        public IActionResult SeeNotifactions(int[] ids)
+        public IActionResult SeeNotifactions([FromForm] int[] ids)
         {
             var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
             notfications.ForEach(c =>
@@ -385,5 +388,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+
     }
 }

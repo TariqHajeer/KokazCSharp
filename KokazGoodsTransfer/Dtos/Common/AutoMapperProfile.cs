@@ -47,10 +47,10 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
                 .MaxDepth(2)
-                .ForMember(c=>c.Agnets,opt=>opt.MapFrom((obj,dto,i,context)=>
-                {
-                    return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
-                }));
+                .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
+                     {
+                         return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
+                     }));
             CreateMap<User, UserDto>()
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
                 {
@@ -173,7 +173,16 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.OrderLogs, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
                          return context.Mapper.Map<OrderLogDto[]>(obj.OrderLogs);
-                     }));
+                     }))
+                .ForMember(c => c.AgentPrint, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent));
+                }))
+            .ForMember(c => c.ClientPrint, opt => opt.MapFrom((obj, dto, i, context) =>
+             {
+                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Client));
+             }));
+            ;
             CreateMap<Order, PayForClientDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
                 {
@@ -223,7 +232,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
 
                     //}
-                    return order.ShouldToPay()-(order.ClientPaied??0);
+                    return order.ShouldToPay() - (order.ClientPaied ?? 0);
                 }));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

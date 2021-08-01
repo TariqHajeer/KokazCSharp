@@ -780,7 +780,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 {
                                     //order.OrderStateId = (int)OrderStateEnum.Finished;
 
-                                       if (order.Cost != item.Cost)
+                                    if (order.Cost != item.Cost)
                                     {
                                         if (order.OldCost == null)
                                             order.OldCost = order.Cost;
@@ -812,7 +812,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         }
                     }
                     this.Context.Update(order);
-                    if (order.OrderStateId != (int)OrderStateEnum.Finished&&order.OrderplacedId!=(int)OrderplacedEnum.Way) 
+                    if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
                     {
                         var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
                         if (clientNotigaction == null)
