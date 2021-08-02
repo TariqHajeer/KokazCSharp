@@ -44,8 +44,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.PaymentWay)
                 .Where(c => c.ClientId == AuthoticateUserId());
             var total = paymentRequests.Count();
-            paymentRequests = paymentRequests.Skip(pagingDto.RowCount - 1).Take(pagingDto.RowCount);
+            paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.RowCount - 1).Take(pagingDto.RowCount);
             return Ok(mapper.Map<PayemntRquestDto[]>(paymentRequests.ToList()));
+        }
+        [HttpGet("GetPaymentWay")]
+        public IActionResult GetPaymentWay()
+        {
+            var paymentWay = this.Context.PaymentWays.ToList();
+            return Ok(mapper.Map<NameAndIdDto[]>(paymentWay));
         }
 
     }
