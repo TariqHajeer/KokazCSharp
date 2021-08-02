@@ -32,11 +32,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 PaymentWayId = createPaymentRequestDto.PaymentWayId,
                 Note = createPaymentRequestDto.Note,
                 ClientId = AuthoticateUserId(),
-                CreateDate  =createPaymentRequestDto.Date
+                CreateDate = createPaymentRequestDto.Date
             };
             this.Context.Add(paymentRequest);
             this.Context.SaveChanges();
-            return Ok();
+            return Ok(mapper.Map<PayemntRquestDto[]>(paymentRequest));
         }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto)
@@ -45,8 +45,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.PaymentWay)
                 .Where(c => c.ClientId == AuthoticateUserId());
             var total = paymentRequests.Count();
-            paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.RowCount - 1).Take(pagingDto.RowCount);
-            return Ok(mapper.Map<PayemntRquestDto[]>(paymentRequests.ToList()));
+            paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
+            var temp = paymentRequests.ToList();
+            var dto = mapper.Map<PayemntRquestDto[]>(temp);
+            return Ok(new { total, dto });
         }
         [HttpGet("GetPaymentWay")]
         public IActionResult GetPaymentWay()
