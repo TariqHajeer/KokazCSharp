@@ -42,6 +42,8 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
+        public virtual DbSet<PaymentRequest> PaymentRequests { get; set; }
+        public virtual DbSet<PaymentWay> PaymentWays { get; set; }
         public virtual DbSet<Printed> Printeds { get; set; }
         public virtual DbSet<Privilege> Privileges { get; set; }
         public virtual DbSet<Receipt> Receipts { get; set; }
@@ -275,12 +277,12 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditReque__Accep__29221CFB");
+                    .HasConstraintName("FK__EditReque__Accep__55F4C372");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__EditReque__UserI__2A164134");
+                    .HasConstraintName("FK__EditReque__UserI__56E8E7AB");
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -624,6 +626,32 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<PaymentRequest>(entity =>
+            {
+                entity.ToTable("PaymentRequest");
+
+                entity.Property(e => e.Accept).HasDefaultValueSql("((0))");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.PaymentRequests)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PaymentRe__Clien__5AB9788F");
+
+                entity.HasOne(d => d.PaymentWay)
+                    .WithMany(p => p.PaymentRequests)
+                    .HasForeignKey(d => d.PaymentWayId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PaymentRe__Payme__5BAD9CC8");
+            });
+
+            modelBuilder.Entity<PaymentWay>(entity =>
+            {
+                entity.ToTable("PaymentWay");
+
+                entity.Property(e => e.Name).IsRequired();
             });
 
             modelBuilder.Entity<Printed>(entity =>

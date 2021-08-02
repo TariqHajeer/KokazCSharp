@@ -11,6 +11,7 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
+using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
@@ -214,25 +215,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.PayForClient, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    //if (!order.IsClientDiliverdMoney)
-                    //{
-                    //    if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
-                    //        return 0;
-                    //    return order.Cost - order.DeliveryCost;
-                    //}
-                    //else
-                    //{
-
-                    //    if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
-                    //        return (order.ClientPaied) * -1;
-                    //    if (order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-                    //        return order.ClientPaied*-1;
-                    //    //if (order.OrderplacedId == (int)OrderplacedEnum.PartialReturned)
-                    //    //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
-                    //    return (order.Cost - order.DeliveryCost) - (order.ClientPaied);
-
-                    //}
-                    return order.ShouldToPay() - (order.ClientPaied ?? 0);
+                    var shoudToPay = order.ShouldToPay();
+                    return shoudToPay - (order.ClientPaied ?? 0);
                 }));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
@@ -317,6 +301,17 @@ namespace KokazGoodsTransfer.Dtos.Common
                 {
                     return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
                 }));
+            CreateMap<PaymentWay, NameAndIdDto>()
+                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.PaymentRequests.Count() == 0));
+            CreateMap<PaymentRequest, PayemntRquestDto>()
+                .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
+                     {
+                         return context.Mapper.Map<ClientDto>(obj.Client);
+                     }))
+                .ForMember(c => c.PaymentWay, opt => opt.MapFrom((obj, dto, i, context) =>
+                  {
+                      return context.Mapper.Map<NameAndIdDto>(obj.PaymentWay);
+                  }));
 
         }
     }

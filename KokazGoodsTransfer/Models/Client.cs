@@ -16,6 +16,7 @@ namespace KokazGoodsTransfer.Models
             Notfications = new HashSet<Notfication>();
             OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
+            PaymentRequests = new HashSet<PaymentRequest>();
             Receipts = new HashSet<Receipt>();
         }
 
@@ -39,6 +40,7 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<Notfication> Notfications { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }
     }
 }
