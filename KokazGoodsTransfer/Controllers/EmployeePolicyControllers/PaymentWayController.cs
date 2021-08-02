@@ -28,7 +28,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             paymentWay.Name = nameAndIdDto.Name;
             this.Context.Add(paymentWay);
             this.Context.SaveChanges();
-            return Ok(mapper.Map<NameAndIdDto[]>(paymentWay));
+            
+            return Ok(mapper.Map<NameAndIdDto>(paymentWay));
         }
         [HttpGet]
         public IActionResult Get()

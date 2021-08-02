@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,15 +19,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public PrintController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        [HttpGet("{printNumber}")]
+        public IActionResult Get(int printNumber)
         {
             var print = this.Context.Printeds
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Order)
                 .Include(c => c.Receipts)
                 .Include(c => c.ClientPrints)
-                .Where(c => c.Id == id);
+                .Where(c => c.Type == PrintType.Client && c.PrintNmber == printNumber);
             return Ok(mapper.Map<PrintOrdersDto>(print));
         }
     }
