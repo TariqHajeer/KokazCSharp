@@ -32,6 +32,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 PaymentWayId = createPaymentRequestDto.PaymentWayId,
                 Note = createPaymentRequestDto.Note,
                 ClientId = AuthoticateUserId(),
+                CreateDate  =createPaymentRequestDto.Date
             };
             this.Context.Add(paymentRequest);
             this.Context.SaveChanges();

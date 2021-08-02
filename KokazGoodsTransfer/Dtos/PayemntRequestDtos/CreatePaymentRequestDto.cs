@@ -9,5 +9,6 @@ namespace KokazGoodsTransfer.Dtos.PayemntRequestDtos
     {
         public int PaymentWayId { get; set; }
         public string Note { get; set; }
+        public DateTime Date { get; set; }
     }
 }
