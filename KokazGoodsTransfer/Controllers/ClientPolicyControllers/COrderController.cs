@@ -155,9 +155,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Include(c=>c.OrderPrints)
-                    .ThenInclude(c=>c.Print)
-                        .ThenInclude(c=>c.ClientPrints)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+                        .ThenInclude(c => c.ClientPrints)
             .FirstOrDefault(c => c.Id == id);
             //if(order.ClientId!=AuthoticateUserId())
             return Ok(mapper.Map<OrderDto>(order));
@@ -290,9 +290,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Include(c=>c.OrderPrints)
-                    .ThenInclude(c=>c.Print)
-                    .ThenInclude(c=>c.ClientPrints)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+                    .ThenInclude(c => c.ClientPrints)
                 .ToList();
             return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
         }
@@ -367,19 +367,26 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true).Count());
         }
-        [HttpGet("Notifcation/{pageNumber}")]
-        public IActionResult Notifcation(int pageNumber)
+        [HttpGet("Notifcation")]
+        public IActionResult Notifcation([FromQuery]PagingDto pagingDto)
         {
+            //var notifactions = this.Context.Notfications
+            //    .Include(c => c.MoneyPlaced)
+            //    .Include(c => c.OrderPlaced)
+            //    .OrderByDescending(c => c.Id)
+            //    .Where(c => c.ClientId == AuthoticateUserId())
+            //    .Skip(pageNumber - 1).Take(20);
+            //return Ok(mapper.Map<NotficationDto[]>(notifactions));
             var notifactions = this.Context.Notfications
                 .Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
-                .OrderByDescending(c => c.Id)
-                .Where(c => c.ClientId == AuthoticateUserId())
-                .Skip(pageNumber - 1).Take(20);
-            return Ok(mapper.Map<NotficationDto[]>(notifactions));
+                .Where(c => c.ClientId == AuthoticateUserId());
+            var total = notifactions.Count();
+            notifactions = notifactions.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
+            return Ok(new { Total = total, Data = mapper.Map<NotficationDto[]>(notifactions) });
         }
         [HttpPut("SeeNotifactions")]
-        public IActionResult SeeNotifactions([FromForm] int[] ids)
+        public IActionResult SeeNotifactions([FromBody] int[] ids)
         {
             var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
             notfications.ForEach(c =>
