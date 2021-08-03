@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     .ThenInclude(c => c.Order)
                 .Include(c => c.Receipts)
                 .Include(c => c.ClientPrints)
-                .Where(c => c.Type == PrintType.Client && c.PrintNmber == printNumber);
+                .Where(c => c.Type == PrintType.Client && c.PrintNmber == printNumber).FirstOrDefault();
             return Ok(mapper.Map<PrintOrdersDto>(print));
         }
     }
