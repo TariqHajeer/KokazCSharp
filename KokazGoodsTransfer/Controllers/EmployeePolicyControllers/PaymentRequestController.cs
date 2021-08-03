@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             Notfication notfication = new Notfication()
             {
 
-            }
+            };
             this.Context.SaveChanges();
 
             return Ok();
