@@ -14,6 +14,7 @@ namespace KokazGoodsTransfer.Dtos.PayemntRequestDtos
         //public int PaymentWayId { get; set; }
         public string Note { get; set; }
         public bool? Accept { get; set; }
+        public DateTime CreateDate { get; set; }
         public ClientDto Client { get; set; }
         public NameAndIdDto PaymentWay { get; set; }
     }

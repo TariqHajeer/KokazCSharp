@@ -27,5 +27,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.Accept != true).ToList();
             return Ok(mapper.Map<PayemntRquestDto[]>(newPaymentRequets));
         }
+        [HttpPut("{id}")]
+        public IActionResult Accept(int id)
+        {
+            var paymentRquest = this.Context.PaymentRequests.Find(id);
+            paymentRquest.Accept = true;
+            this.Context.Update(paymentRquest);
+            Notfication notfication = new Notfication()
+            {
+
+            }
+            this.Context.SaveChanges();
+
+            return Ok();
+        }
     }
 }
