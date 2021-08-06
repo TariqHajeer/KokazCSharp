@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Models;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
         public List<PrintDto> Orders { get; set; }
-        public List<Receipt> Receipts { get; set; }
+        public List<ReceiptDto> Receipts { get; set; }
 
     }
     public  class PrintDto

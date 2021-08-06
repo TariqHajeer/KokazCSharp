@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
+using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -505,6 +506,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }));
 
             return Ok(codeStatuses);
+        }
+        [HttpGet("NewOrderCount")]
+        public IActionResult NewOrderCount()
+        {
+            var Count = this.Context.Orders
+                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .Count();
+            return Ok(Count);
         }
         [HttpGet("NewOrders")]
         public IActionResult GetNewOrders()
@@ -1212,11 +1221,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
         {
             var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
+                .Include(c => c.Receipts)
                 .Include(c => c.ClientPrints)
                     .ThenInclude(c => c.OrderPlaced)
-                .Include(c => c.ClientPrints)
-                    .ThenInclude(c=>c.Print)
-                    .ThenInclude(c=>c.Receipts)
                 .FirstOrDefault();
             if (printed == null)
             {
