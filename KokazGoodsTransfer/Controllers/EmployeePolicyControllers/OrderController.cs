@@ -1214,6 +1214,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
                 .Include(c => c.ClientPrints)
                     .ThenInclude(c => c.OrderPlaced)
+                .Include(c => c.ClientPrints)
+                    .ThenInclude(c=>c.Print)
+                    .ThenInclude(c=>c.Receipts)
                 .FirstOrDefault();
             if (printed == null)
             {

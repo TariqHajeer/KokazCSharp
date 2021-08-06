@@ -370,13 +370,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Notifcation")]
         public IActionResult Notifcation([FromQuery]PagingDto pagingDto)
         {
-            //var notifactions = this.Context.Notfications
-            //    .Include(c => c.MoneyPlaced)
-            //    .Include(c => c.OrderPlaced)
-            //    .OrderByDescending(c => c.Id)
-            //    .Where(c => c.ClientId == AuthoticateUserId())
-            //    .Skip(pageNumber - 1).Take(20);
-            //return Ok(mapper.Map<NotficationDto[]>(notifactions));
             var notifactions = this.Context.Notfications
                 .Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
@@ -391,7 +384,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
             notfications.ForEach(c =>
             {
-
                 c.IsSeen = true;
                 this.Context.Update(c);
             });
