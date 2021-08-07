@@ -41,7 +41,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var country = new Country()
             {
                 Name = createCountryDto.Name,
-                DeliveryCost = createCountryDto.DeliveryCost
+                DeliveryCost = createCountryDto.DeliveryCost,
+                MediatorId =createCountryDto.MediatorId
             };
 
             if (createCountryDto.Regions != null)
@@ -65,6 +66,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             country.Name = updateCountryDto.Name;
             country.DeliveryCost = updateCountryDto.DeliveryCost;
+            country.MediatorId = updateCountryDto.MediatorId;
             this.Context.Update(country);   
             this.Context.SaveChanges();
             return Ok();

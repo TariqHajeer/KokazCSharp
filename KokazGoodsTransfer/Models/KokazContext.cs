@@ -209,9 +209,16 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.MediatorId).HasColumnName("mediatorId");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.Mediator)
+                    .WithMany(p => p.InverseMediator)
+                    .HasForeignKey(d => d.MediatorId)
+                    .HasConstraintName("FK__Country__mediato__74794A92");
             });
 
             modelBuilder.Entity<Currency>(entity =>
@@ -377,17 +384,17 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Notficati__Clien__3C34F16F");
+                    .HasConstraintName("FK__Notficati__Clien__6442E2C9");
 
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__Notficati__Money__40058253");
+                    .HasConstraintName("FK__Notficati__Money__65370702");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__Notficati__Order__3E1D39E1");
+                    .HasConstraintName("FK__Notficati__Order__662B2B3B");
             });
 
             modelBuilder.Entity<Order>(entity =>
