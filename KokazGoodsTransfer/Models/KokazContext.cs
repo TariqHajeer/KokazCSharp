@@ -441,10 +441,15 @@ namespace KokazGoodsTransfer.Models
                     .HasConstraintName("FK_Order_Clients");
 
                 entity.HasOne(d => d.Country)
-                    .WithMany(p => p.Orders)
+                    .WithMany(p => p.OrderCountries)
                     .HasForeignKey(d => d.CountryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Country");
+
+                entity.HasOne(d => d.CurrentCountryNavigation)
+                    .WithMany(p => p.OrderCurrentCountryNavigations)
+                    .HasForeignKey(d => d.CurrentCountry)
+                    .HasConstraintName("FK__Order__CurrentCo__078C1F06");
 
                 entity.HasOne(d => d.MoenyPlaced)
                     .WithMany(p => p.Orders)
@@ -638,6 +643,8 @@ namespace KokazGoodsTransfer.Models
             modelBuilder.Entity<PaymentRequest>(entity =>
             {
                 entity.ToTable("PaymentRequest");
+
+                entity.Property(e => e.Accept).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.CreateDate).HasColumnType("date");
 

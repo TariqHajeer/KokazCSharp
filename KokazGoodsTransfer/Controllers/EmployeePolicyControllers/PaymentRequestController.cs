@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPaymentRequets = this.Context.PaymentRequests
                 .Include(c => c.Client)
                 .Include(c => c.PaymentWay)
-                .Where(c => c.Accept != true).ToList();
+                .Where(c => c.Accept ==null).ToList();
             return Ok(mapper.Map<PayemntRquestDto[]>(newPaymentRequets));
         }
         [HttpPut("{id}")]

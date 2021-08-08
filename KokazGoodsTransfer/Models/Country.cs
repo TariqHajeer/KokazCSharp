@@ -13,8 +13,9 @@ namespace KokazGoodsTransfer.Models
             Clients = new HashSet<Client>();
             DisAcceptOrders = new HashSet<DisAcceptOrder>();
             InverseMediator = new HashSet<Country>();
+            OrderCountries = new HashSet<Order>();
+            OrderCurrentCountryNavigations = new HashSet<Order>();
             OrderLogs = new HashSet<OrderLog>();
-            Orders = new HashSet<Order>();
             Regions = new HashSet<Region>();
         }
 
@@ -28,8 +29,9 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual ICollection<Country> InverseMediator { get; set; }
+        public virtual ICollection<Order> OrderCountries { get; set; }
+        public virtual ICollection<Order> OrderCurrentCountryNavigations { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Region> Regions { get; set; }
     }
 }

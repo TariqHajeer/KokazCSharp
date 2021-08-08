@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("CanRequest")]
         public IActionResult CanRequest()
         {
-            return Ok(!this.Context.PaymentRequests.Any(c => c.ClientId == AuthoticateUserId() && c.Accept != true));
+            return Ok(!this.Context.PaymentRequests.Any(c => c.ClientId == AuthoticateUserId() && c.Accept == null));
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreatePaymentRequestDto createPaymentRequestDto)
@@ -32,11 +32,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 PaymentWayId = createPaymentRequestDto.PaymentWayId,
                 Note = createPaymentRequestDto.Note,
                 ClientId = AuthoticateUserId(),
-                CreateDate = createPaymentRequestDto.Date
+                CreateDate = createPaymentRequestDto.Date,
+                Accept =null
             };
             this.Context.Add(paymentRequest);
             this.Context.SaveChanges();
-            return Ok(mapper.Map<PayemntRquestDto[]>(paymentRequest));
+            return Ok(mapper.Map<PayemntRquestDto>(paymentRequest));
         }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto)

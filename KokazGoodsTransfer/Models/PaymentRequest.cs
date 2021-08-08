@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Models
         public int ClientId { get; set; }
         public int PaymentWayId { get; set; }
         public string Note { get; set; }
-        public bool Accept { get; set; }
+        public bool? Accept { get; set; }
         public DateTime CreateDate { get; set; }
 
         public virtual Client Client { get; set; }
