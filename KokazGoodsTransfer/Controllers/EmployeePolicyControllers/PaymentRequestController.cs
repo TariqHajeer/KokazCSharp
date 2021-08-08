@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
         }
         [HttpGet]
-        public IActionResult Get([FromQuery]PagingDto pagingDto, PaymentFilterDto Filter)
+        public IActionResult Get([FromQuery]PagingDto pagingDto, [FromQuery] PaymentFilterDto Filter)
         {
             var paymentRquest = this.Context.PaymentRequests
                 .Include(c => c.Client)
