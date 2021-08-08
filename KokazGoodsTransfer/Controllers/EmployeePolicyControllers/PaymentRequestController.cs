@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,37 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
         public PaymentRequestController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
+        }
+        [HttpGet]
+        public IActionResult Get([FromQuery]PagingDto pagingDto, PaymentFilterDto Filter)
+        {
+            var paymentRquest = this.Context.PaymentRequests
+                .Include(c => c.Client)
+                .Include(c => c.PaymentWay)
+                .AsQueryable();
+            if (Filter.Id != null)
+            {
+                paymentRquest = paymentRquest.Where(c => c.Id.ToString().StartsWith(Filter.Id.ToString()));
+            }
+            if (Filter.ClientId != null)
+            {
+                paymentRquest = paymentRquest.Where(c => c.ClientId == Filter.ClientId);
+            }
+            if (Filter.PaymentWayId != null)
+            {
+                paymentRquest = paymentRquest.Where(c => c.PaymentWayId == Filter.PaymentWayId);
+            }
+            if (Filter.Accept != null)
+            {
+                paymentRquest = paymentRquest.Where(c => c.Accept == Filter.Accept);
+            }
+            if (Filter.CreateDate != null)
+            {
+                paymentRquest = paymentRquest.Where(c => c.CreateDate == Filter.CreateDate);
+            }
+            var total = paymentRquest.Count();
+            var list = paymentRquest.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
+            return Ok(new { total, data = mapper.Map<PayemntRquestDto[]>(list) });
         }
         [HttpGet("New")]
         public IActionResult New()
@@ -41,5 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok();
         }
+
+
     }
 }
