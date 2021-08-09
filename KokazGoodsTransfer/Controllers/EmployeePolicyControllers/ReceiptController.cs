@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var totalRreq = repiq.Count();
             var replist = repiq.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
+                .Include(c=>c.Print)
                 .ToList();
             var data = mapper.Map<ReceiptDto[]>(replist);
             return Ok(new { data, total = totalRreq });

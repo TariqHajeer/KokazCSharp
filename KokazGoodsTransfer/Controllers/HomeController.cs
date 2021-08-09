@@ -31,14 +31,14 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult GetMarket()
         {
             List<MarketDto> markets = new List<MarketDto>();
-            foreach (var item in this.Context.Markets.Where(c=>c.IsActive==true).ToList())
+            foreach (var item in this.Context.Markets.Where(c => c.IsActive == true).ToList())
             {
                 var temp = new MarketDto()
                 {
                     Id = item.Id,
                     Name = item.Name,
                     Description = item.Description,
-                    IsActive =(bool) item.IsActive,
+                    IsActive = (bool)item.IsActive,
                     MarketUrl = item.MarketUrl,
                     LogoPath = "MarketLogo/" + item.LogoPath
                 };
@@ -60,7 +60,7 @@ namespace KokazGoodsTransfer.Controllers
         public IActionResult TrackingOrder([FromQuery] string code, string phone)
         {
             var orders = this.Context.Orders
-                .Include(c=>c.Orderplaced)
+                .Include(c => c.Orderplaced)
                 .Where(c => c.Code == code);
             if (!String.IsNullOrEmpty(phone))
             {
@@ -68,5 +68,14 @@ namespace KokazGoodsTransfer.Controllers
             }
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        //List<Country> GetPath(Country country, List<Country> countries =null)
+        //{
+        //    if (country.MediatorId != null)
+        //    {
+        //        var mid = this.Context.Countries.Find(country.MediatorId);
+        //        GetPath(mid, countries);
+        //    }
+        //    countries.Add(country);
+        //}
     }
 }
