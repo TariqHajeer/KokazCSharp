@@ -290,7 +290,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }));
 
             CreateMap<Receipt, ReceiptDto>()
-                .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name));
+                .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name))
+                .ForMember(c=>c.PrintNumber,opt=>opt.MapFrom(c=>c.Print.PrintNmber));
             CreateMap<EditRequest, EditRequestDto>()
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {

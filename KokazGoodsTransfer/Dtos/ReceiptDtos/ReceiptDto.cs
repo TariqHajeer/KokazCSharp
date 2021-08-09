@@ -17,5 +17,6 @@ namespace KokazGoodsTransfer.Dtos.ReceiptDtos
         public bool IsPay { get; set; }
         public int? PrintId { get; set; }
         public string ClientName { get; set; }
+        public int? PrintNumber { get; set; }
     }
 }
