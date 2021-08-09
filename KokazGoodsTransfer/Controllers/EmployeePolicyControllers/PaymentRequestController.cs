@@ -59,6 +59,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.Accept ==null).ToList();
             return Ok(mapper.Map<PayemntRquestDto[]>(newPaymentRequets));
         }
+        [HttpGet("NewCount")]
+        public IActionResult NewCount()
+        {
+            var newPaymentRequetsCount = this.Context.PaymentRequests
+                .Where(c => c.Accept == null).Count();
+            return Ok(newPaymentRequetsCount);
+        }
         [HttpPut("{id}")]
         public IActionResult Accept(int id)
         {
