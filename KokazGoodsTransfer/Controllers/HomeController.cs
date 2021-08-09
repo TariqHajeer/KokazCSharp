@@ -61,21 +61,34 @@ namespace KokazGoodsTransfer.Controllers
         {
             var orders = this.Context.Orders
                 .Include(c => c.Orderplaced)
+                .Include(c=>c.Country)
                 .Where(c => c.Code == code);
             if (!String.IsNullOrEmpty(phone))
             {
                 orders = orders.Where(c => c.RecipientPhones.Contains(phone));
             }
-            return Ok(mapper.Map<OrderDto[]>(orders));
+            var dto = mapper.Map<OrderDto[]>(orders).ToList();
+            dto.ForEach(c =>
+            {
+
+                var country = this.Context.Countries.Find(c.Country.Id);
+                c.Path = mapper.Map<CountryDto[]>(GetPath(country, null)).ToList();
+            });
+            return Ok(dto);
         }
-        //List<Country> GetPath(Country country, List<Country> countries =null)
-        //{
-        //    if (country.MediatorId != null)
-        //    {
-        //        var mid = this.Context.Countries.Find(country.MediatorId);
-        //        GetPath(mid, countries);
-        //    }
-        //    countries.Add(country);
-        //}
+        List<Country> GetPath(Country country, List<Country> countries = null)
+        {
+            if (country.MediatorId != null)
+            {
+                var mid = this.Context.Countries.Find(country.MediatorId);
+                countries = GetPath(mid, countries);
+
+            }
+            if (countries == null)
+                countries = new List<Country>();
+            countries.Add(country);
+            return countries;
+        }
+
     }
 }

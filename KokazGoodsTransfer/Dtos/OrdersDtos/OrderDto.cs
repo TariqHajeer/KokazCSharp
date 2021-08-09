@@ -45,6 +45,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public List<OrderLogDto> OrderLogs { get; set; }
         public List<PrintOrdersDto> AgentPrint { get; set; }
         public List<PrintOrdersDto> ClientPrint { get; set; }
+        public List<CountryDto> Path { get; set; }
 
 
     }
