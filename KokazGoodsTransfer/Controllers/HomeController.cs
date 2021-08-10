@@ -63,6 +63,7 @@ namespace KokazGoodsTransfer.Controllers
                 .Include(c => c.Orderplaced)
                 .Include(c=>c.Country)
                 .Include(c=>c.Client)
+                .ThenInclude(c=>c.ClientPhones)
                 .Where(c => c.Code == code);
             if (!String.IsNullOrEmpty(phone))
             {
