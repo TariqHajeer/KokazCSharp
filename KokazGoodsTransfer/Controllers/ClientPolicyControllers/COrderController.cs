@@ -150,6 +150,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var order = this.Context.Orders
+                .Include(c=>c.Agent)
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
