@@ -122,7 +122,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var order = mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
-
+                order.CurrentCountry = this.Context.Countries.Where(c => c.IsMain == true).FirstOrDefault().Id;
                 order.CreatedBy = AuthoticateUserName();
                 if (this.Context.Orders.Where(c => c.Code == order.Code && c.ClientId == order.ClientId).Any())
                 {
@@ -291,6 +291,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.AgentCost = this.Context.Users.Find(order.AgentId).Salary ?? 0;
                     order.Date = item.Date;
                     order.OrderplacedId = (int)OrderplacedEnum.Store;
+                    order.CurrentCountry = this.Context.Countries.Where(c => c.IsMain == true).FirstOrDefault().Id;
                     order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
                     this.Context.SaveChanges();

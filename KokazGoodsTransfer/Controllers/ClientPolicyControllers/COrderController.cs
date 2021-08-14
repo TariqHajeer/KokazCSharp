@@ -86,6 +86,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 order.OrderStateId = (int)OrderStateEnum.Processing;
                 order.RecipientPhones = String.Join(',', createOrderFromClient.RecipientPhones);
                 order.IsSend = false;
+                order.CurrentCountry = this.Context.Countries.Where(c => c.IsMain == true).FirstOrDefault().Id;
                 this.Context.Add(order);
                 this.Context.SaveChanges();
                 var orderItem = createOrderFromClient.OrderItem;

@@ -23,6 +23,7 @@ namespace KokazGoodsTransfer.Models
         public string Name { get; set; }
         public decimal DeliveryCost { get; set; }
         public int? MediatorId { get; set; }
+        public bool IsMain { get; set; }
 
         public virtual Country Mediator { get; set; }
         public virtual ICollection<AgentCountr> AgentCountrs { get; set; }

@@ -42,8 +42,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 Name = createCountryDto.Name,
                 DeliveryCost = createCountryDto.DeliveryCost,
-                MediatorId =createCountryDto.MediatorId
+                MediatorId = createCountryDto.MediatorId,
+                IsMain = false
             };
+            if (this.Context.Countries.Count() == 0)
+            {
+                country.IsMain = true;
+            }
 
             if (createCountryDto.Regions != null)
                 foreach (var item in createCountryDto.Regions)
@@ -109,6 +114,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-
+        [HttpPut("SetMain/{id}")]
+        public IActionResult SetIsMain(int id )
+        {
+            var country = this.Context.Countries.Find(id);
+            var mainCountry = this.Context.Countries.Where(c => c.IsMain == true).ToList();
+            mainCountry.ForEach(c =>
+            {
+                c.IsMain = false;
+            });
+            country.IsMain = true;
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }
