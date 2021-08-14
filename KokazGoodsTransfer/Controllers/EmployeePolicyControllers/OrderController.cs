@@ -435,7 +435,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         if (test)
                         {
-                            c.NextCountryDto = mapper.Map<CountryDto>(p);
+
+
+                            c.NextCountryDto = mapper.Map<CountryDto>(item);
                             break;
                         }
                         if (item.Id == c.CurrentCountry)
