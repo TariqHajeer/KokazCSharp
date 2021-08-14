@@ -37,6 +37,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public bool? IsSend { get; set; }
         public ClientDto Client { get; set; }
         public CountryDto Country { get; set; }
+        public CountryDto NextCountryDto { get; set; }
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
         public NameAndIdDto Orderplaced { get; set; }

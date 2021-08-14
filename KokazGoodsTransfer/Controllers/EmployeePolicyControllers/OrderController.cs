@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
@@ -410,7 +411,56 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        
+        [HttpGet("TrakingOrder")]
+        public IActionResult Get([FromQuery] int agentId, int? nextCountry)
+        {
+            var orders = this.Context.Orders
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Where(c => c.AgentId == agentId && c.OrderplacedId == (int)OrderplacedEnum.Way && c.Country.MediatorId != null&&c.CurrentCountry!=nextCountry).ToList();
+            var dto = mapper.Map<OrderDto[]>(orders).ToList();
+
+            if (nextCountry != null)
+            {
+                Dictionary<int, List<Country>> paths = new Dictionary<int, List<Country>>();
+                dto.ForEach(c =>
+                {
+                    if (!paths.ContainsKey(c.Country.Id))
+                    {
+                        paths.Add(c.Country.Id, GetPath(this.Context.Countries.Find(c.Country.Id)));
+                    }
+                    var path = paths[c.Country.Id];
+                    bool test = false;
+                    foreach (var item in path)
+                    {
+                        if (test)
+                        {
+                            c.NextCountryDto = mapper.Map<CountryDto>(p);
+                            break;
+                        }
+                        if (item.Id == c.CurrentCountry)
+                        {
+                            test = true;
+                        }
+                    }
+                });
+            }
+            return Ok(dto);
+        }
+        List<Country> GetPath(Country country, List<Country> countries = null)
+        {
+            if (country.MediatorId != null)
+            {
+                var mid = this.Context.Countries.Find(country.MediatorId);
+                countries = GetPath(mid, countries);
+
+            }
+            if (countries == null)
+                countries = new List<Country>();
+            countries.Add(country);
+            return countries;
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
