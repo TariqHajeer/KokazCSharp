@@ -417,7 +417,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = this.Context.Orders
                 .Include(c => c.Country)
                 .Include(c => c.Client)
-                .Where(c => c.AgentId == agentId && c.OrderplacedId == (int)OrderplacedEnum.Way && c.Country.MediatorId != null&&c.CurrentCountry!=nextCountry).ToList();
+                .Where(c => c.AgentId == agentId && c.OrderplacedId == (int)OrderplacedEnum.Way && c.Country.MediatorId != null).AsQueryable();
+            if (nextCountry != null)
+            {
+                orders = orders.Where(c => c.CurrentCountry != nextCountry);
+            }
             var dto = mapper.Map<OrderDto[]>(orders).ToList();
 
             if (nextCountry != null)
@@ -436,7 +440,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         if (test)
                         {
 
-
                             c.NextCountryDto = mapper.Map<CountryDto>(item);
                             break;
                         }
@@ -448,6 +451,36 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 });
             }
             return Ok(dto);
+        }
+        [HttpPut("MoveToNextStep")]
+        public IActionResult MoveToNextStep([FromBody] int[] ids)
+        {
+            var orders= this.Context.Orders
+                .Include(c=>c.Country)
+                .Where(c => ids.Contains(c.Id)).ToList();
+            Dictionary<int, List<Country>> paths = new Dictionary<int, List<Country>>();
+            foreach (var item in orders)
+            {
+                if (!paths.ContainsKey(item.CountryId))
+                {
+                    paths.Add(item.CountryId, GetPath(item.Country));
+                }
+                var path = paths[item.Country.Id];
+                bool test = false;
+                foreach (var country in path)
+                {
+                    if (test)
+                    {
+                        item.CurrentCountry = country.Id;
+                    }
+                    if (country.Id == item.CurrentCountry)
+                    {
+                        test = true;
+                    }
+                }
+            }
+            this.Context.SaveChanges();
+            return Ok();
         }
         List<Country> GetPath(Country country, List<Country> countries = null)
         {

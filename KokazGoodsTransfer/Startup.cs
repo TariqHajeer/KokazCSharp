@@ -39,7 +39,7 @@ namespace KokazGoodsTransfer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));          
             services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
             services.AddCors(options =>
