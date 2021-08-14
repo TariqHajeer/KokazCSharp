@@ -150,7 +150,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var order = this.Context.Orders
-                .Include(c=>c.Agent)
+                .Include(c => c.Agent)
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
@@ -355,7 +355,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             var o = mapper.Map<OrderDto[]>(orders);
             return Ok(o);
-            }
+        }
         [HttpGet("UnPaidRecipt")]
         public IActionResult UnPaidRecipt()
         {

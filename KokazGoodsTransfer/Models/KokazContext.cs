@@ -644,8 +644,6 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("PaymentRequest");
 
-                entity.Property(e => e.Accept).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.CreateDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Client)

@@ -33,7 +33,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 Note = createPaymentRequestDto.Note,
                 ClientId = AuthoticateUserId(),
                 CreateDate = createPaymentRequestDto.Date,
-                Accept =null
+                Accept = null
             };
             this.Context.Add(paymentRequest);
             this.Context.SaveChanges();
@@ -56,6 +56,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             var paymentWay = this.Context.PaymentWays.ToList();
             return Ok(mapper.Map<NameAndIdDto[]>(paymentWay));
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var payemntRquest= this.Context.PaymentRequests.Find(id);
+            if (payemntRquest.Accept != null)
+                return Conflict();
+            this.Context.PaymentRequests.Remove(payemntRquest);
+            
+            this.Context.SaveChanges();
+            return Ok();
         }
 
     }
