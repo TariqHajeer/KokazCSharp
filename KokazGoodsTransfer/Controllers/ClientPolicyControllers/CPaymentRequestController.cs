@@ -63,8 +63,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var payemntRquest= this.Context.PaymentRequests.Find(id);
             if (payemntRquest.Accept != null)
                 return Conflict();
-            this.Context.PaymentRequests.Remove(payemntRquest);
-            
+            this.Context.PaymentRequests.Remove(payemntRquest);   
             this.Context.SaveChanges();
             return Ok();
         }

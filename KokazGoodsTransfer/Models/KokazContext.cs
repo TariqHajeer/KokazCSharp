@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Models
     {
         public KokazContext()
         {
+
         }
 
         public KokazContext(DbContextOptions<KokazContext> options)

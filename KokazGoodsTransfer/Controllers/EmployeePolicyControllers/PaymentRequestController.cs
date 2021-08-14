@@ -66,7 +66,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.Accept == null).Count();
             return Ok(newPaymentRequetsCount);
         }
-        [HttpPut("{id}")]
+        [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
             var paymentRquest = this.Context.PaymentRequests.Find(id);
@@ -80,7 +80,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok();
         }
+        [HttpPut("DisAccept/{id}")]
+        public IActionResult DisAccept(int id)
+        {
+            var paymentRquest = this.Context.PaymentRequests.Find(id);
+            paymentRquest.Accept = false;
+            this.Context.Update(paymentRquest);
+            Notfication notfication = new Notfication()
+            {
 
+            };
+            this.Context.SaveChanges();
+            return Ok();
+        }
 
     }
 }
