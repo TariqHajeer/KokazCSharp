@@ -611,8 +611,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Country)
                     .ThenInclude(c => c.AgentCountrs)
                         .ThenInclude(c => c.Agent)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
@@ -625,6 +623,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orderIQ = this.Context.Orders
                     .Include(c => c.Client)
                     .Include(c => c.Country)
+                    .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Client)
+                .ThenInclude(c => c.Country)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                    .ThenInclude(c => c.AgentCountrs)
+                        .ThenInclude(c => c.Agent)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
                .AsQueryable();
             if (orderFilter.CountryId != null)
             {
@@ -691,6 +700,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
             }
             return Ok(mapper.Map<OrderDto[]>(orderIQ.ToArray()));
+        }
+
+        [HttpGet("OrderAtClientCount")]
+        public IActionResult OrderAtClientCount()
+        {
+            var Count = this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+               .Count();
+            return Ok(Count);
         }
         [HttpPut("Accept")]
         public IActionResult Accept([FromBody] IdsDto idsDto)
