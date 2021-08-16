@@ -30,9 +30,17 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     }
     public class OrderItemDto
     {
-
+        /// <summary>
+        /// نوع الطلب
+        /// </summary>
         public string OrderTypeName { get; set; }
+        /// <summary>
+        /// معرف الطلب
+        /// </summary>
         public int? OrderTypeId { get; set; }
+        /// <summary>
+        /// العدد
+        /// </summary>
         public int Count { get; set; }
     }
 }

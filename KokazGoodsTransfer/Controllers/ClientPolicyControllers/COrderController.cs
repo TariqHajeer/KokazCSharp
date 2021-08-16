@@ -64,7 +64,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return erros;
         }
         [HttpPost]
-        public IActionResult Create(CreateOrderFromClient createOrderFromClient)
+        public IActionResult Create([FromBody]CreateOrderFromClient createOrderFromClient)
         {
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
