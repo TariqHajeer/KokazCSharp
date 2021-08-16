@@ -107,7 +107,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<OutComeDto>(outcome);
                 }));
             CreateMap<UpdateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password))).ReverseMap();
             CreateMap<CUpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => src.Password == null ? "" : MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();

@@ -26,6 +26,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Create([FromForm] CreateMarketDto createMarket)
         {
             var transaction = this.Context.Database.BeginTransaction();
+            var marketUrl = createMarket.MarketUrl;
+            if (marketUrl.Contains("https"))
+            {
+                marketUrl = marketUrl.Split("https://")[1];
+            }
+            else if (marketUrl.Contains("http"))
+            {
+                marketUrl = marketUrl.Split("http://")[1];
+            }
+            createMarket.MarketUrl = marketUrl;
             try
             {
                 Market market = new Market()
@@ -58,7 +68,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
-                return Conflict(new  { ex.Message,inner = ex.InnerException.Message});
+                return Conflict(new { ex.Message, inner = ex.InnerException.Message });
             }
             return Ok();
         }
@@ -89,6 +99,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 markets.Add(temp);
             }
             return Ok(markets);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var market = this.Context.Markets.Find(id);
+            this.Context.Markets.Remove(market);
+            this.Context.SaveChanges();
+            return Ok();
         }
     }
 }

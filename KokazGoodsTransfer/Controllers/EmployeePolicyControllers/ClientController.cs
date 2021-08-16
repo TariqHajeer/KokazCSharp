@@ -128,16 +128,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var client = this.Context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
+
                 if (client == null)
                     return NotFound();
 
                 var oldPassord = client.Password;
 
-                client = mapper.Map<UpdateClientDto, Client>(updateClientDto, client);
+                mapper.Map(updateClientDto, client);
                 if (updateClientDto.Password == null)
                     client.Password = oldPassord;
 
-                this.Context.Update(client);
+                //this.Context.Update(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients
                 .Include(c => c.Country)

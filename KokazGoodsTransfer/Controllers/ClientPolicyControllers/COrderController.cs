@@ -243,7 +243,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return false;
         }
         [HttpGet]
-
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]COrderFilter orderFilter)
         {
             var orderIQ = this.Context.Orders

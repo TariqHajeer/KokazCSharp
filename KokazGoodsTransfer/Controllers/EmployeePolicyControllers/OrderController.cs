@@ -619,10 +619,88 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        [HttpGet("OrderAtClient")]
+        public IActionResult OrderAtClient([FromQuery] OrderFilter orderFilter)
+        {
+            var orderIQ = this.Context.Orders
+                    .Include(c => c.Client)
+                    .Include(c => c.Country)
+               .AsQueryable();
+            if (orderFilter.CountryId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            if (orderFilter.ClientId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.MonePlacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+            }
+            if (orderFilter.OrderplacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.AgentId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
+            }
+            if (orderFilter.IsClientDiliverdMoney != null)
+            {
+                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
+            }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+            }
+            if (orderFilter.AgentPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+            }
+            if (orderFilter.CreatedDate != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Date == orderFilter.CreatedDate);
+            }
+            if (orderFilter.Note != "" && orderFilter.Note != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Note.Contains(orderFilter.Note));
+            }
+            if (orderFilter.AgentPrintStartDate != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+            }
+            if (orderFilter.AgentPrintEndDate != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+            }
+            return Ok(mapper.Map<OrderDto[]>(orderIQ.ToArray()));
+        }
         [HttpPut("Accept")]
         public IActionResult Accept([FromBody] IdsDto idsDto)
         {
             var order = this.Context.Orders.Find(idsDto.OrderId);
+            var agnetCountries = this.Context.AgentCountrs.Where(c => c.AgentId == idsDto.AgentId);
+            if (!agnetCountries.Any(c => c.CountryId == order.CountryId))
+            {
+                return Conflict();
+            }
             order.AgentId = idsDto.AgentId;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             this.Context.Update(order);
