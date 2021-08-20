@@ -12,6 +12,7 @@ using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
+using KokazGoodsTransfer.Dtos.PointSettingsDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
@@ -291,7 +292,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name))
-                .ForMember(c=>c.PrintNumber,opt=>opt.MapFrom(c=>c.Print.PrintNmber));
+                .ForMember(c => c.PrintNumber, opt => opt.MapFrom(c => c.Print.PrintNmber));
             CreateMap<EditRequest, EditRequestDto>()
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
@@ -318,6 +319,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                       return context.Mapper.Map<NameAndIdDto>(obj.PaymentWay);
                   }));
 
+            CreateMap<CreatePointSetting,PointsSetting>();
+            CreateMap<PointsSetting, PointSettingsDto>();
         }
     }
 }

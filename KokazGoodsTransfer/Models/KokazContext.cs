@@ -44,6 +44,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
         public virtual DbSet<PaymentRequest> PaymentRequests { get; set; }
         public virtual DbSet<PaymentWay> PaymentWays { get; set; }
+        public virtual DbSet<PointsSetting> PointsSettings { get; set; }
         public virtual DbSet<Printed> Printeds { get; set; }
         public virtual DbSet<Privilege> Privileges { get; set; }
         public virtual DbSet<Receipt> Receipts { get; set; }
@@ -664,6 +665,19 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("PaymentWay");
 
                 entity.Property(e => e.Name).IsRequired();
+            });
+
+            modelBuilder.Entity<PointsSetting>(entity =>
+            {
+                entity.ToTable("PointsSetting");
+
+                entity.HasIndex(e => e.Points, "UQ__PointsSe__DA8267865B952CBA")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Money, "UQ__PointsSe__FA951B4625038075")
+                    .IsUnique();
+
+                entity.Property(e => e.Money).HasColumnType("money");
             });
 
             modelBuilder.Entity<Printed>(entity =>

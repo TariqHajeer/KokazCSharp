@@ -455,8 +455,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("MoveToNextStep")]
         public IActionResult MoveToNextStep([FromBody] int[] ids)
         {
-            var orders= this.Context.Orders
-                .Include(c=>c.Country)
+            var orders = this.Context.Orders
+                .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id)).ToList();
             Dictionary<int, List<Country>> paths = new Dictionary<int, List<Country>>();
             foreach (var item in orders)
@@ -1114,8 +1114,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         c.PrintId = newPrint.Id;
                         this.Context.Update(c);
-                    });
-
+                    }); 
                     this.Context.SaveChanges();
                 }
                 foreach (var item in orders)
@@ -1123,23 +1122,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                     item.IsClientDiliverdMoney = true;
 
-                    // if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
-                    // {
-                    //     item.OrderStateId = (int)OrderStateEnum.Finished;
-                    //     item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-                    // }
-                    ///لتعديل من اجل ذمة المندوب
                     if (item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
                         if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                        {
                             item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-                        //if (item.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
-                        //    item.OrderStateId = (int)OrderStateEnum.Finished;
+                        }
                     }
                     var PayForClient = item.ShouldToPay() - (item.ClientPaied ?? 0);
                     item.ClientPaied = PayForClient;
                     this.Context.Update(item);
+                    this.Context.SaveChanges();
                     var orderPrint = new OrderPrint()
                     {
                         PrintId = newPrint.Id,
@@ -1163,9 +1157,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this.Context.Add(orderPrint);
                     this.Context.Add(clientPrint);
-
+                    this.Context.SaveChanges();
                 }
-                this.Context.SaveChanges();
+
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
