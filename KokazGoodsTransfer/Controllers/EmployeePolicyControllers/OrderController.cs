@@ -1105,8 +1105,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this.Context.Printeds.Add(newPrint);
                 this.Context.SaveChanges();
-                //client.Total = 0;
-                //this.Context.Update(client);
                 if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
                     var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
@@ -1117,10 +1115,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }); 
                     this.Context.SaveChanges();
                 }
+                int totalPoints = 0;
+                
                 foreach (var item in orders)
                 {
 
-                    item.IsClientDiliverdMoney = true;
+                    if (!item.IsClientDiliverdMoney)
+                    {
+                        if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+                        {
+                            totalPoints += item.Country.Points;
+                        }
+                    }
+                    else
+                    {
+                        if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+                        {
+                            totalPoints -= item.Country.Points;
+                        }
+                    }
 
                     if (item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
@@ -1129,7 +1142,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
                         }
+
+                        
                     }
+                    
+                    item.IsClientDiliverdMoney = true;
                     var PayForClient = item.ShouldToPay() - (item.ClientPaied ?? 0);
                     item.ClientPaied = PayForClient;
                     this.Context.Update(item);
@@ -1159,6 +1176,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.Add(clientPrint);
                     this.Context.SaveChanges();
                 }
+                client.Points += totalPoints;
+                this.Context.Update(client);
+                this.Context.SaveChanges();
 
                 transaction.Commit();
                 return Ok(new { printNumber });

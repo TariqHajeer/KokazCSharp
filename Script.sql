@@ -1,6 +1,6 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [Kokaz]    Script Date: 8/20/2021 11:43:00 PM ******/
+/****** Object:  Database [Kokaz]    Script Date: 8/21/2021 3:27:54 PM ******/
 CREATE DATABASE [Kokaz]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -77,7 +77,7 @@ EXEC sys.sp_db_vardecimal_storage_format N'Kokaz', N'ON'
 GO
 USE [Kokaz]
 GO
-/****** Object:  Table [dbo].[AgentCountr]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[AgentCountr]    Script Date: 8/21/2021 3:27:54 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -92,7 +92,7 @@ CREATE TABLE [dbo].[AgentCountr](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AgnetPrint]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[AgnetPrint]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -113,7 +113,7 @@ CREATE TABLE [dbo].[AgnetPrint](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[clientPhones]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[clientPhones]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -128,7 +128,7 @@ CREATE TABLE [dbo].[clientPhones](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ClientPrint]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[ClientPrint]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -153,7 +153,7 @@ CREATE TABLE [dbo].[ClientPrint](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Clients]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Clients]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -176,7 +176,7 @@ CREATE TABLE [dbo].[Clients](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Country]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Country]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -194,7 +194,7 @@ CREATE TABLE [dbo].[Country](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Currency]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Currency]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -208,7 +208,7 @@ CREATE TABLE [dbo].[Currency](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DisAcceptOrder]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[DisAcceptOrder]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -236,7 +236,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EditRequest]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[EditRequest]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -256,7 +256,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Group]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Group]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -270,7 +270,7 @@ CREATE TABLE [dbo].[Group](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GroupPrivilege]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[GroupPrivilege]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -285,7 +285,7 @@ CREATE TABLE [dbo].[GroupPrivilege](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Income]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Income]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -304,7 +304,7 @@ CREATE TABLE [dbo].[Income](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[IncomeType]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[IncomeType]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -318,7 +318,7 @@ CREATE TABLE [dbo].[IncomeType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Market]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Market]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -337,7 +337,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MoenyPlaced]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[MoenyPlaced]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -351,7 +351,7 @@ CREATE TABLE [dbo].[MoenyPlaced](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Notfication]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Notfication]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -370,7 +370,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Order]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[Order]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -414,7 +414,7 @@ CREATE TABLE [dbo].[Order](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderItem]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderItem]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -430,7 +430,7 @@ CREATE TABLE [dbo].[OrderItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderLog]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderLog]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -470,7 +470,7 @@ CREATE TABLE [dbo].[OrderLog](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderPlaced]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderPlaced]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -484,7 +484,7 @@ CREATE TABLE [dbo].[OrderPlaced](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderPrint]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderPrint]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -499,7 +499,7 @@ CREATE TABLE [dbo].[OrderPrint](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderState]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderState]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -513,7 +513,7 @@ CREATE TABLE [dbo].[OrderState](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderType]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OrderType]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -527,7 +527,7 @@ CREATE TABLE [dbo].[OrderType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OutCome]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OutCome]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -546,7 +546,7 @@ CREATE TABLE [dbo].[OutCome](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OutComeType]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[OutComeType]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -560,7 +560,7 @@ CREATE TABLE [dbo].[OutComeType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PaymentRequest]    Script Date: 8/20/2021 11:43:01 PM ******/
+/****** Object:  Table [dbo].[PaymentRequest]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -578,7 +578,7 @@ CREATE TABLE [dbo].[PaymentRequest](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PaymentWay]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[PaymentWay]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -592,7 +592,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PointsSetting]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[PointsSetting]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -607,7 +607,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Printed]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[Printed]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -626,7 +626,7 @@ CREATE TABLE [dbo].[Printed](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Privilege]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[Privilege]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -641,7 +641,7 @@ CREATE TABLE [dbo].[Privilege](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Receipt]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[Receipt]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -663,7 +663,7 @@ CREATE TABLE [dbo].[Receipt](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Region]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[Region]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -678,7 +678,7 @@ CREATE TABLE [dbo].[Region](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserGroup]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[UserGroup]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -693,7 +693,7 @@ CREATE TABLE [dbo].[UserGroup](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserPhone]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[UserPhone]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -708,7 +708,7 @@ CREATE TABLE [dbo].[UserPhone](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -731,7 +731,7 @@ CREATE TABLE [dbo].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  View [dbo].[v_OrderClientPrnitRepeate]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  View [dbo].[v_OrderClientPrnitRepeate]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -751,7 +751,7 @@ where p.[Type] = 'Client'
 group by o.ClientId, o.Code
 
 GO
-/****** Object:  View [dbo].[v_OrderclientPrintReportWithOrderDeitals]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  View [dbo].[v_OrderclientPrintReportWithOrderDeitals]    Script Date: 8/21/2021 3:27:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -787,6 +787,38 @@ INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone],
 INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11724, 2893, N'2', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', N'عميل 1', NULL, NULL)
 INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11725, 2893, N'3', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12131232131', N'عميل 1', NULL, NULL)
 INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11726, 2893, N'4', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'21321312312', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11727, 2895, N'5', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312831', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11728, 2895, N'9', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'23123123123', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11729, 2895, N'8', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21431231231', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11730, 2895, N'7', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'23423421341', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11731, 2895, N'6', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21312312312', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11732, 2895, N'4', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21321312939', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11733, 2895, N'10', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11734, 2895, N'3', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11735, 2895, N'2', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11736, 2895, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12231231231', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11737, 2897, N'11', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'98127391287', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11738, 2898, N'5', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21312301283', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11739, 2898, N'9', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'23098429014', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11740, 2898, N'8', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'23942398742', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11741, 2898, N'7', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'23094029187', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11742, 2898, N'6', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'09823710298', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11743, 2898, N'4', CAST(110000.00 AS Decimal(18, 2)), N'مدينة 1', N'21312908731', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11744, 2898, N'10', CAST(1809098.00 AS Decimal(18, 2)), N'مدينة 1', N'21312098731', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11745, 2898, N'3', CAST(10000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312983712', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11746, 2898, N'2', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12398127398', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11747, 2898, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12321098390', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11748, 2901, N'11', CAST(100000.00 AS Decimal(18, 2)), N'مدينة 1', N'12987319823', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11749, 2901, N'1', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21391283981', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11750, 2901, N'10', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'27340987123', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11751, 2901, N'2', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'23491280731', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11752, 2901, N'3', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'12097310298', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11753, 2901, N'9', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21093012987', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11754, 2901, N'4', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21908739018', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11755, 2901, N'8', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21938120983', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11756, 2901, N'5', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21098431209', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11757, 2901, N'6', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21093812093', N'عميل 1', NULL, NULL)
+INSERT [dbo].[AgnetPrint] ([Id], [PrintId], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region]) VALUES (11758, 2901, N'7', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة 1', N'21873098127', N'عميل 1', NULL, NULL)
 SET IDENTITY_INSERT [dbo].[AgnetPrint] OFF
 SET IDENTITY_INSERT [dbo].[clientPhones] ON 
 
@@ -9997,6 +10029,16 @@ INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [Deli
 INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9951, 2892, N'1', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'23123123123', 1, 3, CAST(N'2021-08-19' AS Date), NULL, 990000.0000)
 INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9952, 2894, N'1', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'21243123123', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 90000.0000)
 INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9953, 2894, N'2', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 90000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9954, 2896, N'1', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12231231231', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 90000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9955, 2896, N'2', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 90000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9956, 2896, N'3', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9957, 2896, N'4', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'21321312939', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9958, 2896, N'10', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12312312312', 1, 3, CAST(N'2021-08-20' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9959, 2902, N'1', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'21391283981', 1, 3, CAST(N'2021-08-21' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9960, 2902, N'2', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'23491280731', 1, 3, CAST(N'2021-08-21' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9961, 2902, N'3', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12097310298', 1, 3, CAST(N'2021-08-21' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9962, 2902, N'10', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'27340987123', 1, 3, CAST(N'2021-08-21' AS Date), NULL, 990000.0000)
+INSERT [dbo].[ClientPrint] ([Id], [PrintId], [Code], [LastTotal], [Total], [DeliveCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9963, 2902, N'11', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), N'مدينة 1', N'12987319823', 1, 3, CAST(N'2021-08-21' AS Date), NULL, 90000.0000)
 SET IDENTITY_INSERT [dbo].[ClientPrint] OFF
 SET IDENTITY_INSERT [dbo].[Clients] ON 
 
@@ -10004,7 +10046,7 @@ INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note
 SET IDENTITY_INSERT [dbo].[Clients] OFF
 SET IDENTITY_INSERT [dbo].[Country] ON 
 
-INSERT [dbo].[Country] ([Id], [Name], [DeliveryCost], [mediatorId], [IsMain], [Points]) VALUES (1, N'مدينة 1', CAST(10000.00 AS Decimal(18, 2)), NULL, 1, 0)
+INSERT [dbo].[Country] ([Id], [Name], [DeliveryCost], [mediatorId], [IsMain], [Points]) VALUES (1, N'مدينة 1', CAST(10000.00 AS Decimal(18, 2)), NULL, 1, 10)
 SET IDENTITY_INSERT [dbo].[Country] OFF
 SET IDENTITY_INSERT [dbo].[Group] ON 
 
@@ -10104,6 +10146,20 @@ SET IDENTITY_INSERT [dbo].[Notfication] ON
 
 INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1, 1292, NULL, 1, 4, 2, 0)
 SET IDENTITY_INSERT [dbo].[Notfication] OFF
+SET IDENTITY_INSERT [dbo].[Order] ON 
+
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11578, N'1', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'12089301298', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11579, N'2', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'23791208731', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11580, N'3', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(10000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'01982908123', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11581, N'4', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'12983712098', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11582, N'5', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'23408120983', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11583, N'6', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'29108371209', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11584, N'7', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'23098412908', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11585, N'8', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'23984210987', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11586, N'9', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'20983412098', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11587, N'10', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'12931209783', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry]) VALUES (11588, N'11', 1292, 1, CAST(10000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(0.00 AS Decimal(18, 2)), NULL, N'98213409812', NULL, NULL, NULL, N'Admin', 1, 2, CAST(N'2021-08-21' AS Date), NULL, NULL, 61, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+SET IDENTITY_INSERT [dbo].[Order] OFF
 INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (1, N'عند العميل')
 INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (2, N'في المخزن')
 INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (3, N'في الطريق')
@@ -12036,6 +12092,13 @@ INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationN
 INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2892, 1095, N'Admin', CAST(N'2021-08-19T23:20:07.493' AS DateTime), N'عميل 1', N'21321231323', N'Client')
 INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2893, 800, N'Admin', CAST(N'2021-08-20T18:02:37.577' AS DateTime), N'مندوب1', N'13513213213', N'Agent')
 INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2894, 1096, N'Admin', CAST(N'2021-08-20T18:02:56.253' AS DateTime), N'عميل 1', N'21321231323', N'Client')
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2895, 801, N'Admin', CAST(N'2021-08-20T21:19:16.690' AS DateTime), N'مندوب1', N'13513213213', N'Agent')
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2896, 1097, N'Admin', CAST(N'2021-08-20T21:19:37.633' AS DateTime), N'عميل 1', N'21321231323', N'Client')
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2897, 802, N'Admin', CAST(N'2021-08-20T21:22:05.080' AS DateTime), N'مندوب1', N'13513213213', N'Agent')
+GO
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2898, 803, N'Admin', CAST(N'2021-08-20T21:22:45.280' AS DateTime), N'مندوب1', N'13513213213', N'Agent')
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2901, 804, N'Admin', CAST(N'2021-08-21T12:23:25.953' AS DateTime), N'مندوب1', N'13513213213', N'Agent')
+INSERT [dbo].[Printed] ([Id], [PrintNmber], [PrinterName], [Date], [DestinationName], [DestinationPhone], [Type]) VALUES (2902, 1098, N'Admin', CAST(N'2021-08-21T12:23:51.907' AS DateTime), N'عميل 1', N'21321231323', N'Client')
 SET IDENTITY_INSERT [dbo].[Printed] OFF
 INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (1, N'عرض المجموعات', N'ShowGroup')
 INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (2, N'إضافة مجموعات', N'AddGroup')
@@ -12101,13 +12164,13 @@ SET IDENTITY_INSERT [dbo].[Users] ON
 INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (59, N'Admin', NULL, NULL, CAST(N'2020-01-01' AS Date), NULL, 0, NULL, N'Admin', N'21232f297a57a5a743894a0e4a801fc3', 1)
 INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (61, N'مندوب1', NULL, NULL, CAST(N'2021-08-19' AS Date), N'سينتبسمينتب', 1, CAST(0.00 AS Decimal(18, 2)), NULL, NULL, 1)
 SET IDENTITY_INSERT [dbo].[Users] OFF
-/****** Object:  Index [UQ__PointsSe__DA8267865B952CBA]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Index [UQ__PointsSe__DA8267865B952CBA]    Script Date: 8/21/2021 3:27:56 PM ******/
 ALTER TABLE [dbo].[PointsSetting] ADD UNIQUE NONCLUSTERED 
 (
 	[Points] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [UQ__PointsSe__FA951B4625038075]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  Index [UQ__PointsSe__FA951B4625038075]    Script Date: 8/21/2021 3:27:56 PM ******/
 ALTER TABLE [dbo].[PointsSetting] ADD UNIQUE NONCLUSTERED 
 (
 	[Money] ASC
@@ -12402,7 +12465,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserPhone] CHECK CONSTRAINT [FK_UserPhone_Users]
 GO
-/****** Object:  StoredProcedure [dbo].[OrderWithClientPrint]    Script Date: 8/20/2021 11:43:02 PM ******/
+/****** Object:  StoredProcedure [dbo].[OrderWithClientPrint]    Script Date: 8/21/2021 3:27:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

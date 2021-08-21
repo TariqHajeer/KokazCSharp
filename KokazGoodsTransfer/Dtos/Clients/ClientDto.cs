@@ -22,6 +22,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public decimal Total { get; set; }
         public List<PhoneDto> Phones { get; set; }
         public string Mail { get; set; }
+        public int Points { get; set; }
     }
     
 }
