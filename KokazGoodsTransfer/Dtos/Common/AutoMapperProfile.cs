@@ -139,6 +139,19 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)));
             CreateMap<CreateMultipleOrder, Order>();
             CreateMap<OrderType, NameAndIdDto>();
+            CreateMap<DisAcceptOrder, OrderDto>()
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<RegionDto>(order.Region);
+                }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c => c.Client, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<ClientDto>(order.Client);
+                }));
             CreateMap<Order, OrderDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
                 {
