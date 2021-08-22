@@ -25,6 +25,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<DisAcceptOrder> DisAcceptOrders { get; set; }
+        public virtual DbSet<Discount> Discounts { get; set; }
         public virtual DbSet<EditRequest> EditRequests { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPrivilege> GroupPrivileges { get; set; }
@@ -267,6 +268,19 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.DisAcceptOrders)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK__DisAccept__Regio__0E6E26BF");
+            });
+
+            modelBuilder.Entity<Discount>(entity =>
+            {
+                entity.ToTable("Discount");
+
+                entity.Property(e => e.Money).HasColumnType("money");
+
+                entity.HasOne(d => d.Printed)
+                    .WithMany(p => p.Discounts)
+                    .HasForeignKey(d => d.PrintedId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Discount_Printed");
             });
 
             modelBuilder.Entity<EditRequest>(entity =>

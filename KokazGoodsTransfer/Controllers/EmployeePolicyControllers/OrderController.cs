@@ -1073,7 +1073,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient([FromBody] DateWithId<IdWithCost[]> dateWithId)
+        public IActionResult DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
             var orders = this.Context.Orders
             .Include(c => c.Client)
@@ -1081,7 +1081,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             .Include(c => c.Country)
             .Include(c => c.Orderplaced)
             .Include(c => c.MoenyPlaced)
-            .Where(c => dateWithId.Ids.Select(c => c.Id).Contains(c.Id)).ToList();
+            .Where(c => deleiverMoneyForClientDto.DateWithId.Ids.Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -1094,7 +1094,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = dateWithId.Date,
+                Date = deleiverMoneyForClientDto.DateWithId.Date,
                 Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
