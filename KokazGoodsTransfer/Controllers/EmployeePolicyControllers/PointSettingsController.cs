@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(mapper.Map<PointSettingsDto>(point));
         }
-        [HttpGet("GetSettingLessThanPoint/{{points}}")]
+        [HttpGet("GetSettingLessThanPoint/{points}")]
         public IActionResult GetByMoneyByPoint(int points)
         {
             var pointsSettings = this.Context.PointsSettings.Where(c => c.Points <= points);
