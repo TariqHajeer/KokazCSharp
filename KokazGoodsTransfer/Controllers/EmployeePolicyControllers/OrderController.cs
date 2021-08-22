@@ -306,7 +306,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")]    
         public IActionResult Delete(int id)
         {
             try
