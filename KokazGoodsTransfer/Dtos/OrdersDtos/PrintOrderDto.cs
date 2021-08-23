@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Phone { get; set; }
         public string Country { get; set; }
         public string LastTotal { get; set; }
-
+        public string ClientNote { get; set; }
         public decimal DeliveCost { get; set; }
         public string ClientName { get; set; }
         public string Note { get; set; }
