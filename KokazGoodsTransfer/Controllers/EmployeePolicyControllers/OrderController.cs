@@ -1179,7 +1179,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 client.Points += totalPoints;
                 this.Context.Update(client);
                 this.Context.SaveChanges();
+                if (deleiverMoneyForClientDto.PointsSettingId != null)
+                {
+                    var pointSetting = this.Context.PointsSettings.Find(deleiverMoneyForClientDto.PointsSettingId);
 
+                    Discount discount = new Discount()
+                    {
+                        Money = pointSetting.Money,
+                        Points = pointSetting.Points,
+                        PrintedId = newPrint.Id
+                    };
+                    this.Context.Add(discount);
+                    this.Context.SaveChanges();
+                }
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
@@ -1415,6 +1427,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
         {
             var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
+                .Include(c=>c.Discounts)
                 .Include(c => c.Receipts)
                 .Include(c => c.ClientPrints)
                     .ThenInclude(c => c.OrderPlaced)
