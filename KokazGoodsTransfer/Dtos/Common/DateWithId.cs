@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Dtos.Common
     public class DeleiverMoneyForClientDto
     {
         public DateWithId<int[]> DateWithId { get; set; }
-        public int PointsSettingId { get; set; }
+        public int? PointsSettingId { get; set; }
     }
     //public class IdWithCost
     //{
