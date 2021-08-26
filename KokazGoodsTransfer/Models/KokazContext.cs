@@ -426,7 +426,7 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.Date).HasColumnType("datetime");
 
                 entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
 
