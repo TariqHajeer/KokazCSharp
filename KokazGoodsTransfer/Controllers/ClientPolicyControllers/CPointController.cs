@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.Dtos.PointSettingsDtos;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
+
             var points = this.Context.PointsSettings.ToList();
             return Ok(mapper.Map<PointSettingsDto[]>(points));
         }
