@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
         }
         [HttpGet("Countries")]
-        public IActionResult GetAll()
+        public IActionResult GetCountreis()
         {
             var countries = Context.Countries
                 .Include(c=>c.Clients)

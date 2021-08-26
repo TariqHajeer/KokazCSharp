@@ -34,6 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 }
                 var client = mapper.Map<Client>(createClientDto);
+                client.Points = 0;
                 client.UserId = (int)AuthoticateUserId();
 
                 foreach (var item in createClientDto.Phones)

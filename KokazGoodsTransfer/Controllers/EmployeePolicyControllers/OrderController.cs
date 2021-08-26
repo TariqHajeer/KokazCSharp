@@ -720,6 +720,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             }
             order.AgentId = idsDto.AgentId;
+            order.AgentCost =(decimal)this.Context.Users.Find(idsDto.AgentId).Salary;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             this.Context.Update(order);
             this.Context.SaveChanges();
