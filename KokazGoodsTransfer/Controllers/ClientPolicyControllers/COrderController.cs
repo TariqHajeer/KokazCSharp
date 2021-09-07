@@ -410,7 +410,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult DeleteOrder(int id)
         {
             var order = this.Context.Orders.Find(id);
-            if (order.IsSend != true)
+            if (order.IsSend == true)
                 return Conflict();
             this.Context.Remove(order);
             this.Context.SaveChanges();
