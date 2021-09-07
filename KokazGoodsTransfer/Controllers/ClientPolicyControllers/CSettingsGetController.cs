@@ -20,7 +20,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public CSettingsGetController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
+        
         [HttpGet("Countries")]
+        /// <summary>
+        /// get Countries
+        /// </summary>
+        /// <returns></returns>
         public IActionResult GetCountreis()
         {
             var countries = Context.Countries
@@ -29,6 +34,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
+        /// <summary>
+        /// مناطق
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("Regions")]
         public IActionResult GetRegions()
         {

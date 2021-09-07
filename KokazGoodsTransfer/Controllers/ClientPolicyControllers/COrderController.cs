@@ -63,6 +63,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             return erros;
         }
+        /// <summary>
+        /// إضافة طلب
+        /// </summary>
+        /// <param name="createOrderFromClient"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Create([FromBody]CreateOrderFromClient createOrderFromClient)
         {
@@ -141,11 +146,21 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         [HttpGet("codeExist")]
         public IActionResult CheckCodeExist([FromQuery] string code)
         {
             return Ok(CodeExist(code));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -391,6 +406,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-
+        [HttpDelete("{id}")]
+        public IActionResult DeleteOrder(int id)
+        {
+            var order = this.Context.Orders.Find(id);
+            if (order.IsSend != true)
+                return Conflict();
+            this.Context.Remove(order);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }

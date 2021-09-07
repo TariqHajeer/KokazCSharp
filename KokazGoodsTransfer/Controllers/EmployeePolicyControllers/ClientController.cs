@@ -166,30 +166,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-
-        //[HttpGet("Account")]
-        //public IActionResult Account([FromQuery] PagingDto pagingDto, [FromQuery]AccountFilterDto accountFilterDto)
-        //{
-        //    var repiq = this.Context.Receipts.AsQueryable();
-        //    if (accountFilterDto.ClientId != null)
-        //    {
-        //        repiq = repiq.Where(c => c.ClientId == accountFilterDto.ClientId);
-        //    }
-        //    if (accountFilterDto.IsPay != null)
-        //    {
-        //        repiq = repiq.Where(c => c.IsPay == (bool)accountFilterDto.IsPay);
-        //    }
-        //    if (accountFilterDto.Date != null)
-        //    {
-        //        repiq = repiq.Where(c => c.Date == accountFilterDto.Date);
-        //    }
-        //    var totalRreq = repiq.Count();
-        //    var replist = repiq.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-        //        .Include(c => c.Client)
-        //        .ToList();
-
-        //    return Ok(new { data = mapper.Map<ReceiptDto[]>(replist), total = totalRreq });
-        //}
         [HttpPost("Account")]
         public IActionResult Account([FromBody] AccountDto accountDto)
         {

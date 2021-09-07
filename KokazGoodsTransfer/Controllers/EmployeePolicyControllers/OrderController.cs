@@ -390,7 +390,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.CreatedDate != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.Date == orderFilter.CreatedDate);
+                    orderIQ = orderIQ.Where(c => c.Date.Value.Date == orderFilter.CreatedDate.Value.Date);
                 }
                 if (orderFilter.AgentPrintStartDate != null)
                 {
