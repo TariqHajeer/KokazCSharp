@@ -384,20 +384,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(this.Context.Notfications.Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true).Count());
         }
         [HttpGet("Notifcation")]
-        public IActionResult Notifcation([FromQuery]PagingDto pagingDto)
+        public IActionResult Notifcation()
         {
             var notifactions =this.Context.Notfications.Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
                 .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true);
             return Ok(mapper.Map<NotficationDto[]>(notifactions));
             
-            //var notifactions = this.Context.Notfications
-            //    .Include(c => c.MoneyPlaced)
-            //    .Include(c => c.OrderPlaced)
-            //    .Where(c => c.ClientId == AuthoticateUserId());
-            //var total = notifactions.Count();
-            //notifactions = notifactions.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
-            return Ok();
         }
         [HttpPut("SeeNotifactions")]
         public IActionResult SeeNotifactions([FromBody] int[] ids)
