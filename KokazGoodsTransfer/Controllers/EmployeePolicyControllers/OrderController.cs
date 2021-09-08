@@ -906,7 +906,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                         order.Cost = item.Cost;
                                     }
                                     var payForClient = order.ShouldToPay();
-                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
 
 
                                     if (Decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
@@ -1022,6 +1021,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             clientNotigaction.OrderCount++;
                         }
                     }
+                    Notfication notfication = new Notfication()
+                    {
+                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع الملبلغ{order.MoenyPlaced.Name}"
+                    };
+                    this.Context.Add(notfication);
                 }
                 foreach (var item in notfications)
                 {
@@ -1193,6 +1197,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this.Context.Add(discount);
                     this.Context.SaveChanges();
                 }
+                this.Context.Add(new Notfication()
+                {
+                    Note = "تم تسديدك برقم " + printNumber
+                });
+                this.Context.SaveChanges();
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
