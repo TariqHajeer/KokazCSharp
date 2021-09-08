@@ -386,13 +386,18 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Notifcation")]
         public IActionResult Notifcation([FromQuery]PagingDto pagingDto)
         {
-            var notifactions = this.Context.Notfications
-                .Include(c => c.MoneyPlaced)
+            var notifactions =this.Context.Notfications.Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
-                .Where(c => c.ClientId == AuthoticateUserId());
-            var total = notifactions.Count();
-            notifactions = notifactions.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
-            return Ok(new { Total = total, Data = mapper.Map<NotficationDto[]>(notifactions) });
+                .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true);
+            return Ok(mapper.Map<NotficationDto[]>(notifactions));
+            
+            //var notifactions = this.Context.Notfications
+            //    .Include(c => c.MoneyPlaced)
+            //    .Include(c => c.OrderPlaced)
+            //    .Where(c => c.ClientId == AuthoticateUserId());
+            //var total = notifactions.Count();
+            //notifactions = notifactions.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
+            return Ok();
         }
         [HttpPut("SeeNotifactions")]
         public IActionResult SeeNotifactions([FromBody] int[] ids)
