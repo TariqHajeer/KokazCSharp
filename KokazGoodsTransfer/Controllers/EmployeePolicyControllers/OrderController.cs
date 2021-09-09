@@ -880,11 +880,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 foreach (var item in orderStates)
                 {
                     var order = this.Context.Orders.Find(item.Id);
+                    
 
                     OrderLog log = order;
                     this.Context.Add(log);
                     order.OrderplacedId = item.OrderplacedId;
                     order.MoenyPlacedId = item.MoenyPlacedId;
+                    this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
+                    this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
                     order.Note = item.Note;
 
                     if (order.DeliveryCost != item.DeliveryCost)
@@ -1023,7 +1026,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
                     Notfication notfication = new Notfication()
                     {
-                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع الملبلغ{order.MoenyPlaced.Name}"
+                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ {order.MoenyPlaced.Name}",
+                        ClientId = order.ClientId
                     };
                     this.Context.Add(notfication);
                 }
