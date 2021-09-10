@@ -368,7 +368,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     orders.AddRange(list);
                 }
             }
-            var o = mapper.Map<OrderDto[]>(orders);
+            var o = mapper.Map<PayForClientDto[]>(orders);
             return Ok(o);
         }
         [HttpGet("UnPaidRecipt")]
@@ -388,8 +388,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             var notifactions =this.Context.Notfications.Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
-                .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true);
-            return Ok(mapper.Map<NotficationDto[]>(notifactions));
+                .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true)
+                .OrderByDescending(c=>c.Id);
+            var response = mapper.Map<NotficationDto[]>(notifactions);
+            response = response.OrderBy(c => c.Note).ThenBy(c=>c.Id).ToArray();
+            return Ok(response);
             
         }
         [HttpPut("SeeNotifactions")]
