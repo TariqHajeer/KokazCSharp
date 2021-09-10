@@ -1203,7 +1203,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 this.Context.Add(new Notfication()
                 {
-                    Note = "تم تسديدك برقم " + printNumber
+                    Note = "تم تسديدك برقم " + printNumber,
+                    ClientId =client.Id
                 });
                 this.Context.SaveChanges();
                 transaction.Commit();
