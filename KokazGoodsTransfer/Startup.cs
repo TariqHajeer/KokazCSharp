@@ -141,12 +141,13 @@ namespace KokazGoodsTransfer
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("EnableCORS");
+            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors("EnableCORS");
             app.UseAuthentication();
             app.UseAuthorization();
 

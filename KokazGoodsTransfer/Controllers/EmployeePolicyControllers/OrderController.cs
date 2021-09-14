@@ -1551,6 +1551,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(mapper.Map<OrderDto>(order));
         }
+        [HttpPut("TransferOrderToAnotherAgnet")] 
+        public IActionResult TransferOrderToAnotherAgnet([FromBody] TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto)
+        {
+            var agnet = this.Context.Users.Find(transferOrderToAnotherAgnetDto.NewAgentId);
+            var orders= this.Context.Orders.Where(c => transferOrderToAnotherAgnetDto.Ids.Contains(c.Id)).ToList();
+            orders.ForEach(c =>
+            {
+                c.AgentId = agnet.Id;
+                c.AgentCost = agnet.Salary??0;
+                
+            });
+            this.Context.SaveChanges();
+            return Ok();
+        }
 
     }
 }
