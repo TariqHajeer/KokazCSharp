@@ -186,6 +186,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok(receipt.Id);
         }
-
+        [HttpPost("GiveOrDiscountPoints")]
+        public IActionResult GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
+        {
+            var client = this.Context.Clients.Find(giveOrDiscountPointsDto.ClientId);
+            string sen= "";
+            if (giveOrDiscountPointsDto.IsGive)
+            {
+                client.Points += giveOrDiscountPointsDto.Points;
+                sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
+            }
+            else
+            {
+                client.Points -= giveOrDiscountPointsDto.Points;
+                sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
+            }
+            Notfication notfication = new Notfication()
+            {
+                ClientId = client.Id,
+                Note = sen,
+            };
+            this.Context.Add(notfication);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }
