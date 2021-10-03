@@ -202,7 +202,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPatch]
-        public IActionResult Edit([FromBody] UpdateOrder updateOrder)
+        public IActionResult Edit([FromBody] UpdateOrder updateOrder)   
         {
 
             try
@@ -1047,8 +1047,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName)
         {
             var orderPrintIq = this.Context.Printeds
-                .Include(c=>c.OrderPrints)
-                .ThenInclude(c=>c.Order)
+                .Include(c=>c.ClientPrints)
+                .ThenInclude(c=>c.OrderPlaced)
                 .Where(c => c.Type == PrintType.Client);
             if (number != null)
             {
