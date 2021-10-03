@@ -436,6 +436,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.OldDeliveryCost).HasColumnType("money");
 
+                entity.Property(e => e.PrintedTimes).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
 
                 entity.Property(e => e.RecipientPhones).IsRequired();
