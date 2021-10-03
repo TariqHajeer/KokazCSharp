@@ -1569,6 +1569,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-
+        [HttpPatch("AddPrintNumber/{orderId}")]
+        public IActionResult AddPrintNumber(int orderId)
+        {
+            var order = this.Context.Orders.Find(orderId);
+            order.PrintedTimes += 1;
+            this.Context.Update(order);
+            this.Context.SaveChanges();
+            return Ok();
+        }
     }
 }
