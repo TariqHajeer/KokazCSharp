@@ -1046,7 +1046,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetClientprint")]
         public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName)
         {
-            var orderPrintIq = this.Context.Printeds.Where(c => c.Type == PrintType.Client);
+            var orderPrintIq = this.Context.Printeds
+                .Include(c=>c.OrderPrints)
+                .ThenInclude(c=>c.Order)
+                .Where(c => c.Type == PrintType.Client);
             if (number != null)
             {
                 orderPrintIq = orderPrintIq.Where(c => c.PrintNmber == number);
@@ -1058,6 +1061,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var total = orderPrintIq.Count();
             var orders = orderPrintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+
             return Ok(new { data = mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         [HttpGet("GetAgentPrint")]

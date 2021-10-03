@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer
             services.AddDbContext<KokazContext>(options =>  options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
-            services.AddCors(options =>
+            services.AddCors(options => 
             {
                 options.AddPolicy("EnableCORS", builder =>
                 {
