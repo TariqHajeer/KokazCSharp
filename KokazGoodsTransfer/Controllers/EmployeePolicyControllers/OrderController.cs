@@ -1060,7 +1060,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (!string.IsNullOrEmpty(code))
             {
-                orderPrintIq = orderPrintIq.Where(c => c.ClientPrints.Any(c => c.Code.StartsWith(code));
+                orderPrintIq = orderPrintIq.Where(c => c.ClientPrints.Any(c => c.Code.StartsWith(code)));
             }
 
             var total = orderPrintIq.Count();
