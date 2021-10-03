@@ -48,6 +48,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public List<PrintOrdersDto> ClientPrint { get; set; }
         public List<CountryDto> Path { get; set; }
         public int? CurrentCountry { get; set; }
-        
+        public int? PrintedTimes { get; set; }
+
     }
 }
