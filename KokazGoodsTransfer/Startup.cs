@@ -21,7 +21,7 @@ using Microsoft.EntityFrameworkCore;
 namespace KokazGoodsTransfer
 {
     public class Startup
-    {
+    { 
         //remotlyconnection
         //Data Source = SQL5101.site4now.net; Initial Catalog = DB_A6C91F_Koka; User Id = DB_A6C91F_Koka_admin; Password=1234qwer
         // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
