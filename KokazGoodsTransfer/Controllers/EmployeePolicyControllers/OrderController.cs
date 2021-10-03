@@ -1044,7 +1044,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet("GetClientprint")]
-        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName)
+        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName,string code)
         {
             var orderPrintIq = this.Context.Printeds
                 .Include(c=>c.ClientPrints)
@@ -1057,6 +1057,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (clientName != null)
             {
                 orderPrintIq = orderPrintIq.Where(c => c.DestinationName == clientName);
+            }
+            if (!string.IsNullOrEmpty(code))
+            {
+                orderPrintIq = orderPrintIq.Where(c => c.ClientPrints.Any(c => c.Code.StartsWith(code));
             }
 
             var total = orderPrintIq.Count();
