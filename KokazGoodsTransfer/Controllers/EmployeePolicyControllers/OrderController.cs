@@ -617,6 +617,32 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        [HttpGet("NewOrderDontSendCount")]
+        public IActionResult NewOrderDontSendCount()
+        {
+            var Count = this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .Count();
+            return Ok(Count);
+        }
+        [HttpGet("NewOrderDontSned")]
+        public IActionResult NewOrderDontSned()
+        {
+            var orders = this.Context.Orders
+                .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Client)
+                .ThenInclude(c => c.Country)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                    .ThenInclude(c => c.AgentCountrs)
+                        .ThenInclude(c => c.Agent)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
         [HttpGet("OrderAtClient")]
         public IActionResult OrderAtClient([FromQuery] OrderFilter orderFilter)
         {
