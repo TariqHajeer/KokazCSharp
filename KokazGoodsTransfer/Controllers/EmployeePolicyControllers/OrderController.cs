@@ -748,6 +748,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.AgentId = idsDto.AgentId;
             order.AgentCost =(decimal)this.Context.Users.Find(idsDto.AgentId).Salary;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
+            order.IsSend = true;
             this.Context.Update(order);
             this.Context.SaveChanges();
             return Ok();
