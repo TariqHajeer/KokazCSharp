@@ -591,7 +591,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok(codeStatuses);
         }
-        [HttpGet("NewOrderCount")]
+        [HttpGet("NewOrdersCount")]
         public IActionResult NewOrderCount()
         {
             var Count = this.Context.Orders
@@ -617,7 +617,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("NewOrderDontSendCount")]
+        [HttpGet("NewOrdersDontSendCount")]
         public IActionResult NewOrderDontSendCount()
         {
             var Count = this.Context.Orders
