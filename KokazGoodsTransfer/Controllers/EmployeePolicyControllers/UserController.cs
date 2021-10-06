@@ -243,6 +243,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (updateUserDto.CanWorkAsAgent)
             {
+                
+                
                 //user.UserName = string.Empty;
                 //user.Password = string.Empty;
                 user.UserGroups.Clear();
@@ -265,11 +267,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
-                user.UserName = updateUserDto.UserName;
-                user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
+                
                 user.AgentCountrs= null;
                 user.Salary = null;
             }
+            user.UserName = updateUserDto.UserName;
+            user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
             this.Context.Update(user);
             this.Context.SaveChanges();
             return Ok();
