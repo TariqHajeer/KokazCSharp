@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Dtos.Users
         public string Name { get; set; }
         public string Token { get; set; }
         public List<UserPrivilegeDto> Privileges { get; set; }
+        public string Policy { get; set; }
     }
     public class UserPrivilegeDto
     {

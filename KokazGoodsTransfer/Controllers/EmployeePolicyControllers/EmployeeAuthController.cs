@@ -70,6 +70,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var token = tokenHandler.WriteToken(securityToken);
             AuthenticatedUserDto authenticatedUserDto = mapper.Map<AuthenticatedUserDto>(user);
             authenticatedUserDto.Token = token;
+            authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
             return Ok(authenticatedUserDto);
         }
 
