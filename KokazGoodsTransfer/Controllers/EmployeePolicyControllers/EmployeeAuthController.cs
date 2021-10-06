@@ -54,6 +54,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             climes.Add(new Claim("UserID", user.Id.ToString()));
             climes.Add(new Claim("Type", "Employee"));
+            
             climes.Add(new Claim(ClaimTypes.Name, user.Name));
             var tokenDescriptor = new SecurityTokenDescriptor
             {

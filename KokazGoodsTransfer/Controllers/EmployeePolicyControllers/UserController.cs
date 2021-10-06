@@ -243,8 +243,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (updateUserDto.CanWorkAsAgent)
             {
-                user.UserName = string.Empty;
-                user.Password = string.Empty;
+                //user.UserName = string.Empty;
+                //user.Password = string.Empty;
                 user.UserGroups.Clear();
                 user.CanWorkAsAgent = true;
                 user.Salary = updateUserDto.Salary;
