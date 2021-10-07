@@ -89,6 +89,11 @@ namespace KokazGoodsTransfer
                     policy.RequireClaim("Type", "Client");
 
                 });
+                option.AddPolicy("Agent", policy =>
+                {
+                    policy.RequireClaim("Type", "Agent");
+
+                });
             });
             services.AddSwaggerGen(s =>
             {

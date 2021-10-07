@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\AgentPolicyControllers\" />
     <Folder Include="wwwroot\MarketLogo\" />
   </ItemGroup>
 

@@ -12,9 +12,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AgentOrder : AbstractAgentController
+    public class AgentOrderController : AbstractAgentController
     {
-        public AgentOrder(KokazContext context, IMapper mapper) : base(context, mapper)
+        public AgentOrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpGet("Order")]
