@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +19,24 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public AgentOrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
-        [HttpGet("Order")]
-        public IActionResult GetOrder()
+        //[HttpGet("Order")]
+        //public IActionResult GetOrder()
+        //{
+        //    var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()).ToList();
+        //    return Ok(mapper.Map<OrderDto[]>(orders));
+        //}
+        [HttpGet("InStock")]
+        public IActionResult GetInStock()
         {
-            var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()).ToList();
+           var orders= this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId())
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+        [HttpGet("InWay")]
+        public IActionResult GetInWay()
+        {
+            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId())
+                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
     }
