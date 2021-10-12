@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             printeds = printeds.Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId()));
             var total = printeds.Count();
             var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page).ToList();
-            return Ok(new { total, Data = mapper.Map<PrintDto[]>(list) });
+            return Ok(new { total, Data = mapper.Map<PrintOrdersDto[]>(list) });
         }
         [HttpGet("Print/{id}")]
         public IActionResult GetPrintById(int id)
