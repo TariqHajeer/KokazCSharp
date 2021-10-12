@@ -39,5 +39,12 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        [HttpGet("OrderSuspended")]
+        public IActionResult OrderSuspended()
+        {
+            var orders = this.Context.Orders.Where(c => (c.OrderplacedId<=(int)OrderplacedEnum.Wa||c.OrderplacedId==(int) OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId())
+                 .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
     }
 }
