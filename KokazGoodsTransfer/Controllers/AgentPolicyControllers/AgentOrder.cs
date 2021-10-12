@@ -49,7 +49,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("Print")]
-        public IActionResult GetPrint([FromQuery] PagingDto pagingDto, PrintFilterDto printFilterDto)
+        public IActionResult GetPrint([FromQuery] PagingDto pagingDto,[FromQuery] PrintFilterDto printFilterDto)
         {
             var printeds = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
             if (printFilterDto.Date != null)
@@ -64,6 +64,12 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var total = printeds.Count();
             var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page).ToList();
             return Ok(new { total, Data = mapper.Map<PrintDto[]>(list) });
+        }
+        [HttpGet("Print/{id}")]
+        public IActionResult GetPrintById(int id)
+        {
+
+            return Ok();
         }
     }
 }
