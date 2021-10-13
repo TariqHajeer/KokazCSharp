@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("Print")]
+        [HttpGet("Prints")]
         public IActionResult GetPrint([FromQuery] PagingDto pagingDto,[FromQuery] PrintFilterDto printFilterDto)
         {
             var printeds = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
@@ -65,11 +65,20 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page).ToList();
             return Ok(new { total, Data = mapper.Map<PrintOrdersDto[]>(list) });
         }
-        [HttpGet("Print/{id}")]
-        public IActionResult GetPrintById(int id)
+        [HttpGet("Print")]
+        public IActionResult GetPrintById([FromQuery] int printNumber)
         {
-
-            return Ok();
+            var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
+                .Include(c => c.AgnetPrints)
+                .FirstOrDefault();
+            if (printed == null)
+            {
+                return Conflict();
+                //this.err.Messges.Add($"رقم الطباعة غير موجود");
+                //return Conflict(this.err);
+            }
+            var x = mapper.Map<PrintOrdersDto>(printed);
+            return Ok(x);
         }
     }
 }
