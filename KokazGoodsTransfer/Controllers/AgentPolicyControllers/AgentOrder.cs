@@ -31,6 +31,12 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public IActionResult GetInStock()
         {
             var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId())
+                .Include(c=>c.Client)
+                .Include(c=>c.Country)
+                .Include(c=>c.Client)
+                .Include(c=>c.Region)
+                .Include(c=>c.OrderPrints)
+                    .ThenInclude(c=>c.Print)
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -38,6 +44,12 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public IActionResult GetInWay()
         {
             var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId())
+                .Include(c => c.Client)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -45,6 +57,12 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public IActionResult OrderSuspended()
         {
             var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId())
+                .Include(c => c.Client)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
@@ -62,7 +80,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             }
             printeds = printeds.Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId()));
             var total = printeds.Count();
-            var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page).ToList();
+            var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page)
+                .ToList();
             return Ok(new { total, Data = mapper.Map<PrintOrdersDto[]>(list) });
         }
         [HttpGet("Print")]
