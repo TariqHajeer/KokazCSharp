@@ -272,7 +272,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.Salary = null;
             }
             user.UserName = updateUserDto.UserName;
-            user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
+            if (updateUserDto.UserName == "")
+            {
+                user.Password = null;
+            }
+            else
+            {
+                if (updateUserDto.Password != "")
+                {
+                    user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
+                }
+                
+            }
             this.Context.Update(user);
             this.Context.SaveChanges();
             return Ok();
