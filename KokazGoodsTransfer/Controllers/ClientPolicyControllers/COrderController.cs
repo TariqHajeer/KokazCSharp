@@ -8,10 +8,12 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
+using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
@@ -20,6 +22,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class COrderController : AbstractClientPolicyController
     {
+        
         public COrderController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
@@ -69,7 +72,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="createOrderFromClient"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody]CreateOrderFromClient createOrderFromClient)
+        public IActionResult Create([FromBody] CreateOrderFromClient createOrderFromClient)
         {
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
@@ -258,7 +261,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return false;
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]COrderFilter orderFilter)
+        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)
         {
             var orderIQ = this.Context.Orders
                 .Where(c => c.ClientId == AuthoticateUserId());
@@ -331,7 +334,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]
-        public IActionResult OrdersDontFinished([FromQuery]OrderDontFinishFilter orderDontFinishFilter)
+        public IActionResult OrdersDontFinished([FromQuery] OrderDontFinishFilter orderDontFinishFilter)
         {
             List<Order> orders = new List<Order>();
 
@@ -386,14 +389,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Notifcation")]
         public IActionResult Notifcation()
         {
-            var notifactions =this.Context.Notfications.Include(c => c.MoneyPlaced)
+            var notifactions = this.Context.Notfications.Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
                 .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true)
-                .OrderByDescending(c=>c.Id);
+                .OrderByDescending(c => c.Id);
             var response = mapper.Map<NotficationDto[]>(notifactions);
-            response = response.OrderBy(c => c.Note).ThenBy(c=>c.Id).ToArray();
+            response = response.OrderBy(c => c.Note).ThenBy(c => c.Id).ToArray();
             return Ok(response);
-            
+
         }
         [HttpPut("SeeNotifactions")]
         public IActionResult SeeNotifactions([FromBody] int[] ids)
@@ -417,5 +420,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        
     }
 }

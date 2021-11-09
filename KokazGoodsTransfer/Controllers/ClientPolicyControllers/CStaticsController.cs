@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.ClientDtos;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -15,8 +17,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CStaticsController : AbstractClientPolicyController
     {
-        public CStaticsController(KokazContext context, IMapper mapper) : base(context, mapper)
+        NotificationHub notificationHub;
+        public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
         {
+            this.notificationHub = notificationHub;
         }
         [HttpGet]
         public IActionResult Get()
@@ -53,6 +57,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             //    DelayedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed).Count(),
             //};
             return Ok(staticsDto);
+        }
+
+        [HttpGet("GetNo")]
+        public async Task<IActionResult> GetNo()
+        {
+
+            var uId = AuthoticateUserId();
+            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false).ToList();
+            var dto = mapper.Map<NotficationDto[]>(nos);
+            await notificationHub.AllNotification(AuthoticateUserId().ToString(), dto);
+            return Ok();
         }
     }
 }

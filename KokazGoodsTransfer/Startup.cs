@@ -17,11 +17,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using KokazGoodsTransfer.HubsConfig;
+using Microsoft.AspNetCore.SignalR;
 
 namespace KokazGoodsTransfer
 {
     public class Startup
-    { 
+    {
         //remotlyconnection
         //Data Source = SQL5101.site4now.net; Initial Catalog = DB_A6C91F_Koka; User Id = DB_A6C91F_Koka_admin; Password=1234qwer
         // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
@@ -38,19 +40,25 @@ namespace KokazGoodsTransfer
         //This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers();
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));     
-            services.AddDbContext<KokazContext>(options =>  options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
-            services.AddCors(options => 
+
+            services.AddCors(options =>
             {
                 options.AddPolicy("EnableCORS", builder =>
                 {
-                    builder.AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .WithExposedHeaders("x-paging"); ;
+                    builder
+                    .SetIsOriginAllowed(_ => true)
+                    //.AllowAnyOrigin()
+                    //.WithOrigins("*", "http://127.0.0.1:5500", "http://localhost:4200", "http://mohammedhatem-001-site6.itempurl.com")
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("x-paging");
                 });
             });
 
@@ -66,6 +74,23 @@ namespace KokazGoodsTransfer
 
             }).AddJwtBearer(x =>
             {
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/NotificationHub")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = false;
                 x.TokenValidationParameters = new TokenValidationParameters()
@@ -76,7 +101,10 @@ namespace KokazGoodsTransfer
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
                 };
-            });
+
+            }
+
+            );
 
             services.AddAuthorization(option =>
             {
@@ -95,6 +123,9 @@ namespace KokazGoodsTransfer
 
                 });
             });
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            services.AddSingleton<NotificationHub, NotificationHub>();
+            services.AddSignalR();
             services.AddSwaggerGen(s =>
             {
 
@@ -136,6 +167,7 @@ namespace KokazGoodsTransfer
 
             });
             services.AddAutoMapper(typeof(Startup));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -146,20 +178,40 @@ namespace KokazGoodsTransfer
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+            //app.UseCors("*");
+            //app.UseCors("AllOrigins");
             app.UseCors("EnableCORS");
+            //app.UseCors(builder =>
+            //{
+            //    builder.AllowAnyHeader();
+            //    builder.AllowAnyMethod();
+            //    builder.AllowCredentials();
+            //    builder.WithOrigins("*");
+            //});
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
             });
+
+            //app.UseSignalR(routes =>
+            //{
+            //    routes.MapHub<NotificationHub>("/NotificationHub");
+            //});
+
+            //app.UseSignalR(config =>
+            //{
+            //    config.MapHub<NotificationHub>("/NotificationHub"); 
+            //});
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
 
