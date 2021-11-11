@@ -37,6 +37,13 @@ namespace KokazGoodsTransfer.Controllers
             await notificationHub.AllNotification(AuthoticateUserId().ToString(),dto);
             return Ok();
         }
+        [Authorize]
+        [HttpGet("TestNoti")]
+        public async Task<IActionResult> TestNOti()
+        {
+            await notificationHub.Test(AuthoticateUserId().ToString(), "waeeell");
+            return Ok();
+        }
 
         //[Authorize]
         //[HttpGet("Check")]

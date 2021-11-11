@@ -1059,7 +1059,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
                     Notfication notfication = new Notfication()
                     {
-                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ {order.MoenyPlaced.Name}",
+                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {order.MoenyPlaced.Name}",
                         ClientId = order.ClientId
                     };
                     this.Context.Add(notfication);
