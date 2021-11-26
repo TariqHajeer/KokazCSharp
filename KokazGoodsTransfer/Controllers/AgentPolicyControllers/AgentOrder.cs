@@ -115,7 +115,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 };
                 this.Context.Add(c);
             });
-            this.Context.SaveChanges();
+            //this.Context.SaveChanges();
             return Ok();
         }
         [HttpGet("GetOrderPlaced")]
