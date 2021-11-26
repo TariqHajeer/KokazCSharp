@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.SignalR;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -37,14 +38,18 @@ namespace KokazGoodsTransfer.Controllers
             await notificationHub.AllNotification(AuthoticateUserId().ToString(),dto);
             return Ok();
         }
-        [Authorize]
-        [HttpGet("TestNoti")]
-        public async Task<IActionResult> TestNOti()
+        //[Authorize]
+        //[HttpGet("TestNoti")]
+        //public async Task<IActionResult> TestNOti()
+        //{
+        //    await notificationHub.Test(AuthoticateUserId().ToString(), "waeeell");
+        //    return Ok();
+        //}
+        [HttpGet("GetHash")]
+        public string GetShash(string x)
         {
-            await notificationHub.Test(AuthoticateUserId().ToString(), "waeeell");
-            return Ok();
+            return MD5Hash.GetMd5Hash(x);
         }
-
         //[Authorize]
         //[HttpGet("Check")]
         //public IActionResult ChekcLogin()

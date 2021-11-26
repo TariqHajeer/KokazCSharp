@@ -19,6 +19,7 @@ namespace KokazGoodsTransfer.Models
 
         public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
         public virtual DbSet<AgnetPrint> AgnetPrints { get; set; }
+        public virtual DbSet<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<ClientPrint> ClientPrints { get; set; }
@@ -114,6 +115,31 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.AgnetPrints)
                     .HasForeignKey(d => d.PrintId)
                     .HasConstraintName("FK_AgnetPrint_Printed");
+            });
+
+            modelBuilder.Entity<ApproveAgentEditOrderRequest>(entity =>
+            {
+                entity.ToTable("ApproveAgentEditOrderRequest");
+
+                entity.Property(e => e.NewAmount).HasColumnType("decimal(18, 2)");
+
+                entity.HasOne(d => d.Agent)
+                    .WithMany(p => p.ApproveAgentEditOrderRequests)
+                    .HasForeignKey(d => d.AgentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ApproveAg__Agent__0FEC5ADD");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.ApproveAgentEditOrderRequests)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ApproveAg__IsApp__0E04126B");
+
+                entity.HasOne(d => d.OrderPlaced)
+                    .WithMany(p => p.ApproveAgentEditOrderRequests)
+                    .HasForeignKey(d => d.OrderPlacedId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ApproveAg__Order__0EF836A4");
             });
 
             modelBuilder.Entity<Client>(entity =>

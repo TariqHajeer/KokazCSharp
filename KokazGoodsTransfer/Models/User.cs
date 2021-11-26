@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Models
         public User()
         {
             AgentCountrs = new HashSet<AgentCountr>();
+            ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
             Clients = new HashSet<Client>();
             EditRequests = new HashSet<EditRequest>();
             Incomes = new HashSet<Income>();
@@ -33,6 +34,7 @@ namespace KokazGoodsTransfer.Models
         public bool IsActive { get; set; }
 
         public virtual ICollection<AgentCountr> AgentCountrs { get; set; }
+        public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<EditRequest> EditRequests { get; set; }
         public virtual ICollection<Income> Incomes { get; set; }

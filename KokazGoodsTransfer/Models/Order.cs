@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public Order()
         {
+            ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
             OrderItems = new HashSet<OrderItem>();
             OrderLogs = new HashSet<OrderLog>();
             OrderPrints = new HashSet<OrderPrint>();
@@ -47,6 +48,7 @@ namespace KokazGoodsTransfer.Models
         public decimal? ClientPaied { get; set; }
         public int? CurrentCountry { get; set; }
         public int PrintedTimes { get; set; }
+        public bool? ApproveAgnetRequest { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
@@ -56,6 +58,7 @@ namespace KokazGoodsTransfer.Models
         public virtual OrderState OrderState { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
+        public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<OrderPrint> OrderPrints { get; set; }

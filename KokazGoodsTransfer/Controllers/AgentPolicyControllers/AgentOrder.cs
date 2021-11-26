@@ -31,23 +31,24 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public IActionResult GetInStock()
         {
             var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId())
-                .Include(c=>c.Client)
-                .Include(c=>c.Country)
-                .Include(c=>c.Client)
-                .Include(c=>c.Region)
-                .Include(c=>c.OrderPrints)
-                    .ThenInclude(c=>c.Print)
+                .Include(c => c.Client)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("InWay")]
         public IActionResult GetInWay()
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId())
+            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.ApproveAgnetRequest == null || c.ApproveAgnetRequest == false))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
+                 .Include(c => c.Orderplaced)
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
                  .ToList();
@@ -67,7 +68,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("Prints")]
-        public IActionResult GetPrint([FromQuery] PagingDto pagingDto,[FromQuery] PrintFilterDto printFilterDto)
+        public IActionResult GetPrint([FromQuery] PagingDto pagingDto, [FromQuery] PrintFilterDto printFilterDto)
         {
             var printeds = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
             if (printFilterDto.Date != null)
@@ -99,5 +100,33 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var x = mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
+        [HttpPost("SetOrderState")]
+        public IActionResult SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos)
+        {
+            agentOrderStateDtos.ForEach(c =>
+            {
+                ApproveAgentEditOrderRequest temp = new ApproveAgentEditOrderRequest()
+                {
+                    AgentId = AuthoticateUserId(),
+                    IsApprove = null,
+                    NewAmount = c.Cost,
+                    OrderId = c.OrderplacedId,
+                    OrderPlacedId = c.OrderplacedId,
+                };
+                this.Context.Add(c);
+            });
+            this.Context.SaveChanges();
+            return Ok();
+        }
+        [HttpGet("GetOrderState")]
+        public IActionResult GetOrderState()
+        {
+            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+        }
+        private List<string> Validation()
+        {
+            return new List<string>();
+        }
+
     }
 }
