@@ -100,7 +100,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var x = mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
-        [HttpPost("SetOrderState")]
+        [HttpPost("SetOrderPlaced")]
         public IActionResult SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos)
         {
             agentOrderStateDtos.ForEach(c =>
@@ -118,8 +118,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        [HttpGet("GetOrderState")]
-        public IActionResult GetOrderState()
+        [HttpGet("GetOrderPlaced")]
+        public IActionResult GetOrderPlaced()
         {
             return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
         }
