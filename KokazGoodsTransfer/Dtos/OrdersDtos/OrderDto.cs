@@ -49,7 +49,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public List<CountryDto> Path { get; set; }
         public int? CurrentCountry { get; set; }
         public int? PrintedTimes { get; set; }
-        public bool? ApproveAgnetRequest { get; set; }
+        public int AgentRequestStatus { get; set; }
 
     }
 }

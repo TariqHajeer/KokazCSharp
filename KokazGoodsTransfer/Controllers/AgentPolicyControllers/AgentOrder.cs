@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("InWay")]
         public IActionResult GetInWay()
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.ApproveAgnetRequest == null || c.ApproveAgnetRequest == false))
+            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == null))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -101,7 +101,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(x);
         }
         [HttpPost("SetOrderPlaced")]
-        public IActionResult SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos)
+        public IActionResult SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
         {
             agentOrderStateDtos.ForEach(c =>
             {
