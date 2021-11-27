@@ -1631,5 +1631,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpGet("OrderRequestEditState")]
+        public IActionResult OrderRequestEditState()
+        {
+            var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).ToList();
+            return Ok(mapper.Map<ApproveAgentEditOrderRequestDto[]>(response));
+        }
     }
 }

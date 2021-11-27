@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("InWay")]
         public IActionResult GetInWay()
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == null))
+            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -101,8 +101,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(x);
         }
         [HttpPost("SetOrderPlaced")]
-        public IActionResult SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
+        public async Task<IActionResult> SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
         {
+            var orderspromise = this.Context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToListAsync();
             agentOrderStateDtos.ForEach(c =>
             {
                 ApproveAgentEditOrderRequest temp = new ApproveAgentEditOrderRequest()
@@ -113,9 +114,14 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                     OrderId = c.OrderplacedId,
                     OrderPlacedId = c.OrderplacedId,
                 };
-                this.Context.Add(c);
+                this.Context.Add(temp);
             });
-            //this.Context.SaveChanges();
+            var orders = await orderspromise;
+            orders.ForEach(c =>
+            {
+                c.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
+            });
+            this.Context.SaveChanges();
             return Ok();
         }
         [HttpGet("GetOrderPlaced")]

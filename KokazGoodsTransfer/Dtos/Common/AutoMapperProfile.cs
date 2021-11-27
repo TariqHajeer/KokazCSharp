@@ -59,7 +59,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
                      }));
             CreateMap<User, UserDto>()
-                .ForMember(c=>c.Password,opt=>opt.Ignore())
+                .ForMember(c => c.Password, opt => opt.Ignore())
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
                 {
                     return context.Mapper.Map<PhoneDto[]>(user.UserPhones);
@@ -304,7 +304,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 ;
             CreateMap<Discount, DiscountDto>();
-                
+
             CreateMap<AgnetPrint, PrintDto>();
             CreateMap<ClientPrint, PrintDto>()
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
@@ -341,8 +341,21 @@ namespace KokazGoodsTransfer.Dtos.Common
                       return context.Mapper.Map<NameAndIdDto>(obj.PaymentWay);
                   }));
 
-            CreateMap<CreatePointSetting,PointsSetting>();
+            CreateMap<CreatePointSetting, PointsSetting>();
             CreateMap<PointsSetting, PointSettingsDto>();
+            CreateMap<ApproveAgentEditOrderRequest, ApproveAgentEditOrderRequestDto>()
+                .ForMember(c => c.Order, opt => opt.MapFrom((obj, dto, i, conext) =>
+                {
+                    return conext.Mapper.Map<OrderDto>(obj.Order);
+                }))
+            .ForMember(c => c.Agent, opt => opt.MapFrom((obj, dto, i, conext) =>
+             {
+                 return conext.Mapper.Map<UserDto>(obj.Agent);
+             }))
+            .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, conext) =>
+             {
+                 return conext.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+             }));
         }
     }
 }
