@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Models
         public decimal? ClientPaied { get; set; }
         public int? CurrentCountry { get; set; }
         public int PrintedTimes { get; set; }
-        public int? AgentRequestStatus { get; set; }
+        public int AgentRequestStatus { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
