@@ -1637,5 +1637,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).ToList();
             return Ok(mapper.Map<ApproveAgentEditOrderRequestDto[]>(response));
         }
+        [HttpGet("OrderRequestEditStateCount")]
+        public IActionResult OrderRequestEditStateCount()
+        {
+            var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).Count();
+            return Ok(response);
+        }
+
     }
 }
