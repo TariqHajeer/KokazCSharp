@@ -33,7 +33,10 @@ namespace KokazGoodsTransfer.Controllers
         {
             
             var uId = AuthoticateUserId();
-            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false).ToList();
+            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false)
+                .Include(c=>c.OrderPlaced)
+                .Include(c=>c.MoneyPlaced)
+                .ToList();
             var dto=  mapper.Map<NotficationDto[]>(nos );
             await notificationHub.AllNotification(AuthoticateUserId().ToString(),dto);
             return Ok();

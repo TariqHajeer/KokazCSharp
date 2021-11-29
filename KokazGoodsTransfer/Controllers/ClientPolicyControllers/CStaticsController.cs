@@ -10,7 +10,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
@@ -64,7 +64,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var uId = AuthoticateUserId();
-            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false).ToList();
+            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false)
+                .Include(c=>c.MoneyPlaced)
+                .Include(c=>c.OrderPlaced)
+                .ToList();
             var dto = mapper.Map<NotficationDto[]>(nos);
             await notificationHub.AllNotification(AuthoticateUserId().ToString(), dto);
             return Ok();

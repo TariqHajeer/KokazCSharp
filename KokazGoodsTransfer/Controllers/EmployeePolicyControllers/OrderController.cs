@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderController : AbstractEmployeePolicyController
     {
+        public static readonly object LockObject = new object();
         ErrorMessage err;
         NotificationHub notificationHub;
         public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
@@ -842,59 +843,61 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
                 return Conflict(err);
             }
-
-            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
-            var printNumber = oldPrint?.PrintNmber ?? 0;
-            ++printNumber;
-            var agent = orders.FirstOrDefault().Agent;
-            var newPrint = new Printed()
+            lock (LockObject)
             {
-                PrintNmber = printNumber,
-                Date = dateWithId.Date,
-                Type = PrintType.Agent,
-                PrinterName = this.AuthoticateUserName(),
-                DestinationName = agent.Name,
-                DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
-            };
-            var transaction = this.Context.Database.BeginTransaction();
-            try
-            {
-                this.Context.Printeds.Add(newPrint);
-                this.Context.SaveChanges();
-                foreach (var item in orders)
+                var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
+                var printNumber = oldPrint?.PrintNmber ?? 0;
+                ++printNumber;
+                var agent = orders.FirstOrDefault().Agent;
+                var newPrint = new Printed()
                 {
+                    PrintNmber = printNumber,
+                    Date = dateWithId.Date,
+                    Type = PrintType.Agent,
+                    PrinterName = this.AuthoticateUserName(),
+                    DestinationName = agent.Name,
+                    DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
+                };
+                var transaction = this.Context.Database.BeginTransaction();
+                try
+                {
+                    this.Context.Printeds.Add(newPrint);
+                    this.Context.SaveChanges();
+                    foreach (var item in orders)
+                    {
 
 
-                    item.OrderplacedId = (int)OrderplacedEnum.Way;
-                    this.Context.Update(item);
-                    this.Context.Entry(item).Reference(c => c.Region).Load();
-                    var orderPrint = new OrderPrint()
-                    {
-                        PrintId = newPrint.Id,
-                        OrderId = item.Id
-                    };
-                    var AgentPrint = new AgnetPrint()
-                    {
-                        Code = item.Code,
-                        ClientName = item.Client.Name,
-                        Note = item.Note,
-                        Total = item.Cost,
-                        Country = item.Country.Name,
-                        PrintId = newPrint.Id,
-                        Phone = item.RecipientPhones,
-                        Region = item.Region?.Name
-                    };
-                    this.Context.Add(orderPrint);
-                    this.Context.Add(AgentPrint);
+                        item.OrderplacedId = (int)OrderplacedEnum.Way;
+                        this.Context.Update(item);
+                        this.Context.Entry(item).Reference(c => c.Region).Load();
+                        var orderPrint = new OrderPrint()
+                        {
+                            PrintId = newPrint.Id,
+                            OrderId = item.Id
+                        };
+                        var AgentPrint = new AgnetPrint()
+                        {
+                            Code = item.Code,
+                            ClientName = item.Client.Name,
+                            Note = item.Note,
+                            Total = item.Cost,
+                            Country = item.Country.Name,
+                            PrintId = newPrint.Id,
+                            Phone = item.RecipientPhones,
+                            Region = item.Region?.Name
+                        };
+                        this.Context.Add(orderPrint);
+                        this.Context.Add(AgentPrint);
+                    }
+                    this.Context.SaveChanges();
+                    transaction.Commit();
+                    return Ok(new { printNumber });
                 }
-                this.Context.SaveChanges();
-                transaction.Commit();
-                return Ok(new { printNumber });
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                return BadRequest();
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest();
+                }
             }
         }
         /// <summary>
@@ -1153,9 +1156,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
                 return Conflict(err);
-            }
+            }   
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
+
             ++printNumber;
             var newPrint = new Printed()
             {
@@ -1642,6 +1646,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).Count();
             return Ok(response);
+        }
+        [HttpPut("DisAproveOrderRequestEditStateCount/{id}")]
+        public IActionResult DisAproveOrderRequestEditStateCount(int id)
+        {
+
+            var y = this.Context.ApproveAgentEditOrderRequests.Find(id);
+            y.IsApprove = false;
+            var order = this.Context.Orders.Find(y.IsApprove);
+            order.AgentRequestStatus = (int)AgentRequestStatusEnum.DisApprove;
+            this.Context.SaveChanges();
+            return Ok();
+
+        } 
+        [HttpPut("AproveOrderRequestEditStateCount/{id}")]
+        public IActionResult OrderRequestEditStateCount(int id)
+        {
+            return Ok();
         }
 
     }

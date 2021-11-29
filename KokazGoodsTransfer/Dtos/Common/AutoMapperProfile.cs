@@ -321,11 +321,11 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<ClientDto>(obj.Client);
                 }));
             CreateMap<Notfication, NotficationDto>()
-                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
                 }))
-                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
                 }));

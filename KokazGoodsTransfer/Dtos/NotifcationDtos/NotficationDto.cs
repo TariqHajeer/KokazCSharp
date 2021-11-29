@@ -12,8 +12,8 @@ namespace KokazGoodsTransfer.Dtos.NotifcationDtos
         public string Note { get; set; }
         public int? OrderCount { get; set; }
         public bool? IsSeen { get; set; }
-        public NameAndIdDto MonePlaced { get; set; }
-        public NameAndIdDto Orderplaced { get; set; }
+        public NameAndIdDto MoneyPlaced { get; set; }
+        public NameAndIdDto OrderPlaced { get; set; }
 
     }
 }
