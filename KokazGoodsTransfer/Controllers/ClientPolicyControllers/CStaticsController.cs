@@ -43,19 +43,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 DelayedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed).Count(),
                 OrderPartialReturned = orders.Where(c=>c.OrderplacedId==(int)OrderplacedEnum.PartialReturned).Count()
             };
-            //var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.OrderplacedId != (int)OrderplacedEnum.Delayed&&c.OrderplacedId!=(int)OrderplacedEnum.CompletelyReturned);
-            //StaticsDto staticsDto = new StaticsDto
-            //{
-            //    TotalOrder = orders.Count(),
-            //    OrderWithClient = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Client).Count(),
-            //    OrderInWay = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
-            //    OrderInCompany = orderInCompany.Count(),
-            //    DeliveredOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered).Count(),
-            //    UnacceptableOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Unacceptable).Count(),
-            //    CompletelyReturnedOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned).Count(),
-            //    PartialReturnedOrder = orderInCompany.Where(c => c.OrderplacedId == (int)OrderplacedEnum.PartialReturned).Count(),
-            //    DelayedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed).Count(),
-            //};
             return Ok(staticsDto);
         }
 
