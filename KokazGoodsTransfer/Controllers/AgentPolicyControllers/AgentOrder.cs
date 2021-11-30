@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Swashbuckle.Swagger.Annotations;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
@@ -53,6 +54,21 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                     .ThenInclude(c => c.Print)
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
+        }
+        
+        [HttpGet("OwedOrder")]
+        public IActionResult OwedOrder()
+        {
+            var orders = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId())
+                .Include(c => c.Client)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                 .Include(c => c.Orderplaced)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print);
+            return Ok(mapper.Map<OrderDto[]>(orders));
+
         }
         [HttpGet("OrderSuspended")]
         public IActionResult OrderSuspended()

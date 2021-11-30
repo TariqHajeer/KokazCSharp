@@ -1156,7 +1156,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
                 return Conflict(err);
-            }   
+            }
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
 
@@ -1647,22 +1647,206 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).Count();
             return Ok(response);
         }
-        [HttpPut("DisAproveOrderRequestEditStateCount/{id}")]
-        public IActionResult DisAproveOrderRequestEditStateCount(int id)
+        [HttpPut("DisAproveOrderRequestEditState")]
+        public IActionResult DisAproveOrderRequestEditStateCount([FromBody] int[] ids)
         {
 
-            var y = this.Context.ApproveAgentEditOrderRequests.Find(id);
-            y.IsApprove = false;
-            var order = this.Context.Orders.Find(y.IsApprove);
-            order.AgentRequestStatus = (int)AgentRequestStatusEnum.DisApprove;
+            var requests = this.Context.ApproveAgentEditOrderRequests.Where(c => ids.Contains(c.Id)).ToList();
+            requests.ForEach(c =>
+            {
+                c.IsApprove = false;
+                var order = this.Context.Orders.Find(c.OrderId);
+                order.AgentRequestStatus = (int)AgentRequestStatusEnum.DisApprove;
+            });
+
             this.Context.SaveChanges();
             return Ok();
-
-        } 
-        [HttpPut("AproveOrderRequestEditStateCount/{id}")]
-        public IActionResult OrderRequestEditStateCount(int id)
+        }
+        [HttpPut("AproveOrderRequestEditState")]
+        public async Task<IActionResult> OrderRequestEditStateCount([FromBody] int[] ids)
         {
-            return Ok();
+
+            try
+            {
+                var requests = this.Context.ApproveAgentEditOrderRequests.Where(c => ids.Contains(c.Id));
+                List<Notfication> notfications = new List<Notfication>();
+                List<Notfication> addednotfications = new List<Notfication>();
+                foreach (var item in requests)
+                {
+                    var order = this.Context.Orders.Find(item.OrderId);
+
+
+                    OrderLog log = order;
+                    this.Context.Add(log);
+                    order.OrderplacedId = item.OrderPlacedId;
+                    order.MoenyPlacedId = (int)MoneyPalcedEnum.WithAgent;
+                    this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
+                    this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
+
+
+                    order.SystemNote = "OrderRequestEditStateCount";
+                    if (order.IsClientDiliverdMoney)
+                    {
+                        switch (order.OrderplacedId)
+                        {
+                            case (int)OrderplacedEnum.Delivered:
+                                {
+                                    if (Decimal.Compare(order.Cost, item.NewAmount) != 0)
+                                    {
+                                        if (order.OldCost == null)
+                                            order.OldCost = order.Cost;
+                                        order.Cost = item.NewAmount;
+                                    }
+                                    var payForClient = order.ShouldToPay();
+
+
+                                    if (Decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
+                                    {
+                                        order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                        if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                                        {
+                                            order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    }
+
+                                }
+                                break;
+                            case (int)OrderplacedEnum.CompletelyReturned:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    //order.DeliveryCost = 0;
+                                    order.Cost = 0;
+                                    order.AgentCost = 0;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.Unacceptable:
+                                {
+                                    if (order.OldCost == null)
+                                    {
+                                        order.OldCost = order.Cost;
+                                    }
+                                    //order.OldCost = order.Cost;
+                                    //order.Cost = 0;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.PartialReturned:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = item.NewAmount;
+                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (order.OrderplacedId)
+                        {
+                            case (int)OrderplacedEnum.PartialReturned:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = item.NewAmount;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.Delivered:
+                                {
+                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
+
+                                    if (order.Cost != item.NewAmount)
+                                    {
+                                        if (order.OldCost == null)
+                                            order.OldCost = order.Cost;
+                                        order.Cost = item.NewAmount;
+                                    }
+                                }
+                                break;
+                            case (int)OrderplacedEnum.CompletelyReturned:
+                                {
+                                    if (order.OldCost == null)
+                                    {
+                                        order.OldCost = order.Cost;
+                                    }
+                                    order.Cost = 0;
+                                    if (order.OldDeliveryCost == null)
+                                        order.OldDeliveryCost = order.DeliveryCost;
+                                    order.DeliveryCost = 0;
+                                    order.AgentCost = 0;
+                                }
+                                break;
+                            case (int)OrderplacedEnum.Unacceptable:
+                                {
+                                    if (order.OldCost == null)
+                                        order.OldCost = order.Cost;
+                                    order.Cost = 0;
+                                }
+                                break;
+
+                        }
+                    }
+                    this.Context.Update(order);
+                    if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
+                    {
+                        var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
+                        if (clientNotigaction == null)
+                        {
+                            clientNotigaction = new Notfication()
+                            {
+                                ClientId = order.ClientId,
+                                OrderPlacedId = item.OrderPlacedId,
+                                MoneyPlacedId = (int)MoneyPalcedEnum.WithAgent,
+                                IsSeen = false,
+                                OrderCount = 1
+                            };
+                            notfications.Add(clientNotigaction);
+                        }
+                        else
+                        {
+                            clientNotigaction.OrderCount++;
+                        }
+                    }
+                    Notfication notfication = new Notfication()
+                    {
+                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {order.MoenyPlaced.Name}",
+                        ClientId = order.ClientId
+                    };
+                    this.Context.Add(notfication);
+                    addednotfications.Add(notfication);
+                }
+                foreach (var item in notfications)
+                {
+                    addednotfications.Add(item);
+                    this.Context.Add(item);
+                }
+                this.Context.SaveChanges();
+                {
+                    var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
+                    foreach (var item in newnotifications)
+                    {
+                        var key = item.Key;
+                        List<NotficationDto> notficationDtos = new List<NotficationDto>();
+                        foreach (var groupItem in item)
+                        {
+                            notficationDtos.Add(mapper.Map<NotficationDto>(groupItem));
+                        }
+                        await notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
+                        ;
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
     }
