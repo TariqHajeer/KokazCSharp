@@ -32,18 +32,6 @@ namespace KokazGoodsTransfer.HubsConfig
             }
 
         }
-        public async Task Test(string userId, string x)
-        {
-            if (Clients != null)
-            {
-                var user = Clients.User(userId);
-                if (user != null)
-                {
-                    await Clients.User(userId).SendAsync("RM", x);
-                }
-            }
-
-        }
 
 
         public override Task OnConnectedAsync()

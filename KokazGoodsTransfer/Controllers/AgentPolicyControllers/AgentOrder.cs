@@ -55,11 +55,11 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
-        
+
         [HttpGet("OwedOrder")]
         public IActionResult OwedOrder()
         {
-            var orders = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId())
+            var orders = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId())
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -117,22 +117,21 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(x);
         }
         [HttpPost("SetOrderPlaced")]
-        public async Task<IActionResult> SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
+        public IActionResult SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
         {
-            var orderspromise = this.Context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToListAsync();
+            var orders = this.Context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToList();
             agentOrderStateDtos.ForEach(c =>
             {
                 ApproveAgentEditOrderRequest temp = new ApproveAgentEditOrderRequest()
-                {
+                {   
                     AgentId = AuthoticateUserId(),
                     IsApprove = null,
                     NewAmount = c.Cost,
-                    OrderId = c.OrderplacedId,
+                    OrderId = c.Id,
                     OrderPlacedId = c.OrderplacedId,
                 };
                 this.Context.Add(temp);
             });
-            var orders = await orderspromise;
             orders.ForEach(c =>
             {
                 c.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
