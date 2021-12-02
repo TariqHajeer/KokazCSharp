@@ -1671,10 +1671,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("AproveOrderRequestEditState")]
         public async Task<IActionResult> OrderRequestEditStateCount([FromBody] int[] ids)
         {
-
+            var requests = this.Context.ApproveAgentEditOrderRequests.Where(c => ids.Contains(c.Id)).ToList();
+            var transaction = this.Context.Database.BeginTransaction();
             try
             {
-                var requests = this.Context.ApproveAgentEditOrderRequests.Where(c => ids.Contains(c.Id));
+                
+                requests.ForEach(c =>
+                {
+                    c.IsApprove = true;
+                    this.Context.Update(c);
+                });
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
                 foreach (var item in requests)
@@ -1847,13 +1853,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         ;
                     }
                 }
+                transaction.Commit();
                 return Ok();
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 return BadRequest();
             }
         }
 
     }
-}
+}   
