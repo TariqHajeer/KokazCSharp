@@ -118,7 +118,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var clientOrder = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
-                var totalOrder = clientOrder.Sum(c => c.PayForClient());
+                var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
                 //var orderInNigative = (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)||(c.OrderStateId==(int)OrderStateEnum.Finished&&c.MoenyPlacedId==(int)MoneyPalcedEnum.WithAgent)).Sum(c => c.Cost - c.DeliveryCost)) * -1;
                 //var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed).Sum(c => c.Cost - c.DeliveryCost));
                 var totalAccount = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c => c.Amount);
