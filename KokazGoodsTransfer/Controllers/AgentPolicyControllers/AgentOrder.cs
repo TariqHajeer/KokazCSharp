@@ -123,7 +123,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             agentOrderStateDtos.ForEach(c =>
             {
                 ApproveAgentEditOrderRequest temp = new ApproveAgentEditOrderRequest()
-                {   
+                {
                     AgentId = AuthoticateUserId(),
                     IsApprove = null,
                     NewAmount = c.Cost,
@@ -143,6 +143,20 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public IActionResult GetOrderPlaced()
         {
             return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+        }
+        [HttpGet("GetAgentStatics")]
+        public IActionResult GetAgentStatics()
+        {
+            AgentStaticsDto mainStatics = new AgentStaticsDto()
+            {
+                TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).Count(),
+                TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).Count(),
+                TotlaOwedOrder = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId()).Count(),
+                TotlaPrintOrder=this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
+                .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).Count(),
+                TotalOrderSuspended=this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId()).Count()
+            };
+            return Ok(mainStatics);
         }
         private List<string> Validation()
         {

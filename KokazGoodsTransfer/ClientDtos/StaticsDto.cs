@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace KokazGoodsTransfer.ClientDtos
 {
     public class StaticsDto
-    {
+    { 
         /// <summary>
         /// إجمالي الطرود
         /// </summary>
