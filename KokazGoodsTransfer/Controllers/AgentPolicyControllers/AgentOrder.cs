@@ -55,6 +55,20 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
+        [HttpGet("InWayByCode")]
+        public IActionResult InWayByCode([FromQuery] string code)
+        {
+            var orders = this.Context.Orders.Where(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).OrderByDescending(c => c.Date)
+                .Include(c => c.Client)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Region)
+                 .Include(c => c.Orderplaced)
+                .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+                .ToList();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
 
         [HttpGet("OwedOrder")]
         public IActionResult OwedOrder()
@@ -152,9 +166,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).Count(),
                 TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).Count(),
                 TotlaOwedOrder = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId()).Count(),
-                TotlaPrintOrder=this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
+                TotlaPrintOrder = this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
                 .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).Count(),
-                TotalOrderSuspended=this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId()).Count()
+                TotalOrderSuspended = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId()).Count()
             };
             return Ok(mainStatics);
         }
