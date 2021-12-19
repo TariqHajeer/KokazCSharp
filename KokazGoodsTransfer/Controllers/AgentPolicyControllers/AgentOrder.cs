@@ -85,9 +85,11 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 
         }
         [HttpGet("OrderSuspended")]
-        public IActionResult OrderSuspended()
+        public IActionResult OrderSuspended([FromQuery] DateTime dateTime)
         {
-            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId())
+            var date = dateTime.AddDays(-3);
+            ///TODO:add date time validation 
+            var orders = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && ((c.OrderplacedId >= (int)OrderplacedEnum.Way &&c.Date<date|| c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId()))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)

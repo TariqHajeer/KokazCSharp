@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer
 
             services.AddControllers();
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));     
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
 
