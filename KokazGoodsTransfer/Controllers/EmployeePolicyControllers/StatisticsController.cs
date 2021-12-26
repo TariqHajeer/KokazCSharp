@@ -41,13 +41,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var clientOrder = this.Context.Orders;
             var orderInNigative = (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).Sum(c => c.Cost - c.DeliveryCost)) * -1;
-            var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).Sum(c => c.Cost - c.DeliveryCost));
+            var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).Sum(c => c.Cost - c.AgentCost));
 
             var totalAccount = this.Context.Receipts.Where(c => c.PrintId == null).Sum(c => c.Amount);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
-            var totalOrderEarinig = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished).Sum(c => c.DeliveryCost - c.AgentCost);
+            var totalOrderEarinig = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoenyPlacedId != (int)MoneyPalcedEnum.OutSideCompany) && (c.OrderplacedId > (int)OrderplacedEnum.Way)).Sum(c => c.DeliveryCost - c.AgentCost);
 
 
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
@@ -107,28 +107,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("ClientBalance")]
-        public async Task<IActionResult> ClientBalance()
+        public IActionResult ClientBalance()
         {
-            List<Task<ClientBlanaceDto>> tasks = new List<Task<ClientBlanaceDto>>();
             var clients = this.Context.Clients.ToList();
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
-                tasks.Add(GetClientBalanceById(item));
-            }
-            for (int i = 0; i < tasks.Count; i++)
-            {
-                clientBlanaceDtos.Add(await tasks[i]);
+                clientBlanaceDtos.Add(GetClientBalanceById(item));
             }
             return Ok(clientBlanaceDtos);
 
         }
-        private async Task<ClientBlanaceDto> GetClientBalanceById(Client item)
+        private ClientBlanaceDto GetClientBalanceById(Client item)
         {
-            var totalAccountTask = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).SumAsync(c => c.Amount);
+            var totalAccountTask = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c => c.Amount);
             var clientOrder = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
             var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
-            var totalAccount = await totalAccountTask;
+            var totalAccount = totalAccountTask;
             return new ClientBlanaceDto()
             {
                 ClientName = item.Name,

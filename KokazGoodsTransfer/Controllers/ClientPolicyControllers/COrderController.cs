@@ -371,6 +371,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     orders.AddRange(list);
                 }
             }
+            orders.ForEach(o => 
+            {
+                if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
+                {
+                    o.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                    o.MoenyPlaced = Context.MoenyPlaceds.Find(o.MoenyPlacedId);
+                }
+            });
             var o = mapper.Map<PayForClientDto[]>(orders);
             return Ok(o);
         }

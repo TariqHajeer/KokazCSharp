@@ -911,6 +911,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
+                var inCompnay = Context.MoenyPlaceds.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany);
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
                 foreach (var item in orderStates)
@@ -1045,10 +1046,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
                         if (clientNotigaction == null)
                         {
+                            int moenyPlacedId = item.MoenyPlacedId;
+                            if (moenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
+                                moenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                             clientNotigaction = new Notfication()
                             {
                                 ClientId = order.ClientId,
-                                OrderPlacedId = item.OrderplacedId,
+                                OrderPlacedId = moenyPlacedId,
                                 MoneyPlacedId = item.MoenyPlacedId,
                                 IsSeen = false,
                                 OrderCount = 1
@@ -1060,9 +1064,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             clientNotigaction.OrderCount++;
                         }
                     }
+                    var moneyPlacedName = order.MoenyPlaced.Name;
+                    if (order.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
+                        moneyPlacedName = inCompnay.Name;
                     Notfication notfication = new Notfication()
                     {
-                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {order.MoenyPlaced.Name}",
+                        Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {moneyPlacedName}",
                         ClientId = order.ClientId
                     };
                     this.Context.Add(notfication);
@@ -1073,7 +1080,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     addednotfications.Add(item);
                     this.Context.Add(item);
                 }
-                this.Context.SaveChanges();
+                this.Context.SaveChanges(); 
                 {
                     var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
                     foreach (var item in newnotifications)
@@ -1095,7 +1102,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        [HttpGet("GetClientprint")]
+        [HttpGet("GetClientprint")]  
         public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
         {
             var orderPrintIq = this.Context.Printeds
