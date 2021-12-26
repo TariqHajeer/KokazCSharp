@@ -1533,7 +1533,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var orders = this.Context.Orders.
                 Where(c => c.AgentId == agnetId)
-                .Where(c => (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
+                .Where(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending||(c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
                 .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)

@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("OwedOrder")]
         public IActionResult OwedOrder()
         {
-            var orders = this.Context.Orders.Where(c =>c.AgentId==AuthoticateUserId()&& c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))
+            var orders = this.Context.Orders.Where(c =>c.AgentId==AuthoticateUserId()&&( c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending|| c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
