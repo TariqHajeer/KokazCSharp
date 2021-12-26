@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("OwedOrder")]
         public IActionResult OwedOrder()
         {
-            var orders = this.Context.Orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)) && c.AgentId == AuthoticateUserId())
+            var orders = this.Context.Orders.Where(c =>c.AgentId==AuthoticateUserId()&& c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -171,7 +171,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 TotlaOwedOrder = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way && c.Date < date || c.OrderplacedId == (int)OrderplacedEnum.Delayed)).Count(),
                 TotlaPrintOrder = this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
                 .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).Count(),
-                TotalOrderSuspended = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed) && c.AgentId == AuthoticateUserId()).Count()
+                TotalOrderSuspended = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()&& c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed)).Count()
             };
             return Ok(mainStatics);
         }
