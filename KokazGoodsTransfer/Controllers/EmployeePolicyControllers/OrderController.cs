@@ -759,6 +759,37 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut("Acceptmultiple")]
+        public async Task<IActionResult> AcceptMultiple([FromBody] List<IdsDto> idsDto)
+        {
+            //get data 
+            var orders= await this.Context.Orders.Where(c => idsDto.Select(dto => dto.OrderId).Contains(c.Id)).ToListAsync();
+            var agentsContries = await this.Context.AgentCountrs.Where(c => idsDto.Select(dto => dto.AgentId).Contains(c.AgentId)).ToListAsync();
+
+            //validation 
+            if (idsDto.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())
+                return Conflict();
+
+            if (idsDto.Select(c => c.AgentId).Except(agentsContries.Select(c => c.AgentId)).Any())
+                return Conflict();
+
+            foreach (var item in idsDto)
+            {
+                var order = orders.Find(c=>c.Id== item.OrderId);
+                var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
+                if (!agentsContries.Any(c => c.CountryId != order.CountryId))
+                {
+                    return Conflict();
+                }
+                order.AgentId = item.AgentId;
+                order.AgentCost = (decimal)this.Context.Users.Find(item.AgentId).Salary;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.IsSend = true;
+                this.Context.Update(order);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+        }
         [HttpPut("DisAccept")]
         public IActionResult DisAccept([FromBody] DateWithId<int> dateWithId)
         {
