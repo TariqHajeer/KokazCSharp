@@ -786,6 +786,42 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPut("DisAcceptmultiple")]
+        public async Task<IActionResult> DisAcceptMultiple([FromBody] DateWithId<List<int>> dateWithIds)
+        {
+            var ids = dateWithIds.Ids;
+            var orders = await this.Context.Orders.Where(c => ids.Contains(c.Id)).ToListAsync();
+            if (ids.Except(orders.Select(c => c.Id)).Any())
+            {
+                return Conflict();
+            }
+            foreach (var order in orders)
+            {
+                DisAcceptOrder disAcceptOrder = new DisAcceptOrder()
+                {
+                    Code = order.Code,
+                    CountryId = order.CountryId,
+                    Cost = order.Cost,
+                    ClientNote = order.ClientNote,
+                    CreatedBy = order.CreatedBy,
+                    Date = order.Date,
+                    Address = order.Address,
+                    ClientId = order.ClientId,
+                    DeliveryCost = order.DeliveryCost,
+                    IsDollar = order.IsDollar,
+                    RecipientName = order.RecipientName,
+                    RecipientPhones = order.RecipientPhones,
+                    RegionId = order.RegionId,
+                    UpdatedBy = AuthoticateUserName(),
+                    UpdatedDate = dateWithIds.Date
+                };
+                this.Context.Orders.Remove(order);
+                this.Context.Add(disAcceptOrder);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+
+        }
         [HttpGet("DisAccept")]
         public IActionResult DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
@@ -1080,7 +1116,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     addednotfications.Add(item);
                     this.Context.Add(item);
                 }
-                this.Context.SaveChanges(); 
+                this.Context.SaveChanges();
                 {
                     var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
                     foreach (var item in newnotifications)
@@ -1102,7 +1138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        [HttpGet("GetClientprint")]  
+        [HttpGet("GetClientprint")]
         public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
         {
             var orderPrintIq = this.Context.Printeds
@@ -1533,7 +1569,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var orders = this.Context.Orders.
                 Where(c => c.AgentId == agnetId)
-                .Where(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending||(c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
+                .Where(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
                 .Include(c => c.Client)
                  .Include(c => c.Region)
                  .Include(c => c.Country)
@@ -1646,9 +1682,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult OrderRequestEditState()
         {
             var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null)
-                .Include(c=>c.Order)
-                .Include(c=>c.Agent)
-                .Include(c=>c.OrderPlaced)
+                .Include(c => c.Order)
+                .Include(c => c.Agent)
+                .Include(c => c.OrderPlaced)
                 .ToList();
 
             var x = mapper.Map<ApproveAgentEditOrderRequestDto[]>(response);
@@ -1682,7 +1718,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var transaction = this.Context.Database.BeginTransaction();
             try
             {
-                
+
                 requests.ForEach(c =>
                 {
                     c.IsApprove = true;
@@ -1871,4 +1907,4 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
     }
-}   
+}
