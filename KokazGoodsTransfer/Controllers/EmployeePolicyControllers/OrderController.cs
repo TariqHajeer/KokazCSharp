@@ -1709,6 +1709,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
+        [HttpPatch("AddPrintNumberMultiple")]
+        public async Task<IActionResult> AddPrintNumber([FromBody] int[] orderids)
+        {
+            var orders = await this.Context.Orders.Where(c => orderids.Contains(c.Id)).ToListAsync();
+            foreach (var item in orders)
+            {
+                item.PrintedTimes += 1;
+                this.Context.Update(item);
+            }
+            this.Context.SaveChanges();
+            return Ok();
+        }
         [HttpGet("OrderRequestEditState")]
         public IActionResult OrderRequestEditState()
         {
