@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            var expireDate = new DateTime(2021, 2,1);
+            var expireDate = new DateTime(2021, 2,2);
             if (DateTime.Now > expireDate)
             {
                 return Conflict("You should  to pay");
