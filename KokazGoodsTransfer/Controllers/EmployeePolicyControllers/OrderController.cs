@@ -763,7 +763,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> AcceptMultiple([FromBody] List<IdsDto> idsDto)
         {
             //get data 
-            var orders= await this.Context.Orders.Where(c => idsDto.Select(dto => dto.OrderId).Contains(c.Id)).ToListAsync();
+            var orders = await this.Context.Orders.Where(c => idsDto.Select(dto => dto.OrderId).Contains(c.Id)).ToListAsync();
             var agentsContries = await this.Context.AgentCountrs.Where(c => idsDto.Select(dto => dto.AgentId).Contains(c.AgentId)).ToListAsync();
 
             //validation 
@@ -775,7 +775,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             foreach (var item in idsDto)
             {
-                var order = orders.Find(c=>c.Id== item.OrderId);
+                var order = orders.Find(c => c.Id == item.OrderId);
                 var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
                 if (!agentsContries.Any(c => c.CountryId != order.CountryId))
                 {
@@ -987,7 +987,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
                     OrderLog log = order;
-                    this.Context.Add(log);
+                    var y = this.Context.Add(log);
                     order.OrderplacedId = item.OrderplacedId;
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();

@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T: class
     {
-        Task Add(T entity);
-        Task<List<T>> GetAll();
+        Task AddAsyc(T entity);
+        IQueryable<T> GetIQueryable();
+
 
     }
 }
