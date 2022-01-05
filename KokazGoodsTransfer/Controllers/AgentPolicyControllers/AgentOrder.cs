@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("OwedOrder")]
         public IActionResult OwedOrder()
         {
-            var orders = this.Context.Orders.Where(c =>c.AgentId==AuthoticateUserId()&&( c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending|| c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))))
+            var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -84,12 +84,18 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
 
         }
+        /// <summary>
+        /// الطلبات المعلقة
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
         [HttpGet("OrderSuspended")]
         public IActionResult OrderSuspended([FromQuery] DateTime dateTime)
         {
             var date = dateTime.AddDays(-4);
             ///TODO:add date time validation 
-            var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()&& c.OrderStateId == (int)OrderStateEnum.Processing && ((c.OrderplacedId >= (int)OrderplacedEnum.Way &&c.OrderplacedId<(int)OrderplacedEnum.Delayed&&c.Date<date)|| c.OrderplacedId == (int)OrderplacedEnum.Delayed))
+            //var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()&& c.OrderStateId == (int)OrderStateEnum.Processing && ((c.OrderplacedId >= (int)OrderplacedEnum.Way &&c.OrderplacedId<(int)OrderplacedEnum.Delayed&&c.Date<date)|| c.OrderplacedId == (int)OrderplacedEnum.Delayed))   
+            var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -171,7 +177,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 TotlaOwedOrder = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way && c.Date < date || c.OrderplacedId == (int)OrderplacedEnum.Delayed)).Count(),
                 TotlaPrintOrder = this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
                 .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).Count(),
-                TotalOrderSuspended = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId()&& c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed)).Count()
+                TotalOrderSuspended = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.OrderStateId == (int)OrderStateEnum.Processing && (c.OrderplacedId >= (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delayed)).Count()
             };
             return Ok(mainStatics);
         }
