@@ -1107,7 +1107,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                         }
                     }
+                    if (order.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                    {
+                        order.ApproveAgentEditOrderRequests.Clear();
+                    }
                     this.Context.Update(order);
+                    
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
                     {
                         var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
