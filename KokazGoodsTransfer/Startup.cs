@@ -168,6 +168,7 @@ namespace KokazGoodsTransfer
 
             });
             services.AddAutoMapper(typeof(Startup));
+            RegiserServices(services);
 
         }
 
