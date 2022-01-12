@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KokazGoodsTransfer.Services.Concret
+namespace KokazGoodsTransfer.Models.Infrastrcuter
 {
-    public class CountryServices
+    public interface IIndex:IIdEntity,INameEntity
     {
     }
 }

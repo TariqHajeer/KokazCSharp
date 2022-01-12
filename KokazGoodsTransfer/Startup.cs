@@ -19,6 +19,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.HubsConfig;
 using Microsoft.AspNetCore.SignalR;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.DAL.Infrastructure.Concret;
 
 namespace KokazGoodsTransfer
 {
@@ -220,6 +222,14 @@ namespace KokazGoodsTransfer
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
                 //c.SwaggerEndpoint("v1/swagger.json", "Swagger Test");
             });
+        }
+
+
+
+
+        private void RegiserServices(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }

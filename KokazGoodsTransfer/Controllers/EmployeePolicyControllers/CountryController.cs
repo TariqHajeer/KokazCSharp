@@ -24,7 +24,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var countries = Context.Countries
                 .Include(c=>c.Clients)
-                //.Include(c => c.Users)
                 .Include(c => c.Regions)
                 .Include(c=>c.AgentCountrs)
                     .ThenInclude(c=>c.Agent)
