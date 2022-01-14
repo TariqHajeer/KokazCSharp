@@ -1787,6 +1787,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.MoenyPlacedId = (int)MoneyPalcedEnum.WithAgent;
                     this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
                     this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
+                    order.AgentRequestStatus = (int)AgentRequestStatusEnum.Approve;
 
 
                     order.SystemNote = "OrderRequestEditStateCount";
