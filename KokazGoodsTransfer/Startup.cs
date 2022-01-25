@@ -43,9 +43,9 @@ namespace KokazGoodsTransfer
         {
 
             services.AddControllers();
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
-            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
 
             services.AddCors(options =>
@@ -54,8 +54,6 @@ namespace KokazGoodsTransfer
                 {
                     builder
                     .SetIsOriginAllowed(_ => true)
-                    //.AllowAnyOrigin()
-                    //.WithOrigins("*", "http://127.0.0.1:5500", "http://localhost:4200", "http://mohammedhatem-001-site6.itempurl.com")
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyMethod()
@@ -186,16 +184,8 @@ namespace KokazGoodsTransfer
             app.UseStaticFiles();
 
             app.UseRouting();
-            //app.UseCors("*");
-            //app.UseCors("AllOrigins");
+            
             app.UseCors("EnableCORS");
-            //app.UseCors(builder =>
-            //{
-            //    builder.AllowAnyHeader();
-            //    builder.AllowAnyMethod();
-            //    builder.AllowCredentials();
-            //    builder.WithOrigins("*");
-            //});
             app.UseAuthentication();
             app.UseAuthorization();
 

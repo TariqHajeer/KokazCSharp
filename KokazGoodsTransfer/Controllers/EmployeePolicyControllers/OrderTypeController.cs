@@ -23,17 +23,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orderTypes = Context.OrderTypes
                 .Include(c => c.OrderItems)
                 .ToList();
-            //List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
-            //foreach (var item in orderTypes)
-            //{
-            //    orderTypeDtos.Add(new OrderTypeDto()
-            //    {
-            //        Id = item.Id,
-            //        Name = item.Name,
-            //        CanDelete = item.OrderItems.Count()==0
-            //    });
-
-            //}
             return Ok(mapper.Map<OrderTypeDto[]>(orderTypes));
         }
         [HttpPost]

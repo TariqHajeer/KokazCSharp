@@ -34,6 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c=>c.UserPhones)
                 .Include(c=>c.AgentCountrs)
                     .ThenInclude(c=>c.Country)
+                        .ThenInclude(c => c.Regions)
                 .ToList();
             return Ok(mapper.Map<UserDto[]>(users));
         }

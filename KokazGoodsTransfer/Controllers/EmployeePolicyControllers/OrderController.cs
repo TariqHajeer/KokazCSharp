@@ -14,6 +14,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -21,9 +22,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderController : AbstractEmployeePolicyController
     {
-        public static readonly object LockObject = new object();
         ErrorMessage err;
         NotificationHub notificationHub;
+        static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
         {
             this.err = new ErrorMessage();
@@ -910,62 +911,61 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
                 return Conflict(err);
             }
-            lock (LockObject)
+
+            var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
+            ++printNumber;
+            var agent = orders.FirstOrDefault().Agent;
+            var newPrint = new Printed()
             {
-                var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
-                var printNumber = oldPrint?.PrintNmber ?? 0;
-                ++printNumber;
-                var agent = orders.FirstOrDefault().Agent;
-                var newPrint = new Printed()
+                PrintNmber = printNumber,
+                Date = dateWithId.Date,
+                Type = PrintType.Agent,
+                PrinterName = this.AuthoticateUserName(),
+                DestinationName = agent.Name,
+                DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
+            };
+            var transaction = this.Context.Database.BeginTransaction();
+            try
+            {
+                this.Context.Printeds.Add(newPrint);
+                this.Context.SaveChanges();
+                foreach (var item in orders)
                 {
-                    PrintNmber = printNumber,
-                    Date = dateWithId.Date,
-                    Type = PrintType.Agent,
-                    PrinterName = this.AuthoticateUserName(),
-                    DestinationName = agent.Name,
-                    DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
-                };
-                var transaction = this.Context.Database.BeginTransaction();
-                try
-                {
-                    this.Context.Printeds.Add(newPrint);
-                    this.Context.SaveChanges();
-                    foreach (var item in orders)
+
+
+                    item.OrderplacedId = (int)OrderplacedEnum.Way;
+                    this.Context.Update(item);
+                    this.Context.Entry(item).Reference(c => c.Region).Load();
+                    var orderPrint = new OrderPrint()
                     {
-
-
-                        item.OrderplacedId = (int)OrderplacedEnum.Way;
-                        this.Context.Update(item);
-                        this.Context.Entry(item).Reference(c => c.Region).Load();
-                        var orderPrint = new OrderPrint()
-                        {
-                            PrintId = newPrint.Id,
-                            OrderId = item.Id
-                        };
-                        var AgentPrint = new AgnetPrint()
-                        {
-                            Code = item.Code,
-                            ClientName = item.Client.Name,
-                            Note = item.Note,
-                            Total = item.Cost,
-                            Country = item.Country.Name,
-                            PrintId = newPrint.Id,
-                            Phone = item.RecipientPhones,
-                            Region = item.Region?.Name
-                        };
-                        this.Context.Add(orderPrint);
-                        this.Context.Add(AgentPrint);
-                    }
-                    this.Context.SaveChanges();
-                    transaction.Commit();
-                    return Ok(new { printNumber });
+                        PrintId = newPrint.Id,
+                        OrderId = item.Id
+                    };
+                    var AgentPrint = new AgnetPrint()
+                    {
+                        Code = item.Code,
+                        ClientName = item.Client.Name,
+                        Note = item.Note,
+                        Total = item.Cost,
+                        Country = item.Country.Name,
+                        PrintId = newPrint.Id,
+                        Phone = item.RecipientPhones,
+                        Region = item.Region?.Name
+                    };
+                    this.Context.Add(orderPrint);
+                    this.Context.Add(AgentPrint);
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    return BadRequest();
-                }
+                this.Context.SaveChanges();
+                transaction.Commit();
+                return Ok(new { printNumber });
             }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return BadRequest();
+            }
+
         }
         /// <summary>
         /// <!--استلام حالة شحنة-->
@@ -1107,7 +1107,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                         }
                     }
+                    if (order.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                    {
+                        order.ApproveAgentEditOrderRequests.Clear();
+                    }
                     this.Context.Update(order);
+
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
                     {
                         var clientNotigaction = notfications.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == order.OrderplacedId && c.MoneyPlacedId == order.MoenyPlacedId).FirstOrDefault();
@@ -1231,6 +1236,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
                 return Conflict(err);
             }
+            semaphore.Wait();
             var oldPrint = this.Context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this.Context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
 
@@ -1287,7 +1293,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
                         }
 
-
                     }
 
                     item.IsClientDiliverdMoney = true;
@@ -1343,10 +1348,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 });
                 this.Context.SaveChanges();
                 transaction.Commit();
+                semaphore.Release();
                 return Ok(new { printNumber });
             }
             catch (Exception ex)
             {
+                semaphore.Release();
                 transaction.Rollback();
                 return BadRequest();
 
@@ -1780,6 +1787,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.MoenyPlacedId = (int)MoneyPalcedEnum.WithAgent;
                     this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
                     this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
+                    order.AgentRequestStatus = (int)AgentRequestStatusEnum.Approve;
 
 
                     order.SystemNote = "OrderRequestEditStateCount";
@@ -1947,6 +1955,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 transaction.Rollback();
                 return BadRequest();
             }
+        }
+        [HttpGet("ForzenInWay")]
+        public async Task<IActionResult> ForzenInWay([FromForm] FrozenOrder frozenOrder)
+        {
+            var query = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way);
+            if (frozenOrder.AgentId != null)
+            {
+                query = query.Where(c => c.AgentId == (int)frozenOrder.AgentId);
+            }
+            var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
+            query = query.Where(c => c.Date <= date);
+            var orders = await query.ToListAsync();
+            return Ok(mapper.Map<OrderDto[]>(orders));
         }
 
     }
