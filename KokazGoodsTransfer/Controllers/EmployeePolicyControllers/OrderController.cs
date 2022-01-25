@@ -1956,6 +1956,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpGet("ForzenInWay")]
+        public async Task<IActionResult> ForzenInWay([FromForm] FrozenOrder frozenOrder)
+        {
+            var query = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way);
+            if (frozenOrder.AgentId != null)
+            {
+                query = query.Where(c => c.AgentId == (int)frozenOrder.AgentId);
+            }
+            var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
+            query = query.Where(c => c.Date <= date);
+            var orders = await query.ToListAsync();
+            return Ok(mapper.Map<OrderDto[]>(orders));
+        }
 
     }
 }
