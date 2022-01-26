@@ -23,8 +23,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
         }
         [HttpPost]
-        public IActionResult Login([FromBody]LoginDto loginDto)
+        public IActionResult Login([FromBody] LoginDto loginDto)
         {
+            var expireDate = new DateTime(2022, 2, 17);
+            if (DateTime.Now > expireDate)
+            {
+                return Conflict("You should  to pay");
+            }
 
             var client = this.Context.Clients
                 .Include(c => c.Country)
