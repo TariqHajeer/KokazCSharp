@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CClientController : AbstractClientPolicyController
     {
-        public CClientController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public CClientController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet("CheckUserName/{username}")]

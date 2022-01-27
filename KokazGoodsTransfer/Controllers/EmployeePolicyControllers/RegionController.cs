@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Regions;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class RegionController : AbstractEmployeePolicyController
     {
 
-        public RegionController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public RegionController(KokazContext context, IMapper mapper, Logging logging ) : base(context, mapper, logging)
         {
 
         }

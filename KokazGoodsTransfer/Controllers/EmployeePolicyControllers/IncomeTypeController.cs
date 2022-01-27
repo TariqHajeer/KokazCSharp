@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
 
-        public IncomeTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public IncomeTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
 

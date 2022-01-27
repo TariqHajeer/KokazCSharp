@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.Statics;
 using KokazGoodsTransfer.Dtos.Users;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class StatisticsController : AbstractEmployeePolicyController
     {
-        public StatisticsController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public StatisticsController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
 

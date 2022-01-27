@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [Authorize(Policy = "Agent")]
     public class AbstractAgentController : AbstractController
     {
-        public AbstractAgentController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public AbstractAgentController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
     }
