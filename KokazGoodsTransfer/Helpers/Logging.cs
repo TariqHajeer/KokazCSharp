@@ -63,6 +63,7 @@ namespace KokazGoodsTransfer.Helpers
                 text += ex.Message + Environment.NewLine;
                 ex = ex.InnerException;
             }
+            text += "=======================================================" + Environment.NewLine;
             return text;
         }
         public static bool IsFileReady(string filename)
