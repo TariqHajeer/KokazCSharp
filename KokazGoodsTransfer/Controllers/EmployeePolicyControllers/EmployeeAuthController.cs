@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class EmployeeAuthController : AbstractController
     {
 
-        public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public EmployeeAuthController(KokazContext context, IMapper mapper,Logging logging ) : base(context, mapper, logging)
         {
         }
 

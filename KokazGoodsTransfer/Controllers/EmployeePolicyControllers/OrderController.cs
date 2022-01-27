@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper,logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";

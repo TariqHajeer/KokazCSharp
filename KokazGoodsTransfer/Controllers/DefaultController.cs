@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers
     public class DefaultController : AbstractController
     {
         NotificationHub notificationHub;
-        public DefaultController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        public DefaultController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper, logging)
         {
             this.notificationHub = notificationHub;
             

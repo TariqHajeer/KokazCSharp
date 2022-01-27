@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class UserController : AbstractEmployeePolicyController
     {
-        public UserController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public UserController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet("Agent")]

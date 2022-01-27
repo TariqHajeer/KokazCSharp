@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.ClientDtos;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CStaticsController : AbstractClientPolicyController
     {
         NotificationHub notificationHub;
-        public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper,logging)
         {
             this.notificationHub = notificationHub;
         }
