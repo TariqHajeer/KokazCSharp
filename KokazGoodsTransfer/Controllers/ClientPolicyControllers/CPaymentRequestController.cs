@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +19,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CPaymentRequestController : AbstractClientPolicyController
     {
-        public CPaymentRequestController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        private readonly NotificationHub _notificationHub;
+        public CPaymentRequestController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            this._notificationHub = notificationHub;
         }
         [HttpGet("CanRequest")]
         public IActionResult CanRequest()
@@ -26,7 +30,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(!this.Context.PaymentRequests.Any(c => c.ClientId == AuthoticateUserId() && c.Accept == null));
         }
         [HttpPost]
-        public IActionResult Create([FromBody] CreatePaymentRequestDto createPaymentRequestDto)
+        public async Task<IActionResult> Create([FromBody] CreatePaymentRequestDto createPaymentRequestDto)
         {
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -37,7 +41,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 Accept = null
             };
             this.Context.Add(paymentRequest);
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
+            var newPaymentRequetsCount = await this.Context.PaymentRequests
+                .Where(c => c.Accept == null).CountAsync();
+            var adminNotification = new AdminNotification()
+            {
+                NewPaymentRequetsCount = newPaymentRequetsCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok(mapper.Map<PayemntRquestDto>(paymentRequest));
         }
         [HttpGet]
@@ -61,10 +72,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var payemntRquest= this.Context.PaymentRequests.Find(id);
+            var payemntRquest = this.Context.PaymentRequests.Find(id);
             if (payemntRquest.Accept != null)
                 return Conflict();
-            this.Context.PaymentRequests.Remove(payemntRquest);   
+            this.Context.PaymentRequests.Remove(payemntRquest);
             this.Context.SaveChanges();
             return Ok();
         }
