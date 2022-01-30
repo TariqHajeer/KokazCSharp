@@ -28,31 +28,30 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("MainStatics")]
-        public IActionResult MainStatics()
+        public async Task<IActionResult> MainStatics()
         {
             MainStaticsDto mainStatics = new MainStaticsDto()
             {
-                TotalAgent = this.Context.Users.Where(c => c.CanWorkAsAgent == true).Count(),
-                TotalClient = this.Context.Clients.Count(),
-                TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).Count(),
-                TotlaOrder = this.Context.Orders.Count(),
-                TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).Count(),
-                TotalOrderCountInProcess = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).Count(),
+                TotalAgent = await this.Context.Users.Where(c => c.CanWorkAsAgent == true).CountAsync(),
+                TotalClient = await this.Context.Clients.CountAsync(),
+                TotalOrderInSotre = await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).CountAsync(),
+                TotlaOrder = await this.Context.Orders.CountAsync(),
+                TotalOrderInWay = await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way).CountAsync(),
+                TotalOrderCountInProcess = await this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Processing).CountAsync(),
                 TotalMoneyInComapny = 0
-
             };
-            var totalEariningIncome = this.Context.Incomes.Sum(c => c.Earining);
-            var totalOutCome = this.Context.OutComes.Sum(c => c.Amount);
+            var totalEariningIncome = await this.Context.Incomes.SumAsync(c => c.Earining);
+            var totalOutCome = await this.Context.OutComes.SumAsync(c => c.Amount);
 
             var clientOrder = this.Context.Orders;
-            var orderInNigative = (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).Sum(c => c.Cost - c.DeliveryCost)) * -1;
-            var orderInPositve = (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).Sum(c => c.Cost - c.AgentCost));
+            var orderInNigative = await (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).SumAsync(c => c.Cost - c.DeliveryCost)) * -1;
+            var orderInPositve = await (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).SumAsync(c => c.Cost - c.AgentCost));
 
-            var totalAccount = this.Context.Receipts.Where(c => c.PrintId == null).Sum(c => c.Amount);
+            var totalAccount = await this.Context.Receipts.Where(c => c.PrintId == null).SumAsync(c => c.Amount);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
-            var totalOrderEarinig = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoenyPlacedId != (int)MoneyPalcedEnum.OutSideCompany) && (c.OrderplacedId > (int)OrderplacedEnum.Way)).Sum(c => c.DeliveryCost - c.AgentCost);
+            var totalOrderEarinig = await this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoenyPlacedId != (int)MoneyPalcedEnum.OutSideCompany) && (c.OrderplacedId > (int)OrderplacedEnum.Way)).SumAsync(c => c.DeliveryCost - c.AgentCost);
 
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
             mainStatics.TotalMoneyInComapny -= totalOutCome;
@@ -83,17 +82,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 NewEditRquests = newEditRquests,
                 NewPaymentRequetsCount = newPaymentRequetsCount
             };
-            _notificationHub.AdminNotifcation(adminNotification);
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
         [HttpGet("GetAggregate")]
-        public IActionResult GetAggregate([FromQuery] DateFiter dateFiter)
+        public async Task<IActionResult> GetAggregate([FromQuery] DateFiter dateFiter)
         {
-            //            AggregateDto aggregateDto = new AggregateDto();
 
-            //var ShipmentTotal = this.Context.Orders.Sum(c => c.DeliveryCost - c.AgentCost);
-            //var TotalIncome = this.Context.Incomes.Sum(c => c.Amount);
-            //var TotalOutCome = this.Context.OutComes.Sum(c => c.Amount);
             var ShipmentTotal = this.Context.Orders.AsQueryable();
             var TotalIncome = this.Context.Incomes.AsQueryable();
             var TotalOutCome = this.Context.OutComes.AsQueryable();
@@ -112,23 +107,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             ShipmentTotal = ShipmentTotal.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             AggregateDto aggregateDto = new AggregateDto()
             {
-                ShipmentTotal = ShipmentTotal.Sum(c => c.DeliveryCost - c.AgentCost),
-                TotalIncome = TotalIncome.Sum(c => c.Earining),
-                TotalOutCome = TotalOutCome.Sum(c => c.Amount)
+                ShipmentTotal =await ShipmentTotal.SumAsync(c => c.DeliveryCost - c.AgentCost),
+                TotalIncome =await TotalIncome.SumAsync(c => c.Earining),
+                TotalOutCome =await TotalOutCome.SumAsync(c => c.Amount)
             };
             return Ok(aggregateDto);
         }
         [HttpGet("AgnetStatics")]
-        public IActionResult AgnetStatics()
+        public async  Task<IActionResult> AgnetStatics()
         {
-            var agent = this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToList();
+            var agent =await this.Context.Users.Where(c => c.CanWorkAsAgent == true).ToListAsync();
             List<UserDto> userDtos = new List<UserDto>();
             foreach (var item in agent)
             {
                 var user = mapper.Map<UserDto>(item);
-                user.UserStatics = new UserStatics();
-                user.UserStatics.OrderInStore = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
-                user.UserStatics.OrderInWay = this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
+                user.UserStatics = new UserStatics
+                {
+                    OrderInStore =await this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).CountAsync(),
+                    OrderInWay = await this.Context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).CountAsync()
+                };
                 userDtos.Add(user);
             }
             return Ok(userDtos);

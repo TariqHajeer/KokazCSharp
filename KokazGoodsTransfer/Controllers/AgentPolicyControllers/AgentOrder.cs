@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Swashbuckle.Swagger.Annotations;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.HubsConfig;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
@@ -20,26 +22,28 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [ApiController]
     public class AgentOrderController : AbstractAgentController
     {
-        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly NotificationHub _notificationHub;
+        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            _notificationHub = notificationHub;
         }
         [HttpGet("InStock")]
-        public IActionResult GetInStock()
+        public async Task<IActionResult> GetInStock()
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId())
+            var orders = await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId())
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                 .ToList();
+                 .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("InWay")]
-        public IActionResult GetInWay()
+        public async Task<IActionResult> GetInWay()
         {
-            var orders = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove))
+            var orders = await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -47,13 +51,13 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .Include(c => c.Orderplaced)
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                 .ToList();
+                 .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("InWayByCode")]
-        public IActionResult InWayByCode([FromQuery] string code)
+        public async Task<IActionResult> InWayByCode([FromQuery] string code)
         {
-            var orders = this.Context.Orders.Where(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).OrderByDescending(c => c.Date)
+            var orders = await this.Context.Orders.Where(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).OrderByDescending(c => c.Date)
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -61,21 +65,21 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                  .Include(c => c.Orderplaced)
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                .ToList();
+                .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
 
         [HttpGet("OwedOrder")]
-        public IActionResult OwedOrder()
+        public async Task<IActionResult> OwedOrder()
         {
-            var orders = this.Context.Orders.Where(c =>c.AgentId==AuthoticateUserId()&&( c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending|| c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))))
+            var orders = await this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                  .Include(c => c.Orderplaced)
                 .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print);
+                    .ThenInclude(c => c.Print).ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
 
         }
@@ -85,17 +89,17 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         /// <param name="dateTime"></param>
         /// <returns></returns>
         [HttpGet("OrderSuspended")]
-        public IActionResult OrderSuspended([FromQuery] DateTime dateTime)
+        public async Task<IActionResult> OrderSuspended([FromQuery] DateTime dateTime)
         {
             var date = dateTime.AddDays(-4);
-            var orders = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany))
+            var orders = await this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany))
                 .Include(c => c.Client)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
-                 .ToList();
+                 .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("Prints")]
@@ -125,19 +129,17 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             if (printed == null)
             {
                 return Conflict();
-                //this.err.Messges.Add($"رقم الطباعة غير موجود");
-                //return Conflict(this.err);
             }
             var x = mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
         [HttpPost("SetOrderPlaced")]
-        public IActionResult SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
+        public async Task<IActionResult> SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
         {
-            var orders = this.Context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToList();
+            var orders = await this.Context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToListAsync();
             agentOrderStateDtos.ForEach(c =>
             {
-                ApproveAgentEditOrderRequest temp = new ApproveAgentEditOrderRequest()
+                var temp = new ApproveAgentEditOrderRequest()
                 {
                     AgentId = AuthoticateUserId(),
                     IsApprove = null,
@@ -151,7 +153,15 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             {
                 c.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
             });
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
+            var orderRequestEditStateCount = await this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).CountAsync();
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                
+                OrderRequestEditStateCount = orderRequestEditStateCount,
+                
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
         [HttpGet("GetOrderPlaced")]
@@ -174,10 +184,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             };
             return Ok(mainStatics);
         }
-        private List<string> Validation()
-        {
-            return new List<string>();
-        }
+
 
     }
 }
