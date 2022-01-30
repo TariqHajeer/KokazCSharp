@@ -60,23 +60,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.Accept ==null).ToList();
             return Ok(mapper.Map<PayemntRquestDto[]>(newPaymentRequets));
         }
-        [HttpGet("NewCount")]
-        public IActionResult NewCount()
-        {
-            var newPaymentRequetsCount = this.Context.PaymentRequests
-                .Where(c => c.Accept == null).Count();
-            return Ok(newPaymentRequetsCount);
-        }
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
             var paymentRquest = this.Context.PaymentRequests.Find(id);
             paymentRquest.Accept = true;
             this.Context.Update(paymentRquest);
-            Notfication notfication = new Notfication()
-            {
-
-            };
             this.Context.SaveChanges();
 
             return Ok();
@@ -87,10 +76,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var paymentRquest = this.Context.PaymentRequests.Find(id);
             paymentRquest.Accept = false;
             this.Context.Update(paymentRquest);
-            Notfication notfication = new Notfication()
-            {
-
-            };
             this.Context.SaveChanges();
             return Ok();
         }

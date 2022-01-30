@@ -598,14 +598,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok(codeStatuses);
         }
-        [HttpGet("NewOrdersCount")]
-        public IActionResult NewOrderCount()
-        {
-            var Count = this.Context.Orders
-                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .Count();
-            return Ok(Count);
-        }
+
+
         [HttpGet("NewOrders")]
         public IActionResult GetNewOrders()
         {
@@ -623,14 +617,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .ToList();
             return Ok(mapper.Map<OrderDto[]>(orders));
-        }
-        [HttpGet("NewOrdersDontSendCount")]
-        public IActionResult NewOrderDontSendCount()
-        {
-            var Count = this.Context.Orders
-                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .Count();
-            return Ok(Count);
         }
         [HttpGet("NewOrderDontSned")]
         public IActionResult NewOrderDontSned()
@@ -1743,12 +1729,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var x = mapper.Map<ApproveAgentEditOrderRequestDto[]>(response);
             return Ok(x);
         }
-        [HttpGet("OrderRequestEditStateCount")]
-        public IActionResult OrderRequestEditStateCount()
-        {
-            var response = this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).Count();
-            return Ok(response);
-        }
+        
         [HttpPut("DisAproveOrderRequestEditState")]
         public IActionResult DisAproveOrderRequestEditStateCount([FromBody] int[] ids)
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.Statics;
 using KokazGoodsTransfer.Dtos.Users;
@@ -59,6 +60,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok(mainStatics);
         }
+        [HttpGet("Notification")]
+        public async Task<ActionResult<AdminNotification>> GetAdminNotification()
+        {
+            var newOrdersCount = await this.Context.Orders
+                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            var newOrdersDontSendCount = await this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            var orderRequestEditStateCount = await this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).CountAsync();
+            var newEditRquests = await this.Context.EditRequests.Where(c => c.Accept == null).CountAsync();
+            var newPaymentRequetsCount = await this.Context.PaymentRequests
+                .Where(c => c.Accept == null).CountAsync();
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersCount = newOrdersCount,
+                NewOrdersDontSendCount = newOrdersDontSendCount,
+                OrderRequestEditStateCount = orderRequestEditStateCount,
+                NewEditRquests = newEditRquests,
+                NewPaymentRequetsCount = newPaymentRequetsCount
+            };
+            return Ok(adminNotification);
+        }
         [HttpGet("GetAggregate")]
         public IActionResult GetAggregate([FromQuery] DateFiter dateFiter)
         {
@@ -108,21 +132,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("ClientBalance")]
-        public IActionResult ClientBalance()
+        public async Task<IActionResult> ClientBalance()
         {
-            var clients = this.Context.Clients.ToList();
+            var clients = await this.Context.Clients.ToListAsync();
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
-                clientBlanaceDtos.Add(GetClientBalanceById(item));
+                clientBlanaceDtos.Add(await GetClientBalanceById(item));
             }
             return Ok(clientBlanaceDtos);
 
         }
-        private ClientBlanaceDto GetClientBalanceById(Client item)
+        private async Task<ClientBlanaceDto> GetClientBalanceById(Client item)
         {
-            var totalAccountTask = this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).Sum(c => c.Amount);
-            var clientOrder = this.Context.Orders.Where(c => c.ClientId == item.Id).ToList();
+            var totalAccountTask = await this.Context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).SumAsync(c => c.Amount);
+            var clientOrder = await this.Context.Orders.Where(c => c.ClientId == item.Id).ToListAsync();
             var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
             var totalAccount = totalAccountTask;
             return new ClientBlanaceDto()
