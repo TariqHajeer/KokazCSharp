@@ -148,7 +148,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 {
                     NewOrdersDontSendCount = newOrdersCount
                 };
-                _notificationHub.AdminNotifcation(adminNotification);
+                await _notificationHub.AdminNotifcation(adminNotification);
                 return Ok(mapper.Map<OrderResponseClientDto>(order));
             }
 
@@ -336,11 +336,23 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpPost("Sned")]
-        public IActionResult Send([FromBody] int[] ids)
+        public async Task<IActionResult> Send([FromBody] int[] ids)
         {
-            var sendOrder = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            var sendOrder = await this.Context.Orders.Where(c => ids.Contains(c.Id)).ToListAsync();
             sendOrder.ForEach(c => c.IsSend = true);
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
+            var newOrdersCount = await this.Context.Orders
+                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            var newOrdersDontSendCount = await this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersCount = newOrdersCount,
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]

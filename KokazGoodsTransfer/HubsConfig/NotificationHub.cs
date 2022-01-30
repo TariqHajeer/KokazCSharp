@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.HubsConfig
             }
 
         }
-        public async void AdminNotifcation(AdminNotification adminNotification)
+        public async Task AdminNotifcation(AdminNotification adminNotification)
         {
             if (Clients != null)
             {
