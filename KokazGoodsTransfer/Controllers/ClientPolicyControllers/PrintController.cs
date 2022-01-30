@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class PrintController : AbstractClientPolicyController
     {
-        public PrintController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public PrintController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet("{printNumber}")]

@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CSettingsGetController : AbstractClientPolicyController
     {
-        public CSettingsGetController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
         

@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -23,7 +24,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class COrderController : AbstractClientPolicyController
     {
         
-        public COrderController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public COrderController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
         private List<string> Validate(CreateOrderFromClient createOrderFromClient)

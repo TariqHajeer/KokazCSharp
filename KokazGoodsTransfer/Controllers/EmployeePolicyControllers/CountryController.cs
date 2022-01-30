@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Countries;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        public CountryController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public CountryController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
 

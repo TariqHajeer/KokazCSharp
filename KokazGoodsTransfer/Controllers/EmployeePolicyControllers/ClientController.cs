@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
     public class ClientController : AbstractEmployeePolicyController
     {
-        public ClientController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public ClientController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpPost]

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Swashbuckle.Swagger.Annotations;
+using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
@@ -19,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [ApiController]
     public class AgentOrderController : AbstractAgentController
     {
-        public AgentOrderController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet("InStock")]

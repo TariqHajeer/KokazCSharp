@@ -19,12 +19,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class ClientAuthController : AbstractController
     {
-        public ClientAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public ClientAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
         [HttpPost]
-        public IActionResult Login([FromBody]LoginDto loginDto)
+        public IActionResult Login([FromBody] LoginDto loginDto)
         {
+            var expireDate = new DateTime(2022, 2, 17);
+            if (DateTime.Now > expireDate)
+            {
+                return Conflict("You should  to pay");
+            }
 
             var client = this.Context.Clients
                 .Include(c => c.Country)

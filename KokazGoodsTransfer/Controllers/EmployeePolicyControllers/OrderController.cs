@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
@@ -1353,9 +1353,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+
                 semaphore.Release();
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
+
 
             }
         }
@@ -1956,7 +1959,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        [HttpGet("ForzenInWay")]
+        [HttpPost("ForzenInWay")]
         public async Task<IActionResult> ForzenInWay([FromForm] FrozenOrder frozenOrder)
         {
             var query = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way);
@@ -1966,6 +1969,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
             query = query.Where(c => c.Date <= date);
+            query = query.Include(c => c.Client)
+                 .Include(c => c.Region)
+                 .Include(c => c.Agent)
+                 .Include(c => c.Country)
+                 .Include(c => c.Orderplaced)
+                 .Include(c => c.MoenyPlaced);
             var orders = await query.ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }

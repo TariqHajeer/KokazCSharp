@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class EmployeeAuthController : AbstractController
     {
 
-        public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public EmployeeAuthController(KokazContext context, IMapper mapper,Logging logging ) : base(context, mapper, logging)
         {
         }
 
@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            var expireDate = new DateTime(2022, 2,15);
+            var expireDate = new DateTime(2022, 2,17);
             if (DateTime.Now > expireDate)
             {
                 return Conflict("You should  to pay");

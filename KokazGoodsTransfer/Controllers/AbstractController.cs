@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace KokazGoodsTransfer.Controllers
     {
         protected KokazContext Context;
         protected IMapper mapper;
-        public AbstractController(KokazContext context, IMapper mapper)
+        protected readonly Logging _logging;
+        public AbstractController(KokazContext context, IMapper mapper,Logging logging)
         {
             this.Context = context;
             this.mapper = mapper;
+            _logging = logging;
         }
         protected int AuthoticateUserId()
         {

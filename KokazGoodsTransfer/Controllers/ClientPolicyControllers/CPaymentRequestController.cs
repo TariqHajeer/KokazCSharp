@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CPaymentRequestController : AbstractClientPolicyController
     {
-        public CPaymentRequestController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public CPaymentRequestController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
         [HttpGet("CanRequest")]
