@@ -23,9 +23,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class COrderController : AbstractClientPolicyController
     {
-        
-        public COrderController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        private readonly NotificationHub _notificationHub;
+        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            _notificationHub = notificationHub;
         }
         private List<string> Validate(CreateOrderFromClient createOrderFromClient)
         {
@@ -73,7 +74,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="createOrderFromClient"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateOrderFromClient createOrderFromClient)
+        public async Task<IActionResult> Create([FromBody] CreateOrderFromClient createOrderFromClient)
         {
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
@@ -140,6 +141,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     }
                 }
                 dbTransacrion.Commit();
+                var newOrdersCount = await this.Context.Orders
+                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+                AdminNotification adminNotification = new AdminNotification()
+                {
+                    NewOrdersDontSendCount = newOrdersCount
+                };
+                _notificationHub.AdminNotifcation(adminNotification);
                 return Ok(mapper.Map<OrderResponseClientDto>(order));
             }
 
@@ -372,7 +381,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     orders.AddRange(list);
                 }
             }
-            orders.ForEach(o => 
+            orders.ForEach(o =>
             {
                 if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                 {
@@ -429,6 +438,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        
+
     }
 }

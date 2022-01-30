@@ -32,6 +32,13 @@ namespace KokazGoodsTransfer.HubsConfig
             }
 
         }
+        public async void AdminNotifcation(AdminNotification adminNotification)
+        {
+            if (Clients != null)
+            {
+                await Clients.All.SendAsync("AdminNotification", adminNotification);
+            }
+        }
 
 
         public override Task OnConnectedAsync()

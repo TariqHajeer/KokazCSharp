@@ -7,10 +7,26 @@ namespace KokazGoodsTransfer.Dtos.NotifcationDtos
 {
     public class AdminNotification
     {
-        public int NewOrdersCount { get; set; }
-        public int NewOrdersDontSendCount { get; set; }
-        public int OrderRequestEditStateCount { get; set; }
-        public int NewEditRquests { get; set;  }
-        public int NewPaymentRequetsCount { get; set; }
+
+        /// <summary>
+        /// الطلبات الجديدة للعملاء
+        /// </summary>
+        public int NewOrdersCount { get; set; } = -1;
+        /// <summary>
+        /// طلبات جديدة لم ترسل 
+        /// </summary>
+        public int NewOrdersDontSendCount { get; set; } = -1;
+        /// <summary>
+        /// طلبات تعديل حالة الشحنة
+        /// </summary>
+        public int OrderRequestEditStateCount { get; set; } = -1;
+        /// <summary>
+        /// طلبات تعديل العملاء
+        /// </summary>
+        public int NewEditRquests { get; set; } = -1;
+        /// <summary>
+        /// طلبات دفعة جديدة 
+        /// </summary>
+        public int NewPaymentRequetsCount { get; set; } = -1;
     }
 }

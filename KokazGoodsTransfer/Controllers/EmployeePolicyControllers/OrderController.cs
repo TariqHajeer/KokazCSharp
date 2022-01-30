@@ -1928,7 +1928,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             notficationDtos.Add(mapper.Map<NotficationDto>(groupItem));
                         }
                         await notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
-                        ;
                     }
                 }
                 transaction.Commit();

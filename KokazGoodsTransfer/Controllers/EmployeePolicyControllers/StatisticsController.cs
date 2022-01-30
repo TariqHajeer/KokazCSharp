@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.Statics;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
@@ -20,8 +21,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class StatisticsController : AbstractEmployeePolicyController
     {
-        public StatisticsController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly NotificationHub _notificationHub;
+        public StatisticsController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            this._notificationHub = notificationHub;
         }
 
         [HttpGet("MainStatics")]
@@ -51,7 +54,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var totalOrderEarinig = this.Context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoenyPlacedId != (int)MoneyPalcedEnum.OutSideCompany) && (c.OrderplacedId > (int)OrderplacedEnum.Way)).Sum(c => c.DeliveryCost - c.AgentCost);
 
-
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
             mainStatics.TotalMoneyInComapny -= totalOutCome;
             mainStatics.TotalMoneyInComapny += sumClientMone;
@@ -61,7 +63,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(mainStatics);
         }
         [HttpGet("Notification")]
-        public async Task<ActionResult<AdminNotification>> GetAdminNotification()
+        public async Task<IActionResult> GetAdminNotification()
         {
             var newOrdersCount = await this.Context.Orders
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
@@ -81,7 +83,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 NewEditRquests = newEditRquests,
                 NewPaymentRequetsCount = newPaymentRequetsCount
             };
-            return Ok(adminNotification);
+            _notificationHub.AdminNotifcation(adminNotification);
+            return Ok();
         }
         [HttpGet("GetAggregate")]
         public IActionResult GetAggregate([FromQuery] DateFiter dateFiter)
