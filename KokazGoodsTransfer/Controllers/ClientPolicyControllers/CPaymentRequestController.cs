@@ -57,26 +57,26 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var paymentRequests = this.Context.PaymentRequests
                 .Include(c => c.PaymentWay)
                 .Where(c => c.ClientId == AuthoticateUserId());
-            var total =await paymentRequests.CountAsync();
+            var total = await paymentRequests.CountAsync();
             paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
-            var temp = paymentRequests.ToList();
+            var temp = await paymentRequests.ToListAsync();
             var dto = mapper.Map<PayemntRquestDto[]>(temp);
             return Ok(new { total, dto });
         }
         [HttpGet("GetPaymentWay")]
-        public IActionResult GetPaymentWay()
+        public async Task<IActionResult> GetPaymentWay()
         {
-            var paymentWay = this.Context.PaymentWays.ToList();
+            var paymentWay = await this.Context.PaymentWays.ToListAsync();
             return Ok(mapper.Map<NameAndIdDto[]>(paymentWay));
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var payemntRquest = this.Context.PaymentRequests.Find(id);
+            var payemntRquest =await this.Context.PaymentRequests.FindAsync(id);
             if (payemntRquest.Accept != null)
                 return Conflict();
             this.Context.PaymentRequests.Remove(payemntRquest);
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
             return Ok();
         }
 

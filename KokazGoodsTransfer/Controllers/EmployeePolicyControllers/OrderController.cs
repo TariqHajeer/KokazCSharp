@@ -33,7 +33,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
+        public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
             try
             {
@@ -112,9 +112,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
-                var total = orderIQ.Count();
-                var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                    .ToList();
+                var total = await orderIQ.CountAsync();
+                var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                    .ToListAsync();
                 return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
             }
             catch (Exception ex)
@@ -273,7 +273,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("createMultiple")]
-        public IActionResult Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
+        public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
         {
             var transaction = this.Context.Database.BeginTransaction();
             try
@@ -282,7 +282,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                 foreach (var item in createMultipleOrders)
                 {
-                    var isExisit = this.Context.Orders.Where(c => c.Code == item.Code && c.ClientId == item.ClientId).Any();
+                    var isExisit = await this.Context.Orders.Where(c => c.Code == item.Code && c.ClientId == item.ClientId).AnyAsync();
                     if (isExisit)
                     {
                         transaction.Rollback();
@@ -291,7 +291,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         return Conflict(this.err);
                     }
                     var order = mapper.Map<Order>(item);
-                    var country = this.Context.Countries.Find(order.CountryId);
+                    var country = await this.Context.Countries.FindAsync(order.CountryId);
                     order.Seen = true;
                     order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                     order.IsClientDiliverdMoney = false;
@@ -302,9 +302,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.CurrentCountry = this.Context.Countries.Where(c => c.IsMain == true).FirstOrDefault().Id;
                     order.CreatedBy = AuthoticateUserName();
                     this.Context.Add(order);
-                    this.Context.SaveChanges();
+                    await this.Context.SaveChangesAsync();
                 }
-                transaction.Commit();
+                await transaction.CommitAsync();
                 return Ok();
             }
             catch (Exception ex)
@@ -329,7 +329,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet("WithoutPaging")]
-        public IActionResult Get([FromQuery] OrderFilter orderFilter)
+        public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
         {
             try
             {
@@ -407,10 +407,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
-                var total = orderIQ.Count();
-                var orders = orderIQ
-
-                    .ToList();
+                var total = await orderIQ.CountAsync();
+                var orders = await orderIQ
+                    .ToListAsync();
                 return Ok(new { data = mapper.Map<OrderDto[]>(orders), total });
             }
             catch (Exception ex)
@@ -601,9 +600,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
         [HttpGet("NewOrders")]
-        public IActionResult GetNewOrders()
+        public async Task<IActionResult> GetNewOrders()
         {
-            var orders = this.Context.Orders
+            var orders = await this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Client)
@@ -615,13 +614,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
                 .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .ToList();
+                .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("NewOrderDontSned")]
-        public IActionResult NewOrderDontSned()
+        public async Task<IActionResult> NewOrderDontSned()
         {
-            var orders = this.Context.Orders
+            var orders = await this.Context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
                 .Include(c => c.Client)
@@ -633,11 +632,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
                 .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .ToList();
+                .ToListAsync();
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("OrderAtClient")]
-        public IActionResult OrderAtClient([FromQuery] OrderFilter orderFilter)
+        public async Task<IActionResult> OrderAtClient([FromQuery] OrderFilter orderFilter)
         {
             var orderIQ = this.Context.Orders
                     .Include(c => c.Client)
@@ -718,17 +717,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
             }
-            return Ok(mapper.Map<OrderDto[]>(orderIQ.ToArray()));
+            return Ok(mapper.Map<OrderDto[]>(await orderIQ.ToArrayAsync()));
         }
 
-        [HttpGet("OrderAtClientCount")]
-        public IActionResult OrderAtClientCount()
-        {
-            var Count = this.Context.Orders
-                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-               .Count();
-            return Ok(Count);
-        }
         [HttpPut("Accept")]
         public IActionResult Accept([FromBody] IdsDto idsDto)
         {
@@ -1729,7 +1720,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var x = mapper.Map<ApproveAgentEditOrderRequestDto[]>(response);
             return Ok(x);
         }
-        
+
         [HttpPut("DisAproveOrderRequestEditState")]
         public IActionResult DisAproveOrderRequestEditStateCount([FromBody] int[] ids)
         {
