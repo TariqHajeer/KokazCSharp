@@ -52,12 +52,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(mapper.Map<PayemntRquestDto>(paymentRequest));
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto)
+        public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto)
         {
             var paymentRequests = this.Context.PaymentRequests
                 .Include(c => c.PaymentWay)
                 .Where(c => c.ClientId == AuthoticateUserId());
-            var total = paymentRequests.Count();
+            var total =await paymentRequests.CountAsync();
             paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
             var temp = paymentRequests.ToList();
             var dto = mapper.Map<PayemntRquestDto[]>(temp);
