@@ -15,6 +15,7 @@ using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -22,14 +23,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderController : AbstractEmployeePolicyController
     {
+        private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
+        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
             this.notificationHub = notificationHub;
+            _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
+            _indexOrderPlacedRepository = indexOrderPlacedRepository;
         }
 
         [HttpGet]
@@ -565,14 +570,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(o);
         }
         [HttpGet("orderPlace")]
-        public IActionResult GetOrderPalce()
+        public async Task<IActionResult> GetOrderPalce()
         {
-            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
+            return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("MoenyPlaced")]
-        public IActionResult GetMoenyPlaced()
+        public async Task<IActionResult> GetMoenyPlaced()
         {
-            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.MoenyPlaceds.ToList()));
+            var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
+            return Ok(mapper.Map<NameAndIdDto[]>(moneyPlaceds));
         }
         [HttpGet("chekcCode")]
         public IActionResult CheckCode([FromQuery] string code, int clientid)

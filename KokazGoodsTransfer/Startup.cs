@@ -166,6 +166,8 @@ namespace KokazGoodsTransfer
             });
 
             });
+            services.AddMemoryCache();
+            services.AddScoped(typeof(IIndexRepository<>), typeof(IndexRepository<>));
             services.AddAutoMapper(typeof(Startup));
             RegiserServices(services);
             services.AddScoped<Logging, Logging>();
@@ -186,7 +188,7 @@ namespace KokazGoodsTransfer
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseCors("EnableCORS");
             app.UseAuthentication();
             app.UseAuthorization();

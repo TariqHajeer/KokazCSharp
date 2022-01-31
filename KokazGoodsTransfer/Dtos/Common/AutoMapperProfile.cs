@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Currencies;
@@ -356,6 +357,7 @@ namespace KokazGoodsTransfer.Dtos.Common
              {
                  return conext.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
              }));
+            CreateMap<IndexEntity, NameAndIdDto>();
         }
     }
 }
