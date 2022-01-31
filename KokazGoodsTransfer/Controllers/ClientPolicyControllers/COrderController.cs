@@ -140,13 +140,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                         this.Context.SaveChanges();
                     }
                 }
-                dbTransacrion.Commit();
-                var newOrdersCount = await this.Context.Orders
-                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                await dbTransacrion.CommitAsync();
+                var newOrdersDontSendCount = await this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .CountAsync();
+
                 AdminNotification adminNotification = new AdminNotification()
                 {
-                    NewOrdersDontSendCount = newOrdersCount
+                    NewOrdersDontSendCount = newOrdersDontSendCount
                 };
                 await _notificationHub.AdminNotifcation(adminNotification);
                 return Ok(mapper.Map<OrderResponseClientDto>(order));
