@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class EmployeeAuthController : AbstractController
     {
 
-        public EmployeeAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public EmployeeAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
 
@@ -32,19 +32,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(MD5Hash.GetMd5Hash(str));
         }
         [HttpPost]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var expireDate = new DateTime(2022, 2,15);
+            var expireDate = new DateTime(2022, 2, 17);
             if (DateTime.Now > expireDate)
             {
                 return Conflict("You should  to pay");
             }
-            var user = this.Context.Users
+            var user =await this.Context.Users
                 .Include(c => c.UserGroups)
                 .ThenInclude(c => c.Group)
                 .ThenInclude(c => c.GroupPrivileges)
                 .ThenInclude(c => c.Privileg)
-                .Where(c => c.UserName == loginDto.UserName).FirstOrDefault();
+                .Where(c => c.UserName == loginDto.UserName).FirstOrDefaultAsync();
             if (user == null)
                 return Conflict();
             if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))

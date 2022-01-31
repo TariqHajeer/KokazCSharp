@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,25 +20,27 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CClientController : AbstractClientPolicyController
     {
-        public CClientController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly NotificationHub _notificationHub;
+        public CClientController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            _notificationHub = notificationHub;
         }
         [HttpGet("CheckUserName/{username}")]
-        public IActionResult CheckUserName(string username)
+        public async Task<IActionResult> CheckUserName(string username)
         {
-            return Ok(this.Context.Clients.Any(c => c.UserName == username && c.Id != AuthoticateUserId()));
+            return Ok(await this.Context.Clients.AnyAsync(c => c.UserName == username && c.Id != AuthoticateUserId()));
         }
         [HttpGet("CheckName/{name}")]
-        public IActionResult CheckName(string name)
+        public async Task<IActionResult> CheckName(string name)
         {
-            return Ok(this.Context.Clients.Any(c => c.Name == name && c.Id != AuthoticateUserId()));
+            return Ok(await this.Context.Clients.AnyAsync(c => c.Name == name && c.Id != AuthoticateUserId()));
         }
         [HttpPut("updateInformation")]
-        public IActionResult Update([FromBody] CUpdateClientDto updateClientDto)
+        public async Task<IActionResult> Update([FromBody] CUpdateClientDto updateClientDto)
         {
             try
             {
-                var client = this.Context.Clients.Find(AuthoticateUserId());
+                var client = await this.Context.Clients.FindAsync(AuthoticateUserId());
                 var clientName = client.Name;
                 var clientUserName = client.UserName;
                 var oldPassword = client.Password;
@@ -61,7 +66,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     }
                 }
 
-                if (clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName)
+                bool isEditRequest = clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName;
+                if (isEditRequest)
                 {
                     EditRequest editRequest = new EditRequest();
                     if (clientName != updateClientDto.Name)
@@ -79,7 +85,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     editRequest.UserId = null;
                     this.Context.Add(editRequest);
                 }
-                this.Context.SaveChanges();
+                await this.Context.SaveChangesAsync();
+                if (isEditRequest)
+                {
+                    var newEditRquests = await this.Context.EditRequests.Where(c => c.Accept == null).CountAsync();
+
+                    var adminNotification = new AdminNotification()
+                    {
+                        NewEditRquests = newEditRquests,
+                    };
+                    await _notificationHub.AdminNotifcation(adminNotification);
+                }
                 return Ok();
             }
             catch (Exception ex)
@@ -87,50 +103,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest(new { message = "خطأ بالتعديل ", Ex = ex.Message });
             }
         }
-        //[HttpPut("deletePhone/{id}")]
-        //public IActionResult DeletePhone(int id)
-        //{
-        //    try
-        //    {
-        //        var clientPhone = this.Context.ClientPhones.Find(id);
-        //        this.Context.Remove(clientPhone);
-        //        this.Context.SaveChanges();
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
-        //[HttpPut("addPhone/{phone}")]
-        //public IActionResult AddPhone(string phone)
-        //{
-        //    try
-        //    {
-        //        var clientId = AuthoticateUserId();
-        //        this.Context.Clients.Find(clientId);
-
-        //        ClientPhone clientPhone = new ClientPhone()
-        //        {
-        //            ClientId = clientId,
-        //            Phone = phone
-        //        };
-        //        this.Context.Add(clientPhone);
-        //        this.Context.SaveChanges();
-        //        return Ok(mapper.Map<PhoneDto>(clientPhone));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
         [HttpGet("GetByToken")]
-        public IActionResult GetByToken()
+        public async Task<IActionResult> GetByToken()
         {
-            var client = this.Context.Clients
+            var client = await this.Context.Clients
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Country)
-                .Where(c => c.Id == AuthoticateUserId()).First();
+                .Where(c => c.Id == AuthoticateUserId()).FirstAsync();
             var authClient = mapper.Map<AuthClient>(client);
             return Ok(authClient);
         }

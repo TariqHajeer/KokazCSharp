@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.HubsConfig;
 using Microsoft.AspNetCore.SignalR;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.DAL.Infrastructure.Concret;
 
@@ -43,7 +44,9 @@ namespace KokazGoodsTransfer
         {
 
             services.AddControllers();
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
             services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
             //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
 
             services.AddCors(options =>
@@ -165,6 +168,7 @@ namespace KokazGoodsTransfer
             });
             services.AddAutoMapper(typeof(Startup));
             RegiserServices(services);
+            services.AddScoped<Logging, Logging>();
 
         }
 
