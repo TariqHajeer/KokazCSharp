@@ -22,24 +22,10 @@ namespace KokazGoodsTransfer.Controllers
     public class DefaultController : AbstractController
     {
         NotificationHub notificationHub;
-        public DefaultController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        public DefaultController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper, logging)
         {
             this.notificationHub = notificationHub;
             
-        }
-
-        [HttpGet("GetNo")]
-        public async Task<IActionResult> GetNo()
-        {
-            
-            var uId = AuthoticateUserId();
-            var nos = this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false)
-                .Include(c=>c.OrderPlaced)
-                .Include(c=>c.MoneyPlaced)
-                .ToList();
-            var dto=  mapper.Map<NotficationDto[]>(nos );
-            await notificationHub.AllNotification(AuthoticateUserId().ToString(),dto);
-            return Ok();
         }
         [HttpGet("GetHash")]
         public string GetShash(string x)

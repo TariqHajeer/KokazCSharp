@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.PayemntRequestDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class PaymentRequestController : AbstractEmployeePolicyController
     {
-        public PaymentRequestController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public PaymentRequestController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet]
@@ -59,23 +60,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.Accept ==null).ToList();
             return Ok(mapper.Map<PayemntRquestDto[]>(newPaymentRequets));
         }
-        [HttpGet("NewCount")]
-        public IActionResult NewCount()
-        {
-            var newPaymentRequetsCount = this.Context.PaymentRequests
-                .Where(c => c.Accept == null).Count();
-            return Ok(newPaymentRequetsCount);
-        }
         [HttpPut("Accept/{id}")]
         public IActionResult Accept(int id)
         {
             var paymentRquest = this.Context.PaymentRequests.Find(id);
             paymentRquest.Accept = true;
             this.Context.Update(paymentRquest);
-            Notfication notfication = new Notfication()
-            {
-
-            };
             this.Context.SaveChanges();
 
             return Ok();
@@ -86,10 +76,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var paymentRquest = this.Context.PaymentRequests.Find(id);
             paymentRquest.Accept = false;
             this.Context.Update(paymentRquest);
-            Notfication notfication = new Notfication()
-            {
-
-            };
             this.Context.SaveChanges();
             return Ok();
         }

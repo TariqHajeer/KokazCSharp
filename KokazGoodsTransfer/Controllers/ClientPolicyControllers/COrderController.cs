@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.ReceiptDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -22,9 +23,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class COrderController : AbstractClientPolicyController
     {
-        
-        public COrderController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly NotificationHub _notificationHub;
+        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
         {
+            _notificationHub = notificationHub;
         }
         private List<string> Validate(CreateOrderFromClient createOrderFromClient)
         {
@@ -72,7 +74,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="createOrderFromClient"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateOrderFromClient createOrderFromClient)
+        public async Task<IActionResult> Create([FromBody] CreateOrderFromClient createOrderFromClient)
         {
             var dbTransacrion = this.Context.Database.BeginTransaction();
             try
@@ -138,7 +140,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                         this.Context.SaveChanges();
                     }
                 }
-                dbTransacrion.Commit();
+                await dbTransacrion.CommitAsync();
+                var newOrdersDontSendCount = await this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+                AdminNotification adminNotification = new AdminNotification()
+                {
+                    NewOrdersDontSendCount = newOrdersDontSendCount
+                };
+                await _notificationHub.AdminNotifcation(adminNotification);
                 return Ok(mapper.Map<OrderResponseClientDto>(order));
             }
 
@@ -165,10 +175,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async  Task<IActionResult> Get(int id)
         {
 
-            var order = this.Context.Orders
+            var order = await this.Context.Orders
                 .Include(c => c.Agent)
                 .Include(c => c.Country)
                 .Include(c => c.Orderplaced)
@@ -178,8 +188,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.OrderPrints)
                     .ThenInclude(c => c.Print)
                         .ThenInclude(c => c.ClientPrints)
-            .FirstOrDefault(c => c.Id == id);
-            //if(order.ClientId!=AuthoticateUserId())
+            .FirstOrDefaultAsync(c => c.Id == id);
+            
             return Ok(mapper.Map<OrderDto>(order));
 
         }
@@ -326,11 +336,23 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpPost("Sned")]
-        public IActionResult Send([FromBody] int[] ids)
+        public async Task<IActionResult> Send([FromBody] int[] ids)
         {
-            var sendOrder = this.Context.Orders.Where(c => ids.Contains(c.Id)).ToList();
+            var sendOrder = await this.Context.Orders.Where(c => ids.Contains(c.Id)).ToListAsync();
             sendOrder.ForEach(c => c.IsSend = true);
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
+            var newOrdersCount = await this.Context.Orders
+                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            var newOrdersDontSendCount = await this.Context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersCount = newOrdersCount,
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]
@@ -371,7 +393,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     orders.AddRange(list);
                 }
             }
-            orders.ForEach(o => 
+            orders.ForEach(o =>
             {
                 if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                 {
@@ -428,6 +450,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             this.Context.SaveChanges();
             return Ok();
         }
-        
+
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.MarketDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class MarketController : AbstractEmployeePolicyController
     {
         IWebHostEnvironment env;
-        public MarketController(KokazContext context, IMapper mapper, IWebHostEnvironment env) : base(context, mapper)
+        public MarketController(KokazContext context, IMapper mapper, IWebHostEnvironment env, Logging logging) : base(context, mapper, logging)
         {
             this.env = env;
         }

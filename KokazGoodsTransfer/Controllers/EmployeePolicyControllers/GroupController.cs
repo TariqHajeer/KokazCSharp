@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Groups;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class GroupController : AbstractEmployeePolicyController
     {
 
-        public GroupController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public GroupController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpGet]

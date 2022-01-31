@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Currencies;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CurrencyController : AbstractEmployeePolicyController
     {
-        public CurrencyController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public CurrencyController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
 

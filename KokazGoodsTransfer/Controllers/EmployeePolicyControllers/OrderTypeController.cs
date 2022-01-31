@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersTypes;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderTypeController : AbstractEmployeePolicyController
     {
-        public OrderTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public OrderTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
         {
         }
 
@@ -23,17 +24,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orderTypes = Context.OrderTypes
                 .Include(c => c.OrderItems)
                 .ToList();
-            //List<OrderTypeDto> orderTypeDtos = new List<OrderTypeDto>();
-            //foreach (var item in orderTypes)
-            //{
-            //    orderTypeDtos.Add(new OrderTypeDto()
-            //    {
-            //        Id = item.Id,
-            //        Name = item.Name,
-            //        CanDelete = item.OrderItems.Count()==0
-            //    });
-
-            //}
             return Ok(mapper.Map<OrderTypeDto[]>(orderTypes));
         }
         [HttpPost]
