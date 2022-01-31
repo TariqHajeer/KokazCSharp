@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [Authorize(Policy = "Employee")]
     public class AbstractEmployeePolicyController : AbstractController
     {
+
         public AbstractEmployeePolicyController(KokazContext context, IMapper mapper,Logging logging) : base(context, mapper,logging)
         {
         }

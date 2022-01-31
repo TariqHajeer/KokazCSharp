@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Helpers;
@@ -14,14 +15,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class RegionController : AbstractEmployeePolicyController
     {
 
-        public RegionController(KokazContext context, IMapper mapper, Logging logging ) : base(context, mapper, logging)
+        public RegionController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
 
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
+            var regions = await Context.Regions.Include(c => c.Country).ToListAsync();
+            return Ok(mapper.Map<RegionDto[]>(regions));
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
@@ -64,10 +66,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPatch]
-        public IActionResult UpdateRegion([FromBody]UpdateRegion updateRegion )
+        public IActionResult UpdateRegion([FromBody] UpdateRegion updateRegion)
         {
             var region = this.Context.Regions.Find(updateRegion.Id);
-            if(this.Context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
+            if (this.Context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
             {
                 return Conflict();
             }
