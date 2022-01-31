@@ -25,11 +25,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpPost]
         [Authorize(Roles = "AddClient")]
-        public IActionResult CreateClient(CreateClientDto createClientDto)
+        public async  Task<IActionResult> CreateClient(CreateClientDto createClientDto)
         {
             try
             {
-                var isExist = Context.Clients.Any(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
+                var isExist =await Context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
                 if (isExist)
                 {
                     return Conflict();
@@ -47,11 +47,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     });
                 }
                 this.Context.Set<Client>().Add(client);
-                this.Context.SaveChanges();
-                client = this.Context.Clients
+                await this.Context.SaveChangesAsync();
+                client =await this.Context.Clients
                     .Include(c => c.Country)
                     .Include(c => c.User)
-                    .Single(c => c.Id == client.Id);
+                    .SingleAsync(c => c.Id == client.Id);
                 return Ok(mapper.Map<ClientDto>(client));
             }
             catch (Exception ex)
@@ -60,16 +60,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet]
-        public IActionResult Get()
+        public async  Task<IActionResult> Get()
         {
-            var clients = this.Context.Clients
+            var clients =await this.Context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
-                //.Include(c => c.Orders)
-                //.ThenInclude(c=>c.OrderPrints)
-                //.Include(c=>c.Receipts)
-                .ToList();
+                .ToListAsync();
             return Ok(mapper.Map<ClientDto[]>(clients));
         }
         [HttpGet("{id}")]
