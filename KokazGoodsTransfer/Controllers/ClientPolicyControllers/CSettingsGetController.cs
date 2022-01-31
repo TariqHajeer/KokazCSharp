@@ -26,12 +26,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
             _indexOrderPlacedRepository = indexOrderPlacedRepository;
         }
-
+        
         [HttpGet("Countries")]
-        /// <summary>
-        /// get Countries
-        /// </summary>
-        /// <returns></returns>
         public IActionResult GetCountreis()
         {
             var countries = Context.Countries

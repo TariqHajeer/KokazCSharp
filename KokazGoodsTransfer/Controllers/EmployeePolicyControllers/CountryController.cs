@@ -83,7 +83,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                //test find instade of that
                 var country = this.Context.Countries
                     .Include(c => c.Clients)
                     .Include(c => c.Regions)
@@ -99,10 +98,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
-                //if (country.Regions.Any(c => c.Clients.Any()))
-                //{
-                //    return Conflict();
-                //}
                 foreach (var item in country.Regions)
                 {
                     this.Context.Regions.Remove(item);

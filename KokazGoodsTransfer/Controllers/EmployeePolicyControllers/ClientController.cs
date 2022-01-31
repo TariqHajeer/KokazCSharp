@@ -137,7 +137,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (updateClientDto.Password == null)
                     client.Password = oldPassord;
 
-                //this.Context.Update(client);
                 this.Context.SaveChanges();
                 client = this.Context.Clients
                 .Include(c => c.Country)
