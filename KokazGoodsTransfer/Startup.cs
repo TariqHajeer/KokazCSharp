@@ -20,6 +20,8 @@ using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.HubsConfig;
 using Microsoft.AspNetCore.SignalR;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.DAL.Infrastructure.Concret;
 
 namespace KokazGoodsTransfer
 {
@@ -164,7 +166,10 @@ namespace KokazGoodsTransfer
             });
 
             });
+            services.AddMemoryCache();
+            services.AddScoped(typeof(IIndexRepository<>), typeof(IndexRepository<>));
             services.AddAutoMapper(typeof(Startup));
+            RegiserServices(services);
             services.AddScoped<Logging, Logging>();
 
         }
@@ -183,7 +188,7 @@ namespace KokazGoodsTransfer
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseCors("EnableCORS");
             app.UseAuthentication();
             app.UseAuthorization();
@@ -212,6 +217,14 @@ namespace KokazGoodsTransfer
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
                 //c.SwaggerEndpoint("v1/swagger.json", "Swagger Test");
             });
+        }
+
+
+
+
+        private void RegiserServices(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }

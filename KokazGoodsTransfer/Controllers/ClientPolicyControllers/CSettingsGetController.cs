@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
@@ -18,19 +19,19 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CSettingsGetController : AbstractClientPolicyController
     {
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
+        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
         {
+            _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
+            _indexOrderPlacedRepository = indexOrderPlacedRepository;
         }
         
         [HttpGet("Countries")]
-        /// <summary>
-        /// get Countries
-        /// </summary>
-        /// <returns></returns>
         public IActionResult GetCountreis()
         {
             var countries = Context.Countries
-                .Include(c=>c.Clients)
+                .Include(c => c.Clients)
                 .Include(c => c.Regions)
                 .ToList();
             return Ok(mapper.Map<CountryDto[]>(countries));
@@ -46,19 +47,21 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()
-        {   
+        {
             var ordertypes = this.Context.OrderTypes.ToList();
             return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
         }
         [HttpGet("OrderPlaced")]
-        public IActionResult GetOrderPalce()
+        public async Task<IActionResult> GetOrderPalce()
         {
-            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
+            return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("MoenyPlaced")]
-        public IActionResult GetMoenyPlaced()
+        public async Task<IActionResult> GetMoenyPlaced()
         {
-            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.MoenyPlaceds.ToList()));
+            var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
+            return Ok(mapper.Map<NameAndIdDto[]>(moneyPlaceds));
         }
 
     }
