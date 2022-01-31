@@ -175,7 +175,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async  Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
 
             var order = await this.Context.Orders
@@ -189,7 +189,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     .ThenInclude(c => c.Print)
                         .ThenInclude(c => c.ClientPrints)
             .FirstOrDefaultAsync(c => c.Id == id);
-            
+
             return Ok(mapper.Map<OrderDto>(order));
 
         }
@@ -429,25 +429,25 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 
         }
         [HttpPut("SeeNotifactions")]
-        public IActionResult SeeNotifactions([FromBody] int[] ids)
+        public async Task<IActionResult> SeeNotifactions([FromBody] int[] ids)
         {
-            var notfications = this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToList();
+            var notfications = await this.Context.Notfications.Where(c => ids.Contains(c.Id)).ToListAsync();
             notfications.ForEach(c =>
             {
                 c.IsSeen = true;
                 this.Context.Update(c);
             });
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
             return Ok();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteOrder(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = this.Context.Orders.Find(id);
+            var order = await this.Context.Orders.FindAsync(id);
             if (order.IsSend == true)
                 return Conflict();
             this.Context.Remove(order);
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
             return Ok();
         }
 
