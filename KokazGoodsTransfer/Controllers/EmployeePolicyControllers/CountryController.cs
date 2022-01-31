@@ -16,25 +16,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        public CountryController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        public CountryController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var countries = Context.Countries
-                .Include(c=>c.Clients)
-                //.Include(c => c.Users)
+            var countries = await Context.Countries
+                .Include(c => c.Clients)
                 .Include(c => c.Regions)
-                .Include(c=>c.AgentCountrs)
-                    .ThenInclude(c=>c.Agent)
-                .ToList();
+                .Include(c => c.AgentCountrs)
+                    .ThenInclude(c => c.Agent)
+                .ToListAsync();
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody]CreateCountryDto createCountryDto)
+        public IActionResult Create([FromBody] CreateCountryDto createCountryDto)
         {
             var similer = Context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
             if (similer != null)
@@ -75,7 +74,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             country.DeliveryCost = updateCountryDto.DeliveryCost;
             country.MediatorId = updateCountryDto.MediatorId;
             country.Points = updateCountryDto.Points;
-            this.Context.Update(country);   
+            this.Context.Update(country);
             this.Context.SaveChanges();
             return Ok();
         }
@@ -86,9 +85,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 //test find instade of that
                 var country = this.Context.Countries
-                    .Include(c=>c.Clients)
+                    .Include(c => c.Clients)
                     .Include(c => c.Regions)
-                    .Include(c=>c.AgentCountrs)
+                    .Include(c => c.AgentCountrs)
                     .Where(c => c.Id == id)
                     .SingleOrDefault();
 
@@ -118,7 +117,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("SetMain/{id}")]
-        public IActionResult SetIsMain(int id )
+        public IActionResult SetIsMain(int id)
         {
             var country = this.Context.Countries.Find(id);
             var mainCountry = this.Context.Countries.Where(c => c.IsMain == true).ToList();

@@ -103,7 +103,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             return Ok(mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("Prints")]
-        public IActionResult GetPrint([FromQuery] PagingDto pagingDto, [FromQuery] PrintFilterDto printFilterDto)
+        public async Task<IActionResult> GetPrint([FromQuery] PagingDto pagingDto, [FromQuery] PrintFilterDto printFilterDto)
         {
             var printeds = this.Context.Printeds.Where(c => c.Type == PrintType.Agent);
             if (printFilterDto.Date != null)
@@ -115,17 +115,17 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 printeds = printeds.Where(c => c.PrintNmber == printFilterDto.Number);
             }
             printeds = printeds.Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId()));
-            var total = printeds.Count();
-            var list = printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page)
-                .ToList();
+            var total = await printeds.CountAsync();
+            var list = await printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page)
+                .ToListAsync();
             return Ok(new { total, Data = mapper.Map<PrintOrdersDto[]>(list) });
         }
         [HttpGet("Print")]
-        public IActionResult GetPrintById([FromQuery] int printNumber)
+        public async Task<IActionResult> GetPrintById([FromQuery] int printNumber)
         {
-            var printed = this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
+            var printed = await this.Context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
                 .Include(c => c.AgnetPrints)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             if (printed == null)
             {
                 return Conflict();
@@ -157,30 +157,31 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var orderRequestEditStateCount = await this.Context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).CountAsync();
             AdminNotification adminNotification = new AdminNotification()
             {
-                
+
                 OrderRequestEditStateCount = orderRequestEditStateCount,
-                
+
             };
             await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
         [HttpGet("GetOrderPlaced")]
-        public IActionResult GetOrderPlaced()
+        public async Task<IActionResult> GetOrderPlaced()
         {
-            return Ok(mapper.Map<NameAndIdDto[]>(this.Context.OrderPlaceds.ToList()));
+            var orderPlaceds = await this.Context.OrderPlaceds.ToListAsync();
+            return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("GetAgentStatics")]
-        public IActionResult GetAgentStatics([FromQuery] DateTime dateTime)
+        public async Task<IActionResult> GetAgentStatics([FromQuery] DateTime dateTime)
         {
             var date = dateTime.AddDays(-4);
             AgentStaticsDto mainStatics = new AgentStaticsDto()
             {
-                TotalOrderInSotre = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).Count(),
-                TotalOrderInWay = this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).Count(),
-                TotlaOwedOrder = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))).Count(),
-                TotlaPrintOrder = this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
-                .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).Count(),
-                TotalOrderSuspended = this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany)).Count()
+                TotalOrderInSotre =await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).CountAsync(),
+                TotalOrderInWay =await this.Context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).CountAsync(),
+                TotlaOwedOrder =await this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))).CountAsync(),
+                TotlaPrintOrder =await this.Context.Printeds.Where(c => c.Type == PrintType.Agent)
+                .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).CountAsync(),
+                TotalOrderSuspended = await this.Context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany)).CountAsync()
             };
             return Ok(mainStatics);
         }
