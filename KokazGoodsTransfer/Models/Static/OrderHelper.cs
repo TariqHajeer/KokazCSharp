@@ -28,8 +28,6 @@ namespace KokazGoodsTransfer.Models.Static
             }
             if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
                 return 0;
-            //if (order.OrderplacedId >= (int)OrderplacedEnum.Delivered && order.OrderplacedId <= (int)OrderplacedEnum.Delayed)
-            //    return 0;
             return (decimal)order.ClientPaied * -1;
         }
 
