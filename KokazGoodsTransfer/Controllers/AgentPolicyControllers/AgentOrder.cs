@@ -15,6 +15,7 @@ using Swashbuckle.Swagger.Annotations;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.HubsConfig;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
@@ -23,9 +24,11 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     public class AgentOrderController : AbstractAgentController
     {
         private readonly NotificationHub _notificationHub;
-        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
+        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
+        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
         {
             _notificationHub = notificationHub;
+            _indexOrderPlacedRepository = indexOrderPlacedRepository;
         }
         [HttpGet("InStock")]
         public async Task<IActionResult> GetInStock()
@@ -167,7 +170,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("GetOrderPlaced")]
         public async Task<IActionResult> GetOrderPlaced()
         {
-            var orderPlaceds = await this.Context.OrderPlaceds.ToListAsync();
+            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
             return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("GetAgentStatics")]
