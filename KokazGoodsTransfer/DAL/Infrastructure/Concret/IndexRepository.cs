@@ -22,12 +22,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 
         public virtual async Task<List<IndexEntity>> GetLiteList()
         {
-
-            if (!_cache.TryGetValue(nameof(T), out List<IndexEntity> entities))
+            var name = typeof(T).FullName;
+            if (!_cache.TryGetValue(name, out List<IndexEntity> entities))
             {
                 var list = await _kokazContext.Set<T>().Select(c => new IndexEntity() { Id = c.Id, Name = c.Name }).ToListAsync();
                 entities = list;
-                _cache.Set(nameof(T), entities);
+                _cache.Set(name, entities);
             }
             return entities;
         }
