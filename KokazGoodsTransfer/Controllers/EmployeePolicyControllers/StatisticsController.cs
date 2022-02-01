@@ -82,8 +82,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 NewEditRquests = newEditRquests,
                 NewPaymentRequetsCount = newPaymentRequetsCount
             };
-            await _notificationHub.AdminNotifcation(adminNotification);
-            return Ok();
+            return Ok(adminNotification);
         }
         [HttpGet("GetAggregate")]
         public async Task<IActionResult> GetAggregate([FromQuery] DateFiter dateFiter)
