@@ -13,5 +13,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task AddAsync(T entity);
         Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<PagingResualt<List<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<List<T>> GetAll();
+        Task Update(T entity);
+        Task Delete(T entity);
     }
 }

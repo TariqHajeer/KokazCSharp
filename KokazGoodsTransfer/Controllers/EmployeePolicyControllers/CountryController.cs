@@ -23,6 +23,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+
             var countries = await Context.Countries
                 .Include(c => c.Clients)
                 .Include(c => c.Regions)

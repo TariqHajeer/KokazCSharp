@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Models.Infrastrcuter
 {
-    public interface IIndex:IIdEntity,INameEntity
+    public interface IIndex: IIdEntity, INameEntity
     {
     }
 }

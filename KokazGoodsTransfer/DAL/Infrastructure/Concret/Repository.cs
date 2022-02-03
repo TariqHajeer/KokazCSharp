@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public virtual async Task AddAsync(T entity)
         {
             await _kokazContext.AddAsync(entity);
+            await _kokazContext.SaveChangesAsync();
         }
 
         public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
@@ -62,6 +63,23 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Data = await dataTask
             };
             return result;
+        }
+
+        public virtual async Task<List<T>> GetAll()
+        {
+            return await _kokazContext.Set<T>().ToListAsync();
+        }
+
+        public virtual async Task Update(T entity)
+        {
+            _kokazContext.Set<T>().Update(entity);
+            await _kokazContext.SaveChangesAsync();
+        }
+
+        public virtual async Task Delete(T entity)
+        {
+            _kokazContext.Set<T>().Remove(entity);
+            await _kokazContext.SaveChangesAsync();
         }
     }
 }
