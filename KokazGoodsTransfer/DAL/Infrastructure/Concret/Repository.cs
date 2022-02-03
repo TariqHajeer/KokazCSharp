@@ -65,9 +65,18 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             return result;
         }
 
-        public virtual async Task<List<T>> GetAll()
+        public virtual async Task<List<T>> GetAll(params string[] propertySelectors)
         {
-            return await _kokazContext.Set<T>().ToListAsync();
+            var query = _kokazContext.Set<T>().AsQueryable();
+            if (propertySelectors != null)
+            {
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            }
+            var txt = query.ToQueryString();
+            return await query.ToListAsync();
         }
 
         public virtual async Task Update(T entity)

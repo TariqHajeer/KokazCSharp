@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
-    public class CahsedRepository<T> : Repository<T>, ICashedRepository<T> where T:class, IIdEntity
+    public class CahsedRepository<T> : Repository<T>, ICashedRepository<T> where T:class,IIdEntity
     {
         private readonly IMemoryCache _cache;
         public CahsedRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext)
@@ -27,12 +27,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 cahsedList.Add(entity);
             }
         }
-        public override async Task<List<T>> GetAll()
+        public override async Task<List<T>> GetAll(params string[] propertySelectors)
         {
             var name = typeof(T).FullName;
             if (!_cache.TryGetValue(name, out List<T> entities))
             {
-                entities = await base.GetAll();
+                entities = await base.GetAll(propertySelectors);
                 _cache.Set(name, entities);
             }
             return entities;
@@ -59,6 +59,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 cahsedList.Add(entity);
                 _cache.Set(cashedName, cahsedList);
             }
+        }
+        public override Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        {
+            return base.GetAsync(filter, propertySelectors);
         }
 
     }

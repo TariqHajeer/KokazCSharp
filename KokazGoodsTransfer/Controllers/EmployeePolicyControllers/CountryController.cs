@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
@@ -16,25 +17,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        public CountryController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        ICashedRepository<Country> _cashedRepository;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICashedRepository<Country> cashedRepository) : base(context, mapper, logging)
         {
+            _cashedRepository = cashedRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-
-            var countries = await Context.Countries
-                .Include(c => c.Clients)
-                .Include(c => c.Regions)
-                .Include(c => c.AgentCountrs)
-                    .ThenInclude(c => c.Agent)
-                .ToListAsync();
+            var countries = await _cashedRepository.GetAll("Clients", "Regions", "AgentCountrs", "AgentCountrs.Agent");
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateCountryDto createCountryDto)
+        public async Task<IActionResult> Create([FromBody] CreateCountryDto createCountryDto)
         {
             var similer = Context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
             if (similer != null)
@@ -60,27 +57,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Name = item
                     });
                 }
-            Context.Add(country);
-            Context.SaveChanges();
+            await _cashedRepository.AddAsync(country);
+
             return Ok(mapper.Map<CountryDto>(country));
         }
         [HttpPatch]
-        public IActionResult Update([FromBody] UpdateCountryDto updateCountryDto)
+        public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
         {
             var country = this.Context.Countries.Find(updateCountryDto.Id);
             var similarCountry = this.Context.Countries.Where(c => c.Name == updateCountryDto.Name && c.Id != updateCountryDto.Id).Any();
             if (similarCountry)
                 return Conflict();
+
             country.Name = updateCountryDto.Name;
             country.DeliveryCost = updateCountryDto.DeliveryCost;
             country.MediatorId = updateCountryDto.MediatorId;
             country.Points = updateCountryDto.Points;
-            this.Context.Update(country);
-            this.Context.SaveChanges();
+            await _cashedRepository.Update(country);
             return Ok();
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
@@ -103,8 +100,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     this.Context.Regions.Remove(item);
                 }
-                this.Context.Countries.Remove(country);
-                this.Context.SaveChanges();
+                await _cashedRepository.Delete(country);
                 return Ok();
             }
             catch (Exception ex)

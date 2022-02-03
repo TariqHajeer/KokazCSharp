@@ -225,7 +225,7 @@ namespace KokazGoodsTransfer
         private void RegiserServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(ICashedRepository<>,typeof(CahsedRepository<>)));
+            services.AddScoped(typeof(ICashedRepository<>),typeof(CahsedRepository<>));
         }
     }
 }
