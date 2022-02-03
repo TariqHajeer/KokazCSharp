@@ -90,5 +90,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _kokazContext.Set<T>().Remove(entity);
             await _kokazContext.SaveChangesAsync();
         }
+
+        public virtual async Task Update(IEnumerable<T> entites)
+        {
+            _kokazContext.UpdateRange(entites);
+            await _kokazContext.SaveChangesAsync();
+        }
     }
 }

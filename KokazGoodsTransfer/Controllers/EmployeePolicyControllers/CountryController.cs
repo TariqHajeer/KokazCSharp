@@ -109,7 +109,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("SetMain/{id}")]
-        public IActionResult SetIsMain(int id)
+        public async Task<IActionResult> SetIsMain(int id)
         {
             var country = this.Context.Countries.Find(id);
             var mainCountry = this.Context.Countries.Where(c => c.IsMain == true).ToList();
@@ -118,7 +118,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 c.IsMain = false;
             });
             country.IsMain = true;
-            this.Context.SaveChanges();
+            mainCountry.Add(country);
+            await _cashedRepository.Update(mainCountry);
             return Ok();
         }
     }
