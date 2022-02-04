@@ -26,7 +26,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            //var countries = await _cashedRepository.GetAll("Clients", "Regions", "AgentCountrs", "AgentCountrs.Agent");
             var countries = await _cashedRepository.GetAll(c=>c.Clients,c=>c.Regions,c=>c.AgentCountrs.Select(c=>c.Agent));
             return Ok(mapper.Map<CountryDto[]>(countries));
         }
