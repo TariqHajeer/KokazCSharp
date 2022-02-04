@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             await _kokazContext.AddAsync(entity);
             await _kokazContext.SaveChangesAsync();
         }
+        public virtual async Task<T> GetById(int Id)
+        {
+            return await _kokazContext.Set<T>().FindAsync(Id);
+        }
 
         public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
@@ -40,9 +45,22 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return await query.ToListAsync();
         }
+        private IQueryable<T> IncludeLmbda(IQueryable<T> query, params Expression<Func<T, object>>[] propertySelectors)
+        {
+            if (propertySelectors != null)
+            {
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item.AsPath());
+                }
+
+            }
+            return query;
+        }
 
         public virtual async Task<PagingResualt<List<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
+
             var query = this._kokazContext.Set<T>().AsQueryable();
             if (filter != null)
             {
@@ -64,20 +82,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             };
             return result;
         }
-
-        public virtual async Task<List<T>> GetAll(params string[] propertySelectors)
+        public virtual async Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
             var query = _kokazContext.Set<T>().AsQueryable();
-            if (propertySelectors != null)
-            {
-                foreach (var item in propertySelectors)
-                {
-                    query = query.Include(item);
-                }
-            }
-            var txt = query.ToQueryString();
+            query = IncludeLmbda(query,propertySelectors);
             return await query.ToListAsync();
         }
+
 
         public virtual async Task Update(T entity)
         {
@@ -96,5 +107,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _kokazContext.UpdateRange(entites);
             await _kokazContext.SaveChangesAsync();
         }
+
+
     }
 }

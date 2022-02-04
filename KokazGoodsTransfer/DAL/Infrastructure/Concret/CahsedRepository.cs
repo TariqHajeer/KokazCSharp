@@ -27,7 +27,21 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 cahsedList.Add(entity);
             }
         }
-        public override async Task<List<T>> GetAll(params string[] propertySelectors)
+        public  override async Task<T> GetById(int Id)
+        {
+            var name = typeof(T).FullName;
+            T entity = null;
+            if (!_cache.TryGetValue(name, out List<T> entities))
+            {
+                entity = entities.Find(c => c.Id == Id);
+                
+            }
+            if (entity == null)
+                entity = await _kokazContext.Set<T>().FindAsync(Id);
+            return entity;
+        }
+        
+        public override async Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
             var name = typeof(T).FullName;
             if (!_cache.TryGetValue(name, out List<T> entities))
@@ -51,7 +65,15 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public override async Task Update(T entity)
         {
-            await base.Update(entity);
+            try
+            {
+                await base.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                await _kokazContext.Entry(entity).ReloadAsync();
+                throw ex;
+            }
             var cashedName = typeof(T).FullName;
             if (_cache.TryGetValue(cashedName, out List<T> cahsedList))
             {

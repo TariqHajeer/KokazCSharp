@@ -17,51 +17,44 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly ICashedRepository<Country> _cashedRepository;
-        public RegionController(KokazContext context, IMapper mapper, Logging logging,ICashedRepository<Country> cashedRepository) : base(context, mapper, logging)
+        public RegionController(KokazContext context, IMapper mapper, Logging logging, ICashedRepository<Country> cashedRepository) : base(context, mapper, logging)
         {
             _cashedRepository = cashedRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var country=  await _cashedRepository.GetAll();
-            var regions = country.Select(c => c.Regions).ToArray();
+            var country = await _cashedRepository.GetAll(c => c.Regions, c => c.Clients, c => c.AgentCountrs);
+            var regions = country.SelectMany(c => c.Regions.ToArray()).ToArray();
             return Ok(mapper.Map<RegionDto[]>(regions));
         }
         [HttpPost]
-        public IActionResult Create(CreateRegionDto createRegionDto)
+        public async Task<IActionResult> Create(CreateRegionDto createRegionDto)
         {
-            
+
             var similerRegion = Context.Regions.Where(c => c.Name == createRegionDto.Name && c.CountryId == createRegionDto.CountryId).FirstOrDefault();
             if (similerRegion != null)
                 return Conflict();
-
-            Region region = new Region()
+            var country = await _cashedRepository.GetById(createRegionDto.CountryId);
+            var region = new Region()
             {
-                CountryId = createRegionDto.CountryId,
                 Name = createRegionDto.Name
             };
-            Context.Add(region);
-            Context.SaveChanges();
-            this.Context.Entry(region).Reference(c => c.Country).Load();
-
+            country.Regions.Add(region);
+            await _cashedRepository.Update(country);
             return Ok(mapper.Map<RegionDto>(region));
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var region = this.Context.Regions.Find(id);
+                var region = await this.Context.Regions.FindAsync(id);
                 if (region == null)
                     return NotFound();
-                //if (region.Clients.Any())
-                //{
-                //    return Conflict();
-                //}
-
-                this.Context.Regions.Remove(region);
-                this.Context.SaveChanges();
+                var country = await _cashedRepository.GetById(region.CountryId);
+                country.Regions = country.Regions.Where(c => c.Id != id).ToList();
+                await _cashedRepository.Update(country);
                 return Ok();
             }
             catch (Exception ex)
@@ -78,6 +71,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             }
             region.Name = updateRegion.Name;
+
             this.Context.Update(region);
             this.Context.SaveChanges();
             return Ok();
