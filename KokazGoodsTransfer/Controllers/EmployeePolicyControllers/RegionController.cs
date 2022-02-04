@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
@@ -15,19 +16,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class RegionController : AbstractEmployeePolicyController
     {
 
-        public RegionController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly ICashedRepository<Country> _cashedRepository;
+        public RegionController(KokazContext context, IMapper mapper, Logging logging,ICashedRepository<Country> cashedRepository) : base(context, mapper, logging)
         {
-
+            _cashedRepository = cashedRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var regions = await Context.Regions.Include(c => c.Country).ToListAsync();
+            var country=  await _cashedRepository.GetAll();
+            var regions = country.Select(c => c.Regions).ToArray();
             return Ok(mapper.Map<RegionDto[]>(regions));
         }
         [HttpPost]
         public IActionResult Create(CreateRegionDto createRegionDto)
         {
+            
             var similerRegion = Context.Regions.Where(c => c.Name == createRegionDto.Name && c.CountryId == createRegionDto.CountryId).FirstOrDefault();
             if (similerRegion != null)
                 return Conflict();
