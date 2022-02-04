@@ -26,10 +26,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var incomeTypes = this.Context.IncomeTypes
+            var incomeTypes = this._context.IncomeTypes
                 .Include(c => c.Incomes)
                 .ToList();
-            return Ok(mapper.Map<IncomeTypeDto[]>(incomeTypes));
+            return Ok(_mapper.Map<IncomeTypeDto[]>(incomeTypes));
             //List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
             //foreach (var item in incomeTypes)
             //{
@@ -44,15 +44,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)
         {
-            var similer = this.Context.IncomeTypes.Where(c => c.Name == createIncomeTypeDto.Name).Count();
+            var similer = this._context.IncomeTypes.Where(c => c.Name == createIncomeTypeDto.Name).Count();
             if (similer > 0)
                 return Conflict();
             IncomeType incomeType = new IncomeType()
             {
                 Name = createIncomeTypeDto.Name
             };
-            this.Context.Add(incomeType);
-            this.Context.SaveChanges();
+            this._context.Add(incomeType);
+            this._context.SaveChanges();
             var response = new IncomeTypeDto()
             {
                 Id = incomeType.Id,
@@ -66,12 +66,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var incomeType = this.Context.IncomeTypes.Where(c => c.Id == updateIncomeTypeDto.Id).FirstOrDefault();
-                if (this.Context.IncomeTypes.Where(c => c.Name == updateIncomeTypeDto.Name && c.Id != updateIncomeTypeDto.Id).Any())
+                var incomeType = this._context.IncomeTypes.Where(c => c.Id == updateIncomeTypeDto.Id).FirstOrDefault();
+                if (this._context.IncomeTypes.Where(c => c.Name == updateIncomeTypeDto.Name && c.Id != updateIncomeTypeDto.Id).Any())
                     return Conflict();
                 incomeType.Name = updateIncomeTypeDto.Name;
-                this.Context.Update(incomeType);
-                this.Context.SaveChanges();
+                this._context.Update(incomeType);
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
@@ -84,14 +84,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var incomeType = this.Context.IncomeTypes.Find(id);
+                var incomeType = this._context.IncomeTypes.Find(id);
                 if (incomeType == null)
                     return NotFound();
-                this.Context.Entry(incomeType).Collection(c => c.Incomes).Load();
+                this._context.Entry(incomeType).Collection(c => c.Incomes).Load();
                 if (incomeType.Incomes.Count() != 0)
                     return Conflict();
-                this.Context.Remove(incomeType);
-                this.Context.SaveChanges();
+                this._context.Remove(incomeType);
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)

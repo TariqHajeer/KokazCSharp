@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             return entity;
         }
 
+
         public override async Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
             var name = typeof(T).FullName;
@@ -91,13 +92,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             {
                 await base.Update(entites);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 foreach (var item in entites)
                 {
                     await _kokazContext.Entry(item).ReloadAsync();
                 }
-                throw ex;  
+                throw ex;
             }
             var cahedName = typeof(T).FullName;
             if (_cache.TryGetValue(cahedName, out List<T> cahsedList))
@@ -108,5 +109,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
         }
 
+        public async Task RefreshCash()
+        {
+            var name = typeof(T).FullName;
+            _cache.Remove(name);
+            await GetAll();
+        }
     }
 }

@@ -27,13 +27,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> GetAll()
         {
             var countries = await _cashedRepository.GetAll(c=>c.Clients,c=>c.Regions,c=>c.AgentCountrs.Select(c=>c.Agent));
-            return Ok(mapper.Map<CountryDto[]>(countries));
+            return Ok(_mapper.Map<CountryDto[]>(countries));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCountryDto createCountryDto)
         {
-            var similer = Context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
+            var similer = _context.Countries.Where(c => c.Name == createCountryDto.Name).FirstOrDefault();
             if (similer != null)
                 return Conflict();
             var country = new Country()
@@ -44,7 +44,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 IsMain = false,
                 Points = createCountryDto.Points
             };
-            if (this.Context.Countries.Count() == 0)
+            if (this._context.Countries.Count() == 0)
             {
                 country.IsMain = true;
             }
@@ -59,13 +59,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
             await _cashedRepository.AddAsync(country);
 
-            return Ok(mapper.Map<CountryDto>(country));
+            return Ok(_mapper.Map<CountryDto>(country));
         }
         [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
         {
-            var country = this.Context.Countries.Find(updateCountryDto.Id);
-            var similarCountry = this.Context.Countries.Where(c => c.Name == updateCountryDto.Name && c.Id != updateCountryDto.Id).Any();
+            var country = this._context.Countries.Find(updateCountryDto.Id);
+            var similarCountry = this._context.Countries.Where(c => c.Name == updateCountryDto.Name && c.Id != updateCountryDto.Id).Any();
             if (similarCountry)
                 return Conflict();
 
@@ -81,7 +81,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var country = this.Context.Countries
+                var country = this._context.Countries
                     .Include(c => c.Clients)
                     .Include(c => c.Regions)
                     .Include(c => c.AgentCountrs)
@@ -98,7 +98,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 foreach (var item in country.Regions)
                 {
-                    this.Context.Regions.Remove(item);
+                    this._context.Regions.Remove(item);
                 }
                 await _cashedRepository.Delete(country);
                 return Ok();
@@ -111,8 +111,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("SetMain/{id}")]
         public async Task<IActionResult> SetIsMain(int id)
         {
-            var country = this.Context.Countries.Find(id);
-            var mainCountry = this.Context.Countries.Where(c => c.IsMain == true).ToList();
+            var country = this._context.Countries.Find(id);
+            var mainCountry = this._context.Countries.Where(c => c.IsMain == true).ToList();
             mainCountry.ForEach(c =>
             {
                 c.IsMain = false;

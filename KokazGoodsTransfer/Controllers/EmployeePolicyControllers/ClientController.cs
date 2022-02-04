@@ -29,12 +29,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var isExist =await Context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
+                var isExist =await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
                 if (isExist)
                 {
                     return Conflict();
                 }
-                var client = mapper.Map<Client>(createClientDto);
+                var client = _mapper.Map<Client>(createClientDto);
                 client.Points = 0;
                 client.UserId = (int)AuthoticateUserId();
 
@@ -46,13 +46,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Phone = item
                     });
                 }
-                this.Context.Set<Client>().Add(client);
-                await this.Context.SaveChangesAsync();
-                client =await this.Context.Clients
+                this._context.Set<Client>().Add(client);
+                await this._context.SaveChangesAsync();
+                client =await this._context.Clients
                     .Include(c => c.Country)
                     .Include(c => c.User)
                     .SingleAsync(c => c.Id == client.Id);
-                return Ok(mapper.Map<ClientDto>(client));
+                return Ok(_mapper.Map<ClientDto>(client));
             }
             catch (Exception ex)
             {
@@ -62,32 +62,32 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async  Task<IActionResult> Get()
         {
-            var clients =await this.Context.Clients
+            var clients =await this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
                 .ToListAsync();
-            return Ok(mapper.Map<ClientDto[]>(clients));
+            return Ok(_mapper.Map<ClientDto[]>(clients));
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var client = this.Context.Clients.Include(c => c.Country)
+            var client = this._context.Clients.Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Orders)
                 .Where(c => c.Id == id).FirstOrDefault();
-            return Ok(mapper.Map<ClientDto>(client));
+            return Ok(_mapper.Map<ClientDto>(client));
         }
         [HttpPut("addPhone")]
         public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
         {
             try
             {
-                var client = this.Context.Clients.Find(addPhoneDto.objectId);
+                var client = this._context.Clients.Find(addPhoneDto.objectId);
                 if (client == null)
                     return NotFound();
-                this.Context.Entry(client).Collection(c => c.ClientPhones).Load();
+                this._context.Entry(client).Collection(c => c.ClientPhones).Load();
                 if (client.ClientPhones.Select(c => c.Phone).Contains(addPhoneDto.Phone))
                 {
                     return Conflict();
@@ -97,9 +97,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ClientId = client.Id,
                     Phone = addPhoneDto.Phone
                 };
-                this.Context.Add(clientPhone);
-                this.Context.SaveChanges();
-                return Ok(mapper.Map<PhoneDto>(clientPhone));
+                this._context.Add(clientPhone);
+                this._context.SaveChanges();
+                return Ok(_mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
             {
@@ -111,9 +111,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var clientPhone = this.Context.ClientPhones.Find(id);
-                this.Context.Remove(clientPhone);
-                this.Context.SaveChanges();
+                var clientPhone = this._context.ClientPhones.Find(id);
+                this._context.Remove(clientPhone);
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
@@ -126,23 +126,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var client = this.Context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
+                var client = this._context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
 
                 if (client == null)
                     return NotFound();
 
                 var oldPassord = client.Password;
 
-                mapper.Map(updateClientDto, client);
+                _mapper.Map(updateClientDto, client);
                 if (updateClientDto.Password == null)
                     client.Password = oldPassord;
 
-                this.Context.SaveChanges();
-                client = this.Context.Clients
+                this._context.SaveChanges();
+                client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.User)
                 .Single(c => c.Id == client.Id);
-                return Ok(mapper.Map<ClientDto>(client));
+                return Ok(_mapper.Map<ClientDto>(client));
             }
             catch (Exception ex)
             {
@@ -152,15 +152,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult DeleteClient(int id)
         {
-            var client = this.Context.Clients
+            var client = this._context.Clients
                 .Find(id);
             if (client == null)
                 return NotFound();
-            this.Context.Entry(client).Collection(c => c.Orders).Load();
+            this._context.Entry(client).Collection(c => c.Orders).Load();
             if (client.Orders.Count() != 0)
                 return Conflict();
-            this.Context.Remove(client);
-            this.Context.SaveChanges();
+            this._context.Remove(client);
+            this._context.SaveChanges();
             return Ok();
         }
         [HttpPost("Account")]
@@ -179,14 +179,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Manager = accountDto.Manager,
                 Note = accountDto.Note,
             };
-            this.Context.Add(receipt);
-            this.Context.SaveChanges();
+            this._context.Add(receipt);
+            this._context.SaveChanges();
             return Ok(receipt.Id);
         }
         [HttpPost("GiveOrDiscountPoints")]
         public IActionResult GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
-            var client = this.Context.Clients.Find(giveOrDiscountPointsDto.ClientId);
+            var client = this._context.Clients.Find(giveOrDiscountPointsDto.ClientId);
             string sen= "";
             if (giveOrDiscountPointsDto.IsGive)
             {
@@ -203,8 +203,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 ClientId = client.Id,
                 Note = sen,
             };
-            this.Context.Add(notfication);
-            this.Context.SaveChanges();
+            this._context.Add(notfication);
+            this._context.SaveChanges();
             return Ok();
         }
     }

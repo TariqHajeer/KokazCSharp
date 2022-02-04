@@ -85,13 +85,14 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public virtual async Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
             var query = _kokazContext.Set<T>().AsQueryable();
-            query = IncludeLmbda(query,propertySelectors);
+            query = IncludeLmbda(query, propertySelectors);
             return await query.ToListAsync();
         }
 
 
         public virtual async Task Update(T entity)
         {
+            _kokazContext.Entry(entity).State = EntityState.Modified;
             _kokazContext.Set<T>().Update(entity);
             await _kokazContext.SaveChangesAsync();
         }

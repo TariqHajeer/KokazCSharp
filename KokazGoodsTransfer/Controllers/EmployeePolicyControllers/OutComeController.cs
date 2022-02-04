@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult Get([FromQuery] Filtering filtering, [FromQuery]PagingDto pagingDto)
         {
-            var outComeIQ = (IQueryable<OutCome>)this.Context.OutComes
+            var outComeIQ = (IQueryable<OutCome>)this._context.OutComes
                 .Include(c => c.User)
                 .Include(c => c.OutComeType);
             if (filtering.MaxAmount != null)
@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var total = outComeIQ.Count();
             var outComes = outComeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
 
-            return Ok(new { data = mapper.Map<OutComeDto[]>(outComes), total });
+            return Ok(new { data = _mapper.Map<OutComeDto[]>(outComes), total });
         }
         /// <summary>
         /// 
@@ -64,13 +64,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var outCome = mapper.Map<OutCome>(createOutComeDto);
+                var outCome = _mapper.Map<OutCome>(createOutComeDto);
                 outCome.UserId = AuthoticateUserId();
-                this.Context.Add(outCome);
-                this.Context.SaveChanges();
-                this.Context.Entry(outCome).Reference(c => c.User).Load();
-                this.Context.Entry(outCome).Reference(c => c.OutComeType).Load();
-                return Ok(mapper.Map<OutComeDto>(outCome));
+                this._context.Add(outCome);
+                this._context.SaveChanges();
+                this._context.Entry(outCome).Reference(c => c.User).Load();
+                this._context.Entry(outCome).Reference(c => c.OutComeType).Load();
+                return Ok(_mapper.Map<OutComeDto>(outCome));
             }
             catch (Exception ex)
             {
@@ -85,11 +85,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var userId = AuthoticateUserId();
                 foreach (var item in createOutComeDtos)
                 {
-                    var outCome = mapper.Map<OutCome>(item);
+                    var outCome = _mapper.Map<OutCome>(item);
                     outCome.UserId = userId;
-                    this.Context.Add(outCome);
+                    this._context.Add(outCome);
                 }
-                this.Context.SaveChanges();
+                this._context.SaveChanges();
 
                 return Ok();
             }
@@ -101,18 +101,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var outCome = this.Context.OutComes.Find(id);
-            this.Context.Remove(outCome);
-            this.Context.SaveChanges();
+            var outCome = this._context.OutComes.Find(id);
+            this._context.Remove(outCome);
+            this._context.SaveChanges();
             return Ok();
         }
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateOuteComeDto dto)
         {
-            var outcome = this.Context.OutComes.Find(dto.Id); 
-            outcome = mapper.Map<UpdateOuteComeDto, OutCome>(dto, outcome);
-            this.Context.Update(outcome);
-            this.Context.SaveChanges();
+            var outcome = this._context.OutComes.Find(dto.Id); 
+            outcome = _mapper.Map<UpdateOuteComeDto, OutCome>(dto, outcome);
+            this._context.Update(outcome);
+            this._context.SaveChanges();
             return Ok(outcome);
         }
     }

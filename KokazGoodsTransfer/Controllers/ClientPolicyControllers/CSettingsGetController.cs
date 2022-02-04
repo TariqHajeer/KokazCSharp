@@ -30,11 +30,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Countries")]
         public IActionResult GetCountreis()
         {
-            var countries = Context.Countries
+            var countries = _context.Countries
                 .Include(c => c.Clients)
                 .Include(c => c.Regions)
                 .ToList();
-            return Ok(mapper.Map<CountryDto[]>(countries));
+            return Ok(_mapper.Map<CountryDto[]>(countries));
         }
         /// <summary>
         /// مناطق
@@ -43,25 +43,25 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("Regions")]
         public IActionResult GetRegions()
         {
-            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
+            return Ok(_mapper.Map<RegionDto[]>(_context.Regions.Include(c => c.Country)));
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()
         {
-            var ordertypes = this.Context.OrderTypes.ToList();
-            return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
+            var ordertypes = this._context.OrderTypes.ToList();
+            return Ok(_mapper.Map<NameAndIdDto[]>(ordertypes));
         }
         [HttpGet("OrderPlaced")]
         public async Task<IActionResult> GetOrderPalce()
         {
             var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
-            return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
+            return Ok(_mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("MoenyPlaced")]
         public async Task<IActionResult> GetMoenyPlaced()
         {
             var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
-            return Ok(mapper.Map<NameAndIdDto[]>(moneyPlaceds));
+            return Ok(_mapper.Map<NameAndIdDto[]>(moneyPlaceds));
         }
 
     }

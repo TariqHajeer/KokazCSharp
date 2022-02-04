@@ -24,15 +24,15 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet("Country")]
         public IActionResult GetCountry()
         {
-            var countries = Context.Countries
+            var countries = _context.Countries
                 .ToList();
-            return Ok(mapper.Map<CountryDto[]>(countries));
+            return Ok(_mapper.Map<CountryDto[]>(countries));
         }
         [HttpGet("Market")]
         public IActionResult GetMarket()
         {
             List<MarketDto> markets = new List<MarketDto>();
-            foreach (var item in this.Context.Markets.Where(c => c.IsActive == true).ToList())
+            foreach (var item in this._context.Markets.Where(c => c.IsActive == true).ToList())
             {
                 var temp = new MarketDto()
                 {
@@ -45,7 +45,7 @@ namespace KokazGoodsTransfer.Controllers
                 };
                 if (item.ClientId != null)
                 {
-                    var client = this.Context.Clients.Find(item.ClientId);
+                    var client = this._context.Clients.Find(item.ClientId);
                     temp.Client = new Dtos.Clients.ClientDto()
                     {
                         Name = client.Name,
@@ -60,7 +60,7 @@ namespace KokazGoodsTransfer.Controllers
         [HttpGet("TrackOrder")]
         public IActionResult TrackingOrder([FromQuery] string code, string phone)
         {
-            var orders = this.Context.Orders
+            var orders = this._context.Orders
                 .Include(c => c.Orderplaced)
                 .Include(c => c.Country)
                 .Include(c => c.Client)
@@ -70,12 +70,12 @@ namespace KokazGoodsTransfer.Controllers
             {
                 orders = orders.Where(c => c.RecipientPhones.Contains(phone));
             }
-            var dto = mapper.Map<OrderDto[]>(orders).ToList();
+            var dto = _mapper.Map<OrderDto[]>(orders).ToList();
             dto.ForEach(c =>
             {
 
-                var country = this.Context.Countries.Find(c.Country.Id);
-                c.Path = mapper.Map<CountryDto[]>(GetPath(country, null)).ToList();
+                var country = this._context.Countries.Find(c.Country.Id);
+                c.Path = _mapper.Map<CountryDto[]>(GetPath(country, null)).ToList();
             });
             return Ok(dto);
         }
@@ -84,7 +84,7 @@ namespace KokazGoodsTransfer.Controllers
         {
             if (country.MediatorId != null)
             {
-                var mid = this.Context.Countries.Find(country.MediatorId);
+                var mid = this._context.Countries.Find(country.MediatorId);
                 countries = GetPath(mid, countries);
 
             }

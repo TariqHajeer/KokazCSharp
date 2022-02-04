@@ -8,6 +8,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
     public interface ICashedRepository<T>:IRepository<T> where T: class, IIdEntity
     {
-
+        Task RefreshCash();
     }
 }
