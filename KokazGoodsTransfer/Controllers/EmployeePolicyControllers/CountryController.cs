@@ -17,8 +17,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        ICashedRepository<Country> _cashedRepository;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICashedRepository<Country> cashedRepository) : base(context, mapper, logging)
+        ICountryCashedRepository _cashedRepository;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository cashedRepository) : base(context, mapper, logging)
         {
             _cashedRepository = cashedRepository;
         }

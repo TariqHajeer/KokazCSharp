@@ -21,19 +21,18 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     {
         private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
         private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
+        private readonly ICashedRepository<Country> _countryCashedRepository;
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository, ICashedRepository<Country> countryCashedRepository) : base(context, mapper, logging)
         {
             _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
             _indexOrderPlacedRepository = indexOrderPlacedRepository;
+            _countryCashedRepository = countryCashedRepository;
         }
-        
+
         [HttpGet("Countries")]
-        public IActionResult GetCountreis()
+        public async Task<IActionResult> GetCountreis()
         {
-            var countries = _context.Countries
-                .Include(c => c.Clients)
-                .Include(c => c.Regions)
-                .ToList();
+            var countries = await _countryCashedRepository.GetAll();
             return Ok(_mapper.Map<CountryDto[]>(countries));
         }
         /// <summary>
@@ -41,9 +40,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("Regions")]
-        public IActionResult GetRegions()
+        public async Task<IActionResult> GetRegions()
         {
-            return Ok(_mapper.Map<RegionDto[]>(_context.Regions.Include(c => c.Country)));
+            var region = (await _countryCashedRepository.GetAll()).SelectMany(c => c.Regions).ToArray();
+            return Ok(_mapper.Map<RegionDto[]>(region));
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()

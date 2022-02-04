@@ -27,8 +27,6 @@ namespace KokazGoodsTransfer
 {
     public class Startup
     {
-        //remotlyconnection
-        //Data Source = SQL5101.site4now.net; Initial Catalog = DB_A6C91F_Koka; User Id = DB_A6C91F_Koka_admin; Password=1234qwer
         // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
         //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -F
         public IConfiguration Configuration { get; }
@@ -47,7 +45,6 @@ namespace KokazGoodsTransfer
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
             services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
-            //services.AddTransient(typeof(KokazContext), typeof(KokazContext));
 
             services.AddCors(options =>
             {
@@ -199,15 +196,6 @@ namespace KokazGoodsTransfer
                 endpoints.MapHub<NotificationHub>("/NotificationHub");
             });
 
-            //app.UseSignalR(routes =>
-            //{
-            //    routes.MapHub<NotificationHub>("/NotificationHub");
-            //});
-
-            //app.UseSignalR(config =>
-            //{
-            //    config.MapHub<NotificationHub>("/NotificationHub"); 
-            //});
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
 
@@ -215,7 +203,6 @@ namespace KokazGoodsTransfer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
-                //c.SwaggerEndpoint("v1/swagger.json", "Swagger Test");
             });
         }
 
@@ -225,7 +212,8 @@ namespace KokazGoodsTransfer
         private void RegiserServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(ICashedRepository<>),typeof(CahsedRepository<>));
+            services.AddScoped(typeof(ICashedRepository<>), typeof(CashedRepository<>));
+            services.AddScoped(typeof(ICountryCashedRepository), typeof(CountryCashedRepository));
         }
     }
 }

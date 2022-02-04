@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
-    public class CahsedRepository<T> : Repository<T>, ICashedRepository<T> where T : class, IIdEntity
+    public class CashedRepository<T> : Repository<T>, ICashedRepository<T> where T : class, IIdEntity
     {
-        private readonly IMemoryCache _cache;
-        public CahsedRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext)
+        protected readonly IMemoryCache _cache;
+        public CashedRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext)
         {
             _cache = cache;
         }
@@ -109,7 +109,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
         }
 
-        public async Task RefreshCash()
+        public virtual async Task RefreshCash()
         {
             var name = typeof(T).FullName;
             _cache.Remove(name);

@@ -36,13 +36,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             {
                 query = query.Where(filter);
             }
-            if (propertySelectors != null)
-            {
-                foreach (var item in propertySelectors)
-                {
-                    query = query.Include(item);
-                }
-            }
+            query = IncludeLmbda(query, propertySelectors);
             return await query.ToListAsync();
         }
         private IQueryable<T> IncludeLmbda(IQueryable<T> query, params Expression<Func<T, object>>[] propertySelectors)
@@ -67,13 +61,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 query = query.Where(filter);
             }
             var totalTask = query.CountAsync();
-            if (propertySelectors != null)
-            {
-                foreach (var item in propertySelectors)
-                {
-                    query = query.Include(item);
-                }
-            }
+            query = IncludeLmbda(query, propertySelectors);
             var dataTask = query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
             var result = new PagingResualt<List<T>>()
             {

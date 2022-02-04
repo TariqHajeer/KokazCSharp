@@ -8,6 +8,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models.Static;
+using System.Threading.Tasks;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -15,8 +17,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class UserController : AbstractEmployeePolicyController
     {
-        public UserController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        ICashedRepository<User> _cashedRepository;
+        public UserController(KokazContext context, IMapper mapper, Logging logging, ICashedRepository<User> cashedRepository) : base(context, mapper, logging)
         {
+            _cashedRepository = cashedRepository;
         }
         [HttpGet("Agent")]
         public IActionResult GetAgent()
@@ -28,19 +32,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<UserDto[]>(users));
         }
         [HttpGet("ActiveAgent")]
-        public IActionResult GetEnalbedAgent()
+        public async Task<IActionResult> GetEnalbedAgent()
         {
-            var users = this._context.Users.Where(c => c.CanWorkAsAgent == true && c.IsActive == true)
-                .Include(c=>c.UserPhones)
-                .Include(c=>c.AgentCountrs)
-                    .ThenInclude(c=>c.Country)
-                        .ThenInclude(c => c.Regions)
-                .ToList();
-            return Ok(_mapper.Map<UserDto[]>(users));
+            var activeAgent = await _cashedRepository.GetAsync(c => c.CanWorkAsAgent == true && c.IsActive == true, c => c.UserPhones, c => c.AgentCountrs.Select(c => c.Country.Regions));
+            //var users = await this._context.Users.Where(c => c.CanWorkAsAgent == true && c.IsActive == true)
+            //    .Include(c => c.UserPhones)
+            //    .Include(c => c.AgentCountrs)
+            //        .ThenInclude(c => c.Country)
+            //            .ThenInclude(c => c.Regions)
+            //    .ToListAsync();
+            return Ok(_mapper.Map<UserDto[]>(activeAgent));
         }
         [HttpPost]
 
-        public IActionResult Create([FromBody]CreateUserDto createUserDto)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
         {
             if (!createUserDto.CanWorkAsAgent)
             {
@@ -106,6 +111,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this._context.Entry(item).Reference(c => c.Country).Load();
             }
+            await _cashedRepository.RefreshCash();
             return Ok(_mapper.Map<UserDto>(user));
         }
         [HttpGet]
@@ -114,8 +120,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var users = this._context.Users
                 .Include(c => c.UserPhones)
                 .Include(c => c.UserGroups)
-                .Include(c=>c.AgentCountrs)
-                    .ThenInclude(c=>c.Country)
+                .Include(c => c.AgentCountrs)
+                    .ThenInclude(c => c.Country)
                 .ToList();
             var usersDto = _mapper.Map<UserDto[]>(users);
             foreach (var item in usersDto)
@@ -148,7 +154,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(user);
         }
         [HttpPut("AddPhone")]
-        public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
+        public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
             try
             {
@@ -165,8 +171,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this._context.Add(userPhone);
                 this._context.SaveChanges();
+                await _cashedRepository.RefreshCash();
                 return Ok(_mapper.Map<PhoneDto>(userPhone));
-                //return Ok(mapper.Map<UserPhone>);
             }
             catch (Exception ex)
             {
@@ -174,7 +180,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("deletePhone/{id}")]
-        public IActionResult DeletePhone(int id)
+        public async Task<IActionResult> DeletePhone(int id)
         {
             try
             {
@@ -183,6 +189,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 this._context.Remove(userPhone);
                 this._context.SaveChanges();
+                await _cashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -191,7 +198,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("deleteGroup/{userId}")]
-        public IActionResult DelteGroup(int userId, [FromForm] int groupId)
+        public async  Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
         {
             try
             {
@@ -200,6 +207,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 this._context.Remove(userGroup);
                 this._context.SaveChanges();
+                await _cashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -208,7 +216,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("AddToGroup/{userId}")]
-        public IActionResult AddToGroup(int userId, [FromForm] int groupId)
+        public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
         {
             try
             {
@@ -219,6 +227,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this._context.Add(userGroup);
                 this._context.SaveChanges();
+                await _cashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -227,7 +236,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPatch]
-        public IActionResult UpdateUser([FromBody]UpdateUserDto updateUserDto)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDto)
         {
             var user = this._context.Users.Find(updateUserDto.Id);
             this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
@@ -253,9 +262,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     user.AgentCountrs.Add(new AgentCountr()
                     {
                         AgentId = user.Id,
-                        CountryId =item
+                        CountryId = item
                     });
-                } 
+                }
             }
             else
             {
@@ -264,8 +273,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
-                
-                user.AgentCountrs= null;
+
+                user.AgentCountrs = null;
                 user.Salary = null;
             }
             user.UserName = updateUserDto.UserName;
@@ -279,10 +288,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
                 }
-                
+
             }
             this._context.Update(user);
             this._context.SaveChanges();
+            await _cashedRepository.RefreshCash();
             return Ok();
         }
         [HttpGet("UsernameExist/{username}")]
@@ -290,12 +300,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(this._context.Users.Where(c => c.UserName == username).Count() != 0);
         }
+
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
             var user = this._context.Users.Find(id);
             if (user == null)
                 return NotFound();
+
+            ///TODO : so bad 
             this._context.Entry(user).Collection(c => c.Orders).Load();
             this._context.Entry(user).Collection(c => c.OutComes).Load();
             this._context.Entry(user).Collection(c => c.Incomes).Load();
