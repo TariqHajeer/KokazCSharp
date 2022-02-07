@@ -74,6 +74,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             country.MediatorId = updateCountryDto.MediatorId;
             country.Points = updateCountryDto.Points;
             await _countryCashedRepository.Update(country);
+            await _countryCashedRepository.RefreshCash();
             return Ok();
         }
         [HttpDelete("{id}")]
@@ -120,6 +121,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             country.IsMain = true;
             mainCountry.Add(country);
             await _countryCashedRepository.Update(mainCountry);
+            await _countryCashedRepository.RefreshCash();
             return Ok();
         }
     }
