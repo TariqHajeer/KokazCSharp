@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
@@ -12,6 +13,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         public CountryCashedRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext, cache)
         {
+        }
+        public override async Task<List<Country>> GetAll(params Expression<Func<Country, object>>[] propertySelectors)
+        {
+            return await base.GetAll(c => c.Clients, c => c.Regions, c => c.AgentCountrs.Select(c => c.Agent));
         }
         public override async Task RefreshCash()
         {

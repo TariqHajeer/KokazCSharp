@@ -90,6 +90,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             try
             {
+                
                 await base.Update(entites);
             }
             catch (Exception ex)

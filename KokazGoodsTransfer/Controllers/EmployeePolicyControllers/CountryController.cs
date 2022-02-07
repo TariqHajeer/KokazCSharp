@@ -17,16 +17,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        ICountryCashedRepository _cashedRepository;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository cashedRepository) : base(context, mapper, logging)
+        ICountryCashedRepository _countryCashedRepository;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository) : base(context, mapper, logging)
         {
-            _cashedRepository = cashedRepository;
+            _countryCashedRepository = countryCashedRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var countries = await _cashedRepository.GetAll(c=>c.Clients,c=>c.Regions,c=>c.AgentCountrs.Select(c=>c.Agent));
+            var countries = await _countryCashedRepository.GetAll();
             return Ok(_mapper.Map<CountryDto[]>(countries));
         }
 
@@ -57,7 +57,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Name = item
                     });
                 }
-            await _cashedRepository.AddAsync(country);
+            await _countryCashedRepository.AddAsync(country);
 
             return Ok(_mapper.Map<CountryDto>(country));
         }
@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             country.DeliveryCost = updateCountryDto.DeliveryCost;
             country.MediatorId = updateCountryDto.MediatorId;
             country.Points = updateCountryDto.Points;
-            await _cashedRepository.Update(country);
+            await _countryCashedRepository.Update(country);
             return Ok();
         }
         [HttpDelete("{id}")]
@@ -100,7 +100,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     this._context.Regions.Remove(item);
                 }
-                await _cashedRepository.Delete(country);
+                await _countryCashedRepository.Delete(country);
                 return Ok();
             }
             catch (Exception ex)
@@ -119,7 +119,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             });
             country.IsMain = true;
             mainCountry.Add(country);
-            await _cashedRepository.Update(mainCountry);
+            await _countryCashedRepository.Update(mainCountry);
             return Ok();
         }
     }
