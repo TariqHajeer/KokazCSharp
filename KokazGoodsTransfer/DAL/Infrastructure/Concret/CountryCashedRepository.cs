@@ -19,11 +19,5 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             return await base.GetAll(c => c.Clients, c => c.Regions, c => c.AgentCountrs.Select(c => c.Agent));
         }
-        public override async Task RefreshCash()
-        {
-            var name = typeof(Country).FullName;
-            _cache.Remove(name);
-            await GetAll(c => c.Clients, c => c.Regions, c => c.AgentCountrs.Select(c => c.Agent));
-        }
     }
 }

@@ -25,11 +25,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpPost]
         [Authorize(Roles = "AddClient")]
-        public async  Task<IActionResult> CreateClient(CreateClientDto createClientDto)
+        public async Task<IActionResult> CreateClient(CreateClientDto createClientDto)
         {
             try
             {
-                var isExist =await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
+                var isExist = await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
                 if (isExist)
                 {
                     return Conflict();
@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 this._context.Set<Client>().Add(client);
                 await this._context.SaveChangesAsync();
-                client =await this._context.Clients
+                client = await this._context.Clients
                     .Include(c => c.Country)
                     .Include(c => c.User)
                     .SingleAsync(c => c.Id == client.Id);
@@ -60,9 +60,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet]
-        public async  Task<IActionResult> Get()
+        public async Task<IActionResult> Get()
         {
-            var clients =await this._context.Clients
+            var clients = await this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.User)
                 .Include(c => c.ClientPhones)
@@ -80,7 +80,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<ClientDto>(client));
         }
         [HttpPut("addPhone")]
-        public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
+        public IActionResult AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
             try
             {
@@ -166,8 +166,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("Account")]
         public IActionResult Account([FromBody] AccountDto accountDto)
         {
-            //var client = this.Context.Clients.Find(accountDto.ClinetId);
-
             Receipt receipt = new Receipt()
             {
                 IsPay = accountDto.IsPay,
@@ -187,7 +185,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
             var client = this._context.Clients.Find(giveOrDiscountPointsDto.ClientId);
-            string sen= "";
+            string sen = "";
             if (giveOrDiscountPointsDto.IsGive)
             {
                 client.Points += giveOrDiscountPointsDto.Points;
