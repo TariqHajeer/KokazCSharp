@@ -40,6 +40,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Name = createRegionDto.Name
             };
             country.Regions.Add(region);
+            _context.Regions.Attach(region);
+            _context.Entry(region).State = EntityState.Added;
             await _countryCashedRepository.Update(country);
             return Ok(_mapper.Map<RegionDto>(region));
         }
