@@ -215,6 +215,7 @@ namespace KokazGoodsTransfer
             services.AddScoped(typeof(ICashedRepository<>), typeof(CashedRepository<>));
             services.AddScoped<ICountryCashedRepository, CountryCashedRepository>();
             services.AddScoped<IAgentCashRepository, AgentCashRepository>();
+            services.AddScoped<IClientCahedRepository, ClientCashedRepository>();
         }
     }
 }

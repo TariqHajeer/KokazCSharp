@@ -12,24 +12,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class ClientController : AbstractEmployeePolicyController
     {
-        public ClientController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly IClientCahedRepository _clientCahedRepository;
+        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCahedRepository clientCahedRepository) : base(context, mapper, logging)
         {
+            _clientCahedRepository = clientCahedRepository;
         }
         [HttpPost]
         [Authorize(Roles = "AddClient")]
-        public async  Task<IActionResult> CreateClient(CreateClientDto createClientDto)
+        public async Task<IActionResult> CreateClient(CreateClientDto createClientDto)
         {
             try
             {
-                var isExist =await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
+                var isExist = await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
                 if (isExist)
                 {
                     return Conflict();
@@ -48,10 +50,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 this._context.Set<Client>().Add(client);
                 await this._context.SaveChangesAsync();
-                client =await this._context.Clients
+                client = await this._context.Clients
                     .Include(c => c.Country)
                     .Include(c => c.User)
                     .SingleAsync(c => c.Id == client.Id);
+                await _clientCahedRepository.RefreshCash();
                 return Ok(_mapper.Map<ClientDto>(client));
             }
             catch (Exception ex)
@@ -60,13 +63,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet]
-        public async  Task<IActionResult> Get()
+        public async Task<IActionResult> Get()
         {
-            var clients =await this._context.Clients
-                .Include(c => c.Country)
-                .Include(c => c.User)
-                .Include(c => c.ClientPhones)
-                .ToListAsync();
+            var clients = await _clientCahedRepository.GetAll();
             return Ok(_mapper.Map<ClientDto[]>(clients));
         }
         [HttpGet("{id}")]
@@ -80,14 +79,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<ClientDto>(client));
         }
         [HttpPut("addPhone")]
-        public IActionResult AddPhone([FromBody]AddPhoneDto addPhoneDto)
+        public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
             try
             {
-                var client = this._context.Clients.Find(addPhoneDto.objectId);
+                var client = await this._context.Clients.FindAsync(addPhoneDto.objectId);
                 if (client == null)
                     return NotFound();
-                this._context.Entry(client).Collection(c => c.ClientPhones).Load();
+                await this._context.Entry(client).Collection(c => c.ClientPhones).LoadAsync();
                 if (client.ClientPhones.Select(c => c.Phone).Contains(addPhoneDto.Phone))
                 {
                     return Conflict();
@@ -97,8 +96,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ClientId = client.Id,
                     Phone = addPhoneDto.Phone
                 };
-                this._context.Add(clientPhone);
-                this._context.SaveChanges();
+                await this._context.AddAsync(clientPhone);
+                await this._context.SaveChangesAsync();
+                await _clientCahedRepository.RefreshCash();
                 return Ok(_mapper.Map<PhoneDto>(clientPhone));
             }
             catch (Exception ex)
@@ -107,13 +107,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("deletePhone/{id}")]
-        public IActionResult DeletePhone(int id)
+        public async Task<IActionResult> DeletePhone(int id)
         {
             try
             {
-                var clientPhone = this._context.ClientPhones.Find(id);
+                var clientPhone = await this._context.ClientPhones.FindAsync(id);
                 this._context.Remove(clientPhone);
-                this._context.SaveChanges();
+                await this._context.SaveChangesAsync();
+                await _clientCahedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -122,11 +123,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPatch]
-        public IActionResult UpdateClient([FromBody] UpdateClientDto updateClientDto)
+        public async Task<IActionResult> UpdateClient([FromBody] UpdateClientDto updateClientDto)
         {
             try
             {
-                var client = this._context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefault();
+                var client = await this._context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefaultAsync();
 
                 if (client == null)
                     return NotFound();
@@ -137,11 +138,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (updateClientDto.Password == null)
                     client.Password = oldPassord;
 
-                this._context.SaveChanges();
-                client = this._context.Clients
+                await this._context.SaveChangesAsync();
+                client = await this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.User)
-                .Single(c => c.Id == client.Id);
+                .SingleAsync(c => c.Id == client.Id);
+                await _clientCahedRepository.RefreshCash();
                 return Ok(_mapper.Map<ClientDto>(client));
             }
             catch (Exception ex)
@@ -150,24 +152,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteClient(int id)
+        public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = this._context.Clients
-                .Find(id);
+            var client = await this._context.Clients
+                .FindAsync(id);
             if (client == null)
                 return NotFound();
-            this._context.Entry(client).Collection(c => c.Orders).Load();
+            await this._context.Entry(client).Collection(c => c.Orders).LoadAsync();
             if (client.Orders.Count() != 0)
                 return Conflict();
             this._context.Remove(client);
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
             return Ok();
         }
         [HttpPost("Account")]
-        public IActionResult Account([FromBody] AccountDto accountDto)
+        public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
         {
-            //var client = this.Context.Clients.Find(accountDto.ClinetId);
-
             Receipt receipt = new Receipt()
             {
                 IsPay = accountDto.IsPay,
@@ -179,15 +179,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Manager = accountDto.Manager,
                 Note = accountDto.Note,
             };
-            this._context.Add(receipt);
-            this._context.SaveChanges();
+            await this._context.AddAsync(receipt);
+            await this._context.SaveChangesAsync();
             return Ok(receipt.Id);
         }
         [HttpPost("GiveOrDiscountPoints")]
-        public IActionResult GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
+        public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
-            var client = this._context.Clients.Find(giveOrDiscountPointsDto.ClientId);
-            string sen= "";
+            var client = await this._context.Clients.FindAsync(giveOrDiscountPointsDto.ClientId);
+            string sen = "";
             if (giveOrDiscountPointsDto.IsGive)
             {
                 client.Points += giveOrDiscountPointsDto.Points;
@@ -203,8 +203,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 ClientId = client.Id,
                 Note = sen,
             };
-            this._context.Add(notfication);
-            this._context.SaveChanges();
+            await this._context.AddAsync(notfication);
+            await this._context.SaveChangesAsync();
             return Ok();
         }
     }
