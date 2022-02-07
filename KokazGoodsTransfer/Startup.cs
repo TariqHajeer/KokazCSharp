@@ -213,7 +213,8 @@ namespace KokazGoodsTransfer
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(ICashedRepository<>), typeof(CashedRepository<>));
-            services.AddScoped(typeof(ICountryCashedRepository), typeof(CountryCashedRepository));
+            services.AddScoped<ICountryCashedRepository, CountryCashedRepository>();
+            services.AddScoped<IAgentCashRepository, AgentCashRepository>();
         }
     }
 }
