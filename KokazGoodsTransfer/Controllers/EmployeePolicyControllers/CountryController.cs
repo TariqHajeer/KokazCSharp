@@ -60,6 +60,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     });
                 }
             await _countryCashedRepository.AddAsync(country);
+            await _countryCashedRepository.RefreshCash();
 
             return Ok(_mapper.Map<CountryDto>(country));
         }

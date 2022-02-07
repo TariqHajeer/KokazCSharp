@@ -56,12 +56,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 CanWorkAsAgent = createUserDto.CanWorkAsAgent,
                 Salary = createUserDto.Salary,
                 IsActive = true,
+                UserName = createUserDto.UserName,
+                Password = MD5Hash.GetMd5Hash(createUserDto.Password)
             };
-            if (!createUserDto.CanWorkAsAgent)
-            {
-                user.UserName = createUserDto.UserName;
-                user.Password = MD5Hash.GetMd5Hash(createUserDto.Password);
-            }
             _context.Add(user);
             if (createUserDto.GroupsId != null)
                 foreach (var item in createUserDto.GroupsId)
