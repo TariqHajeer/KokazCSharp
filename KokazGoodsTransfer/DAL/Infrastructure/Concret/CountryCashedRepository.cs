@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         public CountryCashedRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext, cache)
         {
+            Query = this._kokazContext.Countries.AsQueryable();
         }
         public override async Task<List<Country>> GetAll(params Expression<Func<Country, object>>[] propertySelectors)
         {

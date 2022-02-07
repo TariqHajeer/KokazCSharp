@@ -51,6 +51,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return entities;
         }
+
+
         public override Task Delete(T entity)
         {
             return base.Delete(entity);
@@ -86,11 +88,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             return base.GetAsync(filter, propertySelectors);
         }
+
         public override async Task Update(IEnumerable<T> entites)
         {
             try
             {
-                
+
                 await base.Update(entites);
             }
             catch (Exception ex)
@@ -115,6 +118,19 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var name = typeof(T).FullName;
             _cache.Remove(name);
             await GetAll();
+        }
+
+        public virtual async Task<List<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        {
+
+            var name = typeof(T).FullName;
+            if (!_cache.TryGetValue(name, out List<T> entities))
+            {
+                entities = await base.GetAsync(filter, propertySelectors);
+                _cache.Set(name, entities);
+            }
+            return entities;
+
         }
     }
 }

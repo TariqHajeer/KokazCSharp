@@ -14,10 +14,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly KokazContext _kokazContext;
-
+        protected IQueryable<T> Query;
         public Repository(KokazContext kokazContext)
         {
             this._kokazContext = kokazContext;
+
+
         }
         public virtual async Task AddAsync(T entity)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
-    public interface ICountryCashedRepository : ICashedRepository<Country>
+    public interface IAgentCashRepository: ICashedRepository<User>
     {
 
     }

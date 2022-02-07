@@ -17,30 +17,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class UserController : AbstractEmployeePolicyController
     {
-        ICashedRepository<User> _cashedRepository;
-        public UserController(KokazContext context, IMapper mapper, Logging logging, ICashedRepository<User> cashedRepository) : base(context, mapper, logging)
+        private readonly IAgentCashRepository _agentCashRepository;
+        public UserController(KokazContext context, IMapper mapper, Logging logging, IAgentCashRepository agentCashRepository) : base(context, mapper, logging)
         {
-            _cashedRepository = cashedRepository;
-        }
-        [HttpGet("Agent")]
-        public IActionResult GetAgent()
-        {
-            var users = this._context.Users.Where(c => c.CanWorkAsAgent == true)
-                .Include(c => c.AgentCountrs)
-                    .ThenInclude(c => c.Country)
-                .ToList();
-            return Ok(_mapper.Map<UserDto[]>(users));
+            _agentCashRepository = agentCashRepository;
         }
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetEnalbedAgent()
         {
-            var activeAgent = await _cashedRepository.GetAsync(c => c.CanWorkAsAgent == true && c.IsActive == true, c => c.UserPhones, c => c.AgentCountrs.Select(c => c.Country.Regions));
-            //var users = await this._context.Users.Where(c => c.CanWorkAsAgent == true && c.IsActive == true)
-            //    .Include(c => c.UserPhones)
-            //    .Include(c => c.AgentCountrs)
-            //        .ThenInclude(c => c.Country)
-            //            .ThenInclude(c => c.Regions)
-            //    .ToListAsync();
+            var activeAgent = await _agentCashRepository.Get();
             return Ok(_mapper.Map<UserDto[]>(activeAgent));
         }
         [HttpPost]
@@ -105,13 +90,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     });
                 }
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
             foreach (var item in user.AgentCountrs)
             {
                 this._context.Entry(item).Reference(c => c.Country).Load();
             }
-            await _cashedRepository.RefreshCash();
+            await _agentCashRepository.RefreshCash();
             return Ok(_mapper.Map<UserDto>(user));
         }
         [HttpGet]
@@ -171,7 +156,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this._context.Add(userPhone);
                 this._context.SaveChanges();
-                await _cashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
                 return Ok(_mapper.Map<PhoneDto>(userPhone));
             }
             catch (Exception ex)
@@ -189,7 +174,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 this._context.Remove(userPhone);
                 this._context.SaveChanges();
-                await _cashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -198,7 +183,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPut("deleteGroup/{userId}")]
-        public async  Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
+        public async Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
         {
             try
             {
@@ -207,7 +192,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 this._context.Remove(userGroup);
                 this._context.SaveChanges();
-                await _cashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -227,7 +212,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 this._context.Add(userGroup);
                 this._context.SaveChanges();
-                await _cashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -292,7 +277,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             this._context.Update(user);
             this._context.SaveChanges();
-            await _cashedRepository.RefreshCash();
+            await _agentCashRepository.RefreshCash();
             return Ok();
         }
         [HttpGet("UsernameExist/{username}")]
@@ -302,7 +287,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
             var user = this._context.Users.Find(id);
             if (user == null)
@@ -324,6 +309,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 user.UserGroups.Clear();
                 this._context.Remove(user);
                 this._context.SaveChanges();
+                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
