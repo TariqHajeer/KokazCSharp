@@ -18,9 +18,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class UserController : AbstractEmployeePolicyController
     {
         private readonly IAgentCashRepository _agentCashRepository;
-        public UserController(KokazContext context, IMapper mapper, Logging logging, IAgentCashRepository agentCashRepository) : base(context, mapper, logging)
+        private readonly ICountryCashedRepository _countryCashedRepository;
+        public UserController(KokazContext context, IMapper mapper, Logging logging, IAgentCashRepository agentCashRepository, ICountryCashedRepository countryCashedRepository) : base(context, mapper, logging)
         {
             _agentCashRepository = agentCashRepository;
+            _countryCashedRepository = countryCashedRepository;
         }
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetEnalbedAgent()
@@ -97,6 +99,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Entry(item).Reference(c => c.Country).Load();
             }
             await _agentCashRepository.RefreshCash();
+            await _countryCashedRepository.RefreshCash();
             return Ok(_mapper.Map<UserDto>(user));
         }
         [HttpGet]
@@ -157,6 +160,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Add(userPhone);
                 this._context.SaveChanges();
                 await _agentCashRepository.RefreshCash();
+                await _countryCashedRepository.RefreshCash();
                 return Ok(_mapper.Map<PhoneDto>(userPhone));
             }
             catch (Exception ex)
@@ -175,6 +179,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Remove(userPhone);
                 this._context.SaveChanges();
                 await _agentCashRepository.RefreshCash();
+                await _countryCashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -193,6 +198,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Remove(userGroup);
                 this._context.SaveChanges();
                 await _agentCashRepository.RefreshCash();
+                await _countryCashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -213,6 +219,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Add(userGroup);
                 this._context.SaveChanges();
                 await _agentCashRepository.RefreshCash();
+                await _countryCashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -278,6 +285,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             this._context.Update(user);
             this._context.SaveChanges();
             await _agentCashRepository.RefreshCash();
+            await _countryCashedRepository.RefreshCash();
             return Ok();
         }
         [HttpGet("UsernameExist/{username}")]
@@ -310,6 +318,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.Remove(user);
                 this._context.SaveChanges();
                 await _agentCashRepository.RefreshCash();
+                await _countryCashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)

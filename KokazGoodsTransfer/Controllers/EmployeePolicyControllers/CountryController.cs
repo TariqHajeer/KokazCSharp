@@ -17,10 +17,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class CountryController : AbstractEmployeePolicyController
     {
-        ICountryCashedRepository _countryCashedRepository;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository) : base(context, mapper, logging)
+        private readonly ICountryCashedRepository _countryCashedRepository;
+        private readonly IAgentCashRepository _agentCashRepository;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository, IAgentCashRepository agentCashRepository) : base(context, mapper, logging)
         {
             _countryCashedRepository = countryCashedRepository;
+            _agentCashRepository = agentCashRepository;
         }
 
         [HttpGet]
@@ -75,6 +77,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             country.Points = updateCountryDto.Points;
             await _countryCashedRepository.Update(country);
             await _countryCashedRepository.RefreshCash();
+            await _agentCashRepository.RefreshCash();
             return Ok();
         }
         [HttpDelete("{id}")]
@@ -102,6 +105,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     this._context.Regions.Remove(item);
                 }
                 await _countryCashedRepository.Delete(country);
+                await _countryCashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -122,6 +127,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             mainCountry.Add(country);
             await _countryCashedRepository.Update(mainCountry);
             await _countryCashedRepository.RefreshCash();
+            await _agentCashRepository.RefreshCash();
             return Ok();
         }
     }
