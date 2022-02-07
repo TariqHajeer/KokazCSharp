@@ -19,10 +19,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
         private readonly ICountryCashedRepository _countryCashedRepository;
         private readonly IAgentCashRepository _agentCashRepository;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository, IAgentCashRepository agentCashRepository) : base(context, mapper, logging)
+        private readonly IClientCahedRepository _clientCahedRepository;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository, IAgentCashRepository agentCashRepository, IClientCahedRepository clientCahedRepository) : base(context, mapper, logging)
         {
             _countryCashedRepository = countryCashedRepository;
             _agentCashRepository = agentCashRepository;
+            _clientCahedRepository = clientCahedRepository;
         }
 
         [HttpGet]
@@ -78,6 +80,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _countryCashedRepository.Update(country);
             await _countryCashedRepository.RefreshCash();
             await _agentCashRepository.RefreshCash();
+            await _clientCahedRepository.RefreshCash();
             return Ok();
         }
         [HttpDelete("{id}")]
