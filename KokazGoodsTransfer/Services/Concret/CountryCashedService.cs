@@ -33,9 +33,10 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 country.IsMain = true;
             }
-            await _repository.AddAsync(country);
-            response.Data = _mapper.Map<CountryDto>(country);
-            await RefreshCash();
+            response = await base.AddAsync(createDto);
+            //await _repository.AddAsync(country);
+            //response.Data = _mapper.Map<CountryDto>(country);
+            //await RefreshCash();
             return response;
         }
         public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)
