@@ -59,40 +59,40 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         //    await _clientCahedRepository.RefreshCash();
         //    return Ok();
         //}
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    try
-        //    {
-        //        var country = this._context.Countries
-        //            .Include(c => c.Clients)
-        //            .Include(c => c.Regions)
-        //            .Include(c => c.AgentCountrs)
-        //            .Where(c => c.Id == id)
-        //            .SingleOrDefault();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var country = this._context.Countries
+                    .Include(c => c.Clients)
+                    .Include(c => c.Regions)
+                    .Include(c => c.AgentCountrs)
+                    .Where(c => c.Id == id)
+                    .SingleOrDefault();
 
-        //        if (country == null)
-        //            return NotFound();
-        //        if (country.AgentCountrs.Any())
-        //            return Conflict();
-        //        if (country.Clients.Count() > 0)
-        //        {
-        //            return Conflict();
-        //        }
-        //        foreach (var item in country.Regions)
-        //        {
-        //            this._context.Regions.Remove(item);
-        //        }
-        //        await _countryCashedRepository.Delete(country);
-        //        await _countryCashedRepository.RefreshCash();
-        //        await _agentCashRepository.RefreshCash();
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+                if (country == null)
+                    return NotFound();
+                if (country.AgentCountrs.Any())
+                    return Conflict();
+                if (country.Clients.Count() > 0)
+                {
+                    return Conflict();
+                }
+                foreach (var item in country.Regions)
+                {
+                    this._context.Regions.Remove(item);
+                }
+                await _countryCashedRepository.Delete(country);
+                await _countryCashedRepository.RefreshCash();
+                await _agentCashRepository.RefreshCash();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         //[HttpPut("SetMain/{id}")]
         //public async Task<IActionResult> SetIsMain(int id)
         //{
