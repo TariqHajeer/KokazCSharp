@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Dtos.Common
 {
@@ -52,13 +53,14 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
+                    country.Regions.ToList().ForEach(c => c.Country = null);
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
-                .MaxDepth(2)
                 .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
+                         obj.AgentCountrs.ToList().ForEach(c => c.Agent.AgentCountrs = null);
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
-                     }));
+                     })).MaxDepth(2);
             CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()
                 .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
@@ -76,8 +78,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return regions;
                      }))
                 .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
-            
-            #endregion 
+
+            #endregion
 
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
@@ -88,6 +90,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)))
                 .ForMember(c => c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
                   {
+                      if (user.AgentCountrs == null)
+                          return null;
                       return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
                   }));
 
