@@ -53,20 +53,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpPatch]
-        //public async Task<IActionResult> UpdateRegion([FromBody] UpdateRegionDto updateRegion)
-        //{
-        //    var region = this._context.Regions.Find(updateRegion.Id);
-        //    if (this._context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
-        //    {
-        //        return Conflict();
-        //    }
-        //    region.Name = updateRegion.Name;
-
-        //    _context.Update(region);
-        //    await _context.SaveChangesAsync();
-        //    await _countryCashedRepository.RefreshCash();
-        //    return Ok();
-        //}
+        [HttpPatch]
+        public async Task<IActionResult> UpdateRegion([FromBody] UpdateRegionDto updateRegion)
+        {
+            try
+            {
+                var result = await _regionCashedService.Update(updateRegion);
+                if (result.Errors.Any())
+                {
+                    return Conflict();
+                }
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

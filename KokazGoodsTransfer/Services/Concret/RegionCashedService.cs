@@ -28,6 +28,22 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return await base.AddAsync(createDto);
         }
+        public override async Task<ErrorRepsonse<RegionDto>> Update(UpdateRegionDto updateDto)
+        {
+            var region = await _repository.GetById(updateDto.Id);
+            var similar = await _repository.Any(c => c.CountryId == region.CountryId && c.Name == updateDto.Name && c.Id != updateDto.Id);
+            if (similar)
+            {
+                return new ErrorRepsonse<RegionDto>()
+                {
+                    Errors = new List<string>()
+                    {
+                        "Region.Exsist"
+                    }
+                };
+            }
+            return await base.Update(updateDto);
+        }
         public override async Task<IEnumerable<RegionDto>> GetCashed()
         {
             var name = typeof(Region).FullName;
