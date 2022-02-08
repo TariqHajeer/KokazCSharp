@@ -56,7 +56,17 @@ namespace KokazGoodsTransfer.Services.Concret
             await RefreshCash();
             return response;
         }
-
+        public override async Task<IEnumerable<CountryDto>> GetCashed()
+        {
+            var name = typeof(Country).FullName;
+            if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
+            {
+                var list = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Agent), c => c.Regions, c => c.Clients, c => c.Mediator);
+                entites = _mapper.Map<CountryDto[]>(list);
+                _cache.Set(name, entites);
+            }
+            return entites;
+        }
         public override async Task<ErrorRepsonse<CountryDto>> Update(UpdateCountryDto updateDto)
         {
             var similar = await _repository.Any(c => c.Name == updateDto.Name && c.Id != updateDto.Id);

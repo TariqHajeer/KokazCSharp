@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 await RefreshCash();
             return response;
         }
-        public async Task<IEnumerable<TDTO>> GetCashed()
+        public virtual async Task<IEnumerable<TDTO>> GetCashed()
         {
             var name = typeof(TEntity).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<TDTO> entites))
