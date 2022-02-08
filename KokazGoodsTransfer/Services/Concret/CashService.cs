@@ -28,10 +28,18 @@ namespace KokazGoodsTransfer.Services.Concret
             return repsonse;
         }
 
+        public override async Task<ErrorRepsonse<TDTO>> Delete(int id)
+        {
+            var repsonse = await base.Delete(id);
+            if (!repsonse.Errors.Any())
+                await RefreshCash();
+            return repsonse;
+
+        }
         public async Task<IEnumerable<TDTO>> GetCashed()
         {
             var name = typeof(TEntity).FullName;
-            if (_cache.TryGetValue(name, out IEnumerable<TDTO> entites))
+            if (!_cache.TryGetValue(name, out IEnumerable<TDTO> entites))
             {
                 var list = await GetAsync();
                 entites = _mapper.Map<TDTO[]>(list);

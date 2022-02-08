@@ -30,6 +30,20 @@ namespace KokazGoodsTransfer.Services.Concret
             return response;
         }
 
+        public virtual async Task<ErrorRepsonse<TDTO>> Delete(int id)
+        {
+            var response = new ErrorRepsonse<TDTO>();
+            var entity = await _repository.GetById(id);
+            if (entity == null)
+            {
+                response.Errors.Add("Not.Found");
+                return response;
+            }
+            await _repository.Delete(entity);
+            response.Data = _mapper.Map<TDTO>(entity);
+            return response;
+
+        }
 
         public virtual async Task<List<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
         {

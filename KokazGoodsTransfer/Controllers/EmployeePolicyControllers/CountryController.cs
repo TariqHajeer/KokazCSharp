@@ -36,10 +36,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCountryDto createCountryDto)
         {
-            var result =await _countryCashedService.AddAsync(createCountryDto);
-            if (result.Errors.Any())
-                return Conflict();
-            return Ok(result.Data);
+            try
+            {
+                var result = await _countryCashedService.AddAsync(createCountryDto);
+                if (result.Errors.Any())
+                    return Conflict();
+                return Ok(result.Data);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
         }
         //[HttpPatch]
         //public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
@@ -64,28 +71,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var country = this._context.Countries
-                    .Include(c => c.Clients)
-                    .Include(c => c.Regions)
-                    .Include(c => c.AgentCountrs)
-                    .Where(c => c.Id == id)
-                    .SingleOrDefault();
-
-                if (country == null)
-                    return NotFound();
-                if (country.AgentCountrs.Any())
+                var result = await _countryCashedService.Delete(id);
+                if (result.Errors.Any())
                     return Conflict();
-                if (country.Clients.Count() > 0)
-                {
-                    return Conflict();
-                }
-                foreach (var item in country.Regions)
-                {
-                    this._context.Regions.Remove(item);
-                }
-                await _countryCashedRepository.Delete(country);
-                await _countryCashedRepository.RefreshCash();
-                await _agentCashRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)

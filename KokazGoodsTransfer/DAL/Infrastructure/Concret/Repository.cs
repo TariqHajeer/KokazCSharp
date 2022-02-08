@@ -112,5 +112,15 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 return await _kokazContext.Set<T>().AnyAsync(filter);
             return await _kokazContext.Set<T>().AnyAsync();
         }
+
+        public async Task LoadCollection<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> propertyExpression) where TProperty : class
+        {
+            await _kokazContext.Entry(entity).Collection(propertyExpression).LoadAsync();
+        }
+
+        public async Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class
+        {
+            await _kokazContext.Entry(entity).Reference(propertyExpression).LoadAsync();
+        }
     }
 }

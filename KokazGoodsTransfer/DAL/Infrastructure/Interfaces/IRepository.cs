@@ -17,6 +17,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task Delete(T entity);
         Task Update(IEnumerable<T> entites);
         Task<T> GetById(int Id);
-        Task<bool> Any(Expression<Func<T,bool>>filter =null);
+        Task<bool> Any(Expression<Func<T, bool>> filter = null);
+        Task LoadCollection<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> propertyExpression) where TProperty : class;
+        Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class;
     }
 }

@@ -27,9 +27,10 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = new ErrorRepsonse<CountryDto>();
             var similer = await _repository.FirstOrDefualt(c => c.Name == createDto.Name);
             if (similer != null)
+            {
                 response.Errors.Add("Country.Similar");
-            if (response.Errors.Any())
                 return response;
+            }
             var country = _mapper.Map<Country>(createDto);
             if (!(await _repository.Any()))
             {
@@ -37,6 +38,21 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             await _repository.AddAsync(country);
             response.Data = _mapper.Map<CountryDto>(country);
+            await RefreshCash();
+            return response;
+        }
+        public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)
+        {
+            var country = await _repository.GetById(id);
+            await _repository.LoadCollection(country, c => c.Clients);
+            await _repository.LoadCollection(country, c => c.AgentCountrs);
+            var response = new ErrorRepsonse<CountryDto>();
+            if (country.AgentCountrs.Any() || country.Clients.Any())
+            {
+                response.Errors.Add("Cant.Delete");
+                return response;
+            }
+            response = await base.Delete(id);
             await RefreshCash();
             return response;
         }
