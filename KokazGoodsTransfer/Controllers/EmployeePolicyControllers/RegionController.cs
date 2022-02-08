@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
@@ -15,49 +16,46 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class RegionController : AbstractEmployeePolicyController
     {
 
-        public RegionController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly ICountryCashedRepository _countryCashedRepository;
+        public RegionController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedRepository countryCashedRepository) : base(context, mapper, logging)
         {
-
+            _countryCashedRepository = countryCashedRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var regions = await Context.Regions.Include(c => c.Country).ToListAsync();
-            return Ok(mapper.Map<RegionDto[]>(regions));
+            var country = await _countryCashedRepository.GetAll();
+            var regions = country.SelectMany(c => c.Regions.ToArray()).ToArray();
+            return Ok(_mapper.Map<RegionDto[]>(regions));
         }
         [HttpPost]
-        public IActionResult Create(CreateRegionDto createRegionDto)
+        public async Task<IActionResult> Create(CreateRegionDto createRegionDto)
         {
-            var similerRegion = Context.Regions.Where(c => c.Name == createRegionDto.Name && c.CountryId == createRegionDto.CountryId).FirstOrDefault();
+            var country = await _countryCashedRepository.GetById(createRegionDto.CountryId);
+            var similerRegion = country.Regions.Where(c => c.Name == createRegionDto.Name).FirstOrDefault();
             if (similerRegion != null)
                 return Conflict();
-
-            Region region = new Region()
+            var region = new Region()
             {
-                CountryId = createRegionDto.CountryId,
                 Name = createRegionDto.Name
             };
-            Context.Add(region);
-            Context.SaveChanges();
-            this.Context.Entry(region).Reference(c => c.Country).Load();
-
-            return Ok(mapper.Map<RegionDto>(region));
+            country.Regions.Add(region);
+            _context.Regions.Attach(region);
+            _context.Entry(region).State = EntityState.Added;
+            await _countryCashedRepository.Update(country);
+            return Ok(_mapper.Map<RegionDto>(region));
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var region = this.Context.Regions.Find(id);
+                var region = await this._context.Regions.FindAsync(id);
                 if (region == null)
                     return NotFound();
-                //if (region.Clients.Any())
-                //{
-                //    return Conflict();
-                //}
-
-                this.Context.Regions.Remove(region);
-                this.Context.SaveChanges();
+                _context.Remove(region);
+                _context.SaveChanges();
+                await _countryCashedRepository.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -66,16 +64,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPatch]
-        public IActionResult UpdateRegion([FromBody] UpdateRegion updateRegion)
+        public async Task<IActionResult> UpdateRegion([FromBody] UpdateRegion updateRegion)
         {
-            var region = this.Context.Regions.Find(updateRegion.Id);
-            if (this.Context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
+            var region = this._context.Regions.Find(updateRegion.Id);
+            if (this._context.Regions.Where(c => c.CountryId == region.CountryId && c.Name == updateRegion.Name && c.Id != updateRegion.Id).Any())
             {
                 return Conflict();
             }
             region.Name = updateRegion.Name;
-            this.Context.Update(region);
-            this.Context.SaveChanges();
+
+            _context.Update(region);
+            await _context.SaveChangesAsync();
+            await _countryCashedRepository.RefreshCash();
             return Ok();
         }
     }

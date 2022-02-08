@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var orders = this.Context.Orders.Where(c => c.ClientId == AuthoticateUserId());
+            var orders = this._context.Orders.Where(c => c.ClientId == AuthoticateUserId());
             var ordersInsiedCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
             StaticsDto staticsDto = new StaticsDto
             {
@@ -50,11 +50,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
 
             var uId = AuthoticateUserId();
-            var nos = await this.Context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false)
+            var nos = await this._context.Notfications.Where(c => c.ClientId == uId && c.IsSeen == false)
                 .Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
                 .ToListAsync();
-            var dto = mapper.Map<NotficationDto[]>(nos);
+            var dto = _mapper.Map<NotficationDto[]>(nos);
             await notificationHub.AllNotification(AuthoticateUserId().ToString(), dto);
             return Ok();
         }

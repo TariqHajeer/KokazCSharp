@@ -81,7 +81,6 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return context.Mapper.Map<UserPrivilegeDto[]>(user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(c => c.Privileg).Distinct()));
                      }));
             CreateMap<Client, ClientDto>()
-                .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(c => c.Total, opt => opt.MapFrom(src => src.Receipts.Where(c => c.PrintId == null).Sum(c => c.Amount)))
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {

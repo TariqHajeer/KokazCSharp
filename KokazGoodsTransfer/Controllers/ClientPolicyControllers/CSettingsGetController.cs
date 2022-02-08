@@ -21,47 +21,47 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     {
         private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
         private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
+        private readonly ICashedRepository<Country> _countryCashedRepository;
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository, ICashedRepository<Country> countryCashedRepository) : base(context, mapper, logging)
         {
             _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
             _indexOrderPlacedRepository = indexOrderPlacedRepository;
+            _countryCashedRepository = countryCashedRepository;
         }
-        
+
         [HttpGet("Countries")]
-        public IActionResult GetCountreis()
+        public async Task<IActionResult> GetCountreis()
         {
-            var countries = Context.Countries
-                .Include(c => c.Clients)
-                .Include(c => c.Regions)
-                .ToList();
-            return Ok(mapper.Map<CountryDto[]>(countries));
+            var countries = await _countryCashedRepository.GetAll();
+            return Ok(_mapper.Map<CountryDto[]>(countries));
         }
         /// <summary>
         /// مناطق
         /// </summary>
         /// <returns></returns>
         [HttpGet("Regions")]
-        public IActionResult GetRegions()
+        public async Task<IActionResult> GetRegions()
         {
-            return Ok(mapper.Map<RegionDto[]>(Context.Regions.Include(c => c.Country)));
+            var region = (await _countryCashedRepository.GetAll()).SelectMany(c => c.Regions).ToArray();
+            return Ok(_mapper.Map<RegionDto[]>(region));
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()
         {
-            var ordertypes = this.Context.OrderTypes.ToList();
-            return Ok(mapper.Map<NameAndIdDto[]>(ordertypes));
+            var ordertypes = this._context.OrderTypes.ToList();
+            return Ok(_mapper.Map<NameAndIdDto[]>(ordertypes));
         }
         [HttpGet("OrderPlaced")]
         public async Task<IActionResult> GetOrderPalce()
         {
             var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
-            return Ok(mapper.Map<NameAndIdDto[]>(orderPlaceds));
+            return Ok(_mapper.Map<NameAndIdDto[]>(orderPlaceds));
         }
         [HttpGet("MoenyPlaced")]
         public async Task<IActionResult> GetMoenyPlaced()
         {
             var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
-            return Ok(mapper.Map<NameAndIdDto[]>(moneyPlaceds));
+            return Ok(_mapper.Map<NameAndIdDto[]>(moneyPlaceds));
         }
 
     }

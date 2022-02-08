@@ -39,7 +39,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict("You should  to pay");
             }
-            var user =await this.Context.Users
+            var user =await this._context.Users
                 .Include(c => c.UserGroups)
                 .ThenInclude(c => c.Group)
                 .ThenInclude(c => c.GroupPrivileges)
@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var token = tokenHandler.WriteToken(securityToken);
-            AuthenticatedUserDto authenticatedUserDto = mapper.Map<AuthenticatedUserDto>(user);
+            AuthenticatedUserDto authenticatedUserDto = _mapper.Map<AuthenticatedUserDto>(user);
             authenticatedUserDto.Token = token;
             authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
             return Ok(authenticatedUserDto);

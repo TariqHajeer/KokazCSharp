@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return Conflict("You should  to pay");
             }
 
-            var client = this.Context.Clients
+            var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
@@ -55,7 +55,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var token = tokenHandler.WriteToken(securityToken);
-            var authClient = mapper.Map<AuthClient>(client);
+            var authClient = _mapper.Map<AuthClient>(client);
             authClient.Token = token;
             return Ok(authClient);
         }

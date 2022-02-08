@@ -21,15 +21,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("MyPoints")]
         public IActionResult MyPoints()
         {
-            var client = this.Context.Clients.Find(AuthoticateUserId());
+            var client = this._context.Clients.Find(AuthoticateUserId());
             return Ok(client.Points);
         }
         [HttpGet]
         public IActionResult Get()
         {
 
-            var points = this.Context.PointsSettings.ToList();
-            return Ok(mapper.Map<PointSettingsDto[]>(points));
+            var points = this._context.PointsSettings.ToList();
+            return Ok(_mapper.Map<PointSettingsDto[]>(points));
         }
     }
 }

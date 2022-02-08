@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("CanRequest")]
         public IActionResult CanRequest()
         {
-            return Ok(!this.Context.PaymentRequests.Any(c => c.ClientId == AuthoticateUserId() && c.Accept == null));
+            return Ok(!this._context.PaymentRequests.Any(c => c.ClientId == AuthoticateUserId() && c.Accept == null));
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePaymentRequestDto createPaymentRequestDto)
@@ -40,43 +40,43 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 CreateDate = createPaymentRequestDto.Date,
                 Accept = null
             };
-            this.Context.Add(paymentRequest);
-            await this.Context.SaveChangesAsync();
-            var newPaymentRequetsCount = await this.Context.PaymentRequests
+            this._context.Add(paymentRequest);
+            await this._context.SaveChangesAsync();
+            var newPaymentRequetsCount = await this._context.PaymentRequests
                 .Where(c => c.Accept == null).CountAsync();
             var adminNotification = new AdminNotification()
             {
                 NewPaymentRequetsCount = newPaymentRequetsCount
             };
             await _notificationHub.AdminNotifcation(adminNotification);
-            return Ok(mapper.Map<PayemntRquestDto>(paymentRequest));
+            return Ok(_mapper.Map<PayemntRquestDto>(paymentRequest));
         }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto)
         {
-            var paymentRequests = this.Context.PaymentRequests
+            var paymentRequests = this._context.PaymentRequests
                 .Include(c => c.PaymentWay)
                 .Where(c => c.ClientId == AuthoticateUserId());
             var total = await paymentRequests.CountAsync();
             paymentRequests = paymentRequests.OrderByDescending(c => c.Id).Skip(pagingDto.Page - 1).Take(pagingDto.RowCount);
             var temp = await paymentRequests.ToListAsync();
-            var dto = mapper.Map<PayemntRquestDto[]>(temp);
+            var dto = _mapper.Map<PayemntRquestDto[]>(temp);
             return Ok(new { total, dto });
         }
         [HttpGet("GetPaymentWay")]
         public async Task<IActionResult> GetPaymentWay()
         {
-            var paymentWay = await this.Context.PaymentWays.ToListAsync();
-            return Ok(mapper.Map<NameAndIdDto[]>(paymentWay));
+            var paymentWay = await this._context.PaymentWays.ToListAsync();
+            return Ok(_mapper.Map<NameAndIdDto[]>(paymentWay));
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var payemntRquest =await this.Context.PaymentRequests.FindAsync(id);
+            var payemntRquest =await this._context.PaymentRequests.FindAsync(id);
             if (payemntRquest.Accept != null)
                 return Conflict();
-            this.Context.PaymentRequests.Remove(payemntRquest);
-            await this.Context.SaveChangesAsync();
+            this._context.PaymentRequests.Remove(payemntRquest);
+            await this._context.SaveChangesAsync();
             return Ok();
         }
 

@@ -28,30 +28,30 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("CheckUserName/{username}")]
         public async Task<IActionResult> CheckUserName(string username)
         {
-            return Ok(await this.Context.Clients.AnyAsync(c => c.UserName == username && c.Id != AuthoticateUserId()));
+            return Ok(await this._context.Clients.AnyAsync(c => c.UserName == username && c.Id != AuthoticateUserId()));
         }
         [HttpGet("CheckName/{name}")]
         public async Task<IActionResult> CheckName(string name)
         {
-            return Ok(await this.Context.Clients.AnyAsync(c => c.Name == name && c.Id != AuthoticateUserId()));
+            return Ok(await this._context.Clients.AnyAsync(c => c.Name == name && c.Id != AuthoticateUserId()));
         }
         [HttpPut("updateInformation")]
         public async Task<IActionResult> Update([FromBody] CUpdateClientDto updateClientDto)
         {
             try
             {
-                var client = await this.Context.Clients.FindAsync(AuthoticateUserId());
+                var client = await this._context.Clients.FindAsync(AuthoticateUserId());
                 var clientName = client.Name;
                 var clientUserName = client.UserName;
                 var oldPassword = client.Password;
-                client = mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
+                client = _mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
                 client.Name = clientName;
                 client.UserName = clientUserName;
 
                 if (client.Password == "")
                     client.Password = oldPassword;
-                this.Context.Update(client);
-                this.Context.Entry(client).Collection(c => c.ClientPhones).Load();
+                this._context.Update(client);
+                this._context.Entry(client).Collection(c => c.ClientPhones).Load();
                 client.ClientPhones.Clear();
                 if (updateClientDto.Phones != null)
                 {
@@ -62,7 +62,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                             ClientId = AuthoticateUserId(),
                             Phone = item,
                         };
-                        this.Context.Add(clientPhone);
+                        this._context.Add(clientPhone);
                     }
                 }
 
@@ -83,12 +83,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     editRequest.Accept = null;
                     editRequest.ClientId = AuthoticateUserId();
                     editRequest.UserId = null;
-                    this.Context.Add(editRequest);
+                    this._context.Add(editRequest);
                 }
-                await this.Context.SaveChangesAsync();
+                await this._context.SaveChangesAsync();
                 if (isEditRequest)
                 {
-                    var newEditRquests = await this.Context.EditRequests.Where(c => c.Accept == null).CountAsync();
+                    var newEditRquests = await this._context.EditRequests.Where(c => c.Accept == null).CountAsync();
 
                     var adminNotification = new AdminNotification()
                     {
@@ -106,11 +106,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("GetByToken")]
         public async Task<IActionResult> GetByToken()
         {
-            var client = await this.Context.Clients
+            var client = await this._context.Clients
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Country)
                 .Where(c => c.Id == AuthoticateUserId()).FirstAsync();
-            var authClient = mapper.Map<AuthClient>(client);
+            var authClient = _mapper.Map<AuthClient>(client);
             return Ok(authClient);
         }
     }

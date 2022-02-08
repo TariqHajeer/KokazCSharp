@@ -21,15 +21,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var orderTypes = Context.OrderTypes
+            var orderTypes = _context.OrderTypes
                 .Include(c => c.OrderItems)
                 .ToList();
-            return Ok(mapper.Map<OrderTypeDto[]>(orderTypes));
+            return Ok(_mapper.Map<OrderTypeDto[]>(orderTypes));
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrderType orderTypeDto)
         {
-            var similerOrderType = this.Context.OrderTypes.Where(c => c.Name.Equals(orderTypeDto.Name)).FirstOrDefault();
+            var similerOrderType = this._context.OrderTypes.Where(c => c.Name.Equals(orderTypeDto.Name)).FirstOrDefault();
             if (similerOrderType != null)
                 return Conflict();
 
@@ -38,8 +38,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 Name = orderTypeDto.Name
             };
 
-            Context.Add(orderType);
-            Context.SaveChanges();
+            _context.Add(orderType);
+            _context.SaveChanges();
             OrderTypeDto response = new OrderTypeDto()
             {
                 Id = orderType.Id,
@@ -53,14 +53,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var orderType = this.Context.OrderTypes.Find(updateOrderTypeDto.Id);
+                var orderType = this._context.OrderTypes.Find(updateOrderTypeDto.Id);
                 if (orderType == null)
                     return NotFound();
-                if (this.Context.OrderTypes.Where(c => c.Id != updateOrderTypeDto.Id && c.Name == updateOrderTypeDto.Name).Any())
+                if (this._context.OrderTypes.Where(c => c.Id != updateOrderTypeDto.Id && c.Name == updateOrderTypeDto.Name).Any())
                     return Conflict();
                 orderType.Name = updateOrderTypeDto.Name;
-                this.Context.Update(orderType);
-                this.Context.SaveChanges();
+                this._context.Update(orderType);
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
@@ -73,16 +73,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var orderType = this.Context.OrderTypes
+                var orderType = this._context.OrderTypes
                     .Include(c => c.OrderItems)
                     .Where(c => c.Id == id).SingleOrDefault();
                 if (orderType == null)
                     return NotFound();
-                this.Context.Entry(orderType).Collection(c => c.OrderItems).Load();
+                this._context.Entry(orderType).Collection(c => c.OrderItems).Load();
                 if (orderType.OrderItems.Count() != 0)
                     return Conflict();
-                this.Context.Remove(orderType);
-                this.Context.SaveChanges();
+                this._context.Remove(orderType);
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
