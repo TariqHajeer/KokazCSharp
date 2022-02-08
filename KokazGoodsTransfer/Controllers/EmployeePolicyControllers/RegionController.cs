@@ -18,9 +18,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly IRegionCashedService _regionCashedService;
-        public RegionController(KokazContext context, IMapper mapper, Logging logging, IRegionCashedService regionCashedService) : base(context, mapper, logging)
+        private readonly ICountryCashedService _countryCashedService;
+        public RegionController(KokazContext context, IMapper mapper, Logging logging, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService) : base(context, mapper, logging)
         {
             _regionCashedService = regionCashedService;
+            _countryCashedService = countryCashedService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _regionCashedService.GetCashed());
@@ -30,6 +32,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var result = await _regionCashedService.AddAsync(createRegionDto);
+                await _countryCashedService.RefreshCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -46,6 +49,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result=  await _regionCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
+                await _countryCashedService.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -63,6 +67,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
+                await _countryCashedService.RefreshCash();
                 return Ok();
             }
             catch(Exception ex)

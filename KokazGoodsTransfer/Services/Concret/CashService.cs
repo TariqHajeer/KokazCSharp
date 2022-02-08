@@ -50,7 +50,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var list = await GetAsync();
                 entites = _mapper.Map<TDTO[]>(list);
-                _cache.Set(name, entites);
+                _cache.Set(name, entites, new TimeSpan(8, 0, 0));
             }
             return entites;
         }

@@ -20,9 +20,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly ICountryCashedService _countryCashedService;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        private readonly IRegionCashedService _regionCashedService;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService) : base(context, mapper, logging)
         {
             _countryCashedService = countryCashedService;
+            _regionCashedService = regionCashedService;
         }
 
         [HttpGet]
@@ -37,6 +39,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.AddAsync(createCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
+                await _regionCashedService.RefreshCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -52,6 +55,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Update(updateCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
+                await _regionCashedService.RefreshCash();
                 return Ok();
             }
             catch(Exception ex)
@@ -67,6 +71,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
+                await _regionCashedService.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -80,6 +85,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 await _countryCashedService.SetMainCountry(id);
+                await _regionCashedService.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)

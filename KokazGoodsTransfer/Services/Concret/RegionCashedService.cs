@@ -14,6 +14,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class RegionCashedService : CashService<Region, RegionDto, CreateRegionDto, UpdateRegionDto>, IRegionCashedService
     {
+        
         public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
         {
         }
