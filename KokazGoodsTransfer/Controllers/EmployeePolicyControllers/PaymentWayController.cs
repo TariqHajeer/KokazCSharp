@@ -22,26 +22,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Add([FromBody] NameAndIdDto nameAndIdDto)
         {
             PaymentWay paymentWay = new PaymentWay();
-            if (this.Context.PaymentWays.Any(c => c.Name == nameAndIdDto.Name))
+            if (this._context.PaymentWays.Any(c => c.Name == nameAndIdDto.Name))
             {
                 return Conflict();
             }
             paymentWay.Name = nameAndIdDto.Name;
-            this.Context.Add(paymentWay);
-            this.Context.SaveChanges();
+            this._context.Add(paymentWay);
+            this._context.SaveChanges();
             
-            return Ok(mapper.Map<NameAndIdDto>(paymentWay));
+            return Ok(_mapper.Map<NameAndIdDto>(paymentWay));
         }
         [HttpGet]
         public IActionResult Get()
         {
-            var paymentWaies= this.Context.PaymentWays.ToList();
-            return Ok(mapper.Map<NameAndIdDto[]>(paymentWaies));
+            var paymentWaies= this._context.PaymentWays.ToList();
+            return Ok(_mapper.Map<NameAndIdDto[]>(paymentWaies));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var payment= this.Context.PaymentWays.Find(id);
+            var payment= this._context.PaymentWays.Find(id);
             return Ok();
         }
     }

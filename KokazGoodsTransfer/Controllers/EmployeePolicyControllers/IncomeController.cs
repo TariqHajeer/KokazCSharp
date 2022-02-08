@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var incomeIQ = (IQueryable<Income>)this.Context.Incomes
+                var incomeIQ = (IQueryable<Income>)this._context.Incomes
                        .Include(c => c.User)
                        .Include(c => c.IncomeType);
                 if (filtering.MaxAmount != null)
@@ -42,7 +42,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     incomeIQ = incomeIQ.Where(c => c.Date <= filtering.ToDate);
                 var totla = incomeIQ.Count();
                 var incomes = incomeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-                return Ok(new { data = mapper.Map<IncomeDto[]>(incomeIQ.ToList()), totla });
+                return Ok(new { data = _mapper.Map<IncomeDto[]>(incomeIQ.ToList()), totla });
             }
             catch (Exception ex)
             {
@@ -55,13 +55,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var income = mapper.Map<Income>(creatrIncomeDto);
+                var income = _mapper.Map<Income>(creatrIncomeDto);
                 income.UserId = AuthoticateUserId();
-                this.Context.Add(income);
-                this.Context.SaveChanges();
-                this.Context.Entry(income).Reference(c => c.User).Load();
-                this.Context.Entry(income).Reference(c => c.IncomeType).Load();
-                return Ok(mapper.Map<IncomeDto>(income));
+                this._context.Add(income);
+                this._context.SaveChanges();
+                this._context.Entry(income).Reference(c => c.User).Load();
+                this._context.Entry(income).Reference(c => c.IncomeType).Load();
+                return Ok(_mapper.Map<IncomeDto>(income));
             }
             catch (Exception ex)
             {
@@ -76,11 +76,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var userId = AuthoticateUserId();
                 foreach (var item in createIncomeDtos)
                 {
-                    var incmoe = mapper.Map<Income>(item);
+                    var incmoe = _mapper.Map<Income>(item);
                     incmoe.UserId = userId;
-                    this.Context.Add(incmoe);
+                    this._context.Add(incmoe);
                 }
-                this.Context.SaveChanges();
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
@@ -91,18 +91,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var income = this.Context.Incomes.Find(id);
-            this.Context.Remove(income);
-            this.Context.SaveChanges();
+            var income = this._context.Incomes.Find(id);
+            this._context.Remove(income);
+            this._context.SaveChanges();
             return Ok();
         }
         [HttpPatch]
         public IActionResult UpdateIncome([FromBody]UpdateIncomeDto dto)
         {
-            var income = this.Context.Incomes.Find(dto.Id);
-            income = mapper.Map<UpdateIncomeDto, Income>(dto, income);
-            this.Context.Update(income);
-            this.Context.SaveChanges();
+            var income = this._context.Incomes.Find(dto.Id);
+            income = _mapper.Map<UpdateIncomeDto, Income>(dto, income);
+            this._context.Update(income);
+            this._context.SaveChanges();
             return Ok(income);
         }
     }

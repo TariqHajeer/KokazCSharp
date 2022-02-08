@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult GetAll()
         {
 
-            var groups = this.Context.Groups
+            var groups = this._context.Groups
                 .Include(c => c.GroupPrivileges)
                 .Include(c=>c.UserGroups)
                 .ThenInclude(c=>c.User)
@@ -49,35 +49,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var group = this.Context.Groups
+            var group = this._context.Groups
                 .Find(id);
             if (group == null)
                 return Conflict();
-            var totalPrivilegesCount = this.Context.Privileges.Count();
+            var totalPrivilegesCount = this._context.Privileges.Count();
             if (group.GroupPrivileges.Count() == totalPrivilegesCount)
             {
-                var anotherGroups = this.Context.Groups
+                var anotherGroups = this._context.Groups
                     .Include(c => c.GroupPrivileges)
                     .Where(c => c.Id != id).ToList();
                 anotherGroups = anotherGroups.Where(c => c.GroupPrivileges.Count() == totalPrivilegesCount).ToList();
                 if (anotherGroups.Count == 0)
                     return Conflict();
             }
-            this.Context.Groups.Remove(group);
-            this.Context.Remove(group);
-            this.Context.SaveChanges();
+            this._context.Groups.Remove(group);
+            this._context.Remove(group);
+            this._context.SaveChanges();
             return Ok();
         }
 
         [HttpPost]
         public IActionResult Creat(CreateGroupDto createGroupDto)
         {
-            var similerGroup = this.Context.Groups.Where(c => c.Name == createGroupDto.Name).FirstOrDefault();
+            var similerGroup = this._context.Groups.Where(c => c.Name == createGroupDto.Name).FirstOrDefault();
             if (similerGroup != null)
                 return Conflict();
             Group group = new Group();
             group.Name = createGroupDto.Name;
-            Context.Add(group);
+            _context.Add(group);
             if (createGroupDto.PrivilegesId == null || createGroupDto.PrivilegesId.Count() == 0)
                 return Conflict();  
             foreach (var item in createGroupDto.PrivilegesId)
@@ -88,7 +88,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     PrivilegId = item
                 });
             }
-            Context.SaveChanges();
+            _context.SaveChanges();
             return Ok();
         }
         
@@ -96,7 +96,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("Privileges")]
         public IActionResult GetPrivileges()
         {
-            var privileges = this.Context.Privileges.ToList();
+            var privileges = this._context.Privileges.ToList();
             List<PrivilegeDto> privilegeDtos = new List<PrivilegeDto>();
             foreach (var item in privileges)
             {
@@ -114,27 +114,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var group = this.Context.Groups.Find(updateGroupDto.Id);
+                var group = this._context.Groups.Find(updateGroupDto.Id);
                 if (group == null)
                     return NotFound();
-                var similer = this.Context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
+                var similer = this._context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
                 if (similer != null)
                     return Conflict();
                 group.Name = group.Name;
-                this.Context.Update(group);
-                var groupPrivilges = this.Context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
+                this._context.Update(group);
+                var groupPrivilges = this._context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
                 foreach (var item in groupPrivilges)
                 {
                     if (!updateGroupDto.Privileges.Contains(item.PrivilegId))
                     {
-                        this.Context.Remove(item);
+                        this._context.Remove(item);
                     }
                 }
                 foreach (var item in updateGroupDto.Privileges)
                 {
                     if (!groupPrivilges.Select(c => c.PrivilegId).Contains(item))
                     {
-                        this.Context.Add(new GroupPrivilege()
+                        this._context.Add(new GroupPrivilege()
                         {
                             GroupId = updateGroupDto.Id,
                             PrivilegId = item
@@ -142,7 +142,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         });
                     }
                 }
-                this.Context.SaveChanges();
+                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)

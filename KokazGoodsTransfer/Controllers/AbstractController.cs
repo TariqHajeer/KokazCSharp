@@ -12,13 +12,13 @@ namespace KokazGoodsTransfer.Controllers
     [EnableCors("EnableCORS")]
     public abstract class AbstractController : ControllerBase
     {
-        protected KokazContext Context;
-        protected IMapper mapper;
+        protected KokazContext _context;
+        protected IMapper _mapper;
         protected readonly Logging _logging;
         public AbstractController(KokazContext context, IMapper mapper,Logging logging)
         {
-            this.Context = context;
-            this.mapper = mapper;
+            _context = context;
+            _mapper = mapper;
             _logging = logging;
         }
         protected int AuthoticateUserId()

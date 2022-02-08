@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost, DisableRequestSizeLimit]
         public IActionResult Create([FromForm] CreateMarketDto createMarket)
         {
-            var transaction = this.Context.Database.BeginTransaction();
+            var transaction = this._context.Database.BeginTransaction();
             var marketUrl = createMarket.MarketUrl;
             if (marketUrl.Contains("https"))
             {
@@ -47,8 +47,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     MarketUrl = createMarket.MarketUrl,
                     Name = createMarket.Name,
                 };
-                this.Context.Add(market);
-                this.Context.SaveChanges();
+                this._context.Add(market);
+                this._context.SaveChanges();
                 var fileName = createMarket.Logo.FileName.Split('.');
                 var folderDir = Path.Combine(env.WebRootPath, "MarketLogo");
                 if (!Directory.Exists(Path.Combine(env.WebRootPath, "MarketLogo")))
@@ -60,8 +60,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var stream = new FileStream(path, FileMode.Create);
                 createMarket.Logo.CopyToAsync(stream);
                 market.LogoPath = market.Id.ToString() + "." + fileName[fileName.Length - 1];
-                this.Context.Update(market);
-                this.Context.SaveChanges();
+                this._context.Update(market);
+                this._context.SaveChanges();
                 transaction.Commit();
                 stream.Close();
                 stream.Dispose();
@@ -77,7 +77,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Get()
         {
             List<MarketDto> markets = new List<MarketDto>();
-            foreach (var item in this.Context.Markets.ToList())
+            foreach (var item in this._context.Markets.ToList())
             {
                 var temp = new MarketDto()
                 {
@@ -90,7 +90,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 };
                 if (item.ClientId != null)
                 {
-                    var client = this.Context.Clients.Find(item.ClientId);
+                    var client = this._context.Clients.Find(item.ClientId);
                     temp.Client = new Dtos.Clients.ClientDto()
                     {
                         Name = client.Name,
@@ -104,9 +104,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var market = this.Context.Markets.Find(id);
-            this.Context.Markets.Remove(market);
-            this.Context.SaveChanges();
+            var market = this._context.Markets.Find(id);
+            this._context.Markets.Remove(market);
+            this._context.SaveChanges();
             return Ok();
         }
     }

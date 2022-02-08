@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]AccountFilterDto accountFilterDto)
         {
-            var repiq = this.Context.Receipts.AsQueryable();
+            var repiq = this._context.Receipts.AsQueryable();
             if (accountFilterDto.ClientId != null)
             {
                 repiq = repiq.Where(c => c.ClientId == accountFilterDto.ClientId);
@@ -43,27 +43,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Client)
                 .Include(c=>c.Print)
                 .ToList();
-            var data = mapper.Map<ReceiptDto[]>(replist);
+            var data = _mapper.Map<ReceiptDto[]>(replist);
             return Ok(new { data, total = totalRreq });
         }
         [HttpGet("UnPaidRecipt/{clientId}")]
         public IActionResult UnPaidRecipt(int clientId)
         {
-            var repiq = this.Context.Receipts
+            var repiq = this._context.Receipts
                 .Include(c => c.Print)
                 .Where(c => c.ClientId == clientId && c.PrintId == null).ToList();
-            return Ok(mapper.Map<ReceiptDto[]>(repiq));
+            return Ok(_mapper.Map<ReceiptDto[]>(repiq));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var recipe = this.Context.Receipts.Find(id);
+            var recipe = this._context.Receipts.Find(id);
             if (recipe.PrintId != null)
             {
                 return Conflict();
             }
-            this.Context.Receipts.Remove(recipe);
-            this.Context.SaveChanges();
+            this._context.Receipts.Remove(recipe);
+            this._context.SaveChanges();
             return Ok();
         }
     }

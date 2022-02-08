@@ -21,8 +21,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
-            var points= this.Context.PointsSettings.ToList();
-            return Ok(mapper.Map<PointSettingsDto[]>(points));
+            var points= this._context.PointsSettings.ToList();
+            return Ok(_mapper.Map<PointSettingsDto[]>(points));
         }
         [HttpPost]
         public IActionResult Create([FromBody]CreatePointSetting createPointSetting)
@@ -32,23 +32,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict();
             }
-            var point = mapper.Map<PointsSetting>(createPointSetting);
-            this.Context.Add(point);
-            this.Context.SaveChanges();
-            return Ok(mapper.Map<PointSettingsDto>(point));
+            var point = _mapper.Map<PointsSetting>(createPointSetting);
+            this._context.Add(point);
+            this._context.SaveChanges();
+            return Ok(_mapper.Map<PointSettingsDto>(point));
         }
         [HttpGet("GetSettingLessThanPoint/{points}")]
         public IActionResult GetByMoneyByPoint(int points)
         {
-            var pointsSettings = this.Context.PointsSettings.Where(c => c.Points <= points);
-            return Ok(mapper.Map<PointSettingsDto[]>(pointsSettings));
+            var pointsSettings = this._context.PointsSettings.Where(c => c.Points <= points);
+            return Ok(_mapper.Map<PointSettingsDto[]>(pointsSettings));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var pointSetting= this.Context.PointsSettings.Find(id);
-            this.Context.Remove(pointSetting);
-            this.Context.SaveChanges();
+            var pointSetting= this._context.PointsSettings.Find(id);
+            this._context.Remove(pointSetting);
+            this._context.SaveChanges();
             return Ok();
         }
         [HttpGet("IsPointValid")]
@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             if (createPointSetting.Points == 0 || createPointSetting.Money == 0)
                 return Ok(false);
-            return Ok(!this.Context.PointsSettings.Where(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points).Any());
+            return Ok(!this._context.PointsSettings.Where(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points).Any());
         }
         
     }
