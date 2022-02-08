@@ -19,13 +19,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class CountryController : AbstractEmployeePolicyController
     {
 
-        private readonly IAgentCashRepository _agentCashRepository;
-        private readonly IClientCahedRepository _clientCahedRepository;
         private readonly ICountryCashedService _countryCashedService;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, IAgentCashRepository agentCashRepository, IClientCahedRepository clientCahedRepository, ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService) : base(context, mapper, logging)
         {
-            _agentCashRepository = agentCashRepository;
-            _clientCahedRepository = clientCahedRepository;
             _countryCashedService = countryCashedService;
         }
 
@@ -43,7 +39,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     return Conflict();
                 return Ok(result.Data);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -51,10 +47,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
         {
-            var result =await _countryCashedService.Update(updateCountryDto);
-            if (result.Errors.Any())
-                return Conflict();
-            return Ok();
+            try
+            {
+                var result = await _countryCashedService.Update(updateCountryDto);
+                if (result.Errors.Any())
+                    return Conflict();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -74,18 +77,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("SetMain/{id}")]
         public async Task<IActionResult> SetIsMain(int id)
         {
-            var country = this._context.Countries.Find(id);
-            var mainCountry = this._context.Countries.Where(c => c.IsMain == true).ToList();
-            mainCountry.ForEach(c =>
+            try
             {
-                c.IsMain = false;
-            });
-            country.IsMain = true;
-            mainCountry.Add(country);
-            await _countryCashedRepository.Update(mainCountry);
-            await _countryCashedRepository.RefreshCash();
-            await _agentCashRepository.RefreshCash();
-            return Ok();
+                await _countryCashedService.SetMainCountry(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
     }
 }
