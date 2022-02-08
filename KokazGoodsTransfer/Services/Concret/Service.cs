@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,31 +12,43 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class Service<TEntity,TDTO> : IService<TEntity,TDTO> where TEntity : class where TDTO:class
+    public class Service<TEntity, TDTO, CreateDto, UpdateDto> : IService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class where TDTO : class where CreateDto : class where UpdateDto : class
     {
-        private readonly IRepository<TEntity> _repository;
-        private readonly IMapper _mapper;
+        protected readonly IRepository<TEntity> _repository;
+        protected readonly IMapper _mapper;
         public Service(IRepository<TEntity> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public Task<TDTO> AddAsync(TEntity entity)
+        public virtual async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)
         {
-            throw new NotImplementedException();
+            var entity = _mapper.Map<TEntity>(createDto);
+            await _repository.AddAsync(entity);
+            var response = new ErrorRepsonse<TDTO>(_mapper.Map<TDTO>(entity));
+            return response;
         }
 
-        public virtual  async Task<List<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
+
+        public virtual async Task<List<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             var list = await _repository.GetAsync(filter, propertySelectors);
             var response = _mapper.Map<TDTO[]>(list);
             return response.ToList();
         }
 
-        public Task<PagingResualt<List<TDTO>>> GetAsync(Paging paging, Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public virtual async Task<PagingResualt<List<TDTO>>> GetAsync(Paging paging, Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
-            throw new NotImplementedException();
+            return null;
+        }
+
+        public async Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
+        {
+            var entity = _mapper.Map<TEntity>(updateDto);
+            await _repository.Update(entity);
+            var response = new ErrorRepsonse<TDTO>(_mapper.Map<TDTO>(entity));
+            return response;
         }
     }
 }

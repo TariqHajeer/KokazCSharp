@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
     public interface IRepository<T> where T : class
     {
         Task AddAsync(T entity);
+        Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null);
         Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<PagingResualt<List<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors);
@@ -16,5 +17,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task Delete(T entity);
         Task Update(IEnumerable<T> entites);
         Task<T> GetById(int Id);
+        Task<bool> Any(Expression<Func<T,bool>>filter =null);
     }
 }

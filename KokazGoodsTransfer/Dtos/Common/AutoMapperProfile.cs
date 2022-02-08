@@ -42,7 +42,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 ).MaxDepth(1);
             CreateMap<IncomeType, IncomeTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));
-
+            #region Country 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountrs.Count() == 0))
                 .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountrs.Count() == 0 && src.Clients.Count() == 0))
@@ -59,6 +59,24 @@ namespace KokazGoodsTransfer.Dtos.Common
                      {
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
                      }));
+
+            CreateMap<CreateCountryDto, Country>()
+                .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+
+                         List<Region> regions = new List<Region>();
+                         if (dto.Regions != null)
+                             foreach (var item in dto.Regions)
+                             {
+                                 regions.Add(new Region()
+                                 {
+                                     Name = item
+                                 });
+                             }
+                         return regions;
+                     }))
+                .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
+            #endregion 
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>

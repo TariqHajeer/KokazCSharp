@@ -99,6 +99,18 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             await _kokazContext.SaveChangesAsync();
         }
 
+        public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter != null)
+                return await _kokazContext.Set<T>().FirstOrDefaultAsync(filter);
+            return await _kokazContext.Set<T>().FirstOrDefaultAsync();
+        }
 
+        public async Task<bool> Any(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter != null)
+                return await _kokazContext.Set<T>().AnyAsync(filter);
+            return await _kokazContext.Set<T>().AnyAsync();
+        }
     }
 }
