@@ -163,6 +163,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
             this._context.Remove(client);
             await this._context.SaveChangesAsync();
+            await this._clientCahedRepository.RefreshCash();
             return Ok();
         }
         [HttpPost("Account")]
