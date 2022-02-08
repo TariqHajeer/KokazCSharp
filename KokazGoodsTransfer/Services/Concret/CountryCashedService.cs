@@ -38,7 +38,6 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             await _repository.AddAsync(country);
             response.Data = _mapper.Map<CountryDto>(country);
-            await RefreshCash();
             return response;
         }
         public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)
@@ -53,7 +52,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 return response;
             }
             response = await base.Delete(id);
-            await RefreshCash();
             return response;
         }
         public override async Task<IEnumerable<CountryDto>> GetCashed()
@@ -89,7 +87,6 @@ namespace KokazGoodsTransfer.Services.Concret
             mainCountry.ForEach(c => c.IsMain = false);
             mainCountry.Add(country);
             await _repository.Update(mainCountry);
-            await RefreshCash();
         }
     }
 }

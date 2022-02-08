@@ -2,8 +2,6 @@
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Dtos.Currencies;
-using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.DiscountDtos;
 using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
@@ -38,9 +36,11 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Region, RegionDto>()
                 .ForMember(d => d.Country, src => src.MapFrom((region, regionDto, i, context) =>
                      {
+                         region.Country.Regions = null;
                          return context.Mapper.Map<CountryDto>(region.Country);
                      })
                 ).MaxDepth(1);
+            CreateMap<CreateRegionDto, RegionDto>();
             CreateMap<IncomeType, IncomeTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));
             #region Country 
@@ -53,6 +53,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
+                    if (country.Regions == null)
+                        return null;
                     country.Regions.ToList().ForEach(c => c.Country = null);
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
