@@ -18,10 +18,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
         {
         }
-        public override Task<List<CountryDto>> GetAsync(Expression<Func<Country, bool>> filter = null, params Expression<Func<Country, object>>[] propertySelectors)
-        {
-            return base.GetAsync(null, c => c.Clients, c => c.Regions, c => c.AgentCountrs.Select(c => c.Agent));
-        }
+        
         public override async Task<ErrorRepsonse<CountryDto>> AddAsync(CreateCountryDto createDto)
         {
             var response = new ErrorRepsonse<CountryDto>();

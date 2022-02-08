@@ -36,7 +36,8 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Region, RegionDto>()
                 .ForMember(d => d.Country, src => src.MapFrom((region, regionDto, i, context) =>
                      {
-                         region.Country.Regions = null;
+                         if (region.Country != null)
+                             region.Country.Regions = null;
                          return context.Mapper.Map<CountryDto>(region.Country);
                      })
                 ).MaxDepth(1);
