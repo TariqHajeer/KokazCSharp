@@ -36,6 +36,13 @@ namespace KokazGoodsTransfer.Services.Concret
             return repsonse;
 
         }
+        public async override Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
+        {
+            var response = await base.Update(updateDto);
+            if (!response.Errors.Any())
+                await RefreshCash();
+            return response;
+        }
         public async Task<IEnumerable<TDTO>> GetCashed()
         {
             var name = typeof(TEntity).FullName;

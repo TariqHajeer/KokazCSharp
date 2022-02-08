@@ -48,24 +48,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        //[HttpPatch]
-        //public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
-        //{
-        //    var country = this._context.Countries.Find(updateCountryDto.Id);
-        //    var similarCountry = this._context.Countries.Where(c => c.Name == updateCountryDto.Name && c.Id != updateCountryDto.Id).Any();
-        //    if (similarCountry)
-        //        return Conflict();
-
-        //    country.Name = updateCountryDto.Name;
-        //    country.DeliveryCost = updateCountryDto.DeliveryCost;
-        //    country.MediatorId = updateCountryDto.MediatorId;
-        //    country.Points = updateCountryDto.Points;
-        //    await _countryCashedRepository.Update(country);
-        //    await _countryCashedRepository.RefreshCash();
-        //    await _agentCashRepository.RefreshCash();
-        //    await _clientCahedRepository.RefreshCash();
-        //    return Ok();
-        //}
+        [HttpPatch]
+        public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
+        {
+            var result =await _countryCashedService.Update(updateCountryDto);
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok();
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -81,21 +71,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        //[HttpPut("SetMain/{id}")]
-        //public async Task<IActionResult> SetIsMain(int id)
-        //{
-        //    var country = this._context.Countries.Find(id);
-        //    var mainCountry = this._context.Countries.Where(c => c.IsMain == true).ToList();
-        //    mainCountry.ForEach(c =>
-        //    {
-        //        c.IsMain = false;
-        //    });
-        //    country.IsMain = true;
-        //    mainCountry.Add(country);
-        //    await _countryCashedRepository.Update(mainCountry);
-        //    await _countryCashedRepository.RefreshCash();
-        //    await _agentCashRepository.RefreshCash();
-        //    return Ok();
-        //}
+        [HttpPut("SetMain/{id}")]
+        public async Task<IActionResult> SetIsMain(int id)
+        {
+            var country = this._context.Countries.Find(id);
+            var mainCountry = this._context.Countries.Where(c => c.IsMain == true).ToList();
+            mainCountry.ForEach(c =>
+            {
+                c.IsMain = false;
+            });
+            country.IsMain = true;
+            mainCountry.Add(country);
+            await _countryCashedRepository.Update(mainCountry);
+            await _countryCashedRepository.RefreshCash();
+            await _agentCashRepository.RefreshCash();
+            return Ok();
+        }
     }
 }

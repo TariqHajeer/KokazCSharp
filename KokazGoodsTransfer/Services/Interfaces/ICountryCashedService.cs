@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
-    public interface ICountryCashedService:ICashService<Country,CountryDto,CreateCountryDto,UpdateCountryDto>
+    public interface ICountryCashedService : ICashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>
     {
+        Task SetMainCountry(int id);
     }
 }

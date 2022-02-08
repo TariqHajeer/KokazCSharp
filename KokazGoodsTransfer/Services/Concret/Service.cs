@@ -52,12 +52,7 @@ namespace KokazGoodsTransfer.Services.Concret
             return response.ToList();
         }
 
-        public virtual async Task<PagingResualt<List<TDTO>>> GetAsync(Paging paging, Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
-        {
-            return null;
-        }
-
-        public async Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
+        public virtual async Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
         {
             var entity = _mapper.Map<TEntity>(updateDto);
             await _repository.Update(entity);

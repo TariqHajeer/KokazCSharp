@@ -57,5 +57,29 @@ namespace KokazGoodsTransfer.Services.Concret
             return response;
         }
 
+        public override async Task<ErrorRepsonse<CountryDto>> Update(UpdateCountryDto updateDto)
+        {
+            var similar = await _repository.Any(c => c.Name == updateDto.Name && c.Id != updateDto.Id);
+            var response = new ErrorRepsonse<CountryDto>();
+            if (similar)
+            {
+                response.Errors.Add("There.Is.Similar.Country");
+                return response;
+            }
+
+            response = await base.Update(updateDto);
+            return response;
+        }
+
+        public async Task SetMainCountry(int id)
+        {
+            var country = await _repository.GetById(id);
+            var mainCountry = await _repository.GetAsync(c => c.IsMain == true);
+            country.IsMain = true;
+            mainCountry.ForEach(c => c.IsMain = false);
+            mainCountry.Add(country);
+            await _repository.Update(mainCountry);
+            await RefreshCash();
+        }
     }
 }

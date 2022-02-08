@@ -59,7 +59,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      {
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
                      }));
-
+            CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()
                 .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
                      {
@@ -76,7 +76,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return regions;
                      }))
                 .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
+            
             #endregion 
+
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
