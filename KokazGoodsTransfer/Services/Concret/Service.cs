@@ -30,6 +30,11 @@ namespace KokazGoodsTransfer.Services.Concret
             return response;
         }
 
+        public async Task<bool> Any(Expression<Func<TEntity, bool>> expression)
+        {
+            return await _repository.Any(expression);
+        }
+
         public virtual async Task<ErrorRepsonse<TDTO>> Delete(int id)
         {
             var response = new ErrorRepsonse<TDTO>();
@@ -43,6 +48,12 @@ namespace KokazGoodsTransfer.Services.Concret
             response.Data = _mapper.Map<TDTO>(entity);
             return response;
 
+        }
+
+        public virtual async  Task<List<TDTO>> GetALl(params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            var list= await _repository.GetAll(propertySelectors);
+            return _mapper.Map<TDTO[]>(list).ToList();
         }
 
         public virtual async Task<List<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)

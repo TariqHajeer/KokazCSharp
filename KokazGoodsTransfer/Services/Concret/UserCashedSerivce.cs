@@ -2,12 +2,14 @@
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
@@ -46,6 +48,17 @@ namespace KokazGoodsTransfer.Services.Concret
                 return canntDelete;
 
             return await base.Delete(id);
+        }
+        public override async Task<List<UserDto>> GetALl(params Expression<Func<User, object>>[] propertySelectors)
+        {
+            var dtos = await base.GetALl(propertySelectors);
+            var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
+            foreach (var agent in agents)
+            {
+                agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
+                agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
+            }
+            return dtos;
         }
         public override Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)
         {

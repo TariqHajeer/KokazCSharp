@@ -15,6 +15,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         //Task<PagingResualt<List<TDTO>>> GetAsync(Paging paging, Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors);
         Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto);
         Task<ErrorRepsonse<TDTO>> Delete(int id);
+        Task<bool> Any(Expression<Func<TEntity,bool>> expression);
+        Task<List<TDTO>> GetALl(params Expression<Func<TEntity, object>>[] propertySelectors);
 
 
     }

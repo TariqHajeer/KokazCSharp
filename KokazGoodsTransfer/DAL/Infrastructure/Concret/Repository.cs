@@ -122,5 +122,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             await _kokazContext.Entry(entity).Reference(propertyExpression).LoadAsync();
         }
+
+        public async Task<int> Count(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter == null)
+                return await _kokazContext.Set<T>().CountAsync();
+            return await _kokazContext.Set<T>().CountAsync(filter);
+        }
     }
 }
