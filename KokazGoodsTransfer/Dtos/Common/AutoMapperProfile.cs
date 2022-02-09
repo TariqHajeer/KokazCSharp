@@ -95,7 +95,13 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
                   {
                       if (user.AgentCountrs == null)
+                      {
                           return null;
+                      }
+                      else
+                      {
+                          user.AgentCountrs.ToList().ForEach(c => c.Country.AgentCountrs = null);
+                      }
                       return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
                   }));
             CreateMap<CreateUserDto, User>()
