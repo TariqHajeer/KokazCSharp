@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Helpers
 {
     public class Logging
     {
-        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1,1);
+        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private const string logfileName = "Log.Txt";
 
         private readonly string logfilePath;
@@ -21,10 +21,9 @@ namespace KokazGoodsTransfer.Helpers
             _env = env;
             logfilePath = Path.Combine(env.WebRootPath, logfileName);
         }
-        public async void WriteExption(Exception exception, int count = 1)
+        public async void WriteExption(Exception exception)
         {
-            if (count > 2)
-                return;
+
             _semaphore.Wait();
             try
             {
@@ -34,8 +33,9 @@ namespace KokazGoodsTransfer.Helpers
                 while (!IsFileReady(logfilePath))
                     await File.WriteAllTextAsync(logfilePath, GetExption(exception));
             }
-            catch (Exception ex)
+            catch
             {
+                //TODO: find way to write this ex
             }
             finally
             {
