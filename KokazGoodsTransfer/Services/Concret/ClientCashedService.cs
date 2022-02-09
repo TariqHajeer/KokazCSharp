@@ -15,9 +15,11 @@ namespace KokazGoodsTransfer.Services.Concret
     public class ClientCashedService : CashService<Client, ClientDto, CreateClientDto, UpdateClientDto>, IClientCashedService
     {
         private readonly IRepository<Order> _orderRepository;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository) : base(repository, mapper, cache)
+        private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry) : base(repository, mapper, cache)
         {
             _orderRepository = orderRepository;
+            _clientPhoneReposiotry = clientPhoneReposiotry;
         }
         public override async Task<IEnumerable<ClientDto>> GetCashed()
         {
@@ -87,6 +89,13 @@ namespace KokazGoodsTransfer.Services.Concret
             response.Data = _mapper.Map<PhoneDto>(clientPhone);
             RemoveCash();
             return response;
+        }
+
+        public async Task DeletePhone(int id)
+        {
+            var phone = await _clientPhoneReposiotry.GetById(id);
+            await _clientPhoneReposiotry.Delete(phone);
+            RemoveCash();
         }
     }
 }

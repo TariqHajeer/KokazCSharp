@@ -71,14 +71,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var clientPhone = await this._context.ClientPhones.FindAsync(id);
-                this._context.Remove(clientPhone);
-                await this._context.SaveChangesAsync();
-                await _clientCahedRepository.RefreshCash();
+                await _clientCashedService.DeletePhone(id);
                 return Ok();
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }

@@ -13,5 +13,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
     {
         Task<ClientDto> GetById(int id);
         Task<ErrorRepsonse<PhoneDto>> AddPhone(AddPhoneDto addPhoneDto);
+        Task DeletePhone(int id);
     }
 }
