@@ -27,95 +27,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
         [HttpGet]
-        public async Task<IActionResult> GetAll()=>Ok(await _userCashedService.GetALl());
+        public async Task<IActionResult> GetAll() => Ok(await _userCashedService.GetALl());
         [HttpPost]
 
         public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
         {
-            // if (!createUserDto.CanWorkAsAgent)
-            // {
-            //     var similerUser = this._context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
-            //     if (similerUser != 0)
-            //         return Conflict();
-            // }
-            // {
-            //     var similerUser = this._context.Users.Where(c => c.Name.ToLower() == createUserDto.Name.ToLower()).Count();
-            //     if (similerUser != 0)
-            //         return Conflict();
-            // }
-
-            // User user = new User()
-            // {
-            //     Name = createUserDto.Name,
-            //     Adress = createUserDto.Address,
-            //     Experince = createUserDto.Experince,
-            //     HireDate = createUserDto.HireDate,
-            //     Note = createUserDto.Note,
-            //     CanWorkAsAgent = createUserDto.CanWorkAsAgent,
-            //     Salary = createUserDto.Salary,
-            //     IsActive = true,
-            //     UserName = createUserDto.UserName,
-            //     Password = MD5Hash.GetMd5Hash(createUserDto.Password)
-            // };
-            // _context.Add(user);
-            // if (createUserDto.GroupsId != null)
-            //     foreach (var item in createUserDto.GroupsId)
-            //     {
-            //         user.UserGroups.Add(new UserGroup()
-            //         {
-            //             UserId = user.Id,
-            //             GroupId = item
-            //         });
-            //     }
-            // if (createUserDto.Phones != null)
-            //     foreach (var item in createUserDto.Phones)
-            //     {
-            //         user.UserPhones.Add(new UserPhone()
-            //         {
-            //             Phone = item,
-            //             UserId = user.Id
-            //         });
-            //     }
-            // if (createUserDto.CanWorkAsAgent)
-            // {
-            //     foreach (var item in createUserDto.Countries)
-            //     {
-            //         user.AgentCountrs.Add(new AgentCountr()
-            //         {
-            //             CountryId = item,
-            //             AgentId = user.Id
-            //         });
-            //     }
-            // }
-            await _context.SaveChangesAsync();
-            this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
-            foreach (var item in user.AgentCountrs)
+            try
             {
-                this._context.Entry(item).Reference(c => c.Country).Load();
+                var reuslt = await _userCashedService.AddAsync(createUserDto);
+                if (reuslt.Errors.Any())
+                    return Conflict();
+                return Ok(reuslt.Data);
             }
-            await _agentCashRepository.RefreshCash();
-            await _countryCashedRepository.RefreshCash();
-            return Ok(_mapper.Map<UserDto>(user));
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
-        
-        // [HttpGet("{id}")]
-        // public IActionResult GetById(int id)
-        // {
-        //     var dbuser = this._context.Users
-        //         .Include(c => c.UserPhones)
-        //         .Include(c => c.UserGroups)
-        //         .Include(c => c.AgentCountrs)
-        //             .ThenInclude(c => c.Country)
-        //         .FirstOrDefault(c => c.Id == id);
-        //     var user = _mapper.Map<UserDto>(dbuser);
-        //     user.UserStatics = new UserStatics();
-        //     if (user.CanWorkAsAgent)
-        //     {
-        //         user.UserStatics.OrderInStore = this._context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Store).Count();
-        //         user.UserStatics.OrderInWay = this._context.Orders.Where(c => c.AgentId == id && c.OrderplacedId == (int)OrderplacedEnum.Way).Count();
-        //     }
-        //     return Ok(user);
-        // }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _userCashedService.GetById(id));
+        }
         // [HttpPut("AddPhone")]
         // public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         // {

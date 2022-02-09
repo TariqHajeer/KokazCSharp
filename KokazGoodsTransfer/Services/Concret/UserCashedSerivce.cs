@@ -76,6 +76,10 @@ namespace KokazGoodsTransfer.Services.Concret
             var user = _mapper.Map<User>(createDto);
             await _repository.AddAsync(user);
             response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
+            if (user.CanWorkAsAgent)
+            {
+                await RefreshCash();
+            }
             return response;
         }
         public override async Task<IEnumerable<UserDto>> GetCashed()
@@ -90,5 +94,16 @@ namespace KokazGoodsTransfer.Services.Concret
             return entites;
         }
 
+        public async Task<UserDto> GetById(int id)
+        {
+            var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountrs.Select(c => c.Country));
+            var dto = _mapper.Map<UserDto>(user);
+            if (dto.CanWorkAsAgent)
+            {
+                dto.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
+                dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
+            }
+            return dto;
+        }
     }
 }

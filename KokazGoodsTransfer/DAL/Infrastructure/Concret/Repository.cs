@@ -105,6 +105,14 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 return await _kokazContext.Set<T>().FirstOrDefaultAsync(filter);
             return await _kokazContext.Set<T>().FirstOrDefaultAsync();
         }
+        public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        {
+            var query = _kokazContext.Set<T>().AsQueryable();
+            IncludeLmbda(query, propertySelectors);
+            if (filter != null)
+                query = query.Where(filter);
+            return await query.FirstOrDefaultAsync();
+        }
 
         public async Task<bool> Any(Expression<Func<T, bool>> filter = null)
         {
@@ -129,5 +137,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 return await _kokazContext.Set<T>().CountAsync();
             return await _kokazContext.Set<T>().CountAsync(filter);
         }
+
+
     }
 }
