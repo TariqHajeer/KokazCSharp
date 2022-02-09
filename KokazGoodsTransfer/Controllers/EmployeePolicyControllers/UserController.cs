@@ -28,75 +28,75 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
         [HttpGet]
         public async Task<IActionResult> GetAll()=>Ok(await _userCashedService.GetALl());
-        // [HttpPost]
+        [HttpPost]
 
-        // public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
-        // {
-        //     if (!createUserDto.CanWorkAsAgent)
-        //     {
-        //         var similerUser = this._context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
-        //         if (similerUser != 0)
-        //             return Conflict();
-        //     }
-        //     {
-        //         var similerUser = this._context.Users.Where(c => c.Name.ToLower() == createUserDto.Name.ToLower()).Count();
-        //         if (similerUser != 0)
-        //             return Conflict();
-        //     }
+        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
+        {
+            // if (!createUserDto.CanWorkAsAgent)
+            // {
+            //     var similerUser = this._context.Users.Where(c => c.UserName.ToLower() == createUserDto.UserName.ToLower()).Count();
+            //     if (similerUser != 0)
+            //         return Conflict();
+            // }
+            // {
+            //     var similerUser = this._context.Users.Where(c => c.Name.ToLower() == createUserDto.Name.ToLower()).Count();
+            //     if (similerUser != 0)
+            //         return Conflict();
+            // }
 
-        //     User user = new User()
-        //     {
-        //         Name = createUserDto.Name,
-        //         Adress = createUserDto.Address,
-        //         Experince = createUserDto.Experince,
-        //         HireDate = createUserDto.HireDate,
-        //         Note = createUserDto.Note,
-        //         CanWorkAsAgent = createUserDto.CanWorkAsAgent,
-        //         Salary = createUserDto.Salary,
-        //         IsActive = true,
-        //         UserName = createUserDto.UserName,
-        //         Password = MD5Hash.GetMd5Hash(createUserDto.Password)
-        //     };
-        //     _context.Add(user);
-        //     if (createUserDto.GroupsId != null)
-        //         foreach (var item in createUserDto.GroupsId)
-        //         {
-        //             user.UserGroups.Add(new UserGroup()
-        //             {
-        //                 UserId = user.Id,
-        //                 GroupId = item
-        //             });
-        //         }
-        //     if (createUserDto.Phones != null)
-        //         foreach (var item in createUserDto.Phones)
-        //         {
-        //             user.UserPhones.Add(new UserPhone()
-        //             {
-        //                 Phone = item,
-        //                 UserId = user.Id
-        //             });
-        //         }
-        //     if (createUserDto.CanWorkAsAgent)
-        //     {
-        //         foreach (var item in createUserDto.Countries)
-        //         {
-        //             user.AgentCountrs.Add(new AgentCountr()
-        //             {
-        //                 CountryId = item,
-        //                 AgentId = user.Id
-        //             });
-        //         }
-        //     }
-        //     await _context.SaveChangesAsync();
-        //     this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
-        //     foreach (var item in user.AgentCountrs)
-        //     {
-        //         this._context.Entry(item).Reference(c => c.Country).Load();
-        //     }
-        //     await _agentCashRepository.RefreshCash();
-        //     await _countryCashedRepository.RefreshCash();
-        //     return Ok(_mapper.Map<UserDto>(user));
-        // }
+            // User user = new User()
+            // {
+            //     Name = createUserDto.Name,
+            //     Adress = createUserDto.Address,
+            //     Experince = createUserDto.Experince,
+            //     HireDate = createUserDto.HireDate,
+            //     Note = createUserDto.Note,
+            //     CanWorkAsAgent = createUserDto.CanWorkAsAgent,
+            //     Salary = createUserDto.Salary,
+            //     IsActive = true,
+            //     UserName = createUserDto.UserName,
+            //     Password = MD5Hash.GetMd5Hash(createUserDto.Password)
+            // };
+            // _context.Add(user);
+            // if (createUserDto.GroupsId != null)
+            //     foreach (var item in createUserDto.GroupsId)
+            //     {
+            //         user.UserGroups.Add(new UserGroup()
+            //         {
+            //             UserId = user.Id,
+            //             GroupId = item
+            //         });
+            //     }
+            // if (createUserDto.Phones != null)
+            //     foreach (var item in createUserDto.Phones)
+            //     {
+            //         user.UserPhones.Add(new UserPhone()
+            //         {
+            //             Phone = item,
+            //             UserId = user.Id
+            //         });
+            //     }
+            // if (createUserDto.CanWorkAsAgent)
+            // {
+            //     foreach (var item in createUserDto.Countries)
+            //     {
+            //         user.AgentCountrs.Add(new AgentCountr()
+            //         {
+            //             CountryId = item,
+            //             AgentId = user.Id
+            //         });
+            //     }
+            // }
+            await _context.SaveChangesAsync();
+            this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
+            foreach (var item in user.AgentCountrs)
+            {
+                this._context.Entry(item).Reference(c => c.Country).Load();
+            }
+            await _agentCashRepository.RefreshCash();
+            await _countryCashedRepository.RefreshCash();
+            return Ok(_mapper.Map<UserDto>(user));
+        }
         
         // [HttpGet("{id}")]
         // public IActionResult GetById(int id)

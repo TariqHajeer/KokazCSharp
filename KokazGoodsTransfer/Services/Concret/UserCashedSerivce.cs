@@ -60,10 +60,23 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return dtos;
         }
-        public override Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)
+        public override async Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)
         {
-
-            return base.AddAsync(createDto);
+            var response = new ErrorRepsonse<UserDto>();
+            if (await _repository.Any(c => c.UserName.ToLower() == createDto.UserName.ToLower()))
+            {
+                response.Errors.Add("UserName.Exisit");
+                return response;
+            }
+            if (await _repository.Any(c => c.Name == createDto.Name))
+            {
+                response.Errors.Add("Name.Exisit");
+                return response;
+            }
+            var user = _mapper.Map<User>(createDto);
+            await _repository.AddAsync(user);
+            response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
+            return response;
         }
         public override async Task<IEnumerable<UserDto>> GetCashed()
         {

@@ -84,7 +84,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
 
             #endregion
-
+            #region  user
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
@@ -98,8 +98,56 @@ namespace KokazGoodsTransfer.Dtos.Common
                           return null;
                       return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
                   }));
+            CreateMap<CreateUserDto, User>()
+            .ForMember(des => des.IsActive, opt => opt.MapFrom(src => true))
+            .ForMember(des => des.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))
+            .ForMember(des => des.AgentCountrs, opt => opt.MapFrom((dto, obk, i, context) =>
+            {
+                var agentCountr = new List<AgentCountr>();
+                if (dto.Countries != null && dto.Countries.Any())
+                {
+                    dto.Countries.Distinct().ToList().ForEach(countryId =>
+                    {
+                        agentCountr.Add(new AgentCountr()
+                        {
+                            CountryId = countryId
+                        });
+                    });
+                }
+                return agentCountr;
+            }))
+            .ForMember(des => des.UserPhones, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                var userPhones = new List<UserPhone>();
+                if (dto.Phones != null && dto.Phones.Any())
+                {
+                    dto.Phones.Distinct().ToList().ForEach(phone =>
+                    {
+                        userPhones.Add(new UserPhone()
+                        {
+                            Phone = phone
+                        });
+                    });
 
-
+                }
+                return userPhones;
+            }))
+            .ForMember(des => des.UserGroups, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+                         var userGroup = new List<UserGroup>();
+                         if (dto.GroupsId != null && dto.GroupsId.Any())
+                         {
+                             dto.GroupsId.ToList().ForEach(group =>
+                             {
+                                 userGroup.Add(new UserGroup()
+                                 {
+                                     GroupId = group
+                                 });
+                             });
+                         }
+                         return userGroup;
+                     }));
+            #endregion
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<Privilege, UserPrivilegeDto>();
