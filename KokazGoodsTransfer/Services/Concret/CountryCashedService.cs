@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
         {
         }
-        
+
         public override async Task<ErrorRepsonse<CountryDto>> AddAsync(CreateCountryDto createDto)
         {
             var response = new ErrorRepsonse<CountryDto>();
@@ -33,10 +33,12 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 country.IsMain = true;
             }
-            response = await base.AddAsync(createDto);
-            //await _repository.AddAsync(country);
-            //response.Data = _mapper.Map<CountryDto>(country);
-            //await RefreshCash();
+            var entity = _mapper.Map<Country>(createDto);
+            
+            await _repository.AddAsync(entity);
+            await _repository.LoadRefernces(country, c => c.Mediator);
+            response = new ErrorRepsonse<CountryDto>(_mapper.Map<CountryDto>(entity));
+            await RefreshCash();
             return response;
         }
         public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)

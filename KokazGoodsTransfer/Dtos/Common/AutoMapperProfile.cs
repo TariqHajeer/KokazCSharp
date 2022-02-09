@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return context.Mapper.Map<CountryDto>(region.Country);
                      })
                 ).MaxDepth(1);
-            CreateMap<CreateRegionDto, RegionDto>();
+            CreateMap<CreateRegionDto, Region>();
             CreateMap<UpdateRegionDto, Region>();
             CreateMap<IncomeType, IncomeTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));

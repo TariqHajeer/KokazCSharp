@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
-    public interface IAgentService: ICashService<User, UserDto, CreateUserDto, UpdateUserDto>
+    public interface IUserCashedService: ICashService<User, UserDto, CreateUserDto, UpdateUserDto>
     {
     }
 }

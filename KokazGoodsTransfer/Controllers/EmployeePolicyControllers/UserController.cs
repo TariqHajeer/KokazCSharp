@@ -10,6 +10,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models.Static;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -17,19 +18,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class UserController : AbstractEmployeePolicyController
     {
-        private readonly IAgentCashRepository _agentCashRepository;
-        private readonly ICountryCashedRepository _countryCashedRepository;
-        public UserController(KokazContext context, IMapper mapper, Logging logging, IAgentCashRepository agentCashRepository, ICountryCashedRepository countryCashedRepository) : base(context, mapper, logging)
+
+        private readonly IUserCashedService _userCashedService;
+        public UserController(KokazContext context, IMapper mapper, Logging logging, IUserCashedService userCashedService) : base(context, mapper, logging)
         {
-            _agentCashRepository = agentCashRepository;
-            _countryCashedRepository = countryCashedRepository;
+            _userCashedService = userCashedService;
         }
         [HttpGet("ActiveAgent")]
-        public async Task<IActionResult> GetEnalbedAgent()
-        {
-            var activeAgent = await _agentCashRepository.Get();
-            return Ok(_mapper.Map<UserDto[]>(activeAgent));
-        }
+        public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
         [HttpPost]
 
         public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
@@ -294,28 +290,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = this._context.Users.Find(id);
-            if (user == null)
-                return NotFound();
-
-            ///TODO : so bad 
-            this._context.Entry(user).Collection(c => c.Orders).Load();
-            this._context.Entry(user).Collection(c => c.OutComes).Load();
-            this._context.Entry(user).Collection(c => c.Incomes).Load();
-            this._context.Entry(user).Collection(c => c.Clients).Load();
-            int x = user.Orders.Count() + user.OutComes.Count() + user.Incomes.Count() + user.Clients.Count();
-
-            if (x > 0)
-            {
-                return Conflict();
-            }
             try
             {
-                user.UserGroups.Clear();
-                this._context.Remove(user);
-                this._context.SaveChanges();
-                await _agentCashRepository.RefreshCash();
-                await _countryCashedRepository.RefreshCash();
+
+                var result = await _userCashedService.Delete(id);
+                if (result.Errors.Any())
+                    return Conflict();
                 return Ok();
             }
             catch (Exception ex)

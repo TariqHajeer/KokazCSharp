@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class RegionCashedService : CashService<Region, RegionDto, CreateRegionDto, UpdateRegionDto>, IRegionCashedService
     {
-        
+
         public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
         {
         }
@@ -27,7 +27,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 response.Errors.Add("Region.Exisit");
                 return response;
             }
-            return await base.AddAsync(createDto);
+            var entity = _mapper.Map<Region>(createDto);
+            await _repository.AddAsync(entity);
+            await _repository.LoadRefernces(entity, c => c.Country);
+            response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(entity));
+            await RefreshCash();
+            return response;
         }
         public override async Task<ErrorRepsonse<RegionDto>> Update(UpdateRegionDto updateDto)
         {
@@ -43,7 +48,13 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                 };
             }
-            return await base.Update(updateDto);
+
+            region.Name = updateDto.Name;
+            await _repository.Update(region);
+            var response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(region));
+            if (!response.Errors.Any())
+                await RefreshCash();
+            return response;
         }
         public override async Task<IEnumerable<RegionDto>> GetCashed()
         {
