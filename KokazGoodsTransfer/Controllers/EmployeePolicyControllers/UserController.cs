@@ -20,9 +20,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly IUserCashedService _userCashedService;
-        public UserController(KokazContext context, IMapper mapper, Logging logging, IUserCashedService userCashedService) : base(context, mapper, logging)
+        private readonly ICountryCashedService _countryCashedService;
+        public UserController(KokazContext context, IMapper mapper, Logging logging, IUserCashedService userCashedService, ICountryCashedService countryCashedService) : base(context, mapper, logging)
         {
             _userCashedService = userCashedService;
+            _countryCashedService = countryCashedService;
         }
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
@@ -35,6 +37,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var reuslt = await _userCashedService.AddAsync(createUserDto);
+                await _countryCashedService.RefreshCash();
                 if (reuslt.Errors.Any())
                     return Conflict();
                 return Ok(reuslt.Data);
@@ -78,44 +81,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         //         return BadRequest();
         //     }
         // }
-        // [HttpPut("deletePhone/{id}")]
-        // public async Task<IActionResult> DeletePhone(int id)
-        // {
-        //     try
-        //     {
-        //         var userPhone = this._context.UserPhones.Find(id);
-        //         if (userPhone == null)
-        //             return Conflict();
-        //         this._context.Remove(userPhone);
-        //         this._context.SaveChanges();
-        //         await _agentCashRepository.RefreshCash();
-        //         await _countryCashedRepository.RefreshCash();
-        //         return Ok();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest();
-        //     }
-        // }
-        // [HttpPut("deleteGroup/{userId}")]
-        // public async Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
-        // {
-        //     try
-        //     {
-        //         var userGroup = this._context.UserGroups.Where(c => c.UserId == userId && c.GroupId == groupId).FirstOrDefault();
-        //         if (userGroup == null)
-        //             return Conflict();
-        //         this._context.Remove(userGroup);
-        //         this._context.SaveChanges();
-        //         await _agentCashRepository.RefreshCash();
-        //         await _countryCashedRepository.RefreshCash();
-        //         return Ok();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest();
-        //     }
-        // }
+        [HttpPut("deletePhone/{id}")]
+        public async Task<IActionResult> DeletePhone(int id)
+        {
+            try
+            {
+                await _userCashedService.DeletePhone(id);
+                await _countryCashedService.RefreshCash();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+        }
+        [HttpPut("deleteGroup/{userId}")]
+        public async Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
+        {
+            try
+            {
+                await _userCashedService.DeleteGroup(userId, groupId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+        }
         // [HttpPut("AddToGroup/{userId}")]
         // public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
         // {
@@ -212,6 +206,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var result = await _userCashedService.Delete(id);
+                await _countryCashedService.RefreshCash();
                 if (result.Errors.Any())
                     return Conflict();
                 return Ok();

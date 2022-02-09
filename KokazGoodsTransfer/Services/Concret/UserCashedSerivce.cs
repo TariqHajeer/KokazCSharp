@@ -17,9 +17,13 @@ namespace KokazGoodsTransfer.Services.Concret
     public class UserCashedSerivce : CashService<User, UserDto, CreateUserDto, UpdateUserDto>, IUserCashedService
     {
         private readonly IRepository<Order> _orderRepository;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository) : base(repository, mapper, cache)
+        private readonly IRepository<UserPhone> _userPhoneRepository;
+        private readonly IRepository<UserGroup> _userGroupRepositroy;
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy) : base(repository, mapper, cache)
         {
             _orderRepository = orderRepository;
+            _userPhoneRepository = userPhoneRepository;
+            _userGroupRepositroy = userGroupRepositroy;
         }
         public override async Task<ErrorRepsonse<UserDto>> Delete(int id)
         {
@@ -104,6 +108,22 @@ namespace KokazGoodsTransfer.Services.Concret
                 dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
             }
             return dto;
+        }
+
+        public async Task DeletePhone(int id)
+        {
+            var userPhone = await _userPhoneRepository.GetById(id);
+            var user = await _repository.GetById(userPhone.UserId);
+            await _userPhoneRepository.Delete(userPhone);
+            if (user.CanWorkAsAgent)
+                await RefreshCash();
+        }
+
+        public async Task DeleteGroup(int userId, int groupId)
+        {
+            var userGroup = await _userGroupRepositroy.FirstOrDefualt(c => c.UserId == userId && c.GroupId == groupId);
+            if (userGroup != null)
+                await _userGroupRepositroy.Delete(userGroup);
         }
     }
 }

@@ -10,5 +10,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
     public interface IUserCashedService : ICashService<User, UserDto, CreateUserDto, UpdateUserDto>
     {
         Task<UserDto> GetById(int id);
+        Task DeletePhone(int id);
+        Task DeleteGroup(int userId, int groupId);
     }
 }
