@@ -54,33 +54,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _userCashedService.GetById(id));
         }
-        // [HttpPut("AddPhone")]
-        // public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
-        // {
-        //     try
-        //     {
-        //         var user = this._context.Users.Find(addPhoneDto.objectId);
-        //         if (user == null)
-        //             return NotFound();
-        //         this._context.Entry(user).Collection(c => c.UserPhones).Load();
-        //         if (user.UserPhones.Where(c => c.Phone == addPhoneDto.Phone).Any())
-        //             return Conflict();
-        //         var userPhone = new UserPhone()
-        //         {
-        //             UserId = user.Id,
-        //             Phone = addPhoneDto.Phone
-        //         };
-        //         this._context.Add(userPhone);
-        //         this._context.SaveChanges();
-        //         await _agentCashRepository.RefreshCash();
-        //         await _countryCashedRepository.RefreshCash();
-        //         return Ok(_mapper.Map<PhoneDto>(userPhone));
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest();
-        //     }
-        // }
+        [HttpPut("AddPhone")]
+        public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
+        {
+            try
+            {
+                return Ok( await _userCashedService.AddPhone(addPhoneDto));
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+        }
         [HttpPut("deletePhone/{id}")]
         public async Task<IActionResult> DeletePhone(int id)
         {
@@ -110,27 +96,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        // [HttpPut("AddToGroup/{userId}")]
-        // public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
-        // {
-        //     try
-        //     {
-        //         var userGroup = new UserGroup()
-        //         {
-        //             UserId = userId,
-        //             GroupId = groupId
-        //         };
-        //         this._context.Add(userGroup);
-        //         this._context.SaveChanges();
-        //         await _agentCashRepository.RefreshCash();
-        //         await _countryCashedRepository.RefreshCash();
-        //         return Ok();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest();
-        //     }
-        // }
+        [HttpPut("AddToGroup/{userId}")]
+        public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
+        {
+            try
+            {
+                await _userCashedService.AddToGroup(userId, groupId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+        }
         // [HttpPatch]
         // public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDto)
         // {

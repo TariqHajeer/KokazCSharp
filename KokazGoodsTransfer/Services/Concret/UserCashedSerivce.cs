@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -91,8 +92,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(User).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<UserDto> entites))
             {
-                var list = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Country), c => c.UserPhones);
-                entites = _mapper.Map<UserDto[]>(list);
+                 entites = await GetAsync(c=>c.CanWorkAsAgent==true, c => c.AgentCountrs.Select(c => c.Country), c => c.UserPhones);
                 _cache.Set(name, entites);
             }
             return entites;
@@ -124,6 +124,34 @@ namespace KokazGoodsTransfer.Services.Concret
             var userGroup = await _userGroupRepositroy.FirstOrDefualt(c => c.UserId == userId && c.GroupId == groupId);
             if (userGroup != null)
                 await _userGroupRepositroy.Delete(userGroup);
+        }
+
+        public async Task<PhoneDto> AddPhone(AddPhoneDto addPhoneDto)
+        {
+            var user = await _repository.GetById(addPhoneDto.objectId);
+            if (user == null)
+                return null;
+            await _repository.LoadCollection(user, c => c.UserPhones);
+            if (user.UserPhones.All(c => c.Phone == addPhoneDto.Phone))
+                return null;
+            var phone = new UserPhone()
+            {
+                UserId = user.Id,
+                Phone = addPhoneDto.Phone
+            };
+            user.UserPhones.Add(phone);
+            await _repository.Update(user);
+            if (user.CanWorkAsAgent)
+                await RefreshCash();
+            return _mapper.Map<PhoneDto>(phone);
+
+        }
+
+        public async Task AddToGroup(int userId, int groupId)
+        {
+            var user =await _repository.GetById(userId);
+            user.UserGroups.Add(new UserGroup() { GroupId = groupId });
+            await _repository.Update(user);
         }
     }
 }

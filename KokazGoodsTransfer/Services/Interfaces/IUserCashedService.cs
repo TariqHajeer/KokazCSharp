@@ -1,4 +1,5 @@
-﻿using KokazGoodsTransfer.Dtos.Users;
+﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<UserDto> GetById(int id);
         Task DeletePhone(int id);
         Task DeleteGroup(int userId, int groupId);
+        Task<PhoneDto> AddPhone(AddPhoneDto addPhoneDto);
+        Task AddToGroup(int userId, int groupId);
     }
 }

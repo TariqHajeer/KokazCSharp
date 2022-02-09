@@ -62,6 +62,8 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
+                         if (obj.AgentCountrs == null)
+                             return null;
                          obj.AgentCountrs.ToList().ForEach(c => c.Agent.AgentCountrs = null);
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
                      })).MaxDepth(2);
