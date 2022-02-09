@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var result = await _regionCashedService.AddAsync(createRegionDto);
-                await _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -40,17 +40,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-            
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var result=  await _regionCashedService.Delete(id);
+                var result = await _regionCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
-                await _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -69,10 +69,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
-                await _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logging.WriteExption(ex);
                 return BadRequest();

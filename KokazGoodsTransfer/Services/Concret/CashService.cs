@@ -24,7 +24,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)
         {
             var repsonse = await base.AddAsync(createDto);
-            await RefreshCash();
+             RefreshCash();
             return repsonse;
         }
 
@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var repsonse = await base.Delete(id);
             if (!repsonse.Errors.Any())
-                await RefreshCash();
+                 RefreshCash();
             return repsonse;
 
         }
@@ -40,7 +40,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var response = await base.Update(updateDto);
             if (!response.Errors.Any())
-                await RefreshCash();
+                 RefreshCash();
             return response;
         }
         public virtual async Task<IEnumerable<TDTO>> GetCashed()
@@ -55,11 +55,11 @@ namespace KokazGoodsTransfer.Services.Concret
             return entites;
         }
 
-        public async Task RefreshCash()
+        public void RefreshCash()
         {
             var name = typeof(TEntity).FullName;
             _cache.Remove(name);
-            await GetCashed();
+            //await GetCashed();
         }
     }
 }

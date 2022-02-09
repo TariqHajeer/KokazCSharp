@@ -83,7 +83,7 @@ namespace KokazGoodsTransfer.Services.Concret
             response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
             if (user.CanWorkAsAgent)
             {
-                await RefreshCash();
+                RefreshCash();
             }
             return response;
         }
@@ -92,7 +92,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(User).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<UserDto> entites))
             {
-                 entites = await GetAsync(c=>c.CanWorkAsAgent==true, c => c.AgentCountrs.Select(c => c.Country), c => c.UserPhones);
+                entites = await GetAsync(c => c.CanWorkAsAgent == true, c => c.AgentCountrs.Select(c => c.Country), c => c.UserPhones);
                 _cache.Set(name, entites);
             }
             return entites;
@@ -116,7 +116,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var user = await _repository.GetById(userPhone.UserId);
             await _userPhoneRepository.Delete(userPhone);
             if (user.CanWorkAsAgent)
-                await RefreshCash();
+                RefreshCash();
         }
 
         public async Task DeleteGroup(int userId, int groupId)
@@ -142,14 +142,14 @@ namespace KokazGoodsTransfer.Services.Concret
             user.UserPhones.Add(phone);
             await _repository.Update(user);
             if (user.CanWorkAsAgent)
-                await RefreshCash();
+                RefreshCash();
             return _mapper.Map<PhoneDto>(phone);
 
         }
 
         public async Task AddToGroup(int userId, int groupId)
         {
-            var user =await _repository.GetById(userId);
+            var user = await _repository.GetById(userId);
             user.UserGroups.Add(new UserGroup() { GroupId = groupId });
             await _repository.Update(user);
         }

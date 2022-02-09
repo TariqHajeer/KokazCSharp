@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.AddAsync(entity);
             await _repository.LoadRefernces(entity, c => c.Country);
             response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(entity));
-            await RefreshCash();
+             RefreshCash();
             return response;
         }
         public override async Task<ErrorRepsonse<RegionDto>> Update(UpdateRegionDto updateDto)
@@ -53,7 +53,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(region);
             var response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(region));
             if (!response.Errors.Any())
-                await RefreshCash();
+                 RefreshCash();
             return response;
         }
         public override async Task<IEnumerable<RegionDto>> GetCashed()
@@ -61,8 +61,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Region).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<RegionDto> entites))
             {
-                var list = await GetAsync(null, c => c.Country);
-                entites = _mapper.Map<RegionDto[]>(list);
+                entites = await GetAsync(null, c => c.Country);
                 _cache.Set(name, entites);
             }
             return entites;

@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.AddAsync(entity);
             await _repository.LoadRefernces(country, c => c.Mediator);
             response = new ErrorRepsonse<CountryDto>(_mapper.Map<CountryDto>(entity));
-            await RefreshCash();
+             RefreshCash();
             return response;
         }
         public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)
@@ -60,8 +60,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Country).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
             {
-                var list = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Agent), c => c.Regions, c => c.Clients, c => c.Mediator);
-                entites = _mapper.Map<CountryDto[]>(list);
+                entites = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Agent), c => c.Regions, c => c.Clients, c => c.Mediator); 
                 _cache.Set(name, entites);
             }
             return entites;
