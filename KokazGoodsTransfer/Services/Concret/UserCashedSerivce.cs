@@ -153,5 +153,36 @@ namespace KokazGoodsTransfer.Services.Concret
             user.UserGroups.Add(new UserGroup() { GroupId = groupId });
             await _repository.Update(user);
         }
+        public override async Task<ErrorRepsonse<UserDto>> Update(UpdateUserDto updateDto)
+        {
+            var user = await _repository.GetById(updateDto.Id);
+            bool requeirdReacsh = user.CanWorkAsAgent == true ? true : updateDto.CanWorkAsAgent != user.CanWorkAsAgent;
+            var similerUserByname = await _repository.Any(c => c.Name.ToLower() == updateDto.Name.ToLower() && c.Id != updateDto.Id);
+            if (similerUserByname)
+            {
+                return new ErrorRepsonse<UserDto>()
+                {
+                    Errors = new List<string>(){
+                        "Employee.Exisit"
+                    }
+                };
+            }
+            var similerUserByUserName = await _repository.Any(c => c.UserName.ToLower() == updateDto.UserName.ToLower() && c.Id != updateDto.Id);
+            if (similerUserByUserName)
+            {
+                return new ErrorRepsonse<UserDto>()
+                {
+                    Errors = new List<string>(){
+                        "Employee.Exisit"
+                    }
+                };
+            }
+            var temp = _mapper.Map<UpdateUserDto, User>(updateDto, user);
+            bool z = temp == user;
+            await _repository.Update(user);
+            RefreshCash();
+            var response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
+            return response;
+        }
     }
 }

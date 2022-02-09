@@ -37,7 +37,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var reuslt = await _userCashedService.AddAsync(createUserDto);
-                 _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 if (reuslt.Errors.Any())
                     return Conflict();
                 return Ok(reuslt.Data);
@@ -59,7 +59,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                return Ok( await _userCashedService.AddPhone(addPhoneDto));
+                return Ok(await _userCashedService.AddPhone(addPhoneDto));
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 await _userCashedService.DeletePhone(id);
-                 _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -110,67 +110,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        // [HttpPatch]
-        // public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDto)
-        // {
-        //     var user = this._context.Users.Find(updateUserDto.Id);
-        //     this._context.Entry(user).Collection(c => c.AgentCountrs).Load();
-        //     user.Adress = updateUserDto.Address;
-        //     user.Name = updateUserDto.Name;
-        //     user.HireDate = updateUserDto.HireDate;
-        //     user.Note = updateUserDto.Note;
-        //     {
-        //         var similerUserByname = this._context.Users.Where(c => c.Name.ToLower() == updateUserDto.Name.ToLower() && c.Id != updateUserDto.Id).Count();
-        //         if (similerUserByname != 0)
-        //         {
-        //             return Conflict();
-        //         }
-        //     }
-        //     if (updateUserDto.CanWorkAsAgent)
-        //     {
-        //         user.UserGroups.Clear();
-        //         user.CanWorkAsAgent = true;
-        //         user.Salary = updateUserDto.Salary;
-        //         user.AgentCountrs.Clear();
-        //         foreach (var item in updateUserDto.Countries)
-        //         {
-        //             user.AgentCountrs.Add(new AgentCountr()
-        //             {
-        //                 AgentId = user.Id,
-        //                 CountryId = item
-        //             });
-        //         }
-        //     }
-        //     else
-        //     {
-        //         var similerUserByname = this._context.Users.Where(c => c.UserName.ToLower() == updateUserDto.UserName.ToLower() && c.Id != updateUserDto.Id).Count();
-        //         if (similerUserByname != 0)
-        //         {
-        //             return Conflict();
-        //         }
-
-        //         user.AgentCountrs = null;
-        //         user.Salary = null;
-        //     }
-        //     user.UserName = updateUserDto.UserName;
-        //     if (updateUserDto.UserName == "")
-        //     {
-        //         user.Password = null;
-        //     }
-        //     else
-        //     {
-        //         if (updateUserDto.Password != "")
-        //         {
-        //             user.Password = MD5Hash.GetMd5Hash(updateUserDto.Password);
-        //         }
-
-        //     }
-        //     this._context.Update(user);
-        //     this._context.SaveChanges();
-        //     await _agentCashRepository.RefreshCash();
-        //     await _countryCashedRepository.RefreshCash();
-        //     return Ok();
-        // }
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDto)
+        {
+            try
+            {
+                var result = await _userCashedService.Update(updateUserDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+        }
         [HttpGet("UsernameExist/{username}")]
         public async Task<IActionResult> UsernameExist(string username)
         {
@@ -185,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var result = await _userCashedService.Delete(id);
-                 _countryCashedService.RefreshCash();
+                _countryCashedService.RefreshCash();
                 if (result.Errors.Any())
                     return Conflict();
                 return Ok();

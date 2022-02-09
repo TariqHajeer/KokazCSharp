@@ -155,6 +155,32 @@ namespace KokazGoodsTransfer.Dtos.Common
                          }
                          return userGroup;
                      }));
+            CreateMap<UpdateUserDto, User>()
+            .ForMember(c => c.Password, opt => opt.MapFrom(src => String.IsNullOrEmpty(src.Password) ? String.Empty : MD5Hash.GetMd5Hash(src.Password)))
+            .ForMember(des => des.Salary, opt => opt.MapFrom(src => src.CanWorkAsAgent == true ? src.Salary : (decimal?)null))
+            .ForMember(c => c.UserGroups, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                if (dto.CanWorkAsAgent)
+                {
+                    return null;
+                }
+                return obj.UserGroups;
+            }))
+            .ForMember(src => src.AgentCountrs, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                if (!dto.CanWorkAsAgent)
+                    return null;
+                var agentCountries = new List<AgentCountr>();
+                foreach (var item in dto.Countries)
+                {
+                    agentCountries.Add(new AgentCountr()
+                    {
+                        AgentId = obj.Id,
+                        CountryId = item
+                    });
+                }
+                return agentCountries;
+            }));
             #endregion
             CreateMap<CreateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
