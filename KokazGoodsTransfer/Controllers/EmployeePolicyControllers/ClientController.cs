@@ -21,11 +21,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class ClientController : AbstractEmployeePolicyController
     {
-        private readonly IClientCahedRepository _clientCahedRepository;
         private readonly IClientCashedService _clientCashedService;
-        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCahedRepository clientCahedRepository, IClientCashedService clientCashedService) : base(context, mapper, logging)
+        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCashedService clientCashedService) : base(context, mapper, logging)
         {
-            _clientCahedRepository = clientCahedRepository;
             _clientCashedService = clientCashedService;
         }
         [HttpPost]
@@ -49,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<IActionResult> Get() => Ok(await _clientCashedService.GetCashed());
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id) => Ok(await _clientCahedRepository.GetById(id));
+        public async Task<IActionResult> GetById(int id) => Ok(await _clientCashedService.GetById(id));
         [HttpPut("addPhone")]
         public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
@@ -85,27 +83,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var client = await this._context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefaultAsync();
-
-                if (client == null)
-                    return NotFound();
-
-                var oldPassord = client.Password;
-
-                _mapper.Map(updateClientDto, client);
-                if (updateClientDto.Password == null)
-                    client.Password = oldPassord;
-
-                await this._context.SaveChangesAsync();
-                client = await this._context.Clients
-                .Include(c => c.Country)
-                .Include(c => c.User)
-                .SingleAsync(c => c.Id == client.Id);
-                await _clientCahedRepository.RefreshCash();
-                return Ok(_mapper.Map<ClientDto>(client));
+                var result = await _clientCashedService.Update(updateClientDto);
+                if (result.Errors.Any())
+                    return Conflict();
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }

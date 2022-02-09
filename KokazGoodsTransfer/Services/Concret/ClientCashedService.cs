@@ -97,5 +97,10 @@ namespace KokazGoodsTransfer.Services.Concret
             await _clientPhoneReposiotry.Delete(phone);
             RemoveCash();
         }
+        public override async Task<ErrorRepsonse<ClientDto>> Update(UpdateClientDto updateDto)
+        {
+            await base.Update(updateDto);
+            return new ErrorRepsonse<ClientDto>(await GetById(updateDto.Id));
+        }
     }
 }
