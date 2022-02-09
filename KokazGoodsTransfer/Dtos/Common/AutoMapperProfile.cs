@@ -183,7 +183,20 @@ namespace KokazGoodsTransfer.Dtos.Common
             }));
             #endregion
             CreateMap<CreateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))
+                .ForMember(c => c.Points, opt => opt.MapFrom(src => 0))
+                .ForMember(c => c.ClientPhones, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+                         var clientPhones = new List<ClientPhone>();
+                         dto.Phones.Distinct().ToList().ForEach(c =>
+                         {
+                             clientPhones.Add(new ClientPhone()
+                             {
+                                 Phone = c
+                             });
+                         });
+                         return clientPhones;
+                     }));
             CreateMap<Privilege, UserPrivilegeDto>();
             CreateMap<User, AuthenticatedUserDto>()
                 .ForMember(c => c.Privileges, opt => opt.MapFrom((user, authDto, i, context) =>

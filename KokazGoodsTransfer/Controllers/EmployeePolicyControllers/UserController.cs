@@ -37,7 +37,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var reuslt = await _userCashedService.AddAsync(createUserDto);
-                _countryCashedService.RefreshCash();
+                _countryCashedService.RemoveCash();
                 if (reuslt.Errors.Any())
                     return Conflict();
                 return Ok(reuslt.Data);
@@ -73,7 +73,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 await _userCashedService.DeletePhone(id);
-                _countryCashedService.RefreshCash();
+                _countryCashedService.RemoveCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
 
                 var result = await _userCashedService.Delete(id);
-                _countryCashedService.RefreshCash();
+                _countryCashedService.RemoveCash();
                 if (result.Errors.Any())
                     return Conflict();
                 return Ok();

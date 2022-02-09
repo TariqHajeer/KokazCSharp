@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.AddAsync(createCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RefreshCash();
+                 _regionCashedService.RemoveCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Update(updateCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RefreshCash();
+                 _regionCashedService.RemoveCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RefreshCash();
+                 _regionCashedService.RemoveCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 await _countryCashedService.SetMainCountry(id);
-                _regionCashedService.RefreshCash();
+                _regionCashedService.RemoveCash();
                 return Ok();
             }
             catch (Exception ex)

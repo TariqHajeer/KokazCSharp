@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.AddAsync(entity);
             await _repository.LoadRefernces(country, c => c.Mediator);
             response = new ErrorRepsonse<CountryDto>(_mapper.Map<CountryDto>(entity));
-             RefreshCash();
+             RemoveCash();
             return response;
         }
         public override async Task<ErrorRepsonse<CountryDto>> Delete(int id)

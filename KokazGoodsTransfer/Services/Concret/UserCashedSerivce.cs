@@ -83,7 +83,7 @@ namespace KokazGoodsTransfer.Services.Concret
             response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
             if (user.CanWorkAsAgent)
             {
-                RefreshCash();
+                RemoveCash();
             }
             return response;
         }
@@ -116,7 +116,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var user = await _repository.GetById(userPhone.UserId);
             await _userPhoneRepository.Delete(userPhone);
             if (user.CanWorkAsAgent)
-                RefreshCash();
+                RemoveCash();
         }
 
         public async Task DeleteGroup(int userId, int groupId)
@@ -142,7 +142,7 @@ namespace KokazGoodsTransfer.Services.Concret
             user.UserPhones.Add(phone);
             await _repository.Update(user);
             if (user.CanWorkAsAgent)
-                RefreshCash();
+                RemoveCash();
             return _mapper.Map<PhoneDto>(phone);
 
         }
@@ -183,7 +183,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(user);
 
             if (requeirdReacsh)
-                RefreshCash();
+                RemoveCash();
             var response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(await GetById(user.Id)));
             return response;
         }
