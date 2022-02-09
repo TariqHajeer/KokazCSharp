@@ -30,8 +30,7 @@ namespace KokazGoodsTransfer.Helpers
 
                 if (!File.Exists(logfilePath))
                     File.Create(logfilePath);
-                while (!IsFileReady(logfilePath))
-                    await File.WriteAllTextAsync(logfilePath, GetExption(exception));
+                await File.AppendAllTextAsync(logfilePath, GetExption(exception));
             }
             catch
             {

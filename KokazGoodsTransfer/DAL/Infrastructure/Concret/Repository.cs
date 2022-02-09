@@ -108,7 +108,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
             var query = _kokazContext.Set<T>().AsQueryable();
-            IncludeLmbda(query, propertySelectors);
+            query= IncludeLmbda(query, propertySelectors);
             if (filter != null)
                 query = query.Where(filter);
             return await query.FirstOrDefaultAsync();

@@ -156,6 +156,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public override async Task<ErrorRepsonse<UserDto>> Update(UpdateUserDto updateDto)
         {
             var user = await _repository.GetById(updateDto.Id);
+            await _repository.LoadCollection(user, c => c.AgentCountrs);
             bool requeirdReacsh = user.CanWorkAsAgent == true ? true : updateDto.CanWorkAsAgent != user.CanWorkAsAgent;
             var similerUserByname = await _repository.Any(c => c.Name.ToLower() == updateDto.Name.ToLower() && c.Id != updateDto.Id);
             if (similerUserByname)
@@ -177,11 +178,13 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                 };
             }
-            var temp = _mapper.Map<UpdateUserDto, User>(updateDto, user);
-            bool z = temp == user;
+            user.AgentCountrs.Clear();
+            _mapper.Map<UpdateUserDto, User>(updateDto, user);
             await _repository.Update(user);
-            RefreshCash();
-            var response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
+
+            if (requeirdReacsh)
+                RefreshCash();
+            var response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(await GetById(user.Id)));
             return response;
         }
     }
