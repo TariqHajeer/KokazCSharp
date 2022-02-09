@@ -37,6 +37,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
             
@@ -54,6 +55,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -72,6 +74,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch(Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
