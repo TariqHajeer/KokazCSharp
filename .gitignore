@@ -12,3 +12,4 @@ PublishToHerohuBat.bat
 /Properties/PublishProfiles
 KokazGoodsTransfer/Properties/PublishProfiles/
 KokazGoodsTransfer/wwwroot
+KokazGoodsTransfer/wwwroot/
