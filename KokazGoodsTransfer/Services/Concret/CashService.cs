@@ -59,7 +59,6 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var name = typeof(TEntity).FullName;
             _cache.Remove(name);
-            //await GetCashed();
         }
     }
 }

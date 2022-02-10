@@ -105,6 +105,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var client = await _repository.GetById(updateDto.Id);
             _mapper.Map<UpdateClientDto, Client>(updateDto, client);
             await _repository.Update(client);
+            RemoveCash();
             return new ErrorRepsonse<ClientDto>(_mapper.Map<ClientDto>(client));
         }
 
