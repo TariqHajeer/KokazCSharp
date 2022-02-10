@@ -132,6 +132,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.Repository<Client>().Update(client);
                 await _uintOfWork.Repository<Notfication>().AddAsync(notfication);
                 await _uintOfWork.Commit();
+                RemoveCash();
                 return new ErrorRepsonse<ClientDto>() { Data = _mapper.Map<ClientDto>(client) };
             }
             catch (Exception ex)

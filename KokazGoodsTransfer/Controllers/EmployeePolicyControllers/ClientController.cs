@@ -131,25 +131,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("GiveOrDiscountPoints")]
         public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
-            var client = await this._context.Clients.FindAsync(giveOrDiscountPointsDto.ClientId);
-            string sen = "";
-            if (giveOrDiscountPointsDto.IsGive)
-            {
-                client.Points += giveOrDiscountPointsDto.Points;
-                sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
-            }
-            else
-            {
-                client.Points -= giveOrDiscountPointsDto.Points;
-                sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
-            }
-            Notfication notfication = new Notfication()
-            {
-                ClientId = client.Id,
-                Note = sen,
-            };
-            await this._context.AddAsync(notfication);
-            await this._context.SaveChangesAsync();
+            await _clientCashedService.GivePoints(giveOrDiscountPointsDto);
             return Ok();
         }
     }
