@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class User:IIndex
+    public partial class User : IIndex
     {
         public User()
         {

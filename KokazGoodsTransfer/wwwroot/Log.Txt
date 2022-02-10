@@ -1,5 +1,0 @@
-1/27/2022 2:39:21 PM
-D:\KokazCSharp\KokazGoodsTransfer\Controllers\EmployeePolicyControllers\OrderController.cs
-Microsoft.AspNetCore.Mvc.IActionResult DeleiverMoneyForClient(KokazGoodsTransfer.Dtos.Common.DeleiverMoneyForClientDto)
-1349
-Exxxxx

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.Regions
 {
-    public class UpdateRegion
+    public class UpdateRegionDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
