@@ -74,3 +74,9 @@ Mapping types:
 Object -> UserDto
 System.Object -> KokazGoodsTransfer.Dtos.Users.UserDto
 =======================================================
+2/10/2022 9:19:59 AM
+
+Void MoveNext()
+0
+The navigation 'Country.Mediator' cannot be loaded because the entity is not being tracked. Navigations can only be loaded for tracked entities.
+=======================================================

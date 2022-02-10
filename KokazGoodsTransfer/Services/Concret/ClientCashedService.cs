@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry,IUintOfWork uintOfWork) : base(repository, mapper, cache)
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork) : base(repository, mapper, cache)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
@@ -108,24 +108,29 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<ErrorRepsonse<ClientDto>> GivePoints(GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
-            //var client =await _repository.GetById(giveOrDiscountPointsDto.ClientId);
-            //string sen = "";
-            //if (giveOrDiscountPointsDto.IsGive)
-            //{
-            //    client.Points += giveOrDiscountPointsDto.Points;
-            //    sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
-            //}
-            //else
-            //{
-            //    client.Points -= giveOrDiscountPointsDto.Points;
-            //    sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
-            //}
-            //Notfication notfication = new Notfication()
-            //{
-            //    ClientId = client.Id,
-            //    Note = sen,
-            //};
-            //return Ok();
+            var client = await _uintOfWork.Repository<Client>().GetById(giveOrDiscountPointsDto.ClientId);
+
+            await _uintOfWork.BegeinTransaction();
+
+            string sen = "";
+            if (giveOrDiscountPointsDto.IsGive)
+            {
+                client.Points += giveOrDiscountPointsDto.Points;
+                sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
+            }
+            else
+            {
+                client.Points -= giveOrDiscountPointsDto.Points;
+                sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
+            }
+            Notfication notfication = new Notfication()
+            {
+                ClientId = client.Id,
+                Note = sen,
+            };
+            await _uintOfWork.Repository<Client>().Update(client);
+            await _uintOfWork.Repository<Notfication>().AddAsync(notfication);
+            await _uintOfWork.Commit();
             return null;
         }
     }
