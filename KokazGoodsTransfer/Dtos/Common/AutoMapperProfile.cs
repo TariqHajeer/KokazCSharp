@@ -102,7 +102,12 @@ namespace KokazGoodsTransfer.Dtos.Common
                       }
                       else
                       {
-                          user.AgentCountrs.ToList().ForEach(c => c.Country.AgentCountrs = null);
+
+                          user.AgentCountrs.ToList().ForEach(c =>
+                          {
+                              if (c.Country != null)
+                                  c.Country.AgentCountrs = null;
+                          });
                       }
                       return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
                   }));

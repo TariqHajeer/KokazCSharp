@@ -111,27 +111,35 @@ namespace KokazGoodsTransfer.Services.Concret
             var client = await _uintOfWork.Repository<Client>().GetById(giveOrDiscountPointsDto.ClientId);
 
             await _uintOfWork.BegeinTransaction();
+            try
+            {
+                string sen = "";
+                if (giveOrDiscountPointsDto.IsGive)
+                {
+                    client.Points += giveOrDiscountPointsDto.Points;
+                    sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
+                }
+                else
+                {
+                    client.Points -= giveOrDiscountPointsDto.Points;
+                    sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
+                }
+                Notfication notfication = new Notfication()
+                {
+                    ClientId = client.Id,
+                    Note = sen,
+                };
+                await _uintOfWork.Repository<Client>().Update(client);
+                await _uintOfWork.Repository<Notfication>().AddAsync(notfication);
+                await _uintOfWork.Commit();
+                return new ErrorRepsonse<ClientDto>() { Data = _mapper.Map<ClientDto>(client) };
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.RoleBack();
+                throw ex;
+            }
 
-            string sen = "";
-            if (giveOrDiscountPointsDto.IsGive)
-            {
-                client.Points += giveOrDiscountPointsDto.Points;
-                sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
-            }
-            else
-            {
-                client.Points -= giveOrDiscountPointsDto.Points;
-                sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
-            }
-            Notfication notfication = new Notfication()
-            {
-                ClientId = client.Id,
-                Note = sen,
-            };
-            await _uintOfWork.Repository<Client>().Update(client);
-            await _uintOfWork.Repository<Notfication>().AddAsync(notfication);
-            await _uintOfWork.Commit();
-            return null;
         }
     }
 }
