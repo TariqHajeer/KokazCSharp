@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderPlaced : IIndex
+    public partial class OrderPlaced: IIndex
     {
         public OrderPlaced()
         {
