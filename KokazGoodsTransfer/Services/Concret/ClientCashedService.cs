@@ -102,8 +102,10 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<ErrorRepsonse<ClientDto>> Update(UpdateClientDto updateDto)
         {
-            await base.Update(updateDto);
-            return new ErrorRepsonse<ClientDto>(await GetById(updateDto.Id));
+            var client = await _repository.GetById(updateDto.Id);
+            _mapper.Map<UpdateClientDto, Client>(updateDto, client);
+            await _repository.Update(client);
+            return new ErrorRepsonse<ClientDto>(_mapper.Map<ClientDto>(client));
         }
 
         public async Task<ErrorRepsonse<ClientDto>> GivePoints(GiveOrDiscountPointsDto giveOrDiscountPointsDto)
