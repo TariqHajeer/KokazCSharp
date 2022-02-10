@@ -18,10 +18,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRegionCashedService _regionCashedService;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService) : base(context, mapper, logging)
+        private readonly IUserCashedService _userCashedService;
+        private readonly IClientCashedService _clientCashedService;
+        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService) : base(context, mapper, logging)
         {
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
+            _userCashedService = userCashedService;
+            _clientCashedService = clientCashedService;
+        }
+        private void RemoveRelatedCash()
+        {
+            _regionCashedService.RemoveCash();
+            _userCashedService.RemoveCash();
+            _clientCashedService.RemoveCash();
         }
 
         [HttpGet]
@@ -36,7 +46,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.AddAsync(createCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -53,7 +63,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Update(updateCountryDto);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -70,7 +80,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _countryCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
-                 _regionCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -85,7 +95,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 await _countryCashedService.SetMainCountry(id);
-                _regionCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok();
             }
             catch (Exception ex)

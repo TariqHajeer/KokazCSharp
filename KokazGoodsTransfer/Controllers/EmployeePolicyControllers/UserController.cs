@@ -59,7 +59,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                return Ok(await _userCashedService.AddPhone(addPhoneDto));
+                var data = await _userCashedService.AddPhone(addPhoneDto);
+                _countryCashedService.RemoveCash();
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -116,7 +118,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var result = await _userCashedService.Update(updateUserDto);
-                return Ok();
+                _countryCashedService.RemoveCash();
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {

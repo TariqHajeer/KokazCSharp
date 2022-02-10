@@ -19,10 +19,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         private readonly IRegionCashedService _regionCashedService;
         private readonly ICountryCashedService _countryCashedService;
-        public RegionController(KokazContext context, IMapper mapper, Logging logging, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        private readonly IUserCashedService _userCashedService;
+        public RegionController(KokazContext context, IMapper mapper, Logging logging, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService,IUserCashedService userCashedService) : base(context, mapper, logging)
         {
             _regionCashedService = regionCashedService;
             _countryCashedService = countryCashedService;
+            _userCashedService = userCashedService;
+        }
+        private void RemoveRelatedCash()
+        {
+            _countryCashedService.RemoveCash();
         }
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _regionCashedService.GetCashed());
@@ -32,7 +38,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             try
             {
                 var result = await _regionCashedService.AddAsync(createRegionDto);
-                _countryCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok(result.Data);
             }
             catch (Exception ex)
@@ -50,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 var result = await _regionCashedService.Delete(id);
                 if (result.Errors.Any())
                     return Conflict();
-                _countryCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok();
             }
             catch (Exception ex)
@@ -69,7 +75,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict();
                 }
-                _countryCashedService.RemoveCash();
+                RemoveRelatedCash();
                 return Ok();
             }
             catch (Exception ex)

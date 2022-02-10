@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<ClientDto> GetById(int id)
         {
-            var client = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.ClientPhones, c => c.Orders);
+            var client = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.ClientPhones);
             return _mapper.Map<ClientDto>(client);
         }
         public override async Task<ErrorRepsonse<ClientDto>> AddAsync(CreateClientDto createDto)
