@@ -28,6 +28,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         private void RemoveRelatedCash()
         {
+            _userCashedService.RemoveCash();
             _countryCashedService.RemoveCash();
         }
         [HttpGet]
