@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class CountryCashedService : CashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>, ICountryCashedService
     {
-        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
+        public CountryCashedService(ICountryRepository repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
         {
         }
 
@@ -60,7 +60,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Country).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Agent), c => c.Regions, c => c.Clients, c => c.Mediator);
+                var countries = await ((ICountryRepository)_repository).GetAllCountryIncludeALl();
+                entites = _mapper.Map<CountryDto[]>(countries);
                 _cache.Set(name, entites);
             }
             return entites;
