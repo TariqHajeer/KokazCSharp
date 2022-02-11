@@ -9,10 +9,7 @@ namespace KokazGoodsTransfer.Dtos.Users
 {
     public class UserDto
     {
-        public UserDto()
-        {
-            this.UserStatics = new UserStatics();
-        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Experince { get; set; }

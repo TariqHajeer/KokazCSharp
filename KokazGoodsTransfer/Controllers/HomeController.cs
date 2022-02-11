@@ -8,7 +8,6 @@ using KokazGoodsTransfer.Dtos.MarketDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +18,16 @@ namespace KokazGoodsTransfer.Controllers
     [ApiController]
     public class HomeController : AbstractController
     {
-        private readonly ICountryCashedService _countryCashedService;
-        public HomeController(KokazContext context, IMapper mapper, Logging logging,ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        public HomeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
-            _countryCashedService = countryCashedService;
         }
         [HttpGet("Country")]
-        public IActionResult GetCountry() => Ok(_countryCashedService.GetCashed());
+        public IActionResult GetCountry()
+        {
+            var countries = _context.Countries
+                .ToList();
+            return Ok(_mapper.Map<CountryDto[]>(countries));
+        }
         [HttpGet("Market")]
         public IActionResult GetMarket()
         {

@@ -53,9 +53,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
 
 
-        public override async Task Delete(T entity)
+        public override Task Delete(T entity)
         {
-            await base.Delete(entity);
+            return base.Delete(entity);
 
             var cashedName = typeof(T).FullName;
             if (_cache.TryGetValue(cashedName, out List<T> cahsedList))
@@ -63,6 +63,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 cahsedList = cahsedList.Where(c => c.Id != entity.Id).ToList();
                 _cache.Set(cashedName, cahsedList);
             }
+
         }
         public override async Task Update(T entity)
         {
