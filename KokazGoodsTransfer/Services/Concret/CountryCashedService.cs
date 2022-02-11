@@ -60,7 +60,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Country).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.AgentCountrs.Select(c => c.Agent), c => c.Regions, c => c.Clients, c => c.Mediator);
+                // var countries = await ((ICountryRepository)_repository).GetAllCountryIncludeALl();
+                // entites = _mapper.Map<CountryDto[]>(countries);
+                entites = await GetAsync(null,c=>c.Regions,c=>c.Clients,c=>c.AgentCountrs.Select(a=>a.Agent));
                 _cache.Set(name, entites);
             }
             return entites;

@@ -214,10 +214,8 @@ namespace KokazGoodsTransfer
         private void RegiserServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped(typeof(ICashedRepository<>), typeof(CashedRepository<>));
-            services.AddScoped<ICountryCashedRepository, CountryCashedRepository>();
-            services.AddScoped<IAgentCashRepository, AgentCashRepository>();
-            services.AddScoped<IClientCahedRepository, ClientCashedRepository>();
             services.AddScoped<ICountryCashedService, CountryCashedService>();
             services.AddScoped<IRegionCashedService, RegionCashedService>();
             services.AddScoped<IUserCashedService, UserCashedSerivce>();
