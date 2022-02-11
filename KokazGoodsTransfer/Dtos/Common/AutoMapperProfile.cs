@@ -2,8 +2,6 @@
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Dtos.Currencies;
-using KokazGoodsTransfer.Dtos.DepartmentDtos;
 using KokazGoodsTransfer.Dtos.DiscountDtos;
 using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
@@ -25,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Dtos.Common
 {
@@ -37,12 +36,20 @@ namespace KokazGoodsTransfer.Dtos.Common
             CreateMap<Region, RegionDto>()
                 .ForMember(d => d.Country, src => src.MapFrom((region, regionDto, i, context) =>
                      {
+
+                         if (region.Country != null)
+                         {
+                             region.Country.Mediator = null;
+                             region.Country.Regions = null;
+                         }
                          return context.Mapper.Map<CountryDto>(region.Country);
                      })
                 ).MaxDepth(1);
+            CreateMap<CreateRegionDto, Region>();
+            CreateMap<UpdateRegionDto, Region>();
             CreateMap<IncomeType, IncomeTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));
-
+            #region Country 
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountrs.Count() == 0))
                 .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountrs.Count() == 0 && src.Clients.Count() == 0))
@@ -52,13 +59,38 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
+                    if (country.Regions == null)
+                        return null;
+                    country.Regions.ToList().ForEach(c => c.Country = null);
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
-                .MaxDepth(2)
                 .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
+                         if (obj.AgentCountrs == null)
+                             return null;
+                         obj.AgentCountrs.ToList().ForEach(c => c.Agent.AgentCountrs = null);
                          return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
-                     }));
+                     })).MaxDepth(2);
+            CreateMap<UpdateCountryDto, Country>();
+            CreateMap<CreateCountryDto, Country>()
+                .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+
+                         List<Region> regions = new List<Region>();
+                         if (dto.Regions != null)
+                             foreach (var item in dto.Regions)
+                             {
+                                 regions.Add(new Region()
+                                 {
+                                     Name = item
+                                 });
+                             }
+                         return regions;
+                     }))
+                .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
+
+            #endregion
+            #region  user
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
                 .ForMember(d => d.Phones, opt => opt.MapFrom((user, dto, i, context) =>
@@ -68,12 +100,112 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)))
                 .ForMember(c => c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
                   {
+                      if (user.AgentCountrs == null)
+                      {
+                          return null;
+                      }
+                      else
+                      {
+
+                          user.AgentCountrs.ToList().ForEach(c =>
+                          {
+                              if (c.Country != null)
+                                  c.Country.AgentCountrs = null;
+                          });
+                      }
                       return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
                   }));
+            CreateMap<CreateUserDto, User>()
+            .ForMember(des => des.IsActive, opt => opt.MapFrom(src => true))
+            .ForMember(des => des.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))
+            .ForMember(des => des.AgentCountrs, opt => opt.MapFrom((dto, obk, i, context) =>
+            {
+                var agentCountr = new List<AgentCountr>();
+                if (dto.Countries != null && dto.Countries.Any())
+                {
+                    dto.Countries.Distinct().ToList().ForEach(countryId =>
+                    {
+                        agentCountr.Add(new AgentCountr()
+                        {
+                            CountryId = countryId
+                        });
+                    });
+                }
+                return agentCountr;
+            }))
+            .ForMember(des => des.UserPhones, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                var userPhones = new List<UserPhone>();
+                if (dto.Phones != null && dto.Phones.Any())
+                {
+                    dto.Phones.Distinct().ToList().ForEach(phone =>
+                    {
+                        userPhones.Add(new UserPhone()
+                        {
+                            Phone = phone
+                        });
+                    });
 
-
+                }
+                return userPhones;
+            }))
+            .ForMember(des => des.UserGroups, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+                         var userGroup = new List<UserGroup>();
+                         if (dto.GroupsId != null && dto.GroupsId.Any())
+                         {
+                             dto.GroupsId.ToList().ForEach(group =>
+                             {
+                                 userGroup.Add(new UserGroup()
+                                 {
+                                     GroupId = group
+                                 });
+                             });
+                         }
+                         return userGroup;
+                     }));
+            CreateMap<UpdateUserDto, User>()
+            .ForMember(c => c.Password, opt => opt.MapFrom(src => String.IsNullOrEmpty(src.Password) ? String.Empty : MD5Hash.GetMd5Hash(src.Password)))
+            .ForMember(des => des.Salary, opt => opt.MapFrom(src => src.CanWorkAsAgent == true ? src.Salary : (decimal?)null))
+            .ForMember(c => c.UserGroups, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                if (dto.CanWorkAsAgent)
+                {
+                    return null;
+                }
+                return obj.UserGroups;
+            }))
+            .ForMember(src => src.AgentCountrs, opt => opt.MapFrom((dto, obj, i, context) =>
+            {
+                if (!dto.CanWorkAsAgent)
+                    return null;
+                var agentCountries = new List<AgentCountr>();
+                foreach (var item in dto.Countries)
+                {
+                    agentCountries.Add(new AgentCountr()
+                    {
+                        AgentId = obj.Id,
+                        CountryId = item
+                    });
+                }
+                return agentCountries;
+            }));
+            #endregion
             CreateMap<CreateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)));
+                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))
+                .ForMember(c => c.Points, opt => opt.MapFrom(src => 0))
+                .ForMember(c => c.ClientPhones, opt => opt.MapFrom((dto, obj, i, context) =>
+                     {
+                         var clientPhones = new List<ClientPhone>();
+                         dto.Phones.Distinct().ToList().ForEach(c =>
+                         {
+                             clientPhones.Add(new ClientPhone()
+                             {
+                                 Phone = c
+                             });
+                         });
+                         return clientPhones;
+                     }));
             CreateMap<Privilege, UserPrivilegeDto>();
             CreateMap<User, AuthenticatedUserDto>()
                 .ForMember(c => c.Privileges, opt => opt.MapFrom((user, authDto, i, context) =>
@@ -110,7 +242,12 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<OutComeDto>(outcome);
                 }));
             CreateMap<UpdateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password))).ReverseMap();
+                .ForMember(c => c.Password, opt => opt.MapFrom((dto, obj, i, context) =>
+                {
+                    if (String.IsNullOrEmpty(dto.Password))
+                        return obj.Password;
+                    return MD5Hash.GetMd5Hash(dto.Password);
+                }));
             CreateMap<CUpdateClientDto, Client>()
                 .ForMember(c => c.Password, opt => opt.MapFrom(src => src.Password == null ? "" : MD5Hash.GetMd5Hash(src.Password)));
             CreateMap<CreateIncomeDto, Income>();

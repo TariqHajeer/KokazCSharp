@@ -99,6 +99,45 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             await _kokazContext.SaveChangesAsync();
         }
 
+        public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter != null)
+                return await _kokazContext.Set<T>().FirstOrDefaultAsync(filter);
+            return await _kokazContext.Set<T>().FirstOrDefaultAsync();
+        }
+        public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        {
+            var query = _kokazContext.Set<T>().AsQueryable();
+            query= IncludeLmbda(query, propertySelectors);
+            if (filter != null)
+                query = query.Where(filter);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> Any(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter != null)
+                return await _kokazContext.Set<T>().AnyAsync(filter);
+            return await _kokazContext.Set<T>().AnyAsync();
+        }
+
+        public async Task LoadCollection<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> propertyExpression) where TProperty : class
+        {
+            await _kokazContext.Entry(entity).Collection(propertyExpression).LoadAsync();
+        }
+
+        public async Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class
+        {
+            await _kokazContext.Entry(entity).Reference(propertyExpression).LoadAsync();
+        }
+
+        public async Task<int> Count(Expression<Func<T, bool>> filter = null)
+        {
+            if (filter == null)
+                return await _kokazContext.Set<T>().CountAsync();
+            return await _kokazContext.Set<T>().CountAsync(filter);
+        }
+
 
     }
 }

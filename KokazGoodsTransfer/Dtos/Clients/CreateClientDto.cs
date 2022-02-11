@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         
         public string[] Phones { get; set; }
         public string Mail { get; set; }
+        public int UserId { get; set; } =1;
 
     }
 }
