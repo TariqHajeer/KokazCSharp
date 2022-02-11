@@ -793,6 +793,7 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Country)
                     .WithMany(p => p.Regions)
                     .HasForeignKey(d => d.CountryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Reginos_Country");
             });
 

@@ -22,8 +22,6 @@ using Microsoft.AspNetCore.SignalR;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.DAL.Infrastructure.Concret;
-using KokazGoodsTransfer.Services.Interfaces;
-using KokazGoodsTransfer.Services.Concret;
 
 namespace KokazGoodsTransfer
 {
@@ -218,11 +216,6 @@ namespace KokazGoodsTransfer
             services.AddScoped<ICountryCashedRepository, CountryCashedRepository>();
             services.AddScoped<IAgentCashRepository, AgentCashRepository>();
             services.AddScoped<IClientCahedRepository, ClientCashedRepository>();
-            services.AddScoped<ICountryCashedService, CountryCashedService>();
-            services.AddScoped<IRegionCashedService, RegionCashedService>();
-            services.AddScoped<IUserCashedService, UserCashedSerivce>();
-            services.AddScoped<IClientCashedService, ClientCashedService>();
-            services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }
 }
