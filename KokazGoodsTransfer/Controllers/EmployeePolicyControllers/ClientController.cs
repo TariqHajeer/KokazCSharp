@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -20,10 +21,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class ClientController : AbstractEmployeePolicyController
     {
-        private readonly IClientCahedRepository _clientCahedRepository;
-        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCahedRepository clientCahedRepository) : base(context, mapper, logging)
+        private readonly IClientCashedService _clientCashedService;
+        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCashedService clientCashedService) : base(context, mapper, logging)
         {
-            _clientCahedRepository = clientCahedRepository;
+            _clientCashedService = clientCashedService;
         }
         [HttpPost]
         [Authorize(Roles = "AddClient")]
@@ -31,78 +32,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var isExist = await _context.Clients.AnyAsync(c => c.UserName.ToLower() == createClientDto.UserName.ToLower() || c.Name.ToLower() == createClientDto.Name.ToLower());
-                if (isExist)
-                {
+                createClientDto.UserId = (int)AuthoticateUserId();
+                var result = await _clientCashedService.AddAsync(createClientDto);
+                if (result.Errors.Any())
                     return Conflict();
-                }
-                var client = _mapper.Map<Client>(createClientDto);
-                client.Points = 0;
-                client.UserId = (int)AuthoticateUserId();
-
-                foreach (var item in createClientDto.Phones)
-                {
-                    client.ClientPhones.Add(new ClientPhone()
-                    {
-                        ClientId = client.Id,
-                        Phone = item
-                    });
-                }
-                this._context.Set<Client>().Add(client);
-                await this._context.SaveChangesAsync();
-                client = await this._context.Clients
-                    .Include(c => c.Country)
-                    .Include(c => c.User)
-                    .SingleAsync(c => c.Id == client.Id);
-                await _clientCahedRepository.RefreshCash();
-                return Ok(_mapper.Map<ClientDto>(client));
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var clients = await _clientCahedRepository.GetAll();
-            return Ok(_mapper.Map<ClientDto[]>(clients));
-        }
+        public async Task<IActionResult> Get() => Ok(await _clientCashedService.GetCashed());
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var client = this._context.Clients.Include(c => c.Country)
-                .Include(c => c.User)
-                .Include(c => c.ClientPhones)
-                .Include(c => c.Orders)
-                .Where(c => c.Id == id).FirstOrDefault();
-            return Ok(_mapper.Map<ClientDto>(client));
-        }
+        public async Task<IActionResult> GetById(int id) => Ok(await _clientCashedService.GetById(id));
         [HttpPut("addPhone")]
         public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
             try
             {
-                var client = await this._context.Clients.FindAsync(addPhoneDto.objectId);
-                if (client == null)
-                    return NotFound();
-                await this._context.Entry(client).Collection(c => c.ClientPhones).LoadAsync();
-                if (client.ClientPhones.Select(c => c.Phone).Contains(addPhoneDto.Phone))
-                {
+                var result = await _clientCashedService.AddPhone(addPhoneDto);
+                if (result.Errors.Any())
                     return Conflict();
-                }
-                var clientPhone = new ClientPhone()
-                {
-                    ClientId = client.Id,
-                    Phone = addPhoneDto.Phone
-                };
-                await this._context.AddAsync(clientPhone);
-                await this._context.SaveChangesAsync();
-                await _clientCahedRepository.RefreshCash();
-                return Ok(_mapper.Map<PhoneDto>(clientPhone));
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -111,14 +69,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var clientPhone = await this._context.ClientPhones.FindAsync(id);
-                this._context.Remove(clientPhone);
-                await this._context.SaveChangesAsync();
-                await _clientCahedRepository.RefreshCash();
+                await _clientCashedService.DeletePhone(id);
                 return Ok();
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -127,44 +83,32 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var client = await this._context.Clients.Where(c => c.Id == updateClientDto.Id).FirstOrDefaultAsync();
-
-                if (client == null)
-                    return NotFound();
-
-                var oldPassord = client.Password;
-
-                _mapper.Map(updateClientDto, client);
-                if (updateClientDto.Password == null)
-                    client.Password = oldPassord;
-
-                await this._context.SaveChangesAsync();
-                client = await this._context.Clients
-                .Include(c => c.Country)
-                .Include(c => c.User)
-                .SingleAsync(c => c.Id == client.Id);
-                await _clientCahedRepository.RefreshCash();
-                return Ok(_mapper.Map<ClientDto>(client));
+                var result = await _clientCashedService.Update(updateClientDto);
+                if (result.Errors.Any())
+                    return Conflict();
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = await this._context.Clients
-                .FindAsync(id);
-            if (client == null)
-                return NotFound();
-            await this._context.Entry(client).Collection(c => c.Orders).LoadAsync();
-            if (client.Orders.Count() != 0)
-                return Conflict();
-            this._context.Remove(client);
-            await this._context.SaveChangesAsync();
-            await this._clientCahedRepository.RefreshCash();
-            return Ok();
+            try
+            {
+                var result = await _clientCashedService.Delete(id);
+                if (result.Errors.Any())
+                    return Conflict();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
         }
         [HttpPost("Account")]
         public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
@@ -187,25 +131,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("GiveOrDiscountPoints")]
         public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)
         {
-            var client = await this._context.Clients.FindAsync(giveOrDiscountPointsDto.ClientId);
-            string sen = "";
-            if (giveOrDiscountPointsDto.IsGive)
-            {
-                client.Points += giveOrDiscountPointsDto.Points;
-                sen += $"تم إهدائك {giveOrDiscountPointsDto.Points} نقاط";
-            }
-            else
-            {
-                client.Points -= giveOrDiscountPointsDto.Points;
-                sen += $"تم خصم {giveOrDiscountPointsDto.Points} نقاط منك";
-            }
-            Notfication notfication = new Notfication()
-            {
-                ClientId = client.Id,
-                Note = sen,
-            };
-            await this._context.AddAsync(notfication);
-            await this._context.SaveChangesAsync();
+            await _clientCashedService.GivePoints(giveOrDiscountPointsDto);
             return Ok();
         }
     }
