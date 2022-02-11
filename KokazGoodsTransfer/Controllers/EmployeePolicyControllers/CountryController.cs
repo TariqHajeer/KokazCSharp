@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -33,9 +34,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             _userCashedService.RemoveCash();
             _clientCashedService.RemoveCash();
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CountryDto>>> GetAll() => Ok(await _countryCashedService.GetCashed());
+        
 
 
         [HttpPost]
