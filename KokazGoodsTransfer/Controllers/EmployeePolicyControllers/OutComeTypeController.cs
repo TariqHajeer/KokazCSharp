@@ -27,16 +27,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.OutComes)
                 .ToList();
             return Ok(_mapper.Map<OutComeTypeDto[]>(outComeTypes));
-            //List<OutComeTypeDto> response = new List<OutComeTypeDto>();
-            //foreach (var item in outComeTypes)
-            //{
-            //    response.Add(new OutComeTypeDto()
-            //    {
-            //        Id = item.Id,
-            //        Name = item.Name,
-            //        CanDelete = item.OutComes.Count() == 0
-            //    });
-            //}
 
         }
         [HttpPost]
@@ -80,6 +70,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch(Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
                 
@@ -101,6 +92,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
