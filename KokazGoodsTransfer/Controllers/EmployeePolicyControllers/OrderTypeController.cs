@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderTypeController : AbstractEmployeePolicyController
     {
-        public OrderTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        public OrderTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
 
@@ -49,7 +49,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(response);
         }
         [HttpPatch]
-        public IActionResult Update([FromBody]UpdateOrderTypeDto updateOrderTypeDto)
+        public IActionResult Update([FromBody] UpdateOrderTypeDto updateOrderTypeDto)
         {
             try
             {
@@ -87,6 +87,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
 
