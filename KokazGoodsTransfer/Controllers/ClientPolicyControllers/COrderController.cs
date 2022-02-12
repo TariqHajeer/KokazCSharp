@@ -39,14 +39,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 erros.Add("المدينة غير موجودة");
             }
-            //if (createOrderFromClient.RegionId != null)
-            //{
-            //    var region = this.Context.Regions.Find(createOrderFromClient.RegionId);
-            //    if (region == null || region.CountryId != createOrderFromClient.CountryId)
-            //    {
-            //        erros.Add("المنطقة غير موجودة");
-            //    }
-            //}
             if (createOrderFromClient.RecipientPhones.Length == 0)
             {
                 erros.Add("رقم الهاتف مطلوب");
@@ -155,6 +147,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 dbTransacrion.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
 
             }
@@ -259,6 +252,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return Conflict();
             }
         }
