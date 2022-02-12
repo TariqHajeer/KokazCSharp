@@ -30,16 +30,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.Incomes)
                 .ToList();
             return Ok(_mapper.Map<IncomeTypeDto[]>(incomeTypes));
-            //List<IncomeTypeDto> incomeTypeDtos = new List<IncomeTypeDto>();
-            //foreach (var item in incomeTypes)
-            //{
-            //    incomeTypeDtos.Add(new IncomeTypeDto()
-            //    {
-            //        Id = item.Id,
-            //        Name = item.Name,
-            //        CanDelete = item.Incomes.Count() == 0
-            //    });
-            //}
         }
         [HttpPost]
         public IActionResult Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)
@@ -76,6 +66,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -96,6 +87,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }

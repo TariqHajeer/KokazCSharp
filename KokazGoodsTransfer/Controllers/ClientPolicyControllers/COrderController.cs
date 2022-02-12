@@ -28,10 +28,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             _notificationHub = notificationHub;
         }
-        private List<string> Validate(CreateOrderFromClient createOrderFromClient)
+        private async Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient)
         {
             List<string> erros = new List<string>();
-            if (CodeExist(createOrderFromClient.Code))
+            if (await CodeExist(createOrderFromClient.Code))
             {
                 erros.Add("الكود موجود مسبقاً");
             }
@@ -39,14 +39,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 erros.Add("المدينة غير موجودة");
             }
-            //if (createOrderFromClient.RegionId != null)
-            //{
-            //    var region = this.Context.Regions.Find(createOrderFromClient.RegionId);
-            //    if (region == null || region.CountryId != createOrderFromClient.CountryId)
-            //    {
-            //        erros.Add("المنطقة غير موجودة");
-            //    }
-            //}
             if (createOrderFromClient.RecipientPhones.Length == 0)
             {
                 erros.Add("رقم الهاتف مطلوب");
@@ -79,7 +71,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var dbTransacrion = this._context.Database.BeginTransaction();
             try
             {
-                var validate = this.Validate(createOrderFromClient);
+                var validate = await this.Validate(createOrderFromClient);
                 if (validate.Count != 0)
                 {
                     return Conflict(new { messages = validate });
@@ -155,6 +147,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 dbTransacrion.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
 
             }
@@ -165,9 +158,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         /// <param name="code"></param>
         /// <returns></returns>
         [HttpGet("codeExist")]
-        public IActionResult CheckCodeExist([FromQuery] string code)
+        public async Task<IActionResult> CheckCodeExist([FromQuery] string code)
         {
-            return Ok(CodeExist(code));
+            return Ok(await CodeExist(code));
         }
         /// <summary>
         /// 
@@ -259,16 +252,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return Conflict();
             }
         }
-        bool CodeExist(string code)
+        async Task<bool> CodeExist(string code)
         {
-            if (this._context.Orders.Where(c => c.Code == code && c.ClientId == AuthoticateUserId()).Any())
-            {
-                return true;
-            }
-            return false;
+            return await this._context.Orders.Where(c => c.Code == code && c.ClientId == AuthoticateUserId()).AnyAsync();
         }
         [HttpGet]
         public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)
