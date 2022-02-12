@@ -210,6 +210,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch (Exception ex)
             {
                 dbContextTransaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -274,8 +275,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest(ex.Message);
-                //return BadRequest(new { ex.Message, errorLine });
             }
         }
         [HttpPost("createMultiple")]
@@ -1894,8 +1895,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
-                _logging.WriteExption(ex);
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
