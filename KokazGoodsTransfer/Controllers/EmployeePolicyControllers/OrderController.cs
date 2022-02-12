@@ -124,6 +124,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -314,7 +315,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -419,6 +422,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -947,6 +951,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
 
@@ -1018,7 +1023,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 {
                                     if (order.OldCost == null)
                                         order.OldCost = order.Cost;
-                                    //order.DeliveryCost = 0;
                                     order.Cost = 0;
                                     order.AgentCost = 0;
                                     order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -1030,8 +1034,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                     {
                                         order.OldCost = order.Cost;
                                     }
-                                    //order.OldCost = order.Cost;
-                                    //order.Cost = 0;
                                     order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                                 }
                                 break;
@@ -1058,8 +1060,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
-                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
-
                                     if (order.Cost != item.Cost)
                                     {
                                         if (order.OldCost == null)
@@ -1155,6 +1155,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 return BadRequest();
             }
         }
@@ -1384,15 +1385,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 this._context.Printeds.Add(newPrint);
                 this._context.SaveChanges();
-                //client.Total = 0;
-                //this.Context.Update(client);
-                //var recepits = this.Context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
-                //recepits.ForEach(c =>
-                //{
-                //    c.PrintId = newPrint.Id;
-                //    this.Context.Update(c);
-                //});
-                this._context.SaveChanges();
                 foreach (var item in orders)
                 {
 
@@ -1441,10 +1433,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 transaction.Commit();
                 return Ok(new { printNumber });
             }
-            catch (Exception
-            ex)
+            catch (Exception ex)
             {
+
                 transaction.Rollback();
+                _logging.WriteExption(ex);
                 return BadRequest();
 
             }
@@ -1452,25 +1445,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
         {
-            //var order = this.Context.Orders.Where(c => c.Code == orderCode).SingleOrDefault();
-            //if (order == null)
-            //    return Conflict(new { message = "الشحنة غير موجودة" });
-            //if ((order.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent))
-            //{
-            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-            //}
-            //if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || order.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-            //{
-            //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-            //}
-            //if (order.OrderplacedId == (int)OrderplacedEnum.Store)
-            //{
-            //    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
-            //}
-            //this.Context.Entry(order).Reference(c => c.Orderplaced).Load();
-            //this.Context.Entry(order).Reference(c => c.MoenyPlaced).Load();
-            //this.Context.Entry(order).Reference(c => c.Region).Load();
-            //this.Context.Entry(order).Reference(c => c.Country).Load();
             var orders = this._context.Orders.Where(c => c.Code == orderCode)
                 .Include(c => c.Orderplaced)
                 .Include(c => c.MoenyPlaced)
@@ -1486,8 +1460,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var lastOrderAdded = orders.Last();
             var orderInStor = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).ToList();
             orders = orders.Except(orderInStor).ToList();
-
-            //var fOrder = orders.Where(c => (c.MoenyPlacedId > (int)MoneyPalcedEnum.WithAgent) || c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable);
+            
             var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered))).ToList();
             orders = orders.Except(fOrder).ToList();
             var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany).ToList();
@@ -1498,10 +1471,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     return Conflict(new { message = "الشحنة ما زالت في المخزن" });
                 }
-                //if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Unacceptable)
-                //{
-                //    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-                //}
                 if (lastOrderAdded.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
                 {
                     return Conflict(new { message = "الشحنة داخل الشركة" });
@@ -1621,10 +1590,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
             }
-            //if (order.OrderplacedId < (int)OrderplacedEnum.Delivered)
-            //{
-            //    return Conflict(new { Message = "لم يتم إستلام حالة الشحنة مسبقاً" });
-            //}
             if (order.MoenyPlacedId != (int)MoneyPalcedEnum.InsideCompany)
             {
                 return Conflict(new { Message = "الشحنة ليست داخل الشركة" });
@@ -1807,7 +1772,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 {
                                     if (order.OldCost == null)
                                         order.OldCost = order.Cost;
-                                    //order.DeliveryCost = 0;
                                     order.Cost = 0;
                                     order.AgentCost = 0;
                                     order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -1819,8 +1783,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                     {
                                         order.OldCost = order.Cost;
                                     }
-                                    //order.OldCost = order.Cost;
-                                    //order.Cost = 0;
                                     order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                                 }
                                 break;
@@ -1847,8 +1809,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                                 break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
-                                    //order.OrderStateId = (int)OrderStateEnum.Finished;
-
                                     if (order.Cost != item.NewAmount)
                                     {
                                         if (order.OldCost == null)
@@ -1933,6 +1893,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 transaction.Rollback();
                 return BadRequest();
             }
