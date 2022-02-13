@@ -19,23 +19,40 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class ClientAuthController : AbstractController
     {
-        public ClientAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        public ClientAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
         [HttpPost]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            var expireDate = new DateTime(2022, 2, 17);
+            List<string> errors = new List<string>();
+
+            if (!Request.Headers.TryGetValue("app-v", out var app_vs))
+            {
+                errors.Add("عليك التحديث");
+                return Conflict(errors);
+            }
+            var app_v = app_vs.First();
+            if (string.IsNullOrEmpty(app_v))
+            {
+                errors.Add("عليك التحديث");
+                return Conflict(errors);
+            }
+            if (int.Parse(app_v) < 2)
+            {
+                errors.Add("عليك التحديث");
+                return Conflict(errors);
+            }
+            var expireDate = new DateTime(2022, 3, 1);
             if (DateTime.Now > expireDate)
             {
-                return Conflict("You should  to pay");
+                return Conflict();
             }
-
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
-            List<string> errors = new List<string>();
+
 
             if (client == null || !MD5Hash.VerifyMd5Hash(loginDto.Password, client.Password))
             {
