@@ -26,27 +26,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             List<string> errors = new List<string>();
-
-            if (!Request.Headers.TryGetValue("app-v", out var app_vs))
+            var appVersion = AppVersion();
+            if (appVersion == -1)
             {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
-            }
-            var app_v = app_vs.First();
-            if (string.IsNullOrEmpty(app_v))
-            {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
-            }
-            if (int.Parse(app_v) < 2)
-            {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
-            }
-            var expireDate = new DateTime(2022, 3, 1);
-            if (DateTime.Now > expireDate)
-            {
-                return Conflict();
+                return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
             }
             var client = this._context.Clients
                 .Include(c => c.Country)
@@ -74,7 +57,32 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var token = tokenHandler.WriteToken(securityToken);
             var authClient = _mapper.Map<AuthClient>(client);
             authClient.Token = token;
+            authClient.CanAddOrder = appVersion>=2;
             return Ok(authClient);
+        }
+        private int AppVersion()
+        {
+            if (!Request.Headers.TryGetValue("app-v", out var app_vs))
+            {
+                return -1;
+            }
+            else
+            {
+                var app_v = app_vs.First();
+                if (string.IsNullOrEmpty(app_v))
+                {
+                    return -1;
+                }
+                if (!int.TryParse(app_v, out int version))
+                {
+
+                    return -1;
+                }
+                else
+                {
+                    return version;
+                }
+            }
         }
     }
 }

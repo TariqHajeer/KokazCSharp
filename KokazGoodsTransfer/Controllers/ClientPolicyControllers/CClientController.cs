@@ -106,12 +106,43 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("GetByToken")]
         public async Task<IActionResult> GetByToken()
         {
+
+            var appVersion = AppVersion();
+            if (appVersion == -1)
+            {
+                return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
+            }
             var client = await this._context.Clients
                 .Include(c => c.ClientPhones)
                 .Include(c => c.Country)
                 .Where(c => c.Id == AuthoticateUserId()).FirstAsync();
             var authClient = _mapper.Map<AuthClient>(client);
+            authClient.CanAddOrder = appVersion >= 2;
             return Ok(authClient);
+        }
+        private int AppVersion()
+        {
+            if (!Request.Headers.TryGetValue("app-v", out var app_vs))
+            {
+                return -1;
+            }
+            else
+            {
+                var app_v = app_vs.First();
+                if (string.IsNullOrEmpty(app_v))
+                {
+                    return -1;
+                }
+                if (!int.TryParse(app_v, out int version))
+                {
+
+                    return -1;
+                }
+                else
+                {
+                    return version;
+                }
+            }
         }
     }
 }
