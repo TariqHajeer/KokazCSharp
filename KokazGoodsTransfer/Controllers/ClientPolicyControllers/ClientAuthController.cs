@@ -43,11 +43,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 errors.Add("عليك التحديث");
                 return Conflict(errors);
             }
-            var expireDate = new DateTime(2022, 3, 1);
-            if (DateTime.Now > expireDate)
-            {
-                return Conflict();
-            }
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
