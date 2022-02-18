@@ -26,22 +26,23 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             List<string> errors = new List<string>();
-
+            bool canLogin = true;
+            bool canAddOrder = true;
             if (!Request.Headers.TryGetValue("app-v", out var app_vs))
             {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
+                canAddOrder = canLogin = false;
             }
-            var app_v = app_vs.First();
-            if (string.IsNullOrEmpty(app_v))
+            else
             {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
-            }
-            if (int.Parse(app_v) < 2)
-            {
-                errors.Add("عليك التحديث");
-                return Conflict(errors);
+                var app_v = app_vs.First();
+                if (string.IsNullOrEmpty(app_v))
+                {
+                    canLogin = canAddOrder = false;
+                }
+                if (int.Parse(app_v) < 2)
+                {
+                    canAddOrder = canLogin = false;
+                }
             }
             var client = this._context.Clients
                 .Include(c => c.Country)
@@ -69,6 +70,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             var token = tokenHandler.WriteToken(securityToken);
             var authClient = _mapper.Map<AuthClient>(client);
             authClient.Token = token;
+            authClient.CanAddOrder = canAddOrder;
+            authClient.CanLogin = canLogin;
             return Ok(authClient);
         }
     }

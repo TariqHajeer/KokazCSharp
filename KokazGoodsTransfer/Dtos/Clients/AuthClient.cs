@@ -17,6 +17,8 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public string Mail { get; set; }
         public CountryDto Country { get; set; }
         public List<PhoneDto> Phones { get; set; }
+        public bool CanLogin { get; set; }
+        public bool CanAddOrder { get; set; }
 
     }
 }
