@@ -1599,9 +1599,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<OrderDto>(order));
         }
         [HttpPut("ReSend")]
-        public IActionResult ReSend([FromBody] OrderReSend orderReSend)
+        public async Task<IActionResult> ReSend([FromBody] OrderReSend orderReSend)
         {
-            var order = this._context.Orders.Find(orderReSend.Id);
+            var order = await this._context.Orders.FindAsync(orderReSend.Id);
             order.CountryId = orderReSend.CountryId;
             order.RegionId = orderReSend.RegionId;
             order.AgentId = orderReSend.AgnetId;
@@ -1610,14 +1610,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.Cost = (decimal)order.OldCost;
                 order.OldCost = null;
             }
+            order.IsClientDiliverdMoney = false;
 
             order.OrderStateId = (int)OrderStateEnum.Processing;
             order.OrderplacedId = (int)OrderplacedEnum.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-            order.AgentCost = this._context.Users.Find(order.AgentId).Salary ?? 0;
+            order.AgentCost = (await this._context.Users.FindAsync(order.AgentId)).Salary ?? 0;
             this._context.Update(order);
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
             return Ok();
         }
         [HttpPut("MakeStoreOrderCompletelyReturned")]
