@@ -1592,6 +1592,33 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _context.Entry(order.Country).Collection(c => c.Regions).LoadAsync();
             return Ok(_mapper.Map<OrderDto>(order));
         }
+        [HttpGet("OrderInCompanyv2/{clientId}/{code}")]
+        public async Task<IActionResult> OrderInCompany2(int clientId, string code)
+        {
+            var order = await _context.Orders.
+                AsQueryable()
+                .Include(c=>c.OrderPrints)
+                .ThenInclude(c=>c.Print)
+                FirstAsync(c => c.ClientId == clientId && c.Code == code);
+            if (order == null)
+            {
+                return Conflict(new { Message = "الشحنة غير موجودة" });
+            }
+
+            if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
+            {
+                return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
+            }
+            await _context.Entry(order).Reference(c => c.MoenyPlaced).LoadAsync();
+            await _context.Entry(order).Reference(c => c.Orderplaced).LoadAsync();
+            await _context.Entry(order).Reference(c => c.Country).LoadAsync();
+            await _context.Entry(order.Country).Collection(c => c.Regions).LoadAsync();
+            await _context.Entry(order).Reference(c => c.Region).LoadAsync();
+            await _context.Entry(order).Reference(c => c.Agent).LoadAsync();
+               .Include(c => c.OrderPrints)
+                    .ThenInclude(c => c.Print)
+            return Ok(_mapper.Map<OrderDto>(order));
+        }
         [HttpPut("ReSend")]
         public async Task<IActionResult> ReSend([FromBody] OrderReSend orderReSend)
         {
