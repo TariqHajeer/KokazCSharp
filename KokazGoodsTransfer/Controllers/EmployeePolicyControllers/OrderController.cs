@@ -1582,10 +1582,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced);
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("OrderInCompany/{clientId}/{code}")]
-        public async Task<IActionResult> OrderInCompany(int clientId, string code)
+        [HttpGet("{{clientId}}/{{code}}")]
+        public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId,  string code)
         {
-            var order = await _context.Orders.FirstAsync(c => c.ClientId == clientId && c.Code == code);
+            var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
+                   .Include(c => c.OrderPrints)
+                   .ThenInclude(c => c.Print)
+                   .FirstAsync();
             if (order == null)
             {
                 return Conflict(new { Message = "الشحنة غير موجودة" });
@@ -1602,28 +1605,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (order.OrderplacedId == (int)OrderplacedEnum.Store)
             {
                 return Conflict(new { Message = "الشحنة داخل المخزن" });
-            }
-            await _context.Entry(order).Reference(c => c.MoenyPlaced).LoadAsync();
-            await _context.Entry(order).Reference(c => c.Orderplaced).LoadAsync();
-            await _context.Entry(order).Reference(c => c.Country).LoadAsync();
-            await _context.Entry(order.Country).Collection(c => c.Regions).LoadAsync();
-            return Ok(_mapper.Map<OrderDto>(order));
-        }
-        [HttpGet("OrderInCompanyv2/{clientId}/{code}")]
-        public async Task<IActionResult> OrderInCompany2(int clientId, string code)
-        {
-            var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
-                .Include(c => c.OrderPrints)
-                .ThenInclude(c => c.Print)
-                .FirstAsync();
-            if (order == null)
-            {
-                return Conflict(new { Message = "الشحنة غير موجودة" });
-            }
-
-            if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
-            {
-                return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
             }
             await _context.Entry(order).Reference(c => c.MoenyPlaced).LoadAsync();
             await _context.Entry(order).Reference(c => c.Orderplaced).LoadAsync();
