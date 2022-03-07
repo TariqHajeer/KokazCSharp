@@ -1350,7 +1350,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         /// <summary>
-        /// تسليم الشركات
+        /// تسديد الشركات
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
@@ -1362,6 +1362,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = this._context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
                 .Include(c => c.Country)
                 .Where(c => ids.Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
@@ -1389,22 +1391,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.SaveChanges();
                 foreach (var item in orders)
                 {
-
-                    item.IsClientDiliverdMoney = true;
-                    var newCost = idCosts.Find(c => c.Id == item.Id);
-                    if (item.OldCost != null)
-                    {
-                        if (item.Cost != newCost.Cost)
-                        {
-                            item.OldCost = item.Cost;
-                            item.Cost = newCost.Cost;
-                        }
-                    }
-                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || item.OrderplacedId > (int)OrderplacedEnum.Way)
+                    if (item.OrderplacedId > (int)OrderplacedEnum.Way)
                     {
                         item.OrderStateId = (int)OrderStateEnum.Finished;
-                        item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
+                        if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                        {
+                            item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
+                        }
+
                     }
+                    item.IsClientDiliverdMoney = true;
+                    var idCost = idCosts.Find(c => c.Id == item.Id);
+                    var newCost = idCost.Cost;
+                    if (newCost != item.Cost)
+                    {
+                        if (item.OldCost == null)
+                            item.OldCost = item.Cost;
+                    }
+                    
+                    item.Cost = newCost;
+                    var shouldToPay = item.ShouldToPay();
+                    item.ClientPaied = shouldToPay - (item.ClientPaied ?? 0);
+
                     this._context.Update(item);
                     var orderPrint = new OrderPrint()
                     {
@@ -1423,9 +1431,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         LastTotal = item.OldCost,
-                        PayForClient = dateIdCost.IdCosts.Single(c => c.Id == item.Id).PayForClient,
+                        PayForClient = item.ClientPaied,
                         Date = item.Date,
-                        Note = item.Note
+                        Note = item.Note,
                     };
                     this._context.Add(orderPrint);
                     this._context.Add(clientPrint);
@@ -1443,6 +1451,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
 
             }
+
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
@@ -1580,11 +1589,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (order == null)
             {
                 return Conflict(new { Message = "الشحنة غير موجودة" });
-            } 
+            }
 
             if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
             {
                 return Conflict(new { Message = "تم تسليم كلفة الشحنة من قبل" });
+            }
+            if (order.OrderplacedId == (int)OrderplacedEnum.Client)
+            {
+                return Conflict(new { Message = "الشحنة عند العميل " });
+            }
+            if (order.OrderplacedId == (int)OrderplacedEnum.Store)
+            {
+                return Conflict(new { Message = "الشحنة داخل المخزن" });
             }
             await _context.Entry(order).Reference(c => c.MoenyPlaced).LoadAsync();
             await _context.Entry(order).Reference(c => c.Orderplaced).LoadAsync();

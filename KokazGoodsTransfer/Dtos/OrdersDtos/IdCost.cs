@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     {
         public int Id { get; set; }
         public decimal Cost { get; set; }
-        public decimal PayForClient { get; set; }
+
     }
     public class DateIdCost
     {
