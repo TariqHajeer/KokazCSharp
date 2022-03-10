@@ -1582,7 +1582,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                  .Include(c => c.MoenyPlaced);
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
-        [HttpGet("GetOrderForPayBy/{{clientId}}/{{code}}")]
+        [HttpGet("GetOrderForPayBy/{clientId}/{code}")]
         public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId,  string code)
         {
             var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
