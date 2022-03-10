@@ -1283,8 +1283,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
 
                     item.IsClientDiliverdMoney = true;
-                    var PayForClient = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                    item.ClientPaied = PayForClient;
+                    item.ClientPaied = item.ShouldToPay() - (item.ClientPaied ?? 0);
                     this._context.Update(item);
                     this._context.SaveChanges();
                     var orderPrint = new OrderPrint()
@@ -1355,10 +1354,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(DateIdCost dateIdCost)
+        public IActionResult DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
         {
-            var idCosts = dateIdCost.IdCosts;
-            var ids = idCosts.Select(c => c.Id).ToList();
+            var ids = idsAndDate.Ids;
             var orders = this._context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
@@ -1372,13 +1370,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
                 return Conflict(err);
             }
+            semaphore.Wait();
             var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
             var printNumber = oldPrint?.PrintNmber ?? 0;
+
             ++printNumber;
             var newPrint = new Printed()
             {
                 PrintNmber = printNumber,
-                Date = dateIdCost.Date,
+                Date = idsAndDate.Date,
                 Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
@@ -1401,19 +1401,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                     }
                     item.IsClientDiliverdMoney = true;
-                    var idCost = idCosts.Find(c => c.Id == item.Id);
-                    var newCost = idCost.Cost;
-                    if (newCost != item.Cost)
-                    {
-                        if (item.OldCost == null)
-                            item.OldCost = item.Cost;
-                    }
-                    
-                    item.Cost = newCost;
-                    var shouldToPay = item.ShouldToPay();
-                    item.ClientPaied = shouldToPay - (item.ClientPaied ?? 0);
+
+                    item.ClientPaied = item.ShouldToPay() - (item.ClientPaied ?? 0);
 
                     this._context.Update(item);
+                    _context.SaveChanges();
                     var orderPrint = new OrderPrint()
                     {
                         PrintId = newPrint.Id,
@@ -1441,11 +1433,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.SaveChanges();
 
                 transaction.Commit();
+                semaphore.Release();
                 return Ok(new { printNumber });
             }
             catch (Exception ex)
             {
-
+                semaphore.Release();
                 transaction.Rollback();
                 _logging.WriteExption(ex);
                 return BadRequest();
@@ -1583,7 +1576,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetOrderForPayBy/{clientId}/{code}")]
-        public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId,  string code)
+        public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId, string code)
         {
             var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
                    .Include(c => c.OrderPrints)
