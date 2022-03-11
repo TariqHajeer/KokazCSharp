@@ -15,10 +15,4 @@ namespace KokazGoodsTransfer.Dtos.Common
         public DateWithId<int[]> DateWithId { get; set; }
         public int? PointsSettingId { get; set; }
     }
-    //public class IdWithCost
-    //{
-    //    public int Id { get; set; }
-    //    public decimal Cost { get; set; }
-    //}
-
 }
