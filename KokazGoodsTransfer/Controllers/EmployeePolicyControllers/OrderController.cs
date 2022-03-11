@@ -1283,7 +1283,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
 
                     item.IsClientDiliverdMoney = true;
-                    item.ClientPaied = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                    var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                    item.ClientPaied = item.ShouldToPay();
                     this._context.Update(item);
                     this._context.SaveChanges();
                     var orderPrint = new OrderPrint()
@@ -1305,7 +1306,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        PayForClient = item.ShouldToPay()
+                        PayForClient = currentPay
                     };
                     this._context.Add(orderPrint);
                     this._context.Add(clientPrint);
@@ -1401,8 +1402,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                     }
                     item.IsClientDiliverdMoney = true;
-
-                    item.ClientPaied = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                    var cureentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                    item.ClientPaied = item.ShouldToPay();
 
                     this._context.Update(item);
                     _context.SaveChanges();
@@ -1423,7 +1424,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         LastTotal = item.OldCost,
-                        PayForClient = item.ClientPaied,
+                        PayForClient = cureentPay,
                         Date = item.Date,
                         Note = item.Note,
                     };
@@ -1581,7 +1582,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
                    .Include(c => c.OrderPrints)
                    .ThenInclude(c => c.Print)
-                   .FirstAsync();
+                   .FirstOrDefaultAsync();
             if (order == null)
             {
                 return Conflict(new { Message = "الشحنة غير موجودة" });
