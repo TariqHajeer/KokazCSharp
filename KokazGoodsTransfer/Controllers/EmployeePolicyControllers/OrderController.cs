@@ -969,16 +969,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var inCompnay = _context.MoenyPlaceds.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany);
+                string outSideCompny = (await _indexMoneyPlacedRepository.FirstOrDefualt(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany)).Name;
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
+                var orders = await this._context.Orders.Where(c => orderStates.Select(c => c.Id).Contains(c.Id)).ToListAsync();
                 foreach (var item in orderStates)
                 {
-                    var order = this._context.Orders.Find(item.Id);
+                    var order = orders.Find(c => c.Id == item.Id);
 
 
                     OrderLog log = order;
-                    var y = this._context.Add(log);
+                    this._context.Add(log);
                     order.OrderplacedId = item.OrderplacedId;
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     this._context.Entry(order).Reference(c => c.MoenyPlaced).Load();
@@ -1054,12 +1055,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         switch (order.OrderplacedId)
                         {
                             case (int)OrderplacedEnum.PartialReturned:
-                                {
-                                    if (order.OldCost == null)
-                                        order.OldCost = order.Cost;
-                                    order.Cost = item.Cost;
-                                }
-                                break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
                                     if (order.Cost != item.Cost)
@@ -1124,7 +1119,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
                     var moneyPlacedName = order.MoenyPlaced.Name;
                     if (order.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
-                        moneyPlacedName = inCompnay.Name;
+                        moneyPlacedName = outSideCompny;
                     Notfication notfication = new Notfication()
                     {
                         Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {moneyPlacedName}",
@@ -1814,12 +1809,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         switch (order.OrderplacedId)
                         {
                             case (int)OrderplacedEnum.PartialReturned:
-                                {
-                                    if (order.OldCost == null)
-                                        order.OldCost = order.Cost;
-                                    order.Cost = item.NewAmount;
-                                }
-                                break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
                                     if (order.Cost != item.NewAmount)
