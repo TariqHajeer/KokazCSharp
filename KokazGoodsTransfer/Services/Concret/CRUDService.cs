@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class Service<TEntity, TDTO, CreateDto, UpdateDto> : IService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class where TDTO : class where CreateDto : class where UpdateDto : class
+    public class CRUDService<TEntity, TDTO, CreateDto, UpdateDto> : ICRUDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class where TDTO : class where CreateDto : class where UpdateDto : class
     {
         protected readonly IRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
-        public Service(IRepository<TEntity> repository, IMapper mapper)
+        public CRUDService(IRepository<TEntity> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

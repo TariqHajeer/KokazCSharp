@@ -26,6 +26,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            
             var incomeTypes = this._context.IncomeTypes
                 .Include(c => c.Incomes)
                 .ToList();
