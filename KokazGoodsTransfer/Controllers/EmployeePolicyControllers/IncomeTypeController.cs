@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,51 +20,37 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
 
-        public IncomeTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        private readonly IIncomeTypeSerive _incomeTypeSerive;
+        public IncomeTypeController(IIncomeTypeSerive incomeTypeSerive, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
+            _incomeTypeSerive = incomeTypeSerive;
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            
-            var incomeTypes = this._context.IncomeTypes
-                .Include(c => c.Incomes)
-                .ToList();
-            return Ok(_mapper.Map<IncomeTypeDto[]>(incomeTypes));
+            var incomeTypes = await _incomeTypeSerive.GetAll(c => c.Incomes);
+            return Ok(incomeTypes);
         }
         [HttpPost]
-        public IActionResult Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)
+        public async Task<IActionResult> Create([FromBody] CreateIncomeTypeDto createIncomeTypeDto)
         {
-            var similer = this._context.IncomeTypes.Where(c => c.Name == createIncomeTypeDto.Name).Count();
-            if (similer > 0)
+            var response = await _incomeTypeSerive.AddAsync(createIncomeTypeDto);
+            if (response.Errors.Any())
                 return Conflict();
-            IncomeType incomeType = new IncomeType()
-            {
-                Name = createIncomeTypeDto.Name
-            };
-            this._context.Add(incomeType);
-            this._context.SaveChanges();
-            var response = new IncomeTypeDto()
-            {
-                Id = incomeType.Id,
-                CanDelete = true,
-                Name = incomeType.Name
-            };
-            return Ok(response);
+            return Ok(response.Data);
         }
         [HttpPatch]
-        public IActionResult Update([FromBody]UpdateIncomeTypeDto updateIncomeTypeDto)
+        public async Task<IActionResult> Update([FromBody] UpdateIncomeTypeDto updateIncomeTypeDto)
         {
             try
             {
-                var incomeType = this._context.IncomeTypes.Where(c => c.Id == updateIncomeTypeDto.Id).FirstOrDefault();
-                if (this._context.IncomeTypes.Where(c => c.Name == updateIncomeTypeDto.Name && c.Id != updateIncomeTypeDto.Id).Any())
+                var result = await _incomeTypeSerive.Update(updateIncomeTypeDto);
+                if (result.Errors.Any())
+                {
                     return Conflict();
-                incomeType.Name = updateIncomeTypeDto.Name;
-                this._context.Update(incomeType);
-                this._context.SaveChanges();
-                return Ok();
+                }
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
@@ -72,18 +59,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var incomeType = this._context.IncomeTypes.Find(id);
-                if (incomeType == null)
+                var result = await _incomeTypeSerive.Delete(id);
+                if (result.Sucess)
+                    return Ok(result.Data);
+                if (result.NotFound)
                     return NotFound();
-                this._context.Entry(incomeType).Collection(c => c.Incomes).Load();
-                if (incomeType.Incomes.Count() != 0)
+                if (result.CantDelete)
                     return Conflict();
-                this._context.Remove(incomeType);
-                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)

@@ -18,5 +18,8 @@ namespace KokazGoodsTransfer.Services.Helper
         }
         public T Data { get; set; }
         public List<string> Errors { get; set; }
+        public bool NotFound { get; set; }
+        public bool CantDelete { get; set; }
+        public bool Sucess => CantDelete == false && NotFound == false && !Errors.Any();
     }
 }

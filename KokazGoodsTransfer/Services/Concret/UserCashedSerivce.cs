@@ -54,9 +54,9 @@ namespace KokazGoodsTransfer.Services.Concret
 
             return await base.Delete(id);
         }
-        public override async Task<List<UserDto>> GetALl(params Expression<Func<User, object>>[] propertySelectors)
+        public override async Task<List<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
         {
-            var dtos = await base.GetALl(propertySelectors);
+            var dtos = await base.GetAll(propertySelectors);
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
             foreach (var agent in agents)
             {

@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class CRUDService<TEntity, TDTO, CreateDto, UpdateDto> : ICRUDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class where TDTO : class where CreateDto : class where UpdateDto : class
+    public class CRUDService<TEntity, TDTO, CreateDto, UpdateDto> : ICRUDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class, IIdEntity where TDTO : class where CreateDto : class where UpdateDto : class
     {
         protected readonly IRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
@@ -20,6 +21,18 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             _repository = repository;
             _mapper = mapper;
+        }
+        public async Task<TDTO> GetById(int id)
+        {
+            var entity =await _repository.GetById(id);
+            if (entity == null)
+                return null;
+            return _mapper.Map<TDTO>(entity);
+        }
+
+        public Task<List<TDTO>> GetByIds(IEnumerable<int> ids)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)
@@ -50,9 +63,9 @@ namespace KokazGoodsTransfer.Services.Concret
 
         }
 
-        public virtual async  Task<List<TDTO>> GetALl(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public virtual async Task<List<TDTO>> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors)
         {
-            var list= await _repository.GetAll(propertySelectors);
+            var list = await _repository.GetAll(propertySelectors);
             return _mapper.Map<TDTO[]>(list).ToList();
         }
 
@@ -62,6 +75,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = _mapper.Map<TDTO[]>(list);
             return response.ToList();
         }
+
+
 
         public virtual async Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
         {

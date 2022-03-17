@@ -3,7 +3,7 @@ using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
-    public interface IIncomeTypeSerive:ICRUDService<IncomeType,IncomeTypeDto,CreateIncomeTypeDto,UpdateIncomeTypeDto>
+    public interface IIncomeTypeSerive : IIndexService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>
     {
     }
 }

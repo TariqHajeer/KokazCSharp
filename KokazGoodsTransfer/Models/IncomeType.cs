@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class IncomeType
+    public partial class IncomeType : IIndex
     {
         public IncomeType()
         {

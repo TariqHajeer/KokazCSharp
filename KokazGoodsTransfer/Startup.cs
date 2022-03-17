@@ -220,6 +220,9 @@ namespace KokazGoodsTransfer
             services.AddScoped<IRegionCashedService, RegionCashedService>();
             services.AddScoped<IUserCashedService, UserCashedSerivce>();
             services.AddScoped<IClientCashedService, ClientCashedService>();
+            services.AddScoped<IIncomeTypeSerive, IncomeTypeSerivce>();
+            services.AddScoped<IOutcomeTypeService, OutcomeTypeService>();
+            services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }

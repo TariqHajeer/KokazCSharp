@@ -1,0 +1,92 @@
+﻿using AutoMapper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Groups;
+using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Helper;
+using KokazGoodsTransfer.Services.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace KokazGoodsTransfer.Services.Concret
+{
+    public class GroupService : IndexService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
+    {
+        private readonly IRepository<Privilege> _privilegeRepository;
+        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper) : base(repository, mapper)
+        {
+            _privilegeRepository = privilegeRepository;
+        }
+        public override async Task<ErrorRepsonse<GroupDto>> AddAsync(CreateGroupDto createDto)
+        {
+            createDto.Name = createDto.Name.Trim();
+            var similar = await _repository.Any(c => c.Name == createDto.Name);
+            var response = new ErrorRepsonse<GroupDto>();
+            if (similar)
+            {
+                response.Errors.Add("Similar");
+            }
+            else
+            if (createDto.PrivilegesId?.Any() != true)
+            {
+                response.Errors.Add("Privileges is required");
+            }
+            else
+            {
+                var group = _mapper.Map<Group>(createDto);
+                await _repository.AddAsync(group);
+                var dto = _mapper.Map<GroupDto>(group);
+                response.Data = dto;
+            }
+            return response;
+        }
+        public override async Task<ErrorRepsonse<GroupDto>> Update(UpdateGroupDto updateDto)
+        {
+            var similar =await _repository.Any(c=>c.Id!=updateDto.Id&& c.Name!=updateDto.Name);
+            var response =new ErrorRepsonse<GroupDto>();
+            if (similar)
+            {
+                response.Errors.Add("Similar");
+            }
+            else
+            {
+                var group = _repository.FirstOrDefualt(c => c.Id == updateDto.Id);
+                
+            }
+            return await base.Update(updateDto);
+        }
+        public override async Task<ErrorRepsonse<GroupDto>> Delete(int id)
+        {
+            var group = (await _repository.GetAsync(c => c.Id == id, c => c.GroupPrivileges)).FirstOrDefault();
+            var response = new ErrorRepsonse<GroupDto>();
+            if (group == null)
+            {
+                response.NotFound = true;
+            }
+            else
+            {
+                var count = await _privilegeRepository.Count();
+                if (group.GroupPrivileges.Count() == count)
+                {
+                    var groups = await _repository.GetAll(c => c.GroupPrivileges);
+                    if (groups.Any(c => c.GroupPrivileges.Count() != count))
+                    {
+                        response.CantDelete = true;
+                    }
+                    else
+                    {
+                        await _repository.Delete(group);
+                        response.Data = _mapper.Map<GroupDto>(group);
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<IEnumerable<PrivilegeDto>> GetPrivileges()
+        {
+            var priv = await _privilegeRepository.GetAll();
+            return _mapper.Map<PrivilegeDto[]>(priv);
+        }
+    }
+}

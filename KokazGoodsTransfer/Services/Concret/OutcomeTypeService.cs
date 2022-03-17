@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
-using KokazGoodsTransfer.Dtos.IncomeTypes;
+using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class IncomeTypeSerivce : IndexService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>, IIncomeTypeSerive
+    public class OutcomeTypeService : IndexService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>, IOutcomeTypeService
     {
-        IRepository<Income> _incomeReposiory;
-        public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper) : base(repository, mapper)
+        private readonly IRepository<OutCome> _outcomeRepository;
+        public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper) : base(repository, mapper)
         {
-            _incomeReposiory = incomeReposiory;
+            _outcomeRepository = outcomeRepository;
         }
-        public override async Task<ErrorRepsonse<IncomeTypeDto>> Delete(int id)
+        public override async Task<ErrorRepsonse<OutComeTypeDto>> Delete(int id)
         {
             var enrity = await _repository.GetById(id);
-            var response = new ErrorRepsonse<IncomeTypeDto>();
+            var response = new ErrorRepsonse<OutComeTypeDto>();
             if (enrity == null)
             {
                 response.NotFound = true;
@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             else
             {
-                if (await _incomeReposiory.Any(c => c.IncomeTypeId == id))
+                if (await _outcomeRepository.Any(c => c.OutComeTypeId == id))
                 {
                     response.CantDelete = true;
                     response.Errors.Add("Cant.Delete");
@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 else
                 {
                     await _repository.Delete(enrity);
-                    response.Data = _mapper.Map<IncomeTypeDto>(enrity);
+                    response.Data = _mapper.Map<OutComeTypeDto>(enrity);
                 }
             }
             return response;

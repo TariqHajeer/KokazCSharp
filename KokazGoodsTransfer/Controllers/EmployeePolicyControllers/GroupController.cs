@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Groups;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,96 +19,46 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class GroupController : AbstractEmployeePolicyController
     {
 
-        public GroupController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly IGroupService _groupService;
+        public GroupController(IGroupService groupService, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
+            _groupService = groupService;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<ActionResult<IEnumerable<GroupDto>>> GetAll()
         {
-
-            var groups = this._context.Groups
+            var groups = await this._context.Groups
                 .Include(c => c.GroupPrivileges)
-                .Include(c=>c.UserGroups)
-                .ThenInclude(c=>c.User)
-                .ToList();
-            var groupsDto = new List<GroupDto>();
-            foreach (var item in groups)
-            {
-                GroupDto groupDto = new GroupDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    PrivilegesId = item.GroupPrivileges.Select(c => c.PrivilegId).ToList(),
-                    Users = item.UserGroups.Select(c => c.User.Name).ToArray()
-                    
-                };
-                groupsDto.Add(groupDto);
-            }
+                .Include(c => c.UserGroups)
+                .ThenInclude(c => c.User)
+                .ToListAsync();
+            var groupsDto = _mapper.Map<GroupDto[]>(groups);
             return Ok(groupsDto);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var group = this._context.Groups
-                .Find(id);
-            if (group == null)
+            var response = await _groupService.Delete(id);
+            if (!response.Sucess)
                 return Conflict();
-            var totalPrivilegesCount = this._context.Privileges.Count();
-            if (group.GroupPrivileges.Count() == totalPrivilegesCount)
-            {
-                var anotherGroups = this._context.Groups
-                    .Include(c => c.GroupPrivileges)
-                    .Where(c => c.Id != id).ToList();
-                anotherGroups = anotherGroups.Where(c => c.GroupPrivileges.Count() == totalPrivilegesCount).ToList();
-                if (anotherGroups.Count == 0)
-                    return Conflict();
-            }
-            this._context.Groups.Remove(group);
-            this._context.Remove(group);
-            this._context.SaveChanges();
-            return Ok();
+            return Ok(response.Data);
         }
 
         [HttpPost]
-        public IActionResult Creat(CreateGroupDto createGroupDto)
+        public async Task<IActionResult> Creat(CreateGroupDto createGroupDto)
         {
-            var similerGroup = this._context.Groups.Where(c => c.Name == createGroupDto.Name).FirstOrDefault();
-            if (similerGroup != null)
+            var res = await _groupService.AddAsync(createGroupDto);
+            if (!res.Sucess)
                 return Conflict();
-            Group group = new Group();
-            group.Name = createGroupDto.Name;
-            _context.Add(group);
-            if (createGroupDto.PrivilegesId == null || createGroupDto.PrivilegesId.Count() == 0)
-                return Conflict();  
-            foreach (var item in createGroupDto.PrivilegesId)
-            {
-                group.GroupPrivileges.Add(new GroupPrivilege()
-                {
-                    GroupId = group.Id,
-                    PrivilegId = item
-                });
-            }
-            _context.SaveChanges();
-            return Ok();
+            return Ok(res.Data);
         }
-        
+
 
         [HttpGet("Privileges")]
-        public IActionResult GetPrivileges()
+        public async Task<ActionResult<IEnumerable<PrivilegeDto>>> GetPrivileges()
         {
-            var privileges = this._context.Privileges.ToList();
-            List<PrivilegeDto> privilegeDtos = new List<PrivilegeDto>();
-            foreach (var item in privileges)
-            {
-                privilegeDtos.Add(new PrivilegeDto()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    SysName= item.SysName
-                });
-            }
-            return Ok(privilegeDtos);
+            return Ok(await _groupService.GetPrivileges());
         }
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateGroupDto updateGroupDto)
@@ -138,7 +89,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         {
                             GroupId = updateGroupDto.Id,
                             PrivilegId = item
-                           
+
                         });
                     }
                 }
@@ -151,7 +102,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
-        
+
 
     }
 }
