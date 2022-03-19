@@ -10,6 +10,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
     public interface ICashedRepository<T> : IRepository<T> where T : class, IIdEntity
     {
         Task RefreshCash();
-        Task<List<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
     }
 }

@@ -54,7 +54,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
             return await base.Delete(id);
         }
-        public override async Task<List<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
+        public override async Task<IEnumerable<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
         {
             var dtos = await base.GetAll(propertySelectors);
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
@@ -98,7 +98,7 @@ namespace KokazGoodsTransfer.Services.Concret
             return entites;
         }
 
-        public async Task<UserDto> GetById(int id)
+        public override async Task<UserDto> GetById(int id)
         {
             var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountrs.Select(c => c.Country));
             var dto = _mapper.Map<UserDto>(user);
@@ -110,7 +110,7 @@ namespace KokazGoodsTransfer.Services.Concret
             return dto;
         }
 
-        public async Task DeletePhone(int id)
+        public virtual async Task DeletePhone(int id)
         {
             var userPhone = await _userPhoneRepository.GetById(id);
             var user = await _repository.GetById(userPhone.UserId);

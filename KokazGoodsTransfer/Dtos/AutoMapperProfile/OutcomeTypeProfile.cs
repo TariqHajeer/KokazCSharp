@@ -10,8 +10,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         {
             CreateMap<OutComeType, OutComeTypeDto>()
                 .ForMember(d => d.CanDelete, opt => opt.MapFrom(src => src.OutComes.Count() == 0));
-            CreateMap<CreateOutComeTypeDto,OutCome>();
-            CreateMap<UpdateOutComeTypeDto, OutCome>();
+            CreateMap<CreateOutComeTypeDto, OutComeType>();
+            CreateMap<UpdateOutComeTypeDto, OutComeType>();
         }
     }
 }

@@ -22,15 +22,15 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<TDTO> GetById(int id)
+        public virtual async Task<TDTO> GetById(int id)
         {
-            var entity =await _repository.GetById(id);
+            var entity = await _repository.GetById(id);
             if (entity == null)
                 return null;
             return _mapper.Map<TDTO>(entity);
         }
 
-        public Task<List<TDTO>> GetByIds(IEnumerable<int> ids)
+        public virtual Task<IEnumerable<TDTO>> GetByIds(IEnumerable<int> ids)
         {
             throw new NotImplementedException();
         }
@@ -63,18 +63,24 @@ namespace KokazGoodsTransfer.Services.Concret
 
         }
 
-        public virtual async Task<List<TDTO>> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public virtual async Task<IEnumerable<TDTO>> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            var list = await _repository.GetAll(propertySelectors);
+            return _mapper.Map<TDTO[]>(list).ToList();
+        }
+        public async Task<IEnumerable<TDTO>> GetAll(string[] propertySelectors)
         {
             var list = await _repository.GetAll(propertySelectors);
             return _mapper.Map<TDTO[]>(list).ToList();
         }
 
-        public virtual async Task<List<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public virtual async Task<IEnumerable<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             var list = await _repository.GetAsync(filter, propertySelectors);
             var response = _mapper.Map<TDTO[]>(list);
             return response.ToList();
         }
+
 
 
 
@@ -85,5 +91,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = new ErrorRepsonse<TDTO>(_mapper.Map<TDTO>(entity));
             return response;
         }
+
+
+
+
     }
 }

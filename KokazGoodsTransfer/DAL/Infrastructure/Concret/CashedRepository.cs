@@ -40,10 +40,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
 
 
-        public override async Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
+        public override async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
             var name = typeof(T).FullName;
-            if (!_cache.TryGetValue(name, out List<T> entities))
+            if (!_cache.TryGetValue(name, out IEnumerable<T> entities))
             {
                 entities = await base.GetAll(propertySelectors);
                 _cache.Set(name, entities);
@@ -82,7 +82,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 _cache.Set(cashedName, cahsedList);
             }
         }
-        public override Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        public override Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
             return base.GetAsync(filter, propertySelectors);
         }
@@ -118,11 +118,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             await GetAll();
         }
 
-        public virtual async Task<List<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
 
             var name = typeof(T).FullName;
-            if (!_cache.TryGetValue(name, out List<T> entities))
+            if (!_cache.TryGetValue(name, out IEnumerable<T> entities))
             {
                 entities = await base.GetAsync(filter, propertySelectors);
                 _cache.Set(name, entities);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,9 +8,8 @@ using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
@@ -21,29 +19,31 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     {
         private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
         private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
-        private readonly ICashedRepository<Country> _countryCashedRepository;
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository, ICashedRepository<Country> countryCashedRepository) : base(context, mapper, logging)
+        private readonly ICountryCashedService _countryCashedService;
+        private readonly IRegionCashedService _regionCashedService;
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService) : base(context, mapper, logging)
         {
             _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
             _indexOrderPlacedRepository = indexOrderPlacedRepository;
-            _countryCashedRepository = countryCashedRepository;
+            _countryCashedService = countryCashedService;
+            _regionCashedService = regionCashedService;
         }
 
         [HttpGet("Countries")]
-        public async Task<IActionResult> GetCountreis()
+        public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountreis()
         {
-            var countries = await _countryCashedRepository.GetAll();
-            return Ok(_mapper.Map<CountryDto[]>(countries));
+            var countries = await _countryCashedService.GetAll();
+            return Ok(countries);
         }
         /// <summary>
         /// مناطق
         /// </summary>
         /// <returns></returns>
         [HttpGet("Regions")]
-        public async Task<IActionResult> GetRegions()
+        public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions()
         {
-            var region = (await _countryCashedRepository.GetAll()).SelectMany(c => c.Regions).ToArray();
-            return Ok(_mapper.Map<RegionDto[]>(region));
+            var regions = await _regionCashedService.GetAll();
+            return Ok(regions);
         }
         [HttpGet("orderType")]
         public IActionResult GetOrderType()

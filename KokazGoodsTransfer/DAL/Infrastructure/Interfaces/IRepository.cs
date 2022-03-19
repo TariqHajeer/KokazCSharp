@@ -11,9 +11,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task AddAsync(T entity);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null,params Expression<Func<T, object>>[] propertySelectors);
-        Task<List<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
-        Task<PagingResualt<List<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
-        Task<List<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors);
+        Task<IEnumerable<T>> GetAll(string[] propertySelectors);
         Task Update(T entity);
         Task Delete(T entity);
         Task Update(IEnumerable<T> entites);

@@ -27,11 +27,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetAll()
         {
-            var groups = await this._context.Groups
-                .Include(c => c.GroupPrivileges)
-                .Include(c => c.UserGroups)
-                .ThenInclude(c => c.User)
-                .ToListAsync();
+            var groups = await this._groupService.GetAll(new string[] { "GroupPrivileges", "UserGroups.User" });
             var groupsDto = _mapper.Map<GroupDto[]>(groups);
             return Ok(groupsDto);
         }

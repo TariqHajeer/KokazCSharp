@@ -42,18 +42,27 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<ErrorRepsonse<GroupDto>> Update(UpdateGroupDto updateDto)
         {
-            var similar =await _repository.Any(c=>c.Id!=updateDto.Id&& c.Name!=updateDto.Name);
-            var response =new ErrorRepsonse<GroupDto>();
+            var similar = await _repository.Any(c => c.Id != updateDto.Id && c.Name != updateDto.Name);
+            var response = new ErrorRepsonse<GroupDto>();
             if (similar)
             {
                 response.Errors.Add("Similar");
             }
             else
             {
-                var group = _repository.FirstOrDefualt(c => c.Id == updateDto.Id);
-                
+                var group = await _repository.FirstOrDefualt(c => c.Id == updateDto.Id);
+                if (group == null)
+                {
+                    response.NotFound = true;
+                }
+                else
+                {
+                    _mapper.Map(updateDto, group);
+                    await _repository.Update(group);
+                    response.Data = _mapper.Map<GroupDto>(group);
+                }
             }
-            return await base.Update(updateDto);
+            return response;
         }
         public override async Task<ErrorRepsonse<GroupDto>> Delete(int id)
         {
