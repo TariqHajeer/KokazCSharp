@@ -51,7 +51,7 @@ namespace KokazGoodsTransfer.Services.Concret
             else
             {
                 var group = await _repository.FirstOrDefualt(c => c.Id == updateDto.Id);
-                
+
                 if (group == null)
                 {
                     response.NotFound = true;
@@ -61,7 +61,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     group.Name = updateDto.Name;
                     await _repository.LoadCollection(group, c => c.GroupPrivileges);
                     group.GroupPrivileges = group.GroupPrivileges.Where(c => updateDto.Privileges.Contains(c.PrivilegId)).ToList();
-                    var newPrivlieges= updateDto.Privileges.Except(group.GroupPrivileges.Select(c => c.PrivilegId));
+                    var newPrivlieges = updateDto.Privileges.Except(group.GroupPrivileges.Select(c => c.PrivilegId));
                     foreach (var item in newPrivlieges)
                     {
                         group.GroupPrivileges.Add(new GroupPrivilege() { GroupId = group.Id, PrivilegId = item });
@@ -95,6 +95,11 @@ namespace KokazGoodsTransfer.Services.Concret
                         await _repository.Delete(group);
                         response.Data = _mapper.Map<GroupDto>(group);
                     }
+                }
+                else
+                {
+                    await _repository.Delete(group);
+                    response.Data = _mapper.Map<GroupDto>(group);
                 }
             }
             return response;
