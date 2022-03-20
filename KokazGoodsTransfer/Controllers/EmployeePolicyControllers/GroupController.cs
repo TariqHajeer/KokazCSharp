@@ -28,8 +28,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetAll()
         {
             var groups = await this._groupService.GetAll(new string[] { "GroupPrivileges", "UserGroups.User" });
-            var groupsDto = _mapper.Map<GroupDto[]>(groups);
-            return Ok(groupsDto);
+            return Ok(groups);
         }
 
         [HttpDelete("{id}")]
@@ -57,40 +56,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _groupService.GetPrivileges());
         }
         [HttpPatch]
-        public IActionResult Update([FromBody] UpdateGroupDto updateGroupDto)
+        public async Task<ActionResult<GroupDto>> Update([FromBody] UpdateGroupDto updateGroupDto)
         {
             try
             {
-                var group = this._context.Groups.Find(updateGroupDto.Id);
-                if (group == null)
+                var result = await _groupService.Update(updateGroupDto);
+                if (result.Sucess)
+                    return Ok(result.Data);
+                if (result.NotFound)
                     return NotFound();
-                var similer = this._context.Groups.Where(c => c.Id != updateGroupDto.Id && c.Name == updateGroupDto.Name).FirstOrDefault();
-                if (similer != null)
-                    return Conflict();
-                group.Name = group.Name;
-                this._context.Update(group);
-                var groupPrivilges = this._context.GroupPrivileges.Where(c => c.GroupId == updateGroupDto.Id).ToList();
-                foreach (var item in groupPrivilges)
-                {
-                    if (!updateGroupDto.Privileges.Contains(item.PrivilegId))
-                    {
-                        this._context.Remove(item);
-                    }
-                }
-                foreach (var item in updateGroupDto.Privileges)
-                {
-                    if (!groupPrivilges.Select(c => c.PrivilegId).Contains(item))
-                    {
-                        this._context.Add(new GroupPrivilege()
-                        {
-                            GroupId = updateGroupDto.Id,
-                            PrivilegId = item
-
-                        });
-                    }
-                }
-                this._context.SaveChanges();
-                return Ok();
+                return Conflict(result);
             }
             catch (Exception ex)
             {

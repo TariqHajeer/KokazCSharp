@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public Repository(KokazContext kokazContext)
         {
             this._kokazContext = kokazContext;
+            Query = _kokazContext.Set<T>().AsQueryable();
 
 
         }
@@ -146,7 +147,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 
                 foreach (var item in propertySelectors)
                 {
-                    query.Include(item);
+                    query = query.Include(item);
                 }
             }
             return await query.ToListAsync();
