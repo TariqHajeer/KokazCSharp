@@ -42,7 +42,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<ErrorRepsonse<GroupDto>> Update(UpdateGroupDto updateDto)
         {
-            var similar = await _repository.Any(c => c.Id != updateDto.Id && c.Name != updateDto.Name);
+            var similar = await _repository.Any(c => c.Id != updateDto.Id && c.Name == updateDto.Name);
             var response = new ErrorRepsonse<GroupDto>();
             if (similar)
             {
