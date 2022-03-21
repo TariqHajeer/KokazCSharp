@@ -25,12 +25,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public EmployeeAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
         }
-
-        [HttpGet("HetHash/{str}")]
-        public IActionResult GetHash(string str)
-        {
-            return Ok(MD5Hash.GetMd5Hash(str));
-        }
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {

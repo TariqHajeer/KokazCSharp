@@ -60,9 +60,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Country).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
             {
-                // var countries = await ((ICountryRepository)_repository).GetAllCountryIncludeALl();
-                // entites = _mapper.Map<CountryDto[]>(countries);
-                entites = await GetAsync(null,c=>c.Regions,c=>c.Clients,c=>c.AgentCountrs.Select(a=>a.Agent));
+                entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.AgentCountrs.Select(a => a.Agent));
                 _cache.Set(name, entites);
             }
             return entites;
@@ -84,7 +82,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task SetMainCountry(int id)
         {
             var country = await _repository.GetById(id);
-            var mainCountry = await _repository.GetAsync(c => c.IsMain == true);
+            var mainCountry = (await _repository.GetAsync(c => c.IsMain == true)).ToList();
             country.IsMain = true;
             mainCountry.ForEach(c => c.IsMain = false);
             mainCountry.Add(country);

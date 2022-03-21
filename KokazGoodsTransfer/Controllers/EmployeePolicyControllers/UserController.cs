@@ -29,7 +29,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _userCashedService.GetALl());
+        public async Task<IActionResult> GetAll() => Ok(await _userCashedService.GetAll());
         [HttpPost]
 
         public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)

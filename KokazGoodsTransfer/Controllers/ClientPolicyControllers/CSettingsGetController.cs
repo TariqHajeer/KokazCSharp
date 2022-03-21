@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,9 +8,8 @@ using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
@@ -19,32 +17,30 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CSettingsGetController : AbstractClientPolicyController
     {
-        private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
-        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
-        private readonly ICashedRepository<Country> _countryCashedRepository;
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository, ICashedRepository<Country> countryCashedRepository) : base(context, mapper, logging)
+
+        private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
+        private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
+        private readonly ICountryCashedService _countryCashedService;
+        private readonly IRegionCashedService _regionCashedService;
+        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
         {
-            _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
-            _indexOrderPlacedRepository = indexOrderPlacedRepository;
-            _countryCashedRepository = countryCashedRepository;
+
+            _countryCashedService = countryCashedService;
+            _regionCashedService = regionCashedService;
+            _orderPlacedIndexService = orderPlacedIndexService;
+            _moneyPlacedIndexService = moneyPlacedIndexService;
         }
 
         [HttpGet("Countries")]
-        public async Task<IActionResult> GetCountreis()
-        {
-            var countries = await _countryCashedRepository.GetAll();
-            return Ok(_mapper.Map<CountryDto[]>(countries));
-        }
+        public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountreis() => Ok(await _countryCashedService.GetAll());
+
         /// <summary>
         /// مناطق
         /// </summary>
         /// <returns></returns>
         [HttpGet("Regions")]
-        public async Task<IActionResult> GetRegions()
-        {
-            var region = (await _countryCashedRepository.GetAll()).SelectMany(c => c.Regions).ToArray();
-            return Ok(_mapper.Map<RegionDto[]>(region));
-        }
+        public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions() => Ok(await _regionCashedService.GetAll());
+
         [HttpGet("orderType")]
         public IActionResult GetOrderType()
         {
@@ -52,17 +48,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(_mapper.Map<NameAndIdDto[]>(ordertypes));
         }
         [HttpGet("OrderPlaced")]
-        public async Task<IActionResult> GetOrderPalce()
-        {
-            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(orderPlaceds));
-        }
+        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
         [HttpGet("MoenyPlaced")]
-        public async Task<IActionResult> GetMoenyPlaced()
-        {
-            var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(moneyPlaceds));
-        }
+        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
 
     }
 }

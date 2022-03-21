@@ -20,9 +20,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _kokazContext = kokazContext;
         }
         
-        public Task Add<TEntity>(TEntity entity) where TEntity : class
+        public async Task Add<TEntity>(TEntity entity) where TEntity : class
         {
-            throw new NotImplementedException();
+            await Repository<TEntity>().AddAsync(entity);
         }
 
         public async Task BegeinTransaction()
@@ -59,9 +59,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _dbContextTransaction = null;
         }
 
-        public Task Update<TEntity>(TEntity entity) where TEntity : class
+        public async Task Update<TEntity>(TEntity entity) where TEntity : class
         {
-            throw new NotImplementedException();
+            await Repository<TEntity>().Update(entity);
         }
     }
 }

@@ -11,7 +11,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
 {
     public interface IClientCashedService : ICashService<Client, ClientDto, CreateClientDto, UpdateClientDto>
     {
-        Task<ClientDto> GetById(int id);
         Task<ErrorRepsonse<PhoneDto>> AddPhone(AddPhoneDto addPhoneDto);
         Task DeletePhone(int id);
         Task<ErrorRepsonse<ClientDto>> GivePoints(GiveOrDiscountPointsDto giveOrDiscountPointsDto);

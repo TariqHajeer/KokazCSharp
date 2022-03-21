@@ -14,22 +14,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
     public class IndexRepository<T> : Repository<T>, IIndexRepository<T> where T : class, IIndex
     {
-        private readonly IMemoryCache _cache;
-        public IndexRepository(KokazContext kokazContext, IMemoryCache cache) : base(kokazContext)
+        public IndexRepository(KokazContext kokazContext) : base(kokazContext)
         {
-            _cache = cache;
         }
 
-        public virtual async Task<List<IndexEntity>> GetLiteList()
+        public virtual async Task<IEnumerable<IndexEntity>> GetLiteList()
         {
-            var name = typeof(T).FullName;
-            if (!_cache.TryGetValue(name, out List<IndexEntity> entities))
-            {
-                var list = await _kokazContext.Set<T>().Select(c => new IndexEntity() { Id = c.Id, Name = c.Name }).ToListAsync();
-                entities = list;
-                _cache.Set(name, entities);
-            }
-            return entities;
+            return await _kokazContext.Set<T>().Select(c => new IndexEntity() { Id = c.Id, Name = c.Name }).ToListAsync();
         }
     }
 }

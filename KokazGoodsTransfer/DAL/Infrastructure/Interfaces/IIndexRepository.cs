@@ -9,6 +9,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
     public interface IIndexRepository<T>:IRepository<T> where T: class,IIndex
     {
-        Task<List<IndexEntity>> GetLiteList();
+        Task<IEnumerable<IndexEntity>> GetLiteList();
     }
 }

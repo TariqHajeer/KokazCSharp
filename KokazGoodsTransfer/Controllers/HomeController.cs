@@ -20,12 +20,12 @@ namespace KokazGoodsTransfer.Controllers
     public class HomeController : AbstractController
     {
         private readonly ICountryCashedService _countryCashedService;
-        public HomeController(KokazContext context, IMapper mapper, Logging logging,ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        public HomeController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService) : base(context, mapper, logging)
         {
             _countryCashedService = countryCashedService;
         }
         [HttpGet("Country")]
-        public IActionResult GetCountry() => Ok(_countryCashedService.GetCashed());
+        public async Task<IActionResult> GetCountry() => Ok(await _countryCashedService.GetCashed());
         [HttpGet("Market")]
         public IActionResult GetMarket()
         {
