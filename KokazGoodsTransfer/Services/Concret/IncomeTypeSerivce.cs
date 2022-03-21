@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class IncomeTypeSerivce : IndexService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>, IIncomeTypeSerive
+    public class IncomeTypeSerivce : IndexCURDService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>, IIncomeTypeSerive
     {
         IRepository<Income> _incomeReposiory;
         public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper) : base(repository, mapper)

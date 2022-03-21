@@ -1,50 +1,39 @@
-﻿using AutoMapper;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+﻿using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Models.Infrastrcuter;
-using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
+using System.Linq;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class IndexService<TEntity, TDTO, CreateDto, UpdateDto> : CRUDService<TEntity, TDTO, CreateDto, UpdateDto>, IIndexService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class, IIndex where TDTO : class where CreateDto : class, INameEntity where UpdateDto : class, IIndex
+    public class IndexService<TEntity> : IIndexService<TEntity> where TEntity : class, IIndex
     {
-        public IndexService(IRepository<TEntity> repository, IMapper mapper) : base(repository, mapper)
+        private readonly IIndexRepository<TEntity> _indexRepository;
+        private readonly IMapper _mapper;
+        private readonly IMemoryCache _cash;
+        public IndexService(IIndexRepository<TEntity> indexRepository, IMapper mapper, IMemoryCache cash)
         {
+            _indexRepository = indexRepository;
+            _mapper = mapper;
+            _cash = cash;
+
         }
-        public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)
+        public async Task<IEnumerable<NameAndIdDto>> GetAllLite()
         {
-            var similar = await _repository.Any(c => c.Name == createDto.Name);
-            var response = new ErrorRepsonse<TDTO>();
-            if (similar == true)
+            var className = typeof(TEntity).FullName;
+            var cashName = className + "-" + typeof(IndexService<TEntity>).Name;
+            if (!_cash.TryGetValue(cashName, out IEnumerable<NameAndIdDto> result) || !result.Any())
             {
-                response.Errors.Add("Similar");
+                var list = await _indexRepository.GetLiteList();
+                result = _mapper.Map<IEnumerable<NameAndIdDto>>(list);
+                _cash.Set(cashName, result);
             }
-            else
-            {
-                var entity = _mapper.Map<TEntity>(createDto);
-                await _repository.AddAsync(entity);
-                var dto = _mapper.Map<TDTO>(entity);
-                response.Data = dto;
-            }
-            return response;
-        }
-        public override async Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto)
-        {
-            var similar = await _repository.Any(c => c.Id != updateDto.Id && c.Name == updateDto.Name);
-            var response = new ErrorRepsonse<TDTO>();
-            if (similar == true)
-            {
-                response.Errors.Add("Similar");
-            }
-            else
-            {
-                var entity = await _repository.GetById(updateDto.Id);
-                _mapper.Map(updateDto, entity);
-                await _repository.Update(entity);
-                response.Data = _mapper.Map<TDTO>(entity);
-            }
-            return response;
+            return result;
         }
     }
 }

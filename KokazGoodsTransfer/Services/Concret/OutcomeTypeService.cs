@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class OutcomeTypeService : IndexService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>, IOutcomeTypeService
+    public class OutcomeTypeService : IndexCURDService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>, IOutcomeTypeService
     {
         private readonly IRepository<OutCome> _outcomeRepository;
         public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper) : base(repository, mapper)

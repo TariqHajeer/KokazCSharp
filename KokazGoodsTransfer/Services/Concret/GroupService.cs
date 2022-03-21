@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class GroupService : IndexService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
+    public class GroupService : IndexCURDService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
     {
         private readonly IRepository<Privilege> _privilegeRepository;
         public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper) : base(repository, mapper)

@@ -3,7 +3,7 @@ using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
-    public interface IOutcomeTypeService : IIndexService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>
+    public interface IOutcomeTypeService : IIndexCURDService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>
     {
     }
 }

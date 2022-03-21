@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -23,18 +24,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderController : AbstractEmployeePolicyController
     {
-        private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
-        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
+        private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
+        private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
             this.notificationHub = notificationHub;
-            _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
-            _indexOrderPlacedRepository = indexOrderPlacedRepository;
+            _moneyPlacedIndexService = moneyPlacedIndexService;
+            _orderPlacedIndexService = orderPlacedIndexService;
         }
 
         [HttpGet]
@@ -576,17 +577,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(o);
         }
         [HttpGet("orderPlace")]
-        public async Task<IActionResult> GetOrderPalce()
-        {
-            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(orderPlaceds));
-        }
+        public async Task<IActionResult> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
         [HttpGet("MoenyPlaced")]
-        public async Task<IActionResult> GetMoenyPlaced()
-        {
-            var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(moneyPlaceds));
-        }
+        public async Task<IActionResult> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
         [HttpGet("chekcCode")]
         public IActionResult CheckCode([FromQuery] string code, int clientid)
         {
@@ -969,7 +962,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                string outSideCompny = (await _indexMoneyPlacedRepository.FirstOrDefualt(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany)).Name;
+                var outSideCompny = (await _moneyPlacedIndexService.GetAllLite()).Where(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).First().Name;
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
                 var orders = await this._context.Orders.Where(c => orderStates.Select(c => c.Id).Contains(c.Id)).ToListAsync();
