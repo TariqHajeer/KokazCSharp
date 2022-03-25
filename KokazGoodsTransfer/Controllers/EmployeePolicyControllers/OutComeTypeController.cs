@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,78 +17,57 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OutComeTypeController : AbstractEmployeePolicyController
     {
-        public OutComeTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly IOutcomeTypeService _outcomeTypeService;
+        public OutComeTypeController(IOutcomeTypeService outcomeTypeService, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
         {
+            _outcomeTypeService = outcomeTypeService;
         }
 
         [HttpGet]
-        public IActionResult GetALl()
+        public async Task<IActionResult> GetALl()
         {
-            var outComeTypes = this._context.OutComeTypes
-                .Include(c => c.OutComes)
-                .ToList();
-            return Ok(_mapper.Map<OutComeTypeDto[]>(outComeTypes));
-
+            var result = await _outcomeTypeService.GetAll(c => c.OutComes);
+            return Ok(result);
         }
         [HttpPost]
-        public IActionResult Create([FromBody]CreateOutComeTypeDto createOutComeTypeDto)
+        public async Task<IActionResult> Create([FromBody] CreateOutComeTypeDto createOutComeTypeDto)
         {
-            var similer = this._context.OutComeTypes.Where(c => c.Name == createOutComeTypeDto.Name).Count();
-            if (similer > 0)
+            var response = await _outcomeTypeService.AddAsync(createOutComeTypeDto);
+            if (response.Errors.Any())
                 return Conflict();
-            if (createOutComeTypeDto.Name == "")
-                return Conflict();
-
-            OutComeType outComeType = new OutComeType()
-            {
-                Name = createOutComeTypeDto.Name
-            };
-            this._context.Add(outComeType);
-            this._context.SaveChanges();
-            OutComeTypeDto outeComeTypeDto = new OutComeTypeDto()
-            {
-                Id = outComeType.Id,
-                Name = outComeType.Name,
-                CanDelete = true
-            };
-            return Ok(outeComeTypeDto);
+            return Ok(response.Data);
         }
         [HttpPatch]
-        public IActionResult Update([FromBody] UpdateOutComeTypeDto updateOutComeTypeDto)
+        public async Task<IActionResult> Update([FromBody] UpdateOutComeTypeDto updateOutComeTypeDto)
         {
             try
             {
-                var outComeType = this._context.OutComeTypes.Find(updateOutComeTypeDto.Id);
-                if (outComeType == null)
-                    return NotFound();
-                
-                if (_context.OutComeTypes.Where(c=>c.Name==updateOutComeTypeDto.Name&&c.Id!=updateOutComeTypeDto.Id).Any())
+                var result = await _outcomeTypeService.Update(updateOutComeTypeDto);
+                if (result.Errors.Any())
+                {
                     return Conflict();
-                outComeType.Name = updateOutComeTypeDto.Name;
-                this._context.Update(outComeType);
-                this._context.SaveChanges();
-                return Ok();
+                }
+                return Ok(result.Data);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-                
+
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var outComeType = this._context.OutComeTypes.Find(id);
-                if (outComeType == null)
+                var result = await _outcomeTypeService.Delete(id);
+                if (result.Sucess)
+                    return Ok(result.Data);
+                if (result.NotFound)
                     return NotFound();
-                this._context.Entry(outComeType).Collection(c => c.OutComes).Load();
-                if (outComeType.OutComes.Any())
+                if (result.CantDelete)
                     return Conflict();
-                this._context.Remove(outComeType);
-                this._context.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)

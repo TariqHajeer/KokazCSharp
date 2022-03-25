@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -23,18 +24,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderController : AbstractEmployeePolicyController
     {
-        private readonly IIndexRepository<MoenyPlaced> _indexMoneyPlacedRepository;
-        private readonly IIndexRepository<OrderPlaced> _indexOrderPlacedRepository;
+        private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
+        private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexRepository<MoenyPlaced> indexMoneyPlacedRepository, IIndexRepository<OrderPlaced> indexOrderPlacedRepository) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
             this.notificationHub = notificationHub;
-            _indexMoneyPlacedRepository = indexMoneyPlacedRepository;
-            _indexOrderPlacedRepository = indexOrderPlacedRepository;
+            _moneyPlacedIndexService = moneyPlacedIndexService;
+            _orderPlacedIndexService = orderPlacedIndexService;
         }
 
         [HttpGet]
@@ -576,17 +577,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(o);
         }
         [HttpGet("orderPlace")]
-        public async Task<IActionResult> GetOrderPalce()
-        {
-            var orderPlaceds = await _indexOrderPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(orderPlaceds));
-        }
+        public async Task<IActionResult> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
         [HttpGet("MoenyPlaced")]
-        public async Task<IActionResult> GetMoenyPlaced()
-        {
-            var moneyPlaceds = await _indexMoneyPlacedRepository.GetLiteList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(moneyPlaceds));
-        }
+        public async Task<IActionResult> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
         [HttpGet("chekcCode")]
         public IActionResult CheckCode([FromQuery] string code, int clientid)
         {
@@ -969,16 +962,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             try
             {
-                var inCompnay = _context.MoenyPlaceds.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany);
+                var outSideCompny = (await _moneyPlacedIndexService.GetAllLite()).Where(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).First().Name;
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
+                var orders = await this._context.Orders.Where(c => orderStates.Select(c => c.Id).Contains(c.Id)).ToListAsync();
                 foreach (var item in orderStates)
                 {
-                    var order = this._context.Orders.Find(item.Id);
+                    var order = orders.Find(c => c.Id == item.Id);
 
 
                     OrderLog log = order;
-                    var y = this._context.Add(log);
+                    this._context.Add(log);
                     order.OrderplacedId = item.OrderplacedId;
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     this._context.Entry(order).Reference(c => c.MoenyPlaced).Load();
@@ -1054,12 +1048,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         switch (order.OrderplacedId)
                         {
                             case (int)OrderplacedEnum.PartialReturned:
-                                {
-                                    if (order.OldCost == null)
-                                        order.OldCost = order.Cost;
-                                    order.Cost = item.Cost;
-                                }
-                                break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
                                     if (order.Cost != item.Cost)
@@ -1124,7 +1112,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     }
                     var moneyPlacedName = order.MoenyPlaced.Name;
                     if (order.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
-                        moneyPlacedName = inCompnay.Name;
+                        moneyPlacedName = outSideCompny;
                     Notfication notfication = new Notfication()
                     {
                         Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {moneyPlacedName}",
@@ -1814,12 +1802,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         switch (order.OrderplacedId)
                         {
                             case (int)OrderplacedEnum.PartialReturned:
-                                {
-                                    if (order.OldCost == null)
-                                        order.OldCost = order.Cost;
-                                    order.Cost = item.NewAmount;
-                                }
-                                break;
                             case (int)OrderplacedEnum.Delivered:
                                 {
                                     if (order.Cost != item.NewAmount)

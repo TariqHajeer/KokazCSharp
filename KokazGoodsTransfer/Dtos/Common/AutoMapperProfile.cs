@@ -22,8 +22,6 @@ using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Dtos.Common
 {
@@ -33,63 +31,10 @@ namespace KokazGoodsTransfer.Dtos.Common
         public AutoMapperProfile()
         {
 
-            CreateMap<Region, RegionDto>()
-                .ForMember(d => d.Country, src => src.MapFrom((region, regionDto, i, context) =>
-                     {
+            CreateMap<IndexEntity, NameAndIdDto>();
+            CreateMap<ClientPhone, PhoneDto>();
+            CreateMap<UserPhone, PhoneDto>();
 
-                         if (region.Country != null)
-                         {
-                             region.Country.Mediator = null;
-                             region.Country.Regions = null;
-                         }
-                         return context.Mapper.Map<CountryDto>(region.Country);
-                     })
-                ).MaxDepth(1);
-            CreateMap<CreateRegionDto, Region>();
-            CreateMap<UpdateRegionDto, Region>();
-            CreateMap<IncomeType, IncomeTypeDto>()
-                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0));
-            #region Country 
-            CreateMap<Country, CountryDto>()
-                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountrs.Count() == 0))
-                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountrs.Count() == 0 && src.Clients.Count() == 0))
-                .ForMember(c => c.Mediator, opt => opt.MapFrom((obj, dto, i, context) =>
-                {
-                    return context.Mapper.Map<CountryDto>(obj.Mediator);
-                }))
-                .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
-                {
-                    if (country.Regions == null)
-                        return null;
-                    country.Regions.ToList().ForEach(c => c.Country = null);
-                    return context.Mapper.Map<RegionDto[]>(country.Regions);
-                }))
-                .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
-                     {
-                         if (obj.AgentCountrs == null)
-                             return null;
-                         obj.AgentCountrs.ToList().ForEach(c => c.Agent.AgentCountrs = null);
-                         return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
-                     })).MaxDepth(2);
-            CreateMap<UpdateCountryDto, Country>();
-            CreateMap<CreateCountryDto, Country>()
-                .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
-                     {
-
-                         List<Region> regions = new List<Region>();
-                         if (dto.Regions != null)
-                             foreach (var item in dto.Regions)
-                             {
-                                 regions.Add(new Region()
-                                 {
-                                     Name = item
-                                 });
-                             }
-                         return regions;
-                     }))
-                .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
-
-            #endregion
             #region  user
             CreateMap<User, UserDto>()
                 .ForMember(c => c.Password, opt => opt.Ignore())
@@ -222,8 +167,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      {
                          return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                      }));
-            CreateMap<ClientPhone, PhoneDto>();
-            CreateMap<UserPhone, PhoneDto>();
+            
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
@@ -258,10 +202,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                     return context.Mapper.Map<IncomeTypeDto>(income.IncomeType);
                 }))
                 .ForMember(c => c.CreatedBy, opt => opt.MapFrom(src => src.User.Name));
-            //CreateMap<Currency, CurrencyDto>()
-            //.ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Incomes.Count() == 0 && src.OutComes.Count() == 0));
-            CreateMap<OutComeType, OutComeTypeDto>()
-                .ForMember(d => d.CanDelete, opt => opt.MapFrom(src => src.OutComes.Count() == 0));
+
 
             CreateMap<OutCome, OutComeDto>()
                 .ForMember(d => d.OutComeType, opt => opt.MapFrom((outcome, dto, i, context) =>
@@ -493,7 +434,7 @@ namespace KokazGoodsTransfer.Dtos.Common
              {
                  return conext.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
              }));
-            CreateMap<IndexEntity, NameAndIdDto>();
+
         }
     }
 }
