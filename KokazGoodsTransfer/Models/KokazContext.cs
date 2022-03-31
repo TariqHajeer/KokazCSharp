@@ -24,7 +24,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<ClientPrint> ClientPrints { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual DbSet<Discount> Discounts { get; set; }
         public virtual DbSet<EditRequest> EditRequests { get; set; }
@@ -244,14 +243,6 @@ namespace KokazGoodsTransfer.Models
                     .HasConstraintName("FK__Country__mediato__74794A92");
             });
 
-            modelBuilder.Entity<Currency>(entity =>
-            {
-                entity.ToTable("Currency");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
 
             modelBuilder.Entity<DisAcceptOrder>(entity =>
             {
