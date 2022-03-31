@@ -1,16 +1,16 @@
-﻿using KokazGoodsTransfer.Models.Infrastrcuter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderPlaced: IIndex
+    public partial class OrderPlaced
     {
         public OrderPlaced()
         {
             ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
+            ClientPaymentDetails = new HashSet<ClientPaymentDetail>();
             ClientPrints = new HashSet<ClientPrint>();
             Notfications = new HashSet<Notfication>();
             OrderLogs = new HashSet<OrderLog>();
@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Models
         public string Name { get; set; }
 
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
+        public virtual ICollection<ClientPaymentDetail> ClientPaymentDetails { get; set; }
         public virtual ICollection<ClientPrint> ClientPrints { get; set; }
         public virtual ICollection<Notfication> Notfications { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }

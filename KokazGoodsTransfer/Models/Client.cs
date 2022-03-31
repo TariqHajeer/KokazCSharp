@@ -1,12 +1,11 @@
-﻿using KokazGoodsTransfer.Models.Infrastrcuter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Client:IIndex
+    public partial class Client
     {
         public Client()
         {
