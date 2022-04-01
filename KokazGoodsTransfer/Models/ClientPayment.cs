@@ -10,6 +10,8 @@ namespace KokazGoodsTransfer.Models
         public ClientPayment()
         {
             ClientPaymentDetails = new HashSet<ClientPaymentDetail>();
+            Discounts = new HashSet<Discount>();
+            Receipts = new HashSet<Receipt>();
         }
 
         public int Id { get; set; }
@@ -19,5 +21,7 @@ namespace KokazGoodsTransfer.Models
         public string DestinationPhone { get; set; }
 
         public virtual ICollection<ClientPaymentDetail> ClientPaymentDetails { get; set; }
+        public virtual ICollection<Discount> Discounts { get; set; }
+        public virtual ICollection<Receipt> Receipts { get; set; }
     }
 }

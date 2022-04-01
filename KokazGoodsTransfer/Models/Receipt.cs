@@ -17,8 +17,10 @@ namespace KokazGoodsTransfer.Models
         public string Manager { get; set; }
         public bool IsPay { get; set; }
         public int? PrintId { get; set; }
+        public int? ClientPaymentId { get; set; }
 
         public virtual Client Client { get; set; }
+        public virtual ClientPayment ClientPayment { get; set; }
         public virtual Printed Print { get; set; }
     }
 }

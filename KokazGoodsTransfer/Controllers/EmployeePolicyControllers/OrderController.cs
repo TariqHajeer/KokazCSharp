@@ -878,79 +878,76 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
         }
-        [HttpPut("MakeOrderInWay")]
-        public IActionResult MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
-        {
-            var ids = dateWithId.Ids;
-            var orders = this._context.Orders
-                .Include(c => c.Agent)
-                .ThenInclude(c => c.UserPhones)
-                .Include(c => c.Client)
-                .Include(c => c.Country)
-                .Where(c => ids.Contains(c.Id)).ToList();
+        //[HttpPut("MakeOrderInWay")]
+        //public IActionResult MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
+        //{
+        //    var ids = dateWithId.Ids;
+        //    var orders = this._context.Orders
+        //        .Include(c => c.Agent)
+        //        .ThenInclude(c => c.UserPhones)
+        //        .Include(c => c.Client)
+        //        .Include(c => c.Country)
+        //        .Where(c => ids.Contains(c.Id)).ToList();
 
-            if (orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store) != null)
-            {
-                this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
-                return Conflict(err);
-            }
+        //    if (orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store) != null)
+        //    {
+        //        this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
+        //        return Conflict(err);
+        //    }
 
-            var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
-            var printNumber = oldPrint?.PrintNmber ?? 0;
-            ++printNumber;
-            var agent = orders.FirstOrDefault().Agent;
-            var newPrint = new Printed()
-            {
-                PrintNmber = printNumber,
-                Date = dateWithId.Date,
-                Type = PrintType.Agent,
-                PrinterName = this.AuthoticateUserName(),
-                DestinationName = agent.Name,
-                DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
-            };
-            var transaction = this._context.Database.BeginTransaction();
-            try
-            {
-                this._context.Printeds.Add(newPrint);
-                this._context.SaveChanges();
-                foreach (var item in orders)
-                {
+        //    var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
+            
+        //    var agent = orders.FirstOrDefault().Agent;
+        //    var agnetPrint = new AgentPrint()
+        //    {
+        //        Date = dateWithId.Date,
+        //        PrinterName = this.AuthoticateUserName(),
+        //        DestinationName = agent.Name,
+        //        DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? ""
+        //    };
+        //    var transaction = this._context.Database.BeginTransaction();
+        //    try
+        //    {
+        //        this._context.AgentPrints.Add(agnetPrint);
+        //        this._context.SaveChanges();
+        //        foreach (var item in orders)
+        //        {
 
 
-                    item.OrderplacedId = (int)OrderplacedEnum.Way;
-                    this._context.Update(item);
-                    this._context.Entry(item).Reference(c => c.Region).Load();
-                    var orderPrint = new OrderPrint()
-                    {
-                        PrintId = newPrint.Id,
-                        OrderId = item.Id
-                    };
-                    var AgentPrint = new AgnetPrint()
-                    {
-                        Code = item.Code,
-                        ClientName = item.Client.Name,
-                        Note = item.Note,
-                        Total = item.Cost,
-                        Country = item.Country.Name,
-                        PrintId = newPrint.Id,
-                        Phone = item.RecipientPhones,
-                        Region = item.Region?.Name
-                    };
-                    this._context.Add(orderPrint);
-                    this._context.Add(AgentPrint);
-                }
-                this._context.SaveChanges();
-                transaction.Commit();
-                return Ok(new { printNumber });
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+        //            item.OrderplacedId = (int)OrderplacedEnum.Way;
+        //            this._context.Update(item);
+        //            this._context.Entry(item).Reference(c => c.Region).Load();
+        //            var orderPrint = new OrderPrint()
+        //            {
+        //                PrintId = newPrint.Id,
+        //                OrderId = item.Id
+        //            };
+        //            var agentPrintDetials = new AgentPrintDetail()
+        //            {
+        //                Code = item.Code,
+        //                ClientName = item.Client.Name,
+        //                Note = item.Note,
+        //                Total = item.Cost,
+        //                Country = item.Country.Name,
+        //                AgentPrintId = agnetPrint.Id,
+        //                Phone = item.RecipientPhones,
+        //                Region = item.Region?.Name
+        //            };
+        //            this._context.Add(orderPrint);
+        //            this._context.Add(AgentPrint);
+        //        }
+        //        this._context.SaveChanges();
+        //        transaction.Commit();
+        //        return Ok(new { agnetPrint.Id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        transaction.Rollback();
+        //        _logging.WriteExption(ex);
+        //        return BadRequest();
+        //    }
 
-        }
+        //}
         /// <summary>
         /// <!--استلام حالة شحنة-->
         /// </summary>

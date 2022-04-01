@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         }
 
         public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
+        public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
         public virtual DbSet<AgnetPrint> AgnetPrints { get; set; }
@@ -39,6 +40,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Notfication> Notfications { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderClientPaymnet> OrderClientPaymnets { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
@@ -88,6 +90,23 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.AgentCountrs)
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("FK_AgentCountr_Country");
+            });
+
+            modelBuilder.Entity<AgentOrderPrint>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("AgentOrderPrint");
+
+                entity.HasOne(d => d.AgentPrint)
+                    .WithMany()
+                    .HasForeignKey(d => d.AgentPrintId)
+                    .HasConstraintName("FK__AgentOrde__Agent__02C769E9");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany()
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("FK__AgentOrde__Order__03BB8E22");
             });
 
             modelBuilder.Entity<AgentPrint>(entity =>
@@ -263,8 +282,6 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.LastTotal).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.Note).IsRequired();
-
                 entity.Property(e => e.PayForClient).HasColumnType("money");
 
                 entity.Property(e => e.Phone)
@@ -276,17 +293,17 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.ClientPayment)
                     .WithMany(p => p.ClientPaymentDetails)
                     .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__ClientPay__Clien__7A3223E8");
+                    .HasConstraintName("FK__ClientPay__Clien__10216507");
 
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ClientPaymentDetails)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPay__Money__7B264821");
+                    .HasConstraintName("FK__ClientPay__Money__11158940");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ClientPaymentDetails)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPay__Order__7C1A6C5A");
+                    .HasConstraintName("FK__ClientPay__Order__1209AD79");
             });
 
             modelBuilder.Entity<ClientPhone>(entity =>
@@ -364,7 +381,6 @@ namespace KokazGoodsTransfer.Models
                     .HasConstraintName("FK__Country__mediato__74794A92");
             });
 
-
             modelBuilder.Entity<DisAcceptOrder>(entity =>
             {
                 entity.ToTable("DisAcceptOrder");
@@ -408,6 +424,11 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("Discount");
 
                 entity.Property(e => e.Money).HasColumnType("money");
+
+                entity.HasOne(d => d.ClientPayment)
+                    .WithMany(p => p.Discounts)
+                    .HasForeignKey(d => d.ClientPaymentId)
+                    .HasConstraintName("FK__Discount__Client__7EF6D905");
 
                 entity.HasOne(d => d.Printed)
                     .WithMany(p => p.Discounts)
@@ -621,6 +642,25 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK_Order_Region");
+            });
+
+            modelBuilder.Entity<OrderClientPaymnet>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("OrderClientPaymnet");
+
+                entity.HasOne(d => d.ClientPayment)
+                    .WithMany()
+                    .HasForeignKey(d => d.ClientPaymentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__OrderClie__Clien__0880433F");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany()
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__OrderClie__Order__078C1F06");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
@@ -882,6 +922,11 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Receipt_Clients");
+
+                entity.HasOne(d => d.ClientPayment)
+                    .WithMany(p => p.Receipts)
+                    .HasForeignKey(d => d.ClientPaymentId)
+                    .HasConstraintName("FK__Receipt__ClientP__00DF2177");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.Receipts)
