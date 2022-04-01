@@ -19,5 +19,6 @@ namespace KokazGoodsTransfer.Models
         public string DestinationPhone { get; set; }
 
         public virtual ICollection<AgentPrintDetail> AgentPrintDetails { get; set; }
+        public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
     }
 }

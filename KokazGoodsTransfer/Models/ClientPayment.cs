@@ -23,5 +23,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<ClientPaymentDetail> ClientPaymentDetails { get; set; }
         public virtual ICollection<Discount> Discounts { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }
+        public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
     }
 }

@@ -167,7 +167,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      {
                          return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                      }));
-            
+
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
@@ -362,7 +362,6 @@ namespace KokazGoodsTransfer.Dtos.Common
                     {
                         return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);
                     }));
-
             CreateMap<Printed, PrintOrdersDto>()
 
                 .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
@@ -382,7 +381,6 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 ;
             CreateMap<Discount, DiscountDto>();
-
             CreateMap<AgnetPrint, PrintDto>();
             CreateMap<ClientPrint, PrintDto>()
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
