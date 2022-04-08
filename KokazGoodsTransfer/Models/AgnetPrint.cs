@@ -19,4 +19,5 @@ namespace KokazGoodsTransfer.Models
 
         public virtual Printed Print { get; set; }
     }
+   
 }

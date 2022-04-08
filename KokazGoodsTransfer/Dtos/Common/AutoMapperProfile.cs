@@ -362,8 +362,15 @@ namespace KokazGoodsTransfer.Dtos.Common
                     {
                         return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);
                     }));
-            CreateMap<Printed, PrintOrdersDto>()
+            CreateMap<AgentPrint, PrintOrdersDto>()
+                .ForMember(c => c.PrintNmber, opt => opt.MapFrom(c => c.Id))
+                .ForMember(c => c.Receipts, opt => opt.Ignore())
+                .ForMember(c => c.Discount, opt => opt.Ignore());
 
+
+            CreateMap<AgentPrintDetail, AgentPrintDetailDto>();
+
+            CreateMap<Printed, PrintOrdersDto>()
                 .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
                          List<PrintDto> x = new List<PrintDto>();
