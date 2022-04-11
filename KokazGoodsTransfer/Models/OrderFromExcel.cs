@@ -16,6 +16,7 @@ namespace KokazGoodsTransfer.Models
         public string Phone { get; set; }
         public string Note { get; set; }
         public int ClientId { get; set; }
+        public DateTime CreateDate { get; set; }
 
         public virtual Client Client { get; set; }
     }

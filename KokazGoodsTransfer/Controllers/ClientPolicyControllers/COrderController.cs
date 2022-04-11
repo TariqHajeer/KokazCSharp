@@ -260,6 +260,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                             Phone = item.Phone,
                             RecipientName = item.RecipientName,
                             ClientId = AuthoticateUserId(),
+                            CreateDate = dateTime
                         };
                         await _context.AddAsync(orderFromExcel);
                         correct = true;
@@ -306,7 +307,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-            
+
         }
         /// <summary>
         /// 
@@ -606,7 +607,45 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public async Task<IActionResult> CorrectOrderCountry(Dictionary<int, int> pairs)
         {
             var ids = pairs.Select(c => c.Key).ToList();
+            var cids = pairs.Values.ToList();
             var orders = await _context.OrderFromExcels.Where(c => ids.Contains(c.Id)).ToListAsync();
+            var countries = await _context.Countries.Where(c => cids.Contains(c.Id)).ToListAsync();
+            foreach (var item in pairs)
+            {
+                var ofe = orders.FirstOrDefault(c => c.Id == item.Key);
+                if (ofe == null)
+                    continue;
+
+                var country = countries.FirstOrDefault(c => c.Id == item.Value);
+                var order = new Order()
+                {
+                    Code = ofe.Code,
+                    CountryId = item.Value,
+                    Address = ofe.Address,
+                    RecipientName = ofe.RecipientName,
+                    RecipientPhones = ofe.Phone,
+                    ClientNote = ofe.Note,
+                    Cost = ofe.Cost,
+                    Date = ofe.CreateDate,
+                    MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany,
+                    OrderplacedId = (int)OrderplacedEnum.Client,
+                    OrderStateId = (int)OrderStateEnum.Processing,
+                    ClientId = AuthoticateUserId(),
+                    CreatedBy = AuthoticateUserName(),
+                    DeliveryCost = country.DeliveryCost,
+                    IsSend = false,
+                };
+                _context.Add(order);
+            }
+            await _context.SaveChangesAsync();
+            var newOrdersDontSendCount = await this._context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
             return Ok();
         }
     }

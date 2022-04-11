@@ -521,6 +521,8 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.CreateDate).HasColumnType("date");
+
                 entity.Property(e => e.Phone).HasMaxLength(15);
 
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
@@ -529,7 +531,7 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.OrderFromExcels)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__OrderFrom__Clien__1F63A897");
+                    .HasConstraintName("FK__OrderFrom__Clien__22401542");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
