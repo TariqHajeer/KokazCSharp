@@ -258,7 +258,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                             Country = item.Country,
                             Note = item.Note,
                             Phone = item.Phone,
-                            RecipientName = item.RecipientName
+                            RecipientName = item.RecipientName,
+                            ClientId = AuthoticateUserId(),
                         };
                         await _context.AddAsync(orderFromExcel);
                     }
@@ -285,7 +286,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                         _context.Add(order);
                     }
                 }
-                
+
                 await _context.SaveChangesAsync();
                 await dbTransacrion.CommitAsync();
                 var newOrdersDontSendCount = await this._context.Orders
@@ -596,8 +597,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("OrdersNeedToRevision")]
         public async Task<IActionResult> OrdersNeedToRevision()
         {
-            return Ok();
+            var orders = await _context.OrderFromExcels.Where(c => c.ClientId == AuthoticateUserId()).ToListAsync();
+            return Ok(orders);
         }
-
     }
 }
