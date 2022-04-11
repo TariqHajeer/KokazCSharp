@@ -239,7 +239,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 return Conflict(errors);
             }
-
+            bool correct = false;
             var dbTransacrion = this._context.Database.BeginTransaction();
             try
             {
@@ -262,6 +262,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                             ClientId = AuthoticateUserId(),
                         };
                         await _context.AddAsync(orderFromExcel);
+                        correct = true;
                     }
                     else
                     {
@@ -297,6 +298,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                     NewOrdersDontSendCount = newOrdersDontSendCount
                 };
                 await _notificationHub.AdminNotifcation(adminNotification);
+                return Ok(correct);
             }
             catch (Exception ex)
             {
@@ -304,7 +306,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-            return Ok();
+            
         }
         /// <summary>
         /// 
@@ -599,6 +601,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         {
             var orders = await _context.OrderFromExcels.Where(c => c.ClientId == AuthoticateUserId()).ToListAsync();
             return Ok(orders);
+        }
+        [HttpPut("CorrectOrderCountry")]
+        public async Task<IActionResult> CorrectOrderCountry(Dictionary<int, int> pairs)
+        {
+            var ids = pairs.Select(c => c.Key).ToList();
+            var orders = await _context.OrderFromExcels.Where(c => ids.Contains(c.Id)).ToListAsync();
+            return Ok();
         }
     }
 }
