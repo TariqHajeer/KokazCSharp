@@ -231,7 +231,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             var codes = excelOrder.Select(c => c.Code);
             var similarOrders = await _context.Orders.Where(c => codes.Contains(c.Code) && c.ClientId == AuthoticateUserId()).Select(c => c.Code).ToListAsync();
-            var simialrCodeInExcelTable = await _context.Orders.Where(c =>c.ClientId==AuthoticateUserId() && codes.Contains(c.Code)).Select(c=>c.Code).ToListAsync();
+            var simialrCodeInExcelTable = await _context.OrderFromExcels.Where(c => c.ClientId == AuthoticateUserId() && codes.Contains(c.Code)).Select(c => c.Code).ToListAsync();
             if (similarOrders.Any())
             {
                 errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
@@ -609,10 +609,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(orders);
         }
         [HttpPut("CorrectOrderCountry")]
-        public async Task<IActionResult> CorrectOrderCountry(Dictionary<int, int> pairs)
+        public async Task<IActionResult> CorrectOrderCountry(List<KeyValuePair<int,int>> pairs)
         {
             var ids = pairs.Select(c => c.Key).ToList();
-            var cids = pairs.Values.ToList();
+            var cids = pairs.Select(c => c.Value).ToList();
             var orders = await _context.OrderFromExcels.Where(c => ids.Contains(c.Id)).ToListAsync();
             var countries = await _context.Countries.Where(c => cids.Contains(c.Id)).ToListAsync();
             foreach (var item in pairs)
