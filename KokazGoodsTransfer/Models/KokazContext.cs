@@ -524,6 +524,12 @@ namespace KokazGoodsTransfer.Models
                 entity.Property(e => e.Phone).HasMaxLength(15);
 
                 entity.Property(e => e.RecipientName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.OrderFromExcels)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__OrderFrom__Clien__1F63A897");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
