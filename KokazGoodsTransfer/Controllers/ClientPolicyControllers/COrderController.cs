@@ -231,9 +231,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             var codes = excelOrder.Select(c => c.Code);
             var similarOrders = await _context.Orders.Where(c => codes.Contains(c.Code) && c.ClientId == AuthoticateUserId()).Select(c => c.Code).ToListAsync();
+            var simialrCodeInExcelTable = await _context.Orders.Where(c =>c.ClientId==AuthoticateUserId() && codes.Contains(c.Code)).Select(c=>c.Code).ToListAsync();
             if (similarOrders.Any())
             {
                 errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
+            }
+            if (simialrCodeInExcelTable.Any())
+            {
+                errors.Add($"الأكواد {string.Join(",", simialrCodeInExcelTable)} مكررة يجب مراجعة واجهة التصحيح");
             }
             if (errors.Any())
             {
