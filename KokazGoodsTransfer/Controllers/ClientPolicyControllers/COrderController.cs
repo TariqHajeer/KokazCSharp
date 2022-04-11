@@ -155,7 +155,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
         }
         [HttpPost("UploadExcel")]
-        public async Task<IActionResult> UploadExcel(IFormFile file, DateTime dateTime)
+        public async Task<IActionResult> UploadExcel(IFormFile file,[FromForm] DateTime dateTime)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             HashSet<string> errors = new HashSet<string>();
@@ -609,10 +609,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(orders);
         }
         [HttpPut("CorrectOrderCountry")]
-        public async Task<IActionResult> CorrectOrderCountry(List<KeyValuePair<int,int>> pairs)
+        public async Task<IActionResult> CorrectOrderCountry(List<KeyValuePair<int, int>> pairs)
         {
             var ids = pairs.Select(c => c.Key).ToList();
             var cids = pairs.Select(c => c.Value).ToList();
+
             var orders = await _context.OrderFromExcels.Where(c => ids.Contains(c.Id)).ToListAsync();
             var countries = await _context.Countries.Where(c => cids.Contains(c.Id)).ToListAsync();
             foreach (var item in pairs)
@@ -642,7 +643,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 };
                 _context.Add(order);
             }
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             var newOrdersDontSendCount = await this._context.Orders
                 .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .CountAsync();
