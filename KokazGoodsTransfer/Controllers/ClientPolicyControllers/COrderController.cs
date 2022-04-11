@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using ExcelDataReader;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
@@ -12,9 +14,9 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
@@ -151,6 +153,157 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 return BadRequest();
 
             }
+        }
+        [HttpPost("UploadExcel")]
+        public async Task<IActionResult> UploadExcel(IFormFile file, DateTime dateTime)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            HashSet<string> errors = new HashSet<string>();
+            var excelOrder = new List<OrderFromExcelDto>();
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+                stream.Position = 0;
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    while (reader.Read())
+                    {
+                        var order = new OrderFromExcelDto();
+                        if (!reader.IsDBNull(0))
+                        {
+                            order.Code = reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            errors.Add("يجب ملئ الكود ");
+                        }
+                        if (!reader.IsDBNull(1))
+                        {
+                            order.RecipientName = reader.GetValue(1).ToString();
+                        }
+                        if (!reader.IsDBNull(2))
+                        {
+                            order.Country = reader.GetValue(2).ToString();
+                        }
+                        else
+                        {
+                            errors.Add("يجب ملئ المحافظة");
+                        }
+                        if (!reader.IsDBNull(3))
+                        {
+                            if (Decimal.TryParse(reader.GetValue(3).ToString(), out var d))
+                            {
+                                order.Cost = d;
+                            }
+                            else
+                            {
+                                errors.Add("كلفة الطلب ليست رقم");
+                            }
+                        }
+                        else
+                        {
+                            errors.Add("كلفة الطلب إجبارية");
+                        }
+                        if (!reader.IsDBNull(4))
+                        {
+                            order.Address = reader.GetValue(4).ToString();
+                        }
+                        if (!reader.IsDBNull(5))
+                        {
+                            order.Phone = reader.GetValue(5).ToString();
+                            if (order.Phone.Length > 15)
+                            {
+                                errors.Add("رقم الهاتف لا يجب ان يكون اكبر من 15 رقم");
+                            }
+                        }
+                        else
+                        {
+                            errors.Add("رقم الهاتف إجباري");
+                        }
+                        if (!reader.IsDBNull(6))
+                        {
+                            order.Note = reader.GetValue(6).ToString();
+                        }
+                        excelOrder.Add(order);
+                    }
+
+                }
+            }
+            var codes = excelOrder.Select(c => c.Code);
+            var similarOrders = await _context.Orders.Where(c => codes.Contains(c.Code) && c.ClientId == AuthoticateUserId()).Select(c => c.Code).ToListAsync();
+            if (similarOrders.Any())
+            {
+                errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
+            }
+            if (errors.Any())
+            {
+                return Conflict(errors);
+            }
+
+            var dbTransacrion = this._context.Database.BeginTransaction();
+            try
+            {
+                var countriesName = excelOrder.Select(c => c.Country).Distinct().ToList();
+                var countries = await _context.Countries.Where(c => countriesName.Contains(c.Name)).ToListAsync();
+                foreach (var item in excelOrder)
+                {
+                    var country = countries.FirstOrDefault(c => c.Name == item.Country);
+                    if (country == null)
+                    {
+                        var orderFromExcel = new OrderFromExcel()
+                        {
+                            Address = item.Address,
+                            Code = item.Code,
+                            Cost = item.Cost,
+                            Country = item.Country,
+                            Note = item.Note,
+                            Phone = item.Phone,
+                            RecipientName = item.RecipientName
+                        };
+                        await _context.AddAsync(orderFromExcel);
+                    }
+                    else
+                    {
+                        var order = new Order()
+                        {
+                            Code = item.Code,
+                            CountryId = country.Id,
+                            Address = item.Address,
+                            RecipientName = item.RecipientName,
+                            RecipientPhones = item.Phone,
+                            ClientNote = item.Note,
+                            Cost = item.Cost,
+                            Date = dateTime,
+                            MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany,
+                            OrderplacedId = (int)OrderplacedEnum.Client,
+                            OrderStateId = (int)OrderStateEnum.Processing,
+                            ClientId = AuthoticateUserId(),
+                            CreatedBy = AuthoticateUserName(),
+                            DeliveryCost = country.DeliveryCost,
+                            IsSend = false,
+                        };
+                        _context.Add(order);
+                    }
+                }
+                
+                await _context.SaveChangesAsync();
+                await dbTransacrion.CommitAsync();
+                var newOrdersDontSendCount = await this._context.Orders
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+                .CountAsync();
+                AdminNotification adminNotification = new AdminNotification()
+                {
+                    NewOrdersDontSendCount = newOrdersDontSendCount
+                };
+                await _notificationHub.AdminNotifcation(adminNotification);
+            }
+            catch (Exception ex)
+            {
+                await dbTransacrion.RollbackAsync();
+                _logging.WriteExption(ex);
+                return BadRequest();
+            }
+            return Ok();
         }
         /// <summary>
         /// 
@@ -440,6 +593,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             await this._context.SaveChangesAsync();
             return Ok();
         }
+
 
     }
 }
