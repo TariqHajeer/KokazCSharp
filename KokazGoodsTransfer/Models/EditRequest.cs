@@ -1,12 +1,11 @@
-﻿using KokazGoodsTransfer.Models.Infrastrcuter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class EditRequest: IIdEntity
+    public partial class EditRequest
     {
         public int Id { get; set; }
         public int ClientId { get; set; }

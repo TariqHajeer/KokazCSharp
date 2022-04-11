@@ -24,7 +24,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<ClientPrint> ClientPrints { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual DbSet<Discount> Discounts { get; set; }
         public virtual DbSet<EditRequest> EditRequests { get; set; }
@@ -36,6 +35,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Notfication> Notfications { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderFromExcel> OrderFromExcels { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
@@ -59,6 +59,11 @@ namespace KokazGoodsTransfer.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -122,19 +127,19 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.ApproveAgentEditOrderRequests)
                     .HasForeignKey(d => d.AgentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__Agent__0FEC5ADD");
+                    .HasConstraintName("FK__ApproveAg__Agent__02FC7413");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.ApproveAgentEditOrderRequests)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__IsApp__0E04126B");
+                    .HasConstraintName("FK__ApproveAg__Order__03F0984C");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ApproveAgentEditOrderRequests)
                     .HasForeignKey(d => d.OrderPlacedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__Order__0EF836A4");
+                    .HasConstraintName("FK__ApproveAg__Order__04E4BC85");
             });
 
             modelBuilder.Entity<Client>(entity =>
@@ -213,12 +218,12 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPri__Money__5535A963");
+                    .HasConstraintName("FK__ClientPri__Money__06CD04F7");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.ClientPrints)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPri__Order__5629CD9C");
+                    .HasConstraintName("FK__ClientPri__Order__07C12930");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.ClientPrints)
@@ -242,15 +247,6 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.InverseMediator)
                     .HasForeignKey(d => d.MediatorId)
                     .HasConstraintName("FK__Country__mediato__74794A92");
-            });
-
-            modelBuilder.Entity<Currency>(entity =>
-            {
-                entity.ToTable("Currency");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<DisAcceptOrder>(entity =>
@@ -320,12 +316,12 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditReque__Accep__55F4C372");
+                    .HasConstraintName("FK__EditReque__Clien__10566F31");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EditRequests)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__EditReque__UserI__56E8E7AB");
+                    .HasConstraintName("FK__EditReque__UserI__114A936A");
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -396,7 +392,7 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Markets)
                     .HasForeignKey(d => d.ClientId)
-                    .HasConstraintName("FK__Market__ClientId__5DCAEF64");
+                    .HasConstraintName("FK__Market__ClientId__160F4887");
             });
 
             modelBuilder.Entity<MoenyPlaced>(entity =>
@@ -420,17 +416,17 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Notficati__Clien__6442E2C9");
+                    .HasConstraintName("FK__Notficati__Clien__17036CC0");
 
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__Notficati__Money__65370702");
+                    .HasConstraintName("FK__Notficati__Money__17F790F9");
 
                 entity.HasOne(d => d.OrderPlaced)
                     .WithMany(p => p.Notfications)
                     .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__Notficati__Order__662B2B3B");
+                    .HasConstraintName("FK__Notficati__Order__18EBB532");
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -509,6 +505,33 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK_Order_Region");
+            });
+
+            modelBuilder.Entity<OrderFromExcel>(entity =>
+            {
+                entity.ToTable("OrderFromExcel");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreateDate).HasColumnType("date");
+
+                entity.Property(e => e.Phone).HasMaxLength(15);
+
+                entity.Property(e => e.RecipientName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.OrderFromExcels)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__OrderFrom__Clien__22401542");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
@@ -706,10 +729,10 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("PointsSetting");
 
-                entity.HasIndex(e => e.Points, "UQ__PointsSe__DA8267865B952CBA")
+                entity.HasIndex(e => e.Points, "UQ__PointsSe__DA826786AAEFC670")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Money, "UQ__PointsSe__FA951B4625038075")
+                entity.HasIndex(e => e.Money, "UQ__PointsSe__FA951B46B4297ACE")
                     .IsUnique();
 
                 entity.Property(e => e.Money).HasColumnType("money");
