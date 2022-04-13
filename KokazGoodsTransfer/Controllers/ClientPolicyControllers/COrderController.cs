@@ -155,7 +155,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
         }
         [HttpPost("UploadExcel")]
-        public async Task<IActionResult> UploadExcel(IFormFile file,[FromForm] DateTime dateTime)
+        public async Task<IActionResult> UploadExcel(IFormFile file, [FromForm] DateTime dateTime)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             HashSet<string> errors = new HashSet<string>();
@@ -621,7 +621,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 var ofe = orders.FirstOrDefault(c => c.Id == item.Key);
                 if (ofe == null)
                     continue;
-
                 var country = countries.FirstOrDefault(c => c.Id == item.Value);
                 var order = new Order()
                 {
@@ -643,6 +642,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 };
                 _context.Add(order);
             }
+            _context.OrderFromExcels.RemoveRange(orders);
             _context.SaveChanges();
             var newOrdersDontSendCount = await this._context.Orders
                 .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
