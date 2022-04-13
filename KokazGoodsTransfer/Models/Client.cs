@@ -1,12 +1,11 @@
-﻿using KokazGoodsTransfer.Models.Infrastrcuter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Client:IIndex
+    public partial class Client
     {
         public Client()
         {
@@ -15,6 +14,7 @@ namespace KokazGoodsTransfer.Models
             EditRequests = new HashSet<EditRequest>();
             Markets = new HashSet<Market>();
             Notfications = new HashSet<Notfication>();
+            OrderFromExcels = new HashSet<OrderFromExcel>();
             OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
             PaymentRequests = new HashSet<PaymentRequest>();
@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<EditRequest> EditRequests { get; set; }
         public virtual ICollection<Market> Markets { get; set; }
         public virtual ICollection<Notfication> Notfications { get; set; }
+        public virtual ICollection<OrderFromExcel> OrderFromExcels { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
