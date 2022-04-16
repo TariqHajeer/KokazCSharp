@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<MoenyPlaced> MoenyPlaceds { get; set; }
         public virtual DbSet<Notfication> Notfications { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderFromExcel> OrderFromExcels { get; set; }
         public virtual DbSet<OrderClientPaymnet> OrderClientPaymnets { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
@@ -642,6 +643,33 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK_Order_Region");
+            });
+
+            modelBuilder.Entity<OrderFromExcel>(entity =>
+            {
+                entity.ToTable("OrderFromExcel");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreateDate).HasColumnType("date");
+
+                entity.Property(e => e.Phone).HasMaxLength(15);
+
+                entity.Property(e => e.RecipientName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.OrderFromExcels)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__OrderFrom__Clien__22401542");
             });
 
             modelBuilder.Entity<OrderClientPaymnet>(entity =>

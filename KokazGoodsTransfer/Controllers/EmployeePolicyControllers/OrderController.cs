@@ -15,7 +15,6 @@ using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
@@ -286,8 +285,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var transaction = this._context.Database.BeginTransaction();
             try
             {
-
-
                 foreach (var item in createMultipleOrders)
                 {
                     var isExisit = await this._context.Orders.Where(c => c.Code == item.Code && c.ClientId == item.ClientId).AnyAsync();
