@@ -4,18 +4,15 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Swashbuckle.Swagger.Annotations;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.HubsConfig;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
@@ -110,7 +107,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public async Task<IActionResult> GetPrint([FromQuery] PagingDto pagingDto, [FromQuery] PrintFilterDto printFilterDto)
         {
             var prints = this._context.AgentPrints.AsQueryable();
-            
+
             if (printFilterDto.Date != null)
             {
                 prints = prints.Where(c => c.Date == printFilterDto.Date);
@@ -128,8 +125,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("Print")]
         public async Task<IActionResult> GetPrintById([FromQuery] int printNumber)
         {
-            var printed = await this._context.AgentPrints.Where(c => c.Id== printNumber)
-                .Include(c=>c.AgentPrintDetails)
+            var printed = await this._context.AgentPrints.Where(c => c.Id == printNumber)
+                .Include(c => c.AgentPrintDetails)
                 .FirstOrDefaultAsync();
             if (printed == null)
             {

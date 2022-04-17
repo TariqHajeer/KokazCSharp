@@ -21,11 +21,8 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
-        public virtual DbSet<AgnetPrint> AgnetPrints { get; set; }
         public virtual DbSet<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
-        public virtual DbSet<ClientPayment> ClientPayments { get; set; }
-        public virtual DbSet<ClientPaymentDetail> ClientPaymentDetails { get; set; }
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
         public virtual DbSet<ClientPrint> ClientPrints { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
@@ -41,7 +38,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<Notfication> Notfications { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderFromExcel> OrderFromExcels { get; set; }
-        public virtual DbSet<OrderClientPaymnet> OrderClientPaymnets { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
@@ -95,19 +91,22 @@ namespace KokazGoodsTransfer.Models
 
             modelBuilder.Entity<AgentOrderPrint>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.OrderId, e.AgentPrintId })
+                    .HasName("PK__AgentOrd__CAFCEB4A1121FD0D");
 
                 entity.ToTable("AgentOrderPrint");
 
                 entity.HasOne(d => d.AgentPrint)
-                    .WithMany()
+                    .WithMany(p => p.AgentOrderPrints)
                     .HasForeignKey(d => d.AgentPrintId)
-                    .HasConstraintName("FK__AgentOrde__Agent__02C769E9");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AgentOrde__Agent__336AA144");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany()
+                    .WithMany(p => p.AgentOrderPrints)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__AgentOrde__Order__03BB8E22");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AgentOrde__Order__345EC57D");
             });
 
             modelBuilder.Entity<AgentPrint>(entity =>
@@ -157,37 +156,7 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.AgentPrintDetails)
                     .HasForeignKey(d => d.AgentPrintId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__AgentPrin__Agent__756D6ECB");
-            });
-
-            modelBuilder.Entity<AgnetPrint>(entity =>
-            {
-                entity.ToTable("AgnetPrint");
-
-                entity.Property(e => e.ClientName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Country)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Region).HasMaxLength(50);
-
-                entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
-
-                entity.HasOne(d => d.Print)
-                    .WithMany(p => p.AgnetPrints)
-                    .HasForeignKey(d => d.PrintId)
-                    .HasConstraintName("FK_AgnetPrint_Printed");
+                    .HasConstraintName("FK__AgentPrin__Agent__308E3499");
             });
 
             modelBuilder.Entity<ApproveAgentEditOrderRequest>(entity =>
@@ -245,66 +214,6 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Clients_Users");
-            });
-
-            modelBuilder.Entity<ClientPayment>(entity =>
-            {
-                entity.ToTable("ClientPayment");
-
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.Property(e => e.DestinationName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.DestinationPhone)
-                    .IsRequired()
-                    .HasMaxLength(11)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.PrinterName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<ClientPaymentDetail>(entity =>
-            {
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Country)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.LastTotal).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.PayForClient).HasColumnType("money");
-
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
-
-                entity.HasOne(d => d.ClientPayment)
-                    .WithMany(p => p.ClientPaymentDetails)
-                    .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__ClientPay__Clien__10216507");
-
-                entity.HasOne(d => d.MoneyPlaced)
-                    .WithMany(p => p.ClientPaymentDetails)
-                    .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPay__Money__11158940");
-
-                entity.HasOne(d => d.OrderPlaced)
-                    .WithMany(p => p.ClientPaymentDetails)
-                    .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPay__Order__1209AD79");
             });
 
             modelBuilder.Entity<ClientPhone>(entity =>
@@ -425,11 +334,6 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("Discount");
 
                 entity.Property(e => e.Money).HasColumnType("money");
-
-                entity.HasOne(d => d.ClientPayment)
-                    .WithMany(p => p.Discounts)
-                    .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__Discount__Client__7EF6D905");
 
                 entity.HasOne(d => d.Printed)
                     .WithMany(p => p.Discounts)
@@ -670,25 +574,6 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__OrderFrom__Clien__22401542");
-            });
-
-            modelBuilder.Entity<OrderClientPaymnet>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("OrderClientPaymnet");
-
-                entity.HasOne(d => d.ClientPayment)
-                    .WithMany()
-                    .HasForeignKey(d => d.ClientPaymentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__OrderClie__Clien__0880433F");
-
-                entity.HasOne(d => d.Order)
-                    .WithMany()
-                    .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__OrderClie__Order__078C1F06");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
@@ -950,11 +835,6 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Receipt_Clients");
-
-                entity.HasOne(d => d.ClientPayment)
-                    .WithMany(p => p.Receipts)
-                    .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__Receipt__ClientP__00DF2177");
 
                 entity.HasOne(d => d.Print)
                     .WithMany(p => p.Receipts)

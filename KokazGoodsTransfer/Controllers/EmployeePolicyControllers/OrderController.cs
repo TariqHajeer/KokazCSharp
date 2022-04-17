@@ -216,69 +216,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPatch]
-        public IActionResult Edit([FromBody] UpdateOrder updateOrder)
-        {
-
-            try
-            {
-                var order = this._context.Orders.Find(updateOrder.Id);
-                OrderLog log = order;
-                this._context.Add(log);
-                if (order.Code != updateOrder.Code)
-                {
-                    if (this._context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
-                    {
-                        this.err.Messges.Add($"الكود{order.Code} مكرر");
-                        return Conflict(err);
-                    }
-                }
-                order.Code = updateOrder.Code;
-
-                if (order.AgentId != updateOrder.AgentId)
-                {
-                    order.OrderStateId = (int)OrderStateEnum.Processing;
-                    order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                    order.OrderplacedId = (int)OrderplacedEnum.Store;
-                }
-                if (order.ClientId != updateOrder.ClientId)
-                {
-                    if (order.IsClientDiliverdMoney)
-                    {
-                        order.IsClientDiliverdMoney = false;
-                        Receipt receipt = new Receipt()
-                        {
-                            IsPay = true,
-                            ClientId = order.ClientId,
-                            Amount = ((order.Cost - order.DeliveryCost) * -1),
-                            CreatedBy = "النظام",
-                            Manager = "",
-                            Date = DateTime.Now,
-                            About = "",
-                            Note = " بعد تعديل طلب بكود " + order.Code,
-                        };
-                        this._context.Add(receipt);
-                    }
-                }
-                order.DeliveryCost = updateOrder.DeliveryCost;
-                order.Cost = updateOrder.Cost;
-                order.ClientId = updateOrder.ClientId;
-                order.AgentId = updateOrder.AgentId;
-                order.CountryId = updateOrder.CountryId;
-                order.RegionId = updateOrder.RegionId;
-                order.Address = updateOrder.Address;
-                order.RecipientName = updateOrder.RecipientName;
-                order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
-                order.Note = updateOrder.Note;
-                this._context.Update(order);
-                this._context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest(ex.Message);
-            }
-        }
         [HttpPost("createMultiple")]
         public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
         {
@@ -892,7 +829,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(err);
             }
 
-            var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
 
             var agent = orders.FirstOrDefault().Agent;
             var agnetPrint = new AgentPrint()
@@ -930,11 +866,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Phone = item.RecipientPhones,
                         Region = item.Region?.Name
                     };
+                    this._context.Add(agentPrintDetials);
                     this._context.Add(agnetOrderPrint);
                 }
                 this._context.SaveChanges();
                 transaction.Commit();
-                return Ok(new { agnetPrint.Id });
+                return Ok(new { printNumber = agnetPrint.Id });
             }
             catch (Exception ex)
             {
@@ -943,6 +880,74 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
 
+            //var ids = dateWithId.Ids;
+            //var orders = this._context.Orders
+            //    .Include(c => c.Agent)
+            //    .ThenInclude(c => c.UserPhones)
+            //    .Include(c => c.Client)
+            //    .Include(c => c.Country)
+            //    .Where(c => ids.Contains(c.Id)).ToList();
+
+            //if (orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store) != null)
+            //{
+            //    this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
+            //    return Conflict(err);
+            //}
+
+            //var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
+            //var printNumber = oldPrint?.PrintNmber ?? 0;
+            //++printNumber;
+            //var agent = orders.FirstOrDefault().Agent;
+            //var newPrint = new Printed()
+            //{
+            //    PrintNmber = printNumber,
+            //    Date = dateWithId.Date,
+            //    Type = PrintType.Agent,
+            //    PrinterName = this.AuthoticateUserName(),
+            //    DestinationName = agent.Name,
+            //    DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
+            //};
+            //var transaction = this._context.Database.BeginTransaction();
+            //try
+            //{
+            //    this._context.Printeds.Add(newPrint);
+            //    this._context.SaveChanges();
+            //    foreach (var item in orders)
+            //    {
+
+
+            //        item.OrderplacedId = (int)OrderplacedEnum.Way;
+            //        this._context.Update(item);
+            //        this._context.Entry(item).Reference(c => c.Region).Load();
+            //        var orderPrint = new OrderPrint()
+            //        {
+            //            PrintId = newPrint.Id,
+            //            OrderId = item.Id
+            //        };
+            //        var AgentPrint = new AgnetPrint()
+            //        {
+            //            Code = item.Code,
+            //            ClientName = item.Client.Name,
+            //            Note = item.Note,
+            //            Total = item.Cost,
+            //            Country = item.Country.Name,
+            //            PrintId = newPrint.Id,
+            //            Phone = item.RecipientPhones,
+            //            Region = item.Region?.Name
+            //        };
+            //        this._context.Add(orderPrint);
+            //        this._context.Add(AgentPrint);
+            //    }
+            //    this._context.SaveChanges();
+            //    transaction.Commit();
+            //    return Ok(new { printNumber });
+            //}
+            //catch (Exception ex)
+            //{
+            //    transaction.Rollback();
+            //    _logging.WriteExption(ex);
+            //    return BadRequest();
+            //}
         }
         /// <summary>
         /// <!--استلام حالة شحنة-->
@@ -1170,17 +1175,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetAgentPrint")]
         public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
         {
-            var ordersPintIq = this._context.Printeds.Where(c => c.Type == PrintType.Agent);
+            var ordersPrint = this._context.AgentPrints.AsQueryable();
             if (number != null)
             {
-                ordersPintIq = ordersPintIq.Where(c => c.PrintNmber == number);
+                ordersPrint = ordersPrint.Where(c => c.Id == number);
             }
-            if (agnetName != null)
+            if (!String.IsNullOrWhiteSpace(agnetName))
             {
-                ordersPintIq = ordersPintIq.Where(c => c.DestinationName == agnetName);
+                ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
             }
-            var total = ordersPintIq.Count();
-            var orders = ordersPintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            var total = ordersPrint.Count();
+            var orders = ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         /// <summary>
@@ -1191,6 +1196,140 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
+            //var orders = this._context.Orders
+            //.Include(c => c.Client)
+            //.ThenInclude(c => c.ClientPhones)
+            //.Include(c => c.Country)
+            //.Include(c => c.Orderplaced)
+            //.Include(c => c.MoenyPlaced)
+            //.Where(c => deleiverMoneyForClientDto.DateWithId.Ids.Contains(c.Id)).ToList();
+            //var client = orders.FirstOrDefault().Client;
+            //if (orders.Any(c => c.ClientId != client.Id))
+            //{
+            //    this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
+            //    return Conflict(err);
+            //}
+            //semaphore.Wait();
+            //var clientPayment = new ClientPayment()
+            //{
+            //    Date = deleiverMoneyForClientDto.DateWithId.Date,
+            //    PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
+            //    DestinationName = client.Name,
+            //    DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+
+            //};
+
+            //var transaction = this._context.Database.BeginTransaction();
+            //try
+            //{
+            //    this._context.ClientPayments.Add(clientPayment);
+            //    this._context.SaveChanges();
+            //    if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
+            //    {
+            //        var recepits = this._context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+            //        recepits.ForEach(c =>
+            //        {
+            //            c.ClientPaymentId = clientPayment.Id;
+            //            this._context.Update(c);
+            //        });
+            //        this._context.SaveChanges();
+            //    }
+            //    int totalPoints = 0;
+
+            //    foreach (var item in orders)
+            //    {
+
+            //        if (!item.IsClientDiliverdMoney)
+            //        {
+            //            if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+            //            {
+            //                totalPoints += item.Country.Points;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+            //            {
+            //                totalPoints -= item.Country.Points;
+            //            }
+            //        }
+
+            //        if (item.OrderplacedId > (int)OrderplacedEnum.Way)
+            //        {
+            //            item.OrderStateId = (int)OrderStateEnum.Finished;
+            //            if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+            //            {
+            //                item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
+            //            }
+
+            //        }
+
+            //        item.IsClientDiliverdMoney = true;
+            //        var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
+            //        item.ClientPaied = item.ShouldToPay();
+            //        this._context.Update(item);
+            //        this._context.SaveChanges();
+            //        var orderClientPaymnet = new OrderClientPaymnet()
+            //        {
+            //            OrderId = item.Id,
+            //            ClientPaymentId = clientPayment.Id
+            //        };
+
+            //        var clientPaymentDetials = new ClientPaymentDetail()
+            //        {
+            //            Code = item.Code,
+            //            Total = item.Cost,
+            //            Country = item.Country.Name,
+            //            ClientPaymentId = clientPayment.Id,
+            //            Phone = item.RecipientPhones,
+            //            DeliveryCost = item.DeliveryCost,
+            //            LastTotal = item.OldCost,
+            //            Note = item.Note,
+            //            MoneyPlacedId = item.MoenyPlacedId,
+            //            OrderPlacedId = item.OrderplacedId,
+            //            PayForClient = currentPay
+            //        };
+
+            //        this._context.Add(orderClientPaymnet);
+            //        this._context.Add(clientPaymentDetials);
+            //        this._context.SaveChanges();
+            //    }
+            //    client.Points += totalPoints;
+            //    this._context.Update(client);
+            //    this._context.SaveChanges();
+            //    if (deleiverMoneyForClientDto.PointsSettingId != null)
+            //    {
+            //        var pointSetting = this._context.PointsSettings.Find(deleiverMoneyForClientDto.PointsSettingId);
+
+            //        Discount discount = new Discount()
+            //        {
+            //            Money = pointSetting.Money,
+            //            Points = pointSetting.Points,
+            //            ClientPaymentId= clientPayment.Id
+            //        };
+            //        this._context.Add(discount);
+            //        this._context.SaveChanges();
+            //    }
+            //    this._context.Add(new Notfication()
+            //    {
+            //        Note = "تم تسديدك برقم " + clientPayment.Id,
+            //        ClientId = client.Id
+            //    });
+            //    this._context.SaveChanges();
+            //    transaction.Commit();
+            //    semaphore.Release();
+            //    return Ok(new { clientPayment.Id });
+            //}
+            //catch (Exception ex)
+            //{
+
+            //    semaphore.Release();
+            //    transaction.Rollback();
+            //    _logging.WriteExption(ex);
+            //    return BadRequest();
+
+
+            //}
             var orders = this._context.Orders
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
@@ -1205,26 +1344,30 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(err);
             }
             semaphore.Wait();
-            var clientPayment = new ClientPayment()
+            var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
+            var printNumber = oldPrint?.PrintNmber ?? 0;
+
+            ++printNumber;
+            var newPrint = new Printed()
             {
+                PrintNmber = printNumber,
                 Date = deleiverMoneyForClientDto.DateWithId.Date,
+                Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-
             };
-
             var transaction = this._context.Database.BeginTransaction();
             try
             {
-                this._context.ClientPayments.Add(clientPayment);
+                this._context.Printeds.Add(newPrint);
                 this._context.SaveChanges();
                 if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
                     var recepits = this._context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
                     recepits.ForEach(c =>
                     {
-                        c.ClientPaymentId = clientPayment.Id;
+                        c.PrintId = newPrint.Id;
                         this._context.Update(c);
                     });
                     this._context.SaveChanges();
@@ -1264,29 +1407,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     item.ClientPaied = item.ShouldToPay();
                     this._context.Update(item);
                     this._context.SaveChanges();
-                    var orderClientPaymnet = new OrderClientPaymnet()
+                    var orderPrint = new OrderPrint()
                     {
-                        OrderId = item.Id,
-                        ClientPaymentId = clientPayment.Id
+                        PrintId = newPrint.Id,
+                        OrderId = item.Id
                     };
 
-                    var clientPaymentDetials = new ClientPaymentDetail()
+                    var clientPrint = new ClientPrint()
                     {
                         Code = item.Code,
                         Total = item.Cost,
                         Country = item.Country.Name,
-                        ClientPaymentId = clientPayment.Id,
+                        PrintId = newPrint.Id,
                         Phone = item.RecipientPhones,
-                        DeliveryCost = item.DeliveryCost,
+                        DeliveCost = item.DeliveryCost,
+                        Date = item.Date,
                         LastTotal = item.OldCost,
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         PayForClient = currentPay
                     };
-
-                    this._context.Add(orderClientPaymnet);
-                    this._context.Add(clientPaymentDetials);
+                    this._context.Add(orderPrint);
+                    this._context.Add(clientPrint);
                     this._context.SaveChanges();
                 }
                 client.Points += totalPoints;
@@ -1300,20 +1443,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         Money = pointSetting.Money,
                         Points = pointSetting.Points,
-                        ClientPaymentId= clientPayment.Id
+                        PrintedId = newPrint.Id
                     };
                     this._context.Add(discount);
                     this._context.SaveChanges();
                 }
                 this._context.Add(new Notfication()
                 {
-                    Note = "تم تسديدك برقم " + clientPayment.Id,
+                    Note = "تم تسديدك برقم " + printNumber,
                     ClientId = client.Id
                 });
                 this._context.SaveChanges();
                 transaction.Commit();
                 semaphore.Release();
-                return Ok(new { clientPayment.Id });
+                return Ok(new { printNumber });
             }
             catch (Exception ex)
             {
@@ -1349,7 +1492,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(err);
             }
             semaphore.Wait();
-            
+
             var clientPaymnet = new ClientPayment()
             {
                 Date = idsAndDate.Date,
@@ -1500,12 +1643,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrderByAgnetPrintNumber")]
         public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
         {
-            var printed = this._context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
-                .Include(c => c.AgnetPrints)
-                .FirstOrDefault();
+            var printed = this._context.AgentPrints.Include(c => c.AgentPrintDetails).FirstOrDefault(c => c.Id == printNumber);
             if (printed == null)
             {
-
                 this.err.Messges.Add($"رقم الطباعة غير موجود");
                 return Conflict(this.err);
             }

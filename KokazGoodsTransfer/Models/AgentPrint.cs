@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public AgentPrint()
         {
+            AgentOrderPrints = new HashSet<AgentOrderPrint>();
             AgentPrintDetails = new HashSet<AgentPrintDetail>();
         }
 
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Models
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
 
-        public virtual ICollection<AgentPrintDetail> AgentPrintDetails { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
+        public virtual ICollection<AgentPrintDetail> AgentPrintDetails { get; set; }
     }
 }
