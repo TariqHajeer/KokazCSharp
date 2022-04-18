@@ -167,7 +167,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      {
                          return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
                      }));
-            
+
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
@@ -362,13 +362,20 @@ namespace KokazGoodsTransfer.Dtos.Common
                     {
                         return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);
                     }));
+            CreateMap<AgentPrint, PrintOrdersDto>()
+                .ForMember(c => c.PrintNmber, opt => opt.MapFrom(c => c.Id))
+                .ForMember(c => c.Receipts, opt => opt.Ignore())
+                .ForMember(c => c.Discount, opt => opt.Ignore())
+                .ForMember(c => c.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<PrintDto[]>(obj.AgentPrintDetails);
+                }));
+
 
             CreateMap<Printed, PrintOrdersDto>()
-
                 .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
                          List<PrintDto> x = new List<PrintDto>();
-                         x.AddRange(context.Mapper.Map<PrintDto[]>(obj.AgnetPrints));
                          x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
                          return x;
                      }))
@@ -379,11 +386,9 @@ namespace KokazGoodsTransfer.Dtos.Common
                 .ForMember(c => c.Discount, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<DiscountDto>(obj.Discounts.FirstOrDefault());
-                }))
-                ;
+                }));
+            CreateMap<AgentPrintDetail, PrintDto>();
             CreateMap<Discount, DiscountDto>();
-
-            CreateMap<AgnetPrint, PrintDto>();
             CreateMap<ClientPrint, PrintDto>()
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {

@@ -4,18 +4,15 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Swashbuckle.Swagger.Annotations;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.HubsConfig;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
@@ -109,26 +106,27 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("Prints")]
         public async Task<IActionResult> GetPrint([FromQuery] PagingDto pagingDto, [FromQuery] PrintFilterDto printFilterDto)
         {
-            var printeds = this._context.Printeds.Where(c => c.Type == PrintType.Agent);
+            var prints = this._context.AgentPrints.AsQueryable();
+
             if (printFilterDto.Date != null)
             {
-                printeds = printeds.Where(c => c.Date == printFilterDto.Date);
+                prints = prints.Where(c => c.Date == printFilterDto.Date);
             }
             if (printFilterDto.Number != null)
             {
-                printeds = printeds.Where(c => c.PrintNmber == printFilterDto.Number);
+                prints = prints.Where(c => c.Id == printFilterDto.Number);
             }
-            printeds = printeds.Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId()));
-            var total = await printeds.CountAsync();
-            var list = await printeds.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page)
+            prints = prints.Where(c => c.AgentOrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId()));
+            var total = await prints.CountAsync();
+            var list = await prints.Skip(pagingDto.Page - 1).Take(pagingDto.RowCount * pagingDto.Page)
                 .ToListAsync();
             return Ok(new { total, Data = _mapper.Map<PrintOrdersDto[]>(list) });
         }
         [HttpGet("Print")]
         public async Task<IActionResult> GetPrintById([FromQuery] int printNumber)
         {
-            var printed = await this._context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Agent)
-                .Include(c => c.AgnetPrints)
+            var printed = await this._context.AgentPrints.Where(c => c.Id == printNumber)
+                .Include(c => c.AgentPrintDetails)
                 .FirstOrDefaultAsync();
             if (printed == null)
             {
@@ -183,8 +181,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 TotalOrderInSotre = await this._context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).CountAsync(),
                 TotalOrderInWay = await this._context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).CountAsync(),
                 TotlaOwedOrder = await this._context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))).CountAsync(),
-                TotlaPrintOrder = await this._context.Printeds.Where(c => c.Type == PrintType.Agent)
-                .Where(c => c.OrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).CountAsync(),
+                TotlaPrintOrder = await this._context.AgentPrints.Where(c=>c.AgentOrderPrints.Any(c=>c.Order.AgentId==AuthoticateUserId())).CountAsync(),
                 TotalOrderSuspended = await this._context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany)).CountAsync()
             };
             return Ok(mainStatics);

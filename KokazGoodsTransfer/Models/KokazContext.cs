@@ -18,7 +18,9 @@ namespace KokazGoodsTransfer.Models
         }
 
         public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
-        public virtual DbSet<AgnetPrint> AgnetPrints { get; set; }
+        public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
+        public virtual DbSet<AgentPrint> AgentPrints { get; set; }
+        public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
         public virtual DbSet<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<ClientPhone> ClientPhones { get; set; }
@@ -87,21 +89,60 @@ namespace KokazGoodsTransfer.Models
                     .HasConstraintName("FK_AgentCountr_Country");
             });
 
-            modelBuilder.Entity<AgnetPrint>(entity =>
+            modelBuilder.Entity<AgentOrderPrint>(entity =>
             {
-                entity.ToTable("AgnetPrint");
+                entity.HasKey(e => new { e.OrderId, e.AgentPrintId })
+                    .HasName("PK__AgentOrd__CAFCEB4A1121FD0D");
 
+                entity.ToTable("AgentOrderPrint");
+
+                entity.HasOne(d => d.AgentPrint)
+                    .WithMany(p => p.AgentOrderPrints)
+                    .HasForeignKey(d => d.AgentPrintId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AgentOrde__Agent__336AA144");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.AgentOrderPrints)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AgentOrde__Order__345EC57D");
+            });
+
+            modelBuilder.Entity<AgentPrint>(entity =>
+            {
+                entity.ToTable("AgentPrint");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.DestinationName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DestinationPhone)
+                    .IsRequired()
+                    .HasMaxLength(11)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PrinterName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<AgentPrintDetail>(entity =>
+            {
                 entity.Property(e => e.ClientName)
                     .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Country)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
@@ -111,10 +152,11 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
 
-                entity.HasOne(d => d.Print)
-                    .WithMany(p => p.AgnetPrints)
-                    .HasForeignKey(d => d.PrintId)
-                    .HasConstraintName("FK_AgnetPrint_Printed");
+                entity.HasOne(d => d.AgentPrint)
+                    .WithMany(p => p.AgentPrintDetails)
+                    .HasForeignKey(d => d.AgentPrintId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AgentPrin__Agent__308E3499");
             });
 
             modelBuilder.Entity<ApproveAgentEditOrderRequest>(entity =>
