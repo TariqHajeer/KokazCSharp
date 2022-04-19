@@ -216,6 +216,69 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPatch]
+        public IActionResult Edit([FromBody] UpdateOrder updateOrder)
+        {
+
+            try
+            {
+                var order = this._context.Orders.Find(updateOrder.Id);
+                OrderLog log = order;
+                this._context.Add(log);
+                if (order.Code != updateOrder.Code)
+                {
+                    if (this._context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                    {
+                        this.err.Messges.Add($"الكود{order.Code} مكرر");
+                        return Conflict(err);
+                    }
+                }
+                order.Code = updateOrder.Code;
+
+                if (order.AgentId != updateOrder.AgentId)
+                {
+                    order.OrderStateId = (int)OrderStateEnum.Processing;
+                    order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                    order.OrderplacedId = (int)OrderplacedEnum.Store;
+                }
+                if (order.ClientId != updateOrder.ClientId)
+                {
+                    if (order.IsClientDiliverdMoney)
+                    {
+                        order.IsClientDiliverdMoney = false;
+                        Receipt receipt = new Receipt()
+                        {
+                            IsPay = true,
+                            ClientId = order.ClientId,
+                            Amount = ((order.Cost - order.DeliveryCost) * -1),
+                            CreatedBy = "النظام",
+                            Manager = "",
+                            Date = DateTime.Now,
+                            About = "",
+                            Note = " بعد تعديل طلب بكود " + order.Code,
+                        };
+                        this._context.Add(receipt);
+                    }
+                }
+                order.DeliveryCost = updateOrder.DeliveryCost;
+                order.Cost = updateOrder.Cost;
+                order.ClientId = updateOrder.ClientId;
+                order.AgentId = updateOrder.AgentId;
+                order.CountryId = updateOrder.CountryId;
+                order.RegionId = updateOrder.RegionId;
+                order.Address = updateOrder.Address;
+                order.RecipientName = updateOrder.RecipientName;
+                order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+                order.Note = updateOrder.Note;
+                this._context.Update(order);
+                this._context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logging.WriteExption(ex);
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost("createMultiple")]
         public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
         {
