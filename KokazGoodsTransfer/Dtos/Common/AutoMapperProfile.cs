@@ -263,7 +263,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                   }))
                 .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Agent).LastOrDefault()?.Print?.PrintNmber ?? null;
+                    return obj.AgentOrderPrints.LastOrDefault()?.AgentPrint?.Id ?? null;
                 }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                    {
@@ -275,7 +275,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                      }))
                 .ForMember(c => c.AgentPrint, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent));
+                    return context.Mapper.Map<PrintOrdersDto[]>(obj.AgentOrderPrints.Select(c => c.AgentPrint)).ToList();
                 }))
             .ForMember(c => c.ClientPrint, opt => opt.MapFrom((obj, dto, i, context) =>
              {
@@ -293,7 +293,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Agent).LastOrDefault()?.Print?.PrintNmber ?? null;
+                    return obj.AgentOrderPrints.LastOrDefault()?.AgentPrint?.Id ?? null;
                 }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
