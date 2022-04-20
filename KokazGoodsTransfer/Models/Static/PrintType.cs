@@ -7,7 +7,6 @@ namespace KokazGoodsTransfer.Models.Static
 {
     public static class PrintType
     {
-        public static readonly string Agent = "Agent";
         public static readonly string Client = "Client";
     }
 }
