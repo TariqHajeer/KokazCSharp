@@ -52,6 +52,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     .Include(c => c.MoenyPlaced)
                     .Include(c => c.OrderPrints)
                         .ThenInclude(c => c.Print)
+                    .Include(c => c.AgentOrderPrints)
+                        .ThenInclude(c => c.AgentPrint)
                .AsQueryable();
                 if (orderFilter.CountryId != null)
                 {
@@ -99,7 +101,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.AgentPrintNumber != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
                 }
                 if (orderFilter.CreatedDate != null)
                 {
@@ -111,11 +113,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.AgentPrintStartDate != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+                    ///TODO :
+                    ///chould check this query 
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+
                 }
                 if (orderFilter.AgentPrintEndDate != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                    ///TODO :
+                    ///chould check this query 
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
@@ -401,7 +408,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.AgentPrintNumber != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
                 }
                 if (orderFilter.CreatedDate != null)
                 {
@@ -409,11 +416,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.AgentPrintStartDate != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+                    ///TODO :
+                    ///chould check this query 
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
                 }
                 if (orderFilter.AgentPrintEndDate != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                    ///TODO :
+                    ///chould check this query 
+                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ
@@ -530,6 +541,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .Include(c => c.OrderPrints)
                        .ThenInclude(c => c.Print)
                    .Include(c => c.OrderLogs)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
                .FirstOrDefault(c => c.Id == id);
             return Ok(_mapper.Map<OrderDto>(order));
         }
@@ -702,7 +715,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderFilter.AgentPrintNumber != null)
             {
-                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.AgentPrintNumber && op.Print.Type == PrintType.Agent));
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
             }
             if (orderFilter.CreatedDate != null)
             {
@@ -714,11 +727,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderFilter.AgentPrintStartDate != null)
             {
-                orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
             }
             if (orderFilter.AgentPrintEndDate != null)
             {
-                orderIQ = orderIQ.Where(c => c.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Agent).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
             }
             return Ok(_mapper.Map<OrderDto[]>(await orderIQ.ToArrayAsync()));
         }
