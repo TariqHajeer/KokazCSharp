@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Models
         {
             ClientPaymentDetails = new HashSet<ClientPaymentDetail>();
             Discounts = new HashSet<Discount>();
+            OrderClientPaymnets = new HashSet<OrderClientPaymnet>();
             Receipts = new HashSet<Receipt>();
         }
 
@@ -22,7 +23,7 @@ namespace KokazGoodsTransfer.Models
 
         public virtual ICollection<ClientPaymentDetail> ClientPaymentDetails { get; set; }
         public virtual ICollection<Discount> Discounts { get; set; }
-        public virtual ICollection<Receipt> Receipts { get; set; }
         public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
+        public virtual ICollection<Receipt> Receipts { get; set; }
     }
 }

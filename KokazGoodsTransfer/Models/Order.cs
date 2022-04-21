@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Models
         {
             AgentOrderPrints = new HashSet<AgentOrderPrint>();
             ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
+            OrderClientPaymnets = new HashSet<OrderClientPaymnet>();
             OrderItems = new HashSet<OrderItem>();
             OrderLogs = new HashSet<OrderLog>();
         }
@@ -60,8 +61,8 @@ namespace KokazGoodsTransfer.Models
         public virtual Region Region { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
+        public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
-        public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
     }
 }

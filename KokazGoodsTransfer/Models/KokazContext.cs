@@ -566,18 +566,19 @@ namespace KokazGoodsTransfer.Models
 
             modelBuilder.Entity<OrderClientPaymnet>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.OrderId, e.ClientPaymentId })
+                    .HasName("Pk_OrderClientPaymnet");
 
                 entity.ToTable("OrderClientPaymnet");
 
                 entity.HasOne(d => d.ClientPayment)
-                    .WithMany()
+                    .WithMany(p => p.OrderClientPaymnets)
                     .HasForeignKey(d => d.ClientPaymentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__OrderClie__Clien__55F4C372");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany()
+                    .WithMany(p => p.OrderClientPaymnets)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__OrderClie__Order__55009F39");
