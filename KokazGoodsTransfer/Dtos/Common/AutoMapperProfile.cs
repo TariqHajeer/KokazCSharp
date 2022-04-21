@@ -158,7 +158,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                          return context.Mapper.Map<UserPrivilegeDto[]>(user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(c => c.Privileg).Distinct()));
                      }));
             CreateMap<Client, ClientDto>()
-                .ForMember(c => c.Total, opt => opt.MapFrom(src => src.Receipts.Where(c => c.PrintId == null).Sum(c => c.Amount)))
+                .ForMember(c => c.Total, opt => opt.MapFrom(src => src.Receipts.Where(c => c.ClientPaymentId == null).Sum(c => c.Amount)))
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {
                     return context.Mapper.Map<CountryDto>(client.Country);
@@ -267,7 +267,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                    {
-                       return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
+                       return obj.OrderClientPaymnets.LastOrDefault()?.ClientPayment?.Id?? null;
                    }))
                 .ForMember(c => c.OrderLogs, opt => opt.MapFrom((obj, dto, i, context) =>
                      {
@@ -279,7 +279,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
             .ForMember(c => c.ClientPrint, opt => opt.MapFrom((obj, dto, i, context) =>
              {
-                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderPrints.Select(c => c.Print).Where(c => c.Type == PrintType.Client));
+                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderClientPaymnets.Select(c => c.ClientPayment));
              }));
             ;
             CreateMap<Order, PayForClientDto>()
@@ -297,7 +297,7 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return obj.OrderPrints.Where(c => c.Print.Type == PrintType.Client).LastOrDefault()?.Print?.PrintNmber ?? null;
+                    return obj.OrderClientPaymnets.LastOrDefault()?.ClientPayment?.Id ?? null;
                 }))
                 .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
@@ -372,24 +372,24 @@ namespace KokazGoodsTransfer.Dtos.Common
                 }));
 
 
-            CreateMap<Printed, PrintOrdersDto>()
-                .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
-                     {
-                         List<PrintDto> x = new List<PrintDto>();
-                         x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
-                         return x;
-                     }))
-                .ForMember(c => c.Receipts, opt => opt.MapFrom((obj, dto, i, context) =>
-                {
-                    return context.Mapper.Map<ReceiptDto[]>(obj.Receipts);
-                }))
-                .ForMember(c => c.Discount, opt => opt.MapFrom((obj, dto, i, context) =>
-                {
-                    return context.Mapper.Map<DiscountDto>(obj.Discounts.FirstOrDefault());
-                }));
+            //CreateMap<Printed, PrintOrdersDto>()
+            //    .ForMember(src => src.Orders, opt => opt.MapFrom((obj, dto, i, context) =>
+            //         {
+            //             List<PrintDto> x = new List<PrintDto>();
+            //             x.AddRange(context.Mapper.Map<PrintDto[]>(obj.ClientPrints));
+            //             return x;
+            //         }))
+            //    .ForMember(c => c.Receipts, opt => opt.MapFrom((obj, dto, i, context) =>
+            //    {
+            //        return context.Mapper.Map<ReceiptDto[]>(obj.Receipts);
+            //    }))
+            //    .ForMember(c => c.Discount, opt => opt.MapFrom((obj, dto, i, context) =>
+            //    {
+            //        return context.Mapper.Map<DiscountDto>(obj.Discounts.FirstOrDefault());
+            //    }));
             CreateMap<AgentPrintDetail, PrintDto>();
             CreateMap<Discount, DiscountDto>();
-            CreateMap<ClientPrint, PrintDto>()
+            CreateMap<ClientPaymentDetail, PrintDto>()
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
                     return context.Mapper.Map<NameAndIdDto>(order.OrderPlaced);
@@ -397,7 +397,7 @@ namespace KokazGoodsTransfer.Dtos.Common
 
             CreateMap<Receipt, ReceiptDto>()
                 .ForMember(c => c.ClientName, opt => opt.MapFrom(c => c.Client.Name))
-                .ForMember(c => c.PrintNumber, opt => opt.MapFrom(c => c.Print.PrintNmber));
+                .ForMember(c => c.PrintNumber, opt => opt.MapFrom(c => c.ClientPayment.Id));
             CreateMap<EditRequest, EditRequestDto>()
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
