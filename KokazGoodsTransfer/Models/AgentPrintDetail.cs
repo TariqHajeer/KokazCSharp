@@ -5,10 +5,9 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class AgnetPrint
+    public partial class AgentPrintDetail
     {
         public int Id { get; set; }
-        public int PrintId { get; set; }
         public string Code { get; set; }
         public decimal Total { get; set; }
         public string Country { get; set; }
@@ -16,7 +15,8 @@ namespace KokazGoodsTransfer.Models
         public string ClientName { get; set; }
         public string Note { get; set; }
         public string Region { get; set; }
+        public int AgentPrintId { get; set; }
 
-        public virtual Printed Print { get; set; }
+        public virtual AgentPrint AgentPrint { get; set; }
     }
 }

@@ -23,13 +23,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("{printNumber}")]
         public IActionResult Get(int printNumber)
         {
-            var print = this._context.Printeds
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Order)
-                .Include(c => c.Receipts)
-                .Include(c => c.ClientPrints)
-                .Where(c => c.Type == PrintType.Client && c.PrintNmber == printNumber&&c.OrderPrints.All(c=>c.Order.ClientId==AuthoticateUserId())).FirstOrDefault();
-            return Ok(_mapper.Map<PrintOrdersDto>(print));
+            //var print = this._context.ClientPayments
+            //    .Include(c => c.OrderClientPaymnets)
+            //    .ThenInclude(c => c.Order)
+            //    .Include(c => c.Receipts)
+            //    .Include(c => c.ClientPaymentDetails)
+            //    .Where(c => c.Id == printNumber && c.OrderClientPaymnets.All(c => c.Order.ClientId == AuthoticateUserId())).FirstOrDefaultAsync();
+            //return Ok(_mapper.Map<PrintOrdersDto>(print));
+            return Ok();
         }
     }
 }

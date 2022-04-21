@@ -168,16 +168,21 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                 };
             }
-            var similerUserByUserName = await _repository.Any(c => c.UserName.ToLower() == updateDto.UserName.ToLower() && c.Id != updateDto.Id);
-            if (similerUserByUserName)
+            updateDto.UserName = updateDto.UserName.Trim();
+            if(!String.IsNullOrWhiteSpace(updateDto.UserName))
             {
-                return new ErrorRepsonse<UserDto>()
+                var similerUserByUserName = await _repository.Any(c => c.UserName.ToLower() == updateDto.UserName.ToLower() && c.Id != updateDto.Id);
+                if (similerUserByUserName)
                 {
-                    Errors = new List<string>(){
+                    return new ErrorRepsonse<UserDto>()
+                    {
+                        Errors = new List<string>(){
                         "Employee.Exisit"
                     }
-                };
+                    };
+                }
             }
+            
             user.AgentCountrs.Clear();
             _mapper.Map<UpdateUserDto, User>(updateDto, user);
             await _repository.Update(user);
