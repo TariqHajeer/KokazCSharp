@@ -1236,26 +1236,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetClientprint")]
         public async Task<IActionResult> GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
         {
-            var orderPrintIq = this._context.ClientPayments.AsQueryable();
+            var clientPaymentIq = this._context.ClientPayments.AsQueryable();
 
             if (number != null)
             {
-                orderPrintIq = orderPrintIq.Where(c => c.Id == number);
+                clientPaymentIq = clientPaymentIq.Where(c => c.Id == number);
             }
             if (clientName != null)
             {
-                orderPrintIq = orderPrintIq.Where(c => c.DestinationName == clientName);
+                clientPaymentIq = clientPaymentIq.Where(c => c.DestinationName == clientName);
             }
             if (!string.IsNullOrEmpty(code))
             {
-                orderPrintIq = orderPrintIq.Where(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
+                clientPaymentIq = clientPaymentIq.Where(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
             }
 
-            var total = await orderPrintIq.CountAsync();
-            var orders = await orderPrintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                .Include(c => c.ClientPaymentDetails).ToListAsync();
+            var total = await clientPaymentIq.CountAsync();
+            var clientPayments = await clientPaymentIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c => c.ClientPaymentDetails)
+                .ThenInclude(c => c.OrderPlaced)
+                .ToListAsync();
 
-            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
+            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(clientPayments), total });
         }
         [HttpGet("GetAgentPrint")]
         public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
@@ -1403,7 +1405,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 this._context.SaveChanges();
                 transaction.Commit();
                 semaphore.Release();
-                return Ok(new { clientPayment.Id });
+                return Ok(new { printNumber = clientPayment.Id });
             }
             catch (Exception ex)
             {
@@ -1496,7 +1498,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                 transaction.Commit();
                 semaphore.Release();
-                return Ok(new { clientPaymnet.Id });
+                return Ok(new { printNumber = clientPaymnet.Id });
             }
             catch (Exception ex)
             {
