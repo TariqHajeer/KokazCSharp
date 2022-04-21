@@ -340,9 +340,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-                        .ThenInclude(c => c.ClientPrints)
+                .Include(c=>c.OrderClientPaymnets)
+                .ThenInclude(c=>c.ClientPayment)
+                .ThenInclude(c=>c.ClientPaymentDetails)
             .FirstOrDefaultAsync(c => c.Id == id);
 
             return Ok(_mapper.Map<OrderDto>(order));
@@ -462,7 +462,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             if (orderFilter.ClientPrintNumber != null)
             {
-                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
             var total = orderIQ.Count();
             var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
@@ -471,9 +471,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-                    .ThenInclude(c => c.ClientPrints)
+                .Include(c => c.OrderClientPaymnets)
+                .ThenInclude(c => c.ClientPayment)
+                //.ThenInclude(c=>c.ClientPaymentDetails)
                 .ToList();
             return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
         }
@@ -508,21 +508,23 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]
-        public IActionResult OrdersDontFinished([FromQuery] OrderDontFinishFilter orderDontFinishFilter)
+        public async Task<IActionResult> OrdersDontFinished([FromQuery] OrderDontFinishFilter orderDontFinishFilter)
         {
             List<Order> orders = new List<Order>();
 
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
             {
-                var list = this._context.Orders.Where(c => c.IsClientDiliverdMoney == false && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
+                var list = await this._context.Orders.Where(c => c.IsClientDiliverdMoney == false && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Orderplaced)
                    .Include(c => c.Agent)
-                   .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-                   .ToList();
+                   .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+                   .ToListAsync();
                 if (list != null && list.Count() > 0)
                 {
                     orders.AddRange(list);
@@ -531,15 +533,17 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             if (orderDontFinishFilter.IsClientDeleviredMoney)
             {
 
-                var list = this._context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
+                var list = await this._context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
                .Include(c => c.MoenyPlaced)
                .Include(c => c.Agent)
-               .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-               .ToList();
+               .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+               .ToListAsync();
                 if (list != null && list.Count() > 0)
                 {
                     orders.AddRange(list);
@@ -559,7 +563,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("UnPaidRecipt")]
         public IActionResult UnPaidRecipt()
         {
-            var repiq = this._context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.PrintId == null).ToList();
+            var repiq = this._context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.ClientPayment == null).ToList();
             return Ok(_mapper.Map<ReceiptDto[]>(repiq));
         }
 

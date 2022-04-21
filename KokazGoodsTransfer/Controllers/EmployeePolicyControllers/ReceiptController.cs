@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var totalRreq = repiq.Count();
             var replist = repiq.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
-                .Include(c=>c.Print)
+                .Include(c=>c.ClientPayment)
                 .ToList();
             var data = _mapper.Map<ReceiptDto[]>(replist);
             return Ok(new { data, total = totalRreq });
@@ -50,15 +50,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult UnPaidRecipt(int clientId)
         {
             var repiq = this._context.Receipts
-                .Include(c => c.Print)
-                .Where(c => c.ClientId == clientId && c.PrintId == null).ToList();
+                .Include(c => c.ClientPayment)
+                .Where(c => c.ClientId == clientId && c.ClientPaymentId == null).ToList();
             return Ok(_mapper.Map<ReceiptDto[]>(repiq));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var recipe = this._context.Receipts.Find(id);
-            if (recipe.PrintId != null)
+            if (recipe.ClientPaymentId != null)
             {
                 return Conflict();
             }

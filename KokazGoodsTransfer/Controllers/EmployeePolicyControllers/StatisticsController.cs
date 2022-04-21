@@ -47,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orderInNigative = await (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).SumAsync(c => c.Cost - c.DeliveryCost)) * -1;
             var orderInPositve = await (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).SumAsync(c => c.Cost - c.AgentCost));
 
-            var totalAccount = await this._context.Receipts.Where(c => c.PrintId == null).SumAsync(c => c.Amount);
+            var totalAccount = await this._context.Receipts.Where(c => c.ClientPaymentId== null).SumAsync(c => c.Amount);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
@@ -144,7 +144,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         private async Task<ClientBlanaceDto> GetClientBalanceById(Client item)
         {
-            var totalAccountTask = await this._context.Receipts.Where(c => c.ClientId == item.Id && c.PrintId == null).SumAsync(c => c.Amount);
+            var totalAccountTask = await this._context.Receipts.Where(c => c.ClientId == item.Id && c.ClientPaymentId== null).SumAsync(c => c.Amount);
             var clientOrder = await this._context.Orders.Where(c => c.ClientId == item.Id).ToListAsync();
             var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
             var totalAccount = totalAccountTask;
