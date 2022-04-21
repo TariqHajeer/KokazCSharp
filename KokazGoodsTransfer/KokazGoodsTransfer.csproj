@@ -15,7 +15,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Controllers\AgentPolicyControllers\AgentOrder.cs~RF68bb76.TMP" />
 	</ItemGroup>
 
 	<ItemGroup>

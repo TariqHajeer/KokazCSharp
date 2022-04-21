@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderPrint
+    public partial class OrderClientPaymnet
     {
         public int OrderId { get; set; }
-        public int PrintId { get; set; }
+        public int ClientPaymentId { get; set; }
 
+        public virtual ClientPayment ClientPayment { get; set; }
         public virtual Order Order { get; set; }
-        public virtual Printed Print { get; set; }
     }
 }

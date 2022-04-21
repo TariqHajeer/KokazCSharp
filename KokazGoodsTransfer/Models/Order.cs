@@ -13,7 +13,6 @@ namespace KokazGoodsTransfer.Models
             ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
             OrderItems = new HashSet<OrderItem>();
             OrderLogs = new HashSet<OrderLog>();
-            OrderPrints = new HashSet<OrderPrint>();
         }
 
         public int Id { get; set; }
@@ -63,6 +62,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
-        public virtual ICollection<OrderPrint> OrderPrints { get; set; }
+        public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
     }
 }
