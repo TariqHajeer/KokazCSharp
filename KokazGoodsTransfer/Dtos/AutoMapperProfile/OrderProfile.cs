@@ -180,6 +180,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.PayForClient, opt => opt.MapFrom((order, dto, i, context) =>
                 {
+                    //
                     var shoudToPay = order.ShouldToPay();
                     return shoudToPay - (order.ClientPaied ?? 0);
                 }));
