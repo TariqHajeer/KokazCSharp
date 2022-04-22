@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Linq;
 
@@ -179,6 +180,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.PayForClient, opt => opt.MapFrom((order, dto, i, context) =>
                 {
+                    //
                     var shoudToPay = order.ShouldToPay();
                     return shoudToPay - (order.ClientPaied ?? 0);
                 }));
