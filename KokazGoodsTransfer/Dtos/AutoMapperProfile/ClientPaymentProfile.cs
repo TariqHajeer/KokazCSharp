@@ -8,11 +8,12 @@ using System.Linq;
 
 namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 {
-    public class ClientPaymentProfile:Profile
+    public class ClientPaymentProfile : Profile
     {
         public ClientPaymentProfile()
         {
             CreateMap<ClientPaymentDetail, PrintDto>()
+                .ForMember(c => c.DeliveCost, opt => opt.MapFrom(src => src.DeliveryCost))
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
                     return context.Mapper.Map<NameAndIdDto>(order.OrderPlaced);
