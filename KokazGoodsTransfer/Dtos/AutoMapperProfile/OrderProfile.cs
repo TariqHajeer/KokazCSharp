@@ -148,6 +148,40 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             {
                 return conext.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
             }));
+            CreateMap<Order, PayForClientDto>()
+                .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<RegionDto>(order.Region);
+                }))
+                .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<CountryDto>(order.Country);
+                }))
+                .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.AgentOrderPrints.LastOrDefault()?.AgentPrint?.Id ?? null;
+                }))
+                .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.OrderClientPaymnets.LastOrDefault()?.ClientPayment?.Id ?? null;
+                }))
+                .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                }))
+                .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                }))
+                .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    return context.Mapper.Map<UserDto>(order.Agent);
+                }))
+                .ForMember(c => c.PayForClient, opt => opt.MapFrom((order, dto, i, context) =>
+                {
+                    var shoudToPay = order.ShouldToPay();
+                    return shoudToPay - (order.ClientPaied ?? 0);
+                }));
         }
     }
 }
