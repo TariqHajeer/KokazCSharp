@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.OrdersTypes;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Linq;
 
