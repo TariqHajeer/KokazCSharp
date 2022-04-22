@@ -128,6 +128,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.CanUpdateOrDelete, opt => opt.MapFrom(src => src.OrderplacedId <= 2));
             CreateMap<OrderType, OrderTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.OrderItems.Count() == 0));
+            CreateMap<OrderType, NameAndIdDto>();
             CreateMap<OrderItem, ResponseOrderItemDto>()
                 .ForMember(c => c.OrderTpye, opt => opt.MapFrom((orderItem, response, i, context) =>
                 {
