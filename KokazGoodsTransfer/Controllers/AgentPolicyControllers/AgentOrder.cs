@@ -36,8 +36,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
+                .Include(c=>c.AgentOrderPrints)
+                    .ThenInclude(c=>c.AgentPrint)
                  .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
@@ -50,8 +50,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                  .Include(c => c.Orderplaced)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
+                .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
                  .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
@@ -64,8 +64,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                  .Include(c => c.Orderplaced)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
+                .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
                 .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
@@ -79,8 +79,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Client)
                 .Include(c => c.Region)
                  .Include(c => c.Orderplaced)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print).ToListAsync();
+                .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
+                    .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
 
         }
@@ -98,8 +99,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
-                .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
+                .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
                  .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }

@@ -50,8 +50,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     .Include(c => c.Country)
                     .Include(c => c.Orderplaced)
                     .Include(c => c.MoenyPlaced)
-                    .Include(c => c.OrderPrints)
-                        .ThenInclude(c => c.Print)
+                    .Include(c => c.OrderClientPaymnets)
+                    .ThenInclude(c => c.ClientPayment)
                     .Include(c => c.AgentOrderPrints)
                         .ThenInclude(c => c.AgentPrint)
                .AsQueryable();
@@ -97,7 +97,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.ClientPrintNumber != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+                    orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
                 }
                 if (orderFilter.AgentPrintNumber != null)
                 {
@@ -359,8 +359,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     .Include(c => c.MoenyPlaced)
                     .Include(c => c.OrderItems)
                         .ThenInclude(c => c.OrderTpye)
-                    .Include(c => c.OrderPrints)
-                        .ThenInclude(c => c.Print)
+                    .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
+                     .Include(c => c.OrderClientPaymnets)
+                     .ThenInclude(c => c.ClientPayment)
                 .AsQueryable();
                 if (orderFilter.CountryId != null)
                 {
@@ -404,7 +406,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
                 if (orderFilter.ClientPrintNumber != null)
                 {
-                    orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+                    orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
                 }
                 if (orderFilter.AgentPrintNumber != null)
                 {
@@ -538,8 +540,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.OrderItems)
                        .ThenInclude(c => c.OrderTpye)
-                   .Include(c => c.OrderPrints)
-                       .ThenInclude(c => c.Print)
+                   .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
                    .Include(c => c.OrderLogs)
                    .Include(c => c.AgentOrderPrints)
                    .ThenInclude(c => c.AgentPrint)
@@ -547,20 +549,22 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<OrderDto>(order));
         }
         [HttpGet("OrdersDontFinished")]
-        public IActionResult Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<IActionResult> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
-                var list = this._context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = await this._context.Orders.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Orderplaced)
                    .Include(c => c.Agent)
-                   .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-                   .ToList();
+                   .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+                   .ToListAsync();
                 if (list != null && list.Count() > 0)
                 {
                     orders.AddRange(list);
@@ -569,15 +573,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
-                var list = this._context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = await this._context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Orderplaced)
                .Include(c => c.MoenyPlaced)
                .Include(c => c.Agent)
-               .Include(c => c.OrderPrints)
-                    .ThenInclude(c => c.Print)
-               .ToList();
+               .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+               .ToListAsync();
                 if (list != null && list.Count() > 0)
                 {
                     orders.AddRange(list);
@@ -711,7 +717,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             if (orderFilter.ClientPrintNumber != null)
             {
-                orderIQ = orderIQ.Where(c => c.OrderPrints.Any(op => op.Print.PrintNmber == orderFilter.ClientPrintNumber && op.Print.Type == PrintType.Client));
+                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
             if (orderFilter.AgentPrintNumber != null)
             {
@@ -1228,29 +1234,30 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpGet("GetClientprint")]
-        public IActionResult GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
+        public async Task<IActionResult> GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
         {
-            var orderPrintIq = this._context.Printeds
-                .Include(c => c.ClientPrints)
-                .ThenInclude(c => c.OrderPlaced)
-                .Where(c => c.Type == PrintType.Client);
+            var clientPaymentIq = this._context.ClientPayments.AsQueryable();
+
             if (number != null)
             {
-                orderPrintIq = orderPrintIq.Where(c => c.PrintNmber == number);
+                clientPaymentIq = clientPaymentIq.Where(c => c.Id == number);
             }
             if (clientName != null)
             {
-                orderPrintIq = orderPrintIq.Where(c => c.DestinationName == clientName);
+                clientPaymentIq = clientPaymentIq.Where(c => c.DestinationName == clientName);
             }
             if (!string.IsNullOrEmpty(code))
             {
-                orderPrintIq = orderPrintIq.Where(c => c.ClientPrints.Any(c => c.Code.StartsWith(code)));
+                clientPaymentIq = clientPaymentIq.Where(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
             }
 
-            var total = orderPrintIq.Count();
-            var orders = orderPrintIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            var total = await clientPaymentIq.CountAsync();
+            var clientPayments = await clientPaymentIq.OrderByDescending(c => c.Date).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
+                .Include(c => c.ClientPaymentDetails)
+                .ThenInclude(c => c.OrderPlaced)
+                .ToListAsync();
 
-            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
+            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(clientPayments), total });
         }
         [HttpGet("GetAgentPrint")]
         public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
@@ -1276,140 +1283,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DeleiverMoneyForClient")]
         public IActionResult DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
-            //var orders = this._context.Orders
-            //.Include(c => c.Client)
-            //.ThenInclude(c => c.ClientPhones)
-            //.Include(c => c.Country)
-            //.Include(c => c.Orderplaced)
-            //.Include(c => c.MoenyPlaced)
-            //.Where(c => deleiverMoneyForClientDto.DateWithId.Ids.Contains(c.Id)).ToList();
-            //var client = orders.FirstOrDefault().Client;
-            //if (orders.Any(c => c.ClientId != client.Id))
-            //{
-            //    this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
-            //    return Conflict(err);
-            //}
-            //semaphore.Wait();
-            //var clientPayment = new ClientPayment()
-            //{
-            //    Date = deleiverMoneyForClientDto.DateWithId.Date,
-            //    PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
-            //    DestinationName = client.Name,
-            //    DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-
-            //};
-
-            //var transaction = this._context.Database.BeginTransaction();
-            //try
-            //{
-            //    this._context.ClientPayments.Add(clientPayment);
-            //    this._context.SaveChanges();
-            //    if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
-            //    {
-            //        var recepits = this._context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
-            //        recepits.ForEach(c =>
-            //        {
-            //            c.ClientPaymentId = clientPayment.Id;
-            //            this._context.Update(c);
-            //        });
-            //        this._context.SaveChanges();
-            //    }
-            //    int totalPoints = 0;
-
-            //    foreach (var item in orders)
-            //    {
-
-            //        if (!item.IsClientDiliverdMoney)
-            //        {
-            //            if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
-            //            {
-            //                totalPoints += item.Country.Points;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
-            //            {
-            //                totalPoints -= item.Country.Points;
-            //            }
-            //        }
-
-            //        if (item.OrderplacedId > (int)OrderplacedEnum.Way)
-            //        {
-            //            item.OrderStateId = (int)OrderStateEnum.Finished;
-            //            if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-            //            {
-            //                item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-            //            }
-
-            //        }
-
-            //        item.IsClientDiliverdMoney = true;
-            //        var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-            //        item.ClientPaied = item.ShouldToPay();
-            //        this._context.Update(item);
-            //        this._context.SaveChanges();
-            //        var orderClientPaymnet = new OrderClientPaymnet()
-            //        {
-            //            OrderId = item.Id,
-            //            ClientPaymentId = clientPayment.Id
-            //        };
-
-            //        var clientPaymentDetials = new ClientPaymentDetail()
-            //        {
-            //            Code = item.Code,
-            //            Total = item.Cost,
-            //            Country = item.Country.Name,
-            //            ClientPaymentId = clientPayment.Id,
-            //            Phone = item.RecipientPhones,
-            //            DeliveryCost = item.DeliveryCost,
-            //            LastTotal = item.OldCost,
-            //            Note = item.Note,
-            //            MoneyPlacedId = item.MoenyPlacedId,
-            //            OrderPlacedId = item.OrderplacedId,
-            //            PayForClient = currentPay
-            //        };
-
-            //        this._context.Add(orderClientPaymnet);
-            //        this._context.Add(clientPaymentDetials);
-            //        this._context.SaveChanges();
-            //    }
-            //    client.Points += totalPoints;
-            //    this._context.Update(client);
-            //    this._context.SaveChanges();
-            //    if (deleiverMoneyForClientDto.PointsSettingId != null)
-            //    {
-            //        var pointSetting = this._context.PointsSettings.Find(deleiverMoneyForClientDto.PointsSettingId);
-
-            //        Discount discount = new Discount()
-            //        {
-            //            Money = pointSetting.Money,
-            //            Points = pointSetting.Points,
-            //            ClientPaymentId= clientPayment.Id
-            //        };
-            //        this._context.Add(discount);
-            //        this._context.SaveChanges();
-            //    }
-            //    this._context.Add(new Notfication()
-            //    {
-            //        Note = "تم تسديدك برقم " + clientPayment.Id,
-            //        ClientId = client.Id
-            //    });
-            //    this._context.SaveChanges();
-            //    transaction.Commit();
-            //    semaphore.Release();
-            //    return Ok(new { clientPayment.Id });
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    semaphore.Release();
-            //    transaction.Rollback();
-            //    _logging.WriteExption(ex);
-            //    return BadRequest();
-
-
-            //}
             var orders = this._context.Orders
             .Include(c => c.Client)
             .ThenInclude(c => c.ClientPhones)
@@ -1424,30 +1297,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(err);
             }
             semaphore.Wait();
-            var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
-            var printNumber = oldPrint?.PrintNmber ?? 0;
-
-            ++printNumber;
-            var newPrint = new Printed()
+            var clientPayment = new ClientPayment()
             {
-                PrintNmber = printNumber,
                 Date = deleiverMoneyForClientDto.DateWithId.Date,
-                Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+
             };
+
             var transaction = this._context.Database.BeginTransaction();
             try
             {
-                this._context.Printeds.Add(newPrint);
+                this._context.ClientPayments.Add(clientPayment);
                 this._context.SaveChanges();
                 if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
-                    var recepits = this._context.Receipts.Where(c => c.PrintId == null && c.ClientId == client.Id).ToList();
+                    var recepits = this._context.Receipts.Where(c => c.ClientPaymentId == null && c.ClientId == client.Id).ToList();
                     recepits.ForEach(c =>
                     {
-                        c.PrintId = newPrint.Id;
+                        c.ClientPaymentId = clientPayment.Id;
                         this._context.Update(c);
                     });
                     this._context.SaveChanges();
@@ -1487,29 +1356,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     item.ClientPaied = item.ShouldToPay();
                     this._context.Update(item);
                     this._context.SaveChanges();
-                    var orderPrint = new OrderPrint()
+                    var orderClientPaymnet = new OrderClientPaymnet()
                     {
-                        PrintId = newPrint.Id,
-                        OrderId = item.Id
+                        OrderId = item.Id,
+                        ClientPaymentId = clientPayment.Id
                     };
 
-                    var clientPrint = new ClientPrint()
+                    var clientPaymentDetials = new ClientPaymentDetail()
                     {
                         Code = item.Code,
                         Total = item.Cost,
                         Country = item.Country.Name,
-                        PrintId = newPrint.Id,
+                        ClientPaymentId = clientPayment.Id,
                         Phone = item.RecipientPhones,
-                        DeliveCost = item.DeliveryCost,
-                        Date = item.Date,
+                        DeliveryCost = item.DeliveryCost,
                         LastTotal = item.OldCost,
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         PayForClient = currentPay
                     };
-                    this._context.Add(orderPrint);
-                    this._context.Add(clientPrint);
+
+                    this._context.Add(orderClientPaymnet);
+                    this._context.Add(clientPaymentDetials);
                     this._context.SaveChanges();
                 }
                 client.Points += totalPoints;
@@ -1523,20 +1392,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         Money = pointSetting.Money,
                         Points = pointSetting.Points,
-                        PrintedId = newPrint.Id
+                        ClientPaymentId = clientPayment.Id
                     };
                     this._context.Add(discount);
                     this._context.SaveChanges();
                 }
                 this._context.Add(new Notfication()
                 {
-                    Note = "تم تسديدك برقم " + printNumber,
+                    Note = "تم تسديدك برقم " + clientPayment.Id,
                     ClientId = client.Id
                 });
                 this._context.SaveChanges();
                 transaction.Commit();
                 semaphore.Release();
-                return Ok(new { printNumber });
+                return Ok(new { printNumber = clientPayment.Id });
             }
             catch (Exception ex)
             {
@@ -1572,15 +1441,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict(err);
             }
             semaphore.Wait();
-            var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Client && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Client).Max(c => c.PrintNmber)).FirstOrDefault();
-            var printNumber = oldPrint?.PrintNmber ?? 0;
 
-            ++printNumber;
-            var newPrint = new Printed()
+            var clientPaymnet = new ClientPayment()
             {
-                PrintNmber = printNumber,
                 Date = idsAndDate.Date,
-                Type = PrintType.Client,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
@@ -1588,7 +1452,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var transaction = this._context.Database.BeginTransaction();
             try
             {
-                this._context.Printeds.Add(newPrint);
+                this._context.Add(clientPaymnet);
                 this._context.SaveChanges();
                 foreach (var item in orders)
                 {
@@ -1607,20 +1471,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                     this._context.Update(item);
                     _context.SaveChanges();
-                    var orderPrint = new OrderPrint()
+                    var orderClientPayment = new OrderClientPaymnet()
                     {
-                        PrintId = newPrint.Id,
-                        OrderId = item.Id
+                        OrderId = item.Id,
+                        ClientPaymentId = clientPaymnet.Id
                     };
-
-                    var clientPrint = new ClientPrint()
+                    var clientPaymnetDetial = new ClientPaymentDetail()
                     {
                         Code = item.Code,
                         Total = item.Cost,
                         Country = item.Country.Name,
-                        PrintId = newPrint.Id,
+                        ClientPaymentId = clientPaymnet.Id,
                         Phone = item.RecipientPhones,
-                        DeliveCost = item.DeliveryCost,
+                        DeliveryCost = item.DeliveryCost,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
                         LastTotal = item.OldCost,
@@ -1628,14 +1491,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Date = item.Date,
                         Note = item.Note,
                     };
-                    this._context.Add(orderPrint);
-                    this._context.Add(clientPrint);
+                    this._context.Add(orderClientPayment);
+                    this._context.Add(clientPaymnetDetial);
                 }
                 this._context.SaveChanges();
 
                 transaction.Commit();
                 semaphore.Release();
-                return Ok(new { printNumber });
+                return Ok(new { printNumber = clientPaymnet.Id });
             }
             catch (Exception ex)
             {
@@ -1645,88 +1508,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
 
             }
-            //var ids = idsAndDate.Ids;
-            //var orders = this._context.Orders
-            //    .Include(c => c.Client)
-            //    .ThenInclude(c => c.ClientPhones)
-            //    .Include(c => c.Orderplaced)
-            //    .Include(c => c.MoenyPlaced)
-            //    .Include(c => c.Country)
-            //    .Where(c => ids.Contains(c.Id)).ToList();
-            //var client = orders.FirstOrDefault().Client;
-            //if (orders.Any(c => c.ClientId != client.Id))
-            //{
-            //    this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
-            //    return Conflict(err);
-            //}
-            //semaphore.Wait();
-
-            //var clientPaymnet = new ClientPayment()
-            //{
-            //    Date = idsAndDate.Date,
-            //    PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
-            //    DestinationName = client.Name,
-            //    DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-            //};
-            //var transaction = this._context.Database.BeginTransaction();
-            //try
-            //{
-            //    this._context.Add(clientPaymnet);
-            //    this._context.SaveChanges();
-            //    foreach (var item in orders)
-            //    {
-            //        if (item.OrderplacedId > (int)OrderplacedEnum.Way)
-            //        {
-            //            item.OrderStateId = (int)OrderStateEnum.Finished;
-            //            if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-            //            {
-            //                item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-            //            }
-
-            //        }
-            //        item.IsClientDiliverdMoney = true;
-            //        var cureentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-            //        item.ClientPaied = item.ShouldToPay();
-
-            //        this._context.Update(item);
-            //        _context.SaveChanges();
-            //        var orderClientPayment = new OrderClientPaymnet()
-            //        {
-            //            OrderId = item.Id,
-            //            ClientPaymentId = clientPaymnet.Id
-            //        };
-            //        var clientPaymnetDetial = new ClientPaymentDetail()
-            //        {
-            //            Code = item.Code,
-            //            Total = item.Cost,
-            //            Country = item.Country.Name,
-            //            ClientPaymentId = clientPaymnet.Id,
-            //            Phone = item.RecipientPhones,
-            //            DeliveryCost = item.DeliveryCost,
-            //            MoneyPlacedId = item.MoenyPlacedId,
-            //            OrderPlacedId = item.OrderplacedId,
-            //            LastTotal = item.OldCost,
-            //            PayForClient = cureentPay,
-            //            Date = item.Date,
-            //            Note = item.Note,
-            //        };
-            //        this._cx`ontext.Add(orderClientPayment);
-            //        this._context.Add(clientPaymnetDetial);
-            //    }
-            //    this._context.SaveChanges();
-
-            //    transaction.Commit();
-            //    semaphore.Release();
-            //    return Ok(new { clientPaymnet.Id });
-            //}
-            //catch (Exception ex)
-            //{
-            //    semaphore.Release();
-            //    transaction.Rollback();
-            //    _logging.WriteExption(ex);
-            //    return BadRequest();
-
-            //}
 
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
@@ -1821,14 +1602,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(x);
         }
         [HttpGet("GetOrderByClientPrintNumber")]
-        public IActionResult GetOrderByClientPrintNumber([FromQuery] int printNumber)
+        public async Task<IActionResult> GetOrderByClientPrintNumber([FromQuery] int printNumber)
         {
-            var printed = this._context.Printeds.Where(c => c.PrintNmber == printNumber && c.Type == PrintType.Client)
+            var printed = await this._context.ClientPayments.Where(c => c.Id == printNumber)
                 .Include(c => c.Discounts)
                 .Include(c => c.Receipts)
-                .Include(c => c.ClientPrints)
-                    .ThenInclude(c => c.OrderPlaced)
-                .FirstOrDefault();
+                .Include(c => c.ClientPaymentDetails)
+                 .ThenInclude(c => c.OrderPlaced)
+                .FirstOrDefaultAsync();
             if (printed == null)
             {
                 this.err.Messges.Add($"رقم الطباعة غير موجود");
@@ -1859,8 +1640,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId, string code)
         {
             var order = await _context.Orders.Where(c => c.ClientId == clientId && c.Code == code)
-                   .Include(c => c.OrderPrints)
-                   .ThenInclude(c => c.Print)
+                .Include(c => c.OrderClientPaymnets)
+                .ThenInclude(c => c.ClientPayment)
+                .Include(c => c.AgentOrderPrints)
+                .ThenInclude(c => c.AgentPrint)
                    .FirstOrDefaultAsync();
             if (order == null)
             {
