@@ -189,8 +189,6 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("CashMovment");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.CreatedBy)
@@ -883,7 +881,7 @@ namespace KokazGoodsTransfer.Models
                     .WithOne(p => p.Treasury)
                     .HasForeignKey<Treasury>(d => d.Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Treasury__Id__7814D14C");
+                    .HasConstraintName("FK__Treasury__Id__019E3B86");
             });
 
             modelBuilder.Entity<TreasuryHistory>(entity =>
@@ -897,18 +895,18 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.CashMovment)
                     .WithMany(p => p.TreasuryHistories)
                     .HasForeignKey(d => d.CashMovmentId)
-                    .HasConstraintName("FK__TreasuryH__CashM__7EC1CEDB");
+                    .HasConstraintName("FK__TreasuryH__CashM__084B3915");
 
                 entity.HasOne(d => d.ClientPayment)
                     .WithMany(p => p.TreasuryHistories)
                     .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__TreasuryH__Clien__7DCDAAA2");
+                    .HasConstraintName("FK__TreasuryH__Clien__075714DC");
 
                 entity.HasOne(d => d.Treasury)
                     .WithMany(p => p.TreasuryHistories)
                     .HasForeignKey(d => d.TreasuryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__TreasuryH__Treas__7CD98669");
+                    .HasConstraintName("FK__TreasuryH__Treas__0662F0A3");
             });
 
             modelBuilder.Entity<User>(entity =>
