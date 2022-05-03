@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.TreasuryDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
@@ -57,6 +58,8 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<TreasuryDto> GetById(int id)
         {
             var treasury = await _repository.GetById(id);
+            if (treasury == null)
+                return null;
             var history = await _historyRepositroy.GetAsync(new Paging() { Page = 1, RowCount = 10 }, c => c.TreasuryId == id);
             var treasuryDto = _mapper.Map<TreasuryDto>(treasury);
             treasuryDto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
@@ -65,6 +68,15 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<TreasuryHistoryDto[]>(history.Data)
             };
             return treasuryDto;
+        }
+        public async Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto)
+        {
+            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c=>c.TreasuryId==id);
+            return new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
+            {
+                Total = hisotres.Total,
+                Data = _mapper.Map<TreasuryHistoryDto[]>(hisotres.Data)
+            };
         }
     }
 }

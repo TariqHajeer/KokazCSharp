@@ -3,10 +3,11 @@ using KokazGoodsTransfer.Dtos.TreasuryDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using KokazGoodsTransfer.DAL.Helper;
+using KokazGoodsTransfer.Dtos.Common;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -32,5 +33,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetById(id));
         }
+        [HttpGet("Hisotry/{treasuryId:int}")]
+        public async Task<ActionResult<PagingResualt<IEnumerator<TreasuryHistoryDto>>>> History(int treasuryId, [FromQuery] PagingDto pagingDto)
+        {
+            return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
+        }
+
     }
 }
