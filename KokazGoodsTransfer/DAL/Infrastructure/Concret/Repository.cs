@@ -59,7 +59,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var query = _kokazContext.Set<T>().AsQueryable();
             if (filter != null)
                 query = query.Where(filter);
-            if(propertySelectors.Any())
+            if(propertySelectors?.Any()==true)
                 foreach (var item in propertySelectors)
                 {
                     query = query.Include(item);

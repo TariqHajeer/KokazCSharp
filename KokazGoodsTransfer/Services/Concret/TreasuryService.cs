@@ -45,8 +45,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 treaury.TreasuryHistories.Add(history);
             }
             await _uintOfWork.Commit();
-
-            return new ErrorRepsonse<TreasuryDto>(_mapper.Map<TreasuryDto>(treaury));
+            var dto = _mapper.Map<TreasuryDto>(treaury);
+            dto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
+            {
+                Total = treaury.TreasuryHistories.Count,
+                Data = _mapper.Map<TreasuryHistoryDto[]>(treaury.TreasuryHistories)
+            };
+            return new ErrorRepsonse<TreasuryDto>();
         }
 
         public async Task<TreasuryDto> GetById(int id)
