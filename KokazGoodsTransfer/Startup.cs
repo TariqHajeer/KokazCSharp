@@ -104,7 +104,7 @@ namespace KokazGoodsTransfer
             }
 
             );
-
+            services.AddHttpContextAccessor();
             services.AddAuthorization(option =>
             {
                 option.AddPolicy("Employee", policy =>
@@ -120,6 +120,10 @@ namespace KokazGoodsTransfer
                 {
                     policy.RequireClaim("Type", "Agent");
 
+                });
+                option.AddPolicy("TreasuryOfficial", policy =>
+                {
+                    policy.RequireClaim("TreasuryOfficial", true.ToString());
                 });
             });
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
@@ -222,6 +226,8 @@ namespace KokazGoodsTransfer
             services.AddScoped<IOutcomeTypeService, OutcomeTypeService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped(typeof(IIndexService<>), typeof(IndexService<>));
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITreasuryService, TreasuryService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }

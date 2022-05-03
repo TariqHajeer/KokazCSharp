@@ -33,6 +33,7 @@ namespace KokazGoodsTransfer.Models
         public string Password { get; set; }
         public bool IsActive { get; set; }
 
+        public virtual Treasury Treasury { get; set; }
         public virtual ICollection<AgentCountr> AgentCountrs { get; set; }
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<Client> Clients { get; set; }

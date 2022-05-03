@@ -22,6 +22,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
         public virtual DbSet<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
+        public virtual DbSet<CashMovment> CashMovments { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<ClientPayment> ClientPayments { get; set; }
         public virtual DbSet<ClientPaymentDetail> ClientPaymentDetails { get; set; }
@@ -53,6 +54,8 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<Privilege> Privileges { get; set; }
         public virtual DbSet<Receipt> Receipts { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<Treasury> Treasuries { get; set; }
+        public virtual DbSet<TreasuryHistory> TreasuryHistories { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<UserPhone> UserPhones { get; set; }
@@ -180,6 +183,21 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.OrderPlacedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__ApproveAg__Order__0D7A0286");
+            });
+
+            modelBuilder.Entity<CashMovment>(entity =>
+            {
+                entity.ToTable("CashMovment");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOnUtc).HasColumnType("date");
             });
 
             modelBuilder.Entity<Client>(entity =>
@@ -849,6 +867,48 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.Regions)
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("FK_Reginos_Country");
+            });
+
+            modelBuilder.Entity<Treasury>(entity =>
+            {
+                entity.ToTable("Treasury");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateOnUtc).HasColumnType("date");
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Treasury)
+                    .HasForeignKey<Treasury>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Treasury__Id__7814D14C");
+            });
+
+            modelBuilder.Entity<TreasuryHistory>(entity =>
+            {
+                entity.ToTable("TreasuryHistory");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.CreatedOnUtc).HasColumnType("date");
+
+                entity.HasOne(d => d.CashMovment)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.CashMovmentId)
+                    .HasConstraintName("FK__TreasuryH__CashM__7EC1CEDB");
+
+                entity.HasOne(d => d.ClientPayment)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.ClientPaymentId)
+                    .HasConstraintName("FK__TreasuryH__Clien__7DCDAAA2");
+
+                entity.HasOne(d => d.Treasury)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.TreasuryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__TreasuryH__Treas__7CD98669");
             });
 
             modelBuilder.Entity<User>(entity =>
