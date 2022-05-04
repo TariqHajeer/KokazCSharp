@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.TreasuryDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -34,25 +35,37 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             var treaury = _mapper.Map<Treasury>(createTreasuryDto);
             await _uintOfWork.BegeinTransaction();
-            await _uintOfWork.Add(treaury);
-            if (createTreasuryDto.Amount != 0)
+            try
             {
-                var cashMovment = _mapper.Map<CashMovment>(createTreasuryDto);
-                cashMovment.CreatedBy = _userService.AuthoticateUserName();
-                var history = _mapper.Map<TreasuryHistory>(cashMovment);
-                cashMovment.TreasuryHistories.Add(history);
-                await _uintOfWork.Add(cashMovment);
-                history.CashMovment = cashMovment;
-                treaury.TreasuryHistories.Add(history);
+                await _uintOfWork.Add(treaury);
+                if (createTreasuryDto.Amount != 0)
+                {
+                    var cashMovment = _mapper.Map<CashMovment>(createTreasuryDto);
+                    cashMovment.CreatedBy = _userService.AuthoticateUserName();
+                    var history = _mapper.Map<TreasuryHistory>(cashMovment);
+                    cashMovment.TreasuryHistories.Add(history);
+                    await _uintOfWork.Add(cashMovment);
+                    history.CashMovment = cashMovment;
+                    treaury.TreasuryHistories.Add(history);
+                }
+                await _uintOfWork.Commit();
+
+                var dto = _mapper.Map<TreasuryDto>(treaury);
+                dto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
+                {
+                    Total = treaury.TreasuryHistories.Count,
+                    Data = _mapper.Map<TreasuryHistoryDto[]>(treaury.TreasuryHistories)
+                };
+                return new ErrorRepsonse<TreasuryDto>();
             }
-            await _uintOfWork.Commit();
-            var dto = _mapper.Map<TreasuryDto>(treaury);
-            dto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
+            catch (Exception ex)
             {
-                Total = treaury.TreasuryHistories.Count,
-                Data = _mapper.Map<TreasuryHistoryDto[]>(treaury.TreasuryHistories)
-            };
-            return new ErrorRepsonse<TreasuryDto>();
+                await _uintOfWork.RoleBack();
+                return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
+                {
+
+                };
+            }
         }
 
         public async Task<TreasuryDto> GetById(int id)
@@ -71,12 +84,81 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto)
         {
-            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c=>c.TreasuryId==id);
+            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c => c.TreasuryId == id);
             return new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
             {
                 Total = hisotres.Total,
                 Data = _mapper.Map<TreasuryHistoryDto[]>(hisotres.Data)
             };
+        }
+
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, decimal amount)
+        {
+            var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
+            await _uintOfWork.BegeinTransaction();
+            try
+            {
+                var cashMovment = new CashMovment()
+                {
+                    Amount = amount,
+                    CreatedBy = _userService.AuthoticateUserName(),
+                    CreatedOnUtc = DateTime.UtcNow,
+                    TreasuryId = treausry.Id,
+                };
+                await _uintOfWork.Add(cashMovment);
+                var history = new TreasuryHistory()
+                {
+                    CreatedOnUtc = cashMovment.CreatedOnUtc,
+                    Amount = amount,
+                    CashMovment = cashMovment,
+                    CashMovmentId = cashMovment.Id,
+                    TreasuryId = id,
+                };
+                await _uintOfWork.Add(history);
+                treausry.Total += amount;
+                await _uintOfWork.Update(treausry);
+                await _uintOfWork.Commit();
+                return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.RoleBack();
+                return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
+            }
+        }
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, decimal amount)
+        {
+            var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
+            await _uintOfWork.BegeinTransaction();
+            try
+            {
+                var cashMovment = new CashMovment()
+                {
+                    Amount = -amount,
+                    CreatedBy = _userService.AuthoticateUserName(),
+                    CreatedOnUtc = DateTime.UtcNow,
+                    TreasuryId = treausry.Id,
+                };
+                await _uintOfWork.Add(cashMovment);
+                var history = new TreasuryHistory()
+                {
+                    CreatedOnUtc = cashMovment.CreatedOnUtc,
+                    Amount = -amount,
+                    CashMovment = cashMovment,
+                    CashMovmentId = cashMovment.Id,
+                    TreasuryId = id,
+                };
+                await _uintOfWork.Add(history);
+                treausry.Total -= amount;
+                await _uintOfWork.Update(treausry);
+                await _uintOfWork.Commit();
+                return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.RoleBack();
+                return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Services.Helper;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -38,14 +39,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
         }
-        [HttpPatch]
-        public async Task<ActionResult> GiveMoney(int id, [FromBody] decimal amount)
+        [HttpPatch("GiveMoney")]
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromBody] decimal amount)
         {
             var treasury = _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
-            return Ok();
-
+            var data = await _treasuryService.IncreaseAmount(id, amount);
+            return Ok(data);
+        }
+        [HttpPatch("GetMoney")]
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromBody] decimal amount)
+        {
+            var treasury = _treasuryService.GetById(id);
+            if (treasury == null)
+                return NotFound();
+            var data = await _treasuryService.DecreaseAmount(id, amount);
+            return Ok(data);
         }
 
     }
