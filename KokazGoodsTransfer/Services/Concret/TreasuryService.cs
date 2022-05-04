@@ -143,7 +143,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = -amount,
+                    Amount = amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,
@@ -175,9 +175,5 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(treausry);
         }
 
-        public Task PayForClinet(int id, decimal amount, int clientPamynetId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

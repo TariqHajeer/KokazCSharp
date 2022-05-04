@@ -17,7 +17,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, decimal amount);
         Task DisActive(int id);
         Task Active(int id);
-        Task PayForClinet(int id, decimal amount, int clientPamynetId);
 
 
     }

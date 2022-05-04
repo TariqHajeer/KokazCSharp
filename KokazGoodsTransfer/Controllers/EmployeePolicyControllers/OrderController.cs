@@ -1281,7 +1281,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
             var orders = this._context.Orders
             .Include(c => c.Client)
@@ -1305,7 +1305,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
 
             };
-
+            var total = 0m;
             var transaction = this._context.Database.BeginTransaction();
             try
             {
@@ -1314,6 +1314,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
                     var recepits = this._context.Receipts.Where(c => c.ClientPaymentId == null && c.ClientId == client.Id).ToList();
+                    total += recepits.Sum(c => c.Amount);
                     recepits.ForEach(c =>
                     {
                         c.ClientPaymentId = clientPayment.Id;
@@ -1350,7 +1351,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         }
 
                     }
-
                     item.IsClientDiliverdMoney = true;
                     var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
                     item.ClientPaied = item.ShouldToPay();
@@ -1376,7 +1376,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         OrderPlacedId = item.OrderplacedId,
                         PayForClient = currentPay
                     };
-
+                    total += currentPay;
                     this._context.Add(orderClientPaymnet);
                     this._context.Add(clientPaymentDetials);
                     this._context.SaveChanges();
@@ -1396,6 +1396,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this._context.Add(discount);
                     this._context.SaveChanges();
+                    total -= discount.Money;
+
                 }
                 this._context.Add(new Notfication()
                 {
@@ -1403,6 +1405,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ClientId = client.Id
                 });
                 this._context.SaveChanges();
+                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasury.Total -= total;
+                var history = new TreasuryHistory()
+                {
+                    ClientPaymentId = clientPayment.Id,
+                    CashMovmentId = null,
+                    TreasuryId = AuthoticateUserId(),
+                    Amount = total,
+                    CreatedOnUtc = DateTime.UtcNow
+                };
+                _context.Update(treasury);
+                await _context.AddAsync(history);
+                await _context.SaveChangesAsync();
                 transaction.Commit();
                 semaphore.Release();
                 return Ok(new { printNumber = clientPayment.Id });
@@ -1424,7 +1439,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
+        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
         {
             var ids = idsAndDate.Ids;
             var orders = this._context.Orders
@@ -1450,6 +1465,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
             };
             var transaction = this._context.Database.BeginTransaction();
+            var total = 0m;
             try
             {
                 this._context.Add(clientPaymnet);
@@ -1491,11 +1507,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Date = item.Date,
                         Note = item.Note,
                     };
+                    total += cureentPay;
                     this._context.Add(orderClientPayment);
                     this._context.Add(clientPaymnetDetial);
                 }
                 this._context.SaveChanges();
-
+                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasury.Total -= total;
+                var history = new TreasuryHistory()
+                {
+                    ClientPaymentId = clientPaymnet.Id,
+                    TreasuryId = AuthoticateUserId(),
+                    Amount = total,
+                    CreatedOnUtc = DateTime.UtcNow
+                };
+                this._context.Update(treasury);
+                await this._context.AddAsync(history);
+                await _context.SaveChangesAsync();
                 transaction.Commit();
                 semaphore.Release();
                 return Ok(new { printNumber = clientPaymnet.Id });
