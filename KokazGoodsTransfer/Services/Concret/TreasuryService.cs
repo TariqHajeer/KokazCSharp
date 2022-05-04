@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     Total = treaury.TreasuryHistories.Count,
                     Data = _mapper.Map<TreasuryHistoryDto[]>(treaury.TreasuryHistories)
                 };
-                return new ErrorRepsonse<TreasuryDto>();
+                return new ErrorRepsonse<TreasuryDto>(dto);
             }
             catch (Exception ex)
             {
@@ -159,6 +159,25 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.RoleBack();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
+        }
+
+        public async Task DisActive(int id)
+        {
+            var treausry = await _repository.GetById(id);
+            treausry.IsActive = false;
+            await _repository.Update(treausry);
+        }
+
+        public async Task Active(int id)
+        {
+            var treausry = await _repository.GetById(id);
+            treausry.IsActive = true;
+            await _repository.Update(treausry);
+        }
+
+        public Task PayForClinet(int id, decimal amount, int clientPamynetId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

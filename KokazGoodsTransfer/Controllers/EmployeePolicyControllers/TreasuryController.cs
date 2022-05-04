@@ -57,6 +57,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var data = await _treasuryService.DecreaseAmount(id, amount);
             return Ok(data);
         }
-
+        [HttpPatch("DisActive")]
+        public async Task<IActionResult> DisActive(int id)
+        {
+            await _treasuryService.DisActive(id);
+            return Ok();
+        }
+        [HttpPatch("Active")]
+        public async Task<IActionResult> Active(int id)
+        {
+            await _treasuryService.Active(id);
+            return Ok();
+        }
     }
 }
