@@ -13,5 +13,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<ErrorRepsonse<TreasuryDto>> Create(CreateTreasuryDto createTreasuryDto);
         Task<TreasuryDto> GetById(int id);
         Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto);
+        
     }
 }

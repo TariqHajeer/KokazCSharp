@@ -38,6 +38,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
         }
+        [HttpPatch]
+        public async Task<ActionResult> GiveMoney(int id, [FromBody] decimal amount)
+        {
+            var treasury = _treasuryService.GetById(id);
+            if (treasury == null)
+                return NotFound();
+            return Ok();
+
+        }
 
     }
 }
