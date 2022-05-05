@@ -8,6 +8,12 @@
             {
                 if (ClientPaymentId != null)
                     return "تسديد";
+                if(ReceiptId!=null)
+                {
+                    if (Receipt.IsPay)
+                        return "صرف";
+                    return "قبض";
+                }    
                 if (CashMovmentId != null)
                     if (Amount > 0)
                         return "إعطاء";

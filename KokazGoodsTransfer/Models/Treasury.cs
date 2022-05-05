@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public Treasury()
         {
+            CashMovments = new HashSet<CashMovment>();
             TreasuryHistories = new HashSet<TreasuryHistory>();
         }
 
@@ -18,6 +19,7 @@ namespace KokazGoodsTransfer.Models
         public bool IsActive { get; set; }
 
         public virtual User IdNavigation { get; set; }
+        public virtual ICollection<CashMovment> CashMovments { get; set; }
         public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
     }
 }

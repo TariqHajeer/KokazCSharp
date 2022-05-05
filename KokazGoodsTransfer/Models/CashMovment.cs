@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
         public DateTime CreatedOnUtc { get; set; }
         public string CreatedBy { get; set; }
 
+        public virtual Treasury Treasury { get; set; }
         public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
     }
 }

@@ -42,16 +42,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch("GiveMoney")]
         public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromBody] decimal amount)
         {
-            var treasury = _treasuryService.GetById(id);
+            var treasury =await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
             var data = await _treasuryService.IncreaseAmount(id, amount);
             return Ok(data);
         }
         [HttpPatch("GetMoney")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromBody] decimal amount)
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] decimal amount)
         {
-            var treasury = _treasuryService.GetById(id);
+            var treasury =await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
             var data = await _treasuryService.DecreaseAmount(id, amount);

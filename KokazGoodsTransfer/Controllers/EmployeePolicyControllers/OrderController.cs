@@ -965,75 +965,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-
-            //var ids = dateWithId.Ids;
-            //var orders = this._context.Orders
-            //    .Include(c => c.Agent)
-            //    .ThenInclude(c => c.UserPhones)
-            //    .Include(c => c.Client)
-            //    .Include(c => c.Country)
-            //    .Where(c => ids.Contains(c.Id)).ToList();
-
-            //if (orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store) != null)
-            //{
-            //    this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
-            //    return Conflict(err);
-            //}
-
-            //var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
-            //var printNumber = oldPrint?.PrintNmber ?? 0;
-            //++printNumber;
-            //var agent = orders.FirstOrDefault().Agent;
-            //var newPrint = new Printed()
-            //{
-            //    PrintNmber = printNumber,
-            //    Date = dateWithId.Date,
-            //    Type = PrintType.Agent,
-            //    PrinterName = this.AuthoticateUserName(),
-            //    DestinationName = agent.Name,
-            //    DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
-            //};
-            //var transaction = this._context.Database.BeginTransaction();
-            //try
-            //{
-            //    this._context.Printeds.Add(newPrint);
-            //    this._context.SaveChanges();
-            //    foreach (var item in orders)
-            //    {
-
-
-            //        item.OrderplacedId = (int)OrderplacedEnum.Way;
-            //        this._context.Update(item);
-            //        this._context.Entry(item).Reference(c => c.Region).Load();
-            //        var orderPrint = new OrderPrint()
-            //        {
-            //            PrintId = newPrint.Id,
-            //            OrderId = item.Id
-            //        };
-            //        var AgentPrint = new AgnetPrint()
-            //        {
-            //            Code = item.Code,
-            //            ClientName = item.Client.Name,
-            //            Note = item.Note,
-            //            Total = item.Cost,
-            //            Country = item.Country.Name,
-            //            PrintId = newPrint.Id,
-            //            Phone = item.RecipientPhones,
-            //            Region = item.Region?.Name
-            //        };
-            //        this._context.Add(orderPrint);
-            //        this._context.Add(AgentPrint);
-            //    }
-            //    this._context.SaveChanges();
-            //    transaction.Commit();
-            //    return Ok(new { printNumber });
-            //}
-            //catch (Exception ex)
-            //{
-            //    transaction.Rollback();
-            //    _logging.WriteExption(ex);
-            //    return BadRequest();
-            //}
         }
         /// <summary>
         /// <!--استلام حالة شحنة-->
@@ -1050,10 +981,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
                 var orders = await this._context.Orders.Where(c => orderStates.Select(c => c.Id).Contains(c.Id)).ToListAsync();
+                var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
                 foreach (var item in orderStates)
                 {
                     var order = orders.Find(c => c.Id == item.Id);
-
 
                     OrderLog log = order;
                     this._context.Add(log);
@@ -1061,11 +992,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     this._context.Entry(order).Reference(c => c.MoenyPlaced).Load();
                     this._context.Entry(order).Reference(c => c.Orderplaced).Load();
+
                     order.Note = item.Note;
 
                     if (order.DeliveryCost != item.DeliveryCost)
+                    {
                         if (order.OldDeliveryCost == null)
+                        {
                             order.OldDeliveryCost = order.DeliveryCost;
+                        }
+                    }
                     order.DeliveryCost = item.DeliveryCost;
                     order.AgentCost = item.AgentCost;
                     order.SystemNote = "UpdateOrdersStatusFromAgent";
@@ -1169,6 +1105,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         order.ApproveAgentEditOrderRequests.Clear();
                     }
+                    var receiptOfTheOrderStatusDetali = new ReceiptOfTheOrderStatusDetali()
+                    {
+                        AgentId = (int)order.AgentId,
+                        MoneyPlacedId = order.MoenyPlacedId,
+                        OrderCode = order.Code,
+                        OrderStateId = order.OrderStateId,
+                        Amount = order.Cost - order.AgentCost
+                    };
+                    receiptOfTheOrderStatusDetalis.Add(receiptOfTheOrderStatusDetali);
+
                     this._context.Update(order);
 
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
@@ -1210,6 +1156,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     addednotfications.Add(item);
                     this._context.Add(item);
                 }
+                var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus()
+                {
+                    CreatedOn = DateTime.UtcNow,
+                    ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis
+                };
+                await _context.AddAsync(receiptOfTheOrderStatus);
+                receiptOfTheOrderStatusDetalis.ForEach(c => c.ReceiptOfTheOrderStatusId = receiptOfTheOrderStatus.Id);
+                var treasuey = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasuey.Total += receiptOfTheOrderStatusDetalis.Sum(c => c.Amount);
+                var history = new TreasuryHistory()
+                {
+                    CreatedOnUtc = DateTime.UtcNow,
+                    Amount = receiptOfTheOrderStatusDetalis.Sum(c => c.Amount),
+                    TreasuryId = AuthoticateUserId(),
+                    ReceiptOfTheOrderStatusId = receiptOfTheOrderStatus.Id
+                };
+                await _context.AddAsync(history);
+                this._context.Add(receiptOfTheOrderStatus);
                 this._context.SaveChanges();
                 {
                     var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
@@ -1222,7 +1186,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                             notficationDtos.Add(_mapper.Map<NotficationDto>(groupItem));
                         }
                         await notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
-                        ;
                     }
                 }
                 return Ok();
