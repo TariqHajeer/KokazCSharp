@@ -31,6 +31,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             return await _kokazContext.Set<T>().FindAsync(Id);
         }
+        
 
         public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
@@ -54,12 +55,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return query;
         }
-        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors =null)
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null)
         {
             var query = _kokazContext.Set<T>().AsQueryable();
             if (filter != null)
                 query = query.Where(filter);
-            if(propertySelectors?.Any()==true)
+            if (propertySelectors?.Any() == true)
                 foreach (var item in propertySelectors)
                 {
                     query = query.Include(item);
@@ -168,5 +169,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return await query.ToListAsync();
         }
+
+
     }
 }

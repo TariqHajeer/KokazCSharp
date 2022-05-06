@@ -223,6 +223,7 @@ namespace KokazGoodsTransfer
             services.AddScoped(typeof(IIndexService<>), typeof(IndexService<>));
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITreasuryService, TreasuryService>();
+            services.AddScoped<IOrderService,OrderService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }

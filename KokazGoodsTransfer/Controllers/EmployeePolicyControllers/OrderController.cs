@@ -25,16 +25,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
+        private readonly IOrderService _orderService;
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
             this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
+            _orderService = orderService;
         }
 
         [HttpGet]
@@ -966,6 +968,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest();
             }
         }
+        [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
+        public async Task<IActionResult> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        {
+            return Ok();
+        }
         /// <summary>
         /// <!--استلام حالة شحنة-->
         /// </summary>
@@ -1501,6 +1508,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
 
         }
+        [HttpGet("GetOrderToReciveForDelivredOrders/{code}")]
+        public async Task<ActionResult<GenaricErrorResponse<Order, string, string>>> GetOrderToReciveForDelivredOrders(string code)
+        {
+            return Ok(await _orderService.GetOrderToReciveForDelivredOrders(code));
+        }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
         {
@@ -1540,7 +1552,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
 
             }
-
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetEarnings")]
