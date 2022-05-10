@@ -15,6 +15,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto);
         Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, decimal amount);
         Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, decimal amount);
+        Task IncreaseAmountByOrderFromAgent(IEnumerable<Order> orders);
         Task DisActive(int id);
         Task Active(int id);
 

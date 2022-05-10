@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client,c=>c.Agent,c=>c.MoenyPlaced,c=>c.Orderplaced);
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             if (!orders.Any())
             {
@@ -168,7 +168,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.UpdateRange(orders);
             await _notificationService.SendOrderReciveNotifcation(orders);
             await _uintOfWork.Commit();
-
+            await _treasuryService.IncreaseAmountByOrderFromAgent(orders);
             return response;
         }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)

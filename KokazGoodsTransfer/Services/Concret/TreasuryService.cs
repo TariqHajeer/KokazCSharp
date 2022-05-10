@@ -175,5 +175,10 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(treausry);
         }
 
+        public Task IncreaseAmountByOrderFromAgent(IEnumerable<Order> orders)
+        {
+            
+            throw new NotImplementedException();
+        }
     }
 }
