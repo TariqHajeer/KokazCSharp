@@ -974,11 +974,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
         }
         [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
-        public async Task<ActionResult<ErrorResponse<string,IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {
             return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
         }
-        public async Task<ActionResult<>>
         /// <summary>
         /// <!--استلام حالة شحنة-->
         /// </summary>
@@ -1118,17 +1117,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         order.ApproveAgentEditOrderRequests.Clear();
                     }
-                    #region not now 
-                    //var receiptOfTheOrderStatusDetali = new ReceiptOfTheOrderStatusDetali()
-                    //{
-                    //    AgentId = (int)order.AgentId,
-                    //    MoneyPlacedId = order.MoenyPlacedId,
-                    //    OrderCode = order.Code,
-                    //    OrderStateId = order.OrderStateId,
-                    //    Amount = order.Cost - order.AgentCost
-                    //};
-                    //receiptOfTheOrderStatusDetalis.Add(receiptOfTheOrderStatusDetali);
-                    #endregion
+                    
                     this._context.Update(order);
 
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
@@ -1170,27 +1159,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     addednotfications.Add(item);
                     this._context.Add(item);
                 }
-                #region not now
-                //var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus()
-                //{
-                //    CreatedOn = DateTime.UtcNow,
-                //    ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis
-                //};
-                //await _context.AddAsync(receiptOfTheOrderStatus);
-                //receiptOfTheOrderStatusDetalis.ForEach(c => c.ReceiptOfTheOrderStatusId = receiptOfTheOrderStatus.Id);
-                //var treasuey = await _context.Treasuries.FindAsync(AuthoticateUserId());
-                //treasuey.Total += receiptOfTheOrderStatusDetalis.Sum(c => c.Amount);
-                //var history = new TreasuryHistory()
-                //{
-                //    CreatedOnUtc = DateTime.UtcNow,
-                //    Amount = receiptOfTheOrderStatusDetalis.Sum(c => c.Amount),
-                //    TreasuryId = AuthoticateUserId(),
-                //    ReceiptOfTheOrderStatusId = receiptOfTheOrderStatus.Id
-                //};
-                //await _context.AddAsync(history);
-                //this._context.Add(receiptOfTheOrderStatus);
-                //this._context.SaveChanges();
-                #endregion
                 {
                     var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
                     foreach (var item in newnotifications)

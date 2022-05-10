@@ -92,9 +92,7 @@ namespace KokazGoodsTransfer.Services.Concret
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
                 var order = orders.First(c => c.Id == item.Id);
-
                 logs.Add(order);
-
                 order.MoenyPlacedId = (int)item.MoenyPlacedId;
                 order.OrderplacedId = (int)item.OrderplacedId;
                 order.Note = item.Note;
@@ -107,7 +105,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 order.DeliveryCost = item.DeliveryCost;
                 order.AgentCost = item.AgentCost;
-                order.SystemNote = "ReceiptOfTheStatusOfTheDeliveredShipmentService";
+                order.SystemNote = "ReceiptOfTheStatusOfTheDeliveredShipment";
                 if (order.IsClientDiliverdMoney)
                 {
                     switch (order.OrderplacedId)
@@ -162,13 +160,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.MoenyPlaced = moneyPlacedes.First(c => c.Id == order.MoenyPlacedId);
                 order.Orderplaced = orderPlacedes.First(c => c.Id == order.OrderplacedId);
             }
-            
+
             await _uintOfWork.BegeinTransaction();
             try
             {
                 await _uintOfWork.UpdateRange(orders);
                 await _uintOfWork.AddRange(logs);
-                await _uintOfWork.UpdateRange(orders);
                 await _notificationService.SendOrderReciveNotifcation(orders);
 
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
@@ -197,15 +194,151 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.Commit();
                 return response;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _uintOfWork.RoleBack();
+                return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
-            return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
+           
         }
-        public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto>  receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {
+            var moneyPlacedes = await _uintOfWork.Repository<MoenyPlaced>().GetAll();
+            var orderPlacedes = await _uintOfWork.Repository<OrderPlaced>().GetAll();
+            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
+            var response = new ErrorResponse<string, IEnumerable<string>>();
+            if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable))
+            {
+                var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable));
+                var worngDataIds = wrongData.Select(c => c.Id);
+                var worngOrders = await _uintOfWork.Repository<Order>().GetAsync(c => worngDataIds.Contains(c.Id));
+                List<string> errors = new List<string>();
+                foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
+                {
+                    string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
+                    errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");
+                }
+                response.Errors = errors;
+                return response;
+            }
+            List<Notfication> notfications = new List<Notfication>();
+            List<Notfication> addednotfications = new List<Notfication>();
+
+            var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id));
+
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
+            List<OrderLog> logs = new List<OrderLog>();
+            foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
+            {
+                var order = orders.First(c => c.Id == item.Id);
+                logs.Add(order);
+                order.MoenyPlacedId = (int)item.MoenyPlacedId;
+                order.OrderplacedId = (int)item.OrderplacedId;
+                order.Note = item.Note;
+
+                if (order.DeliveryCost != item.DeliveryCost)
+                {
+                    if (order.OldDeliveryCost == null)
+                    {
+                        order.OldDeliveryCost = order.DeliveryCost;
+                    }
+                }
+                order.DeliveryCost = item.DeliveryCost;
+                order.AgentCost = item.AgentCost;
+                order.SystemNote = "ReceiptOfTheStatusOfTheReturnedShipment";
+                if (order.IsClientDiliverdMoney)
+                {
+                    switch (order.OrderplacedId)
+                    {
+                        case (int)OrderplacedEnum.CompletelyReturned:
+                            {
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = 0;
+                                order.AgentCost = 0;
+                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Unacceptable:
+                            {
+                                if (order.OldCost == null)
+                                {
+                                    order.OldCost = order.Cost;
+                                }
+                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                            }
+                            break;
+
+                    }
+                }
+                else
+                {
+                    switch (order.OrderplacedId)
+                    {
+                        case (int)OrderplacedEnum.CompletelyReturned:
+                            {
+                                if (order.OldCost == null)
+                                {
+                                    order.OldCost = order.Cost;
+                                }
+                                order.Cost = 0;
+                                if (order.OldDeliveryCost == null)
+                                    order.OldDeliveryCost = order.DeliveryCost;
+                                order.DeliveryCost = 0;
+                                order.AgentCost = 0;
+                            }
+                            break;
+                        case (int)OrderplacedEnum.Unacceptable:
+                            {
+                                if (order.OldCost == null)
+                                    order.OldCost = order.Cost;
+                                order.Cost = 0;
+                            }
+                            break;
+                    }
+                }
+                if (order.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                {
+                    order.ApproveAgentEditOrderRequests.Clear();
+                }
+                order.MoenyPlaced = moneyPlacedes.First(c => c.Id == order.MoenyPlacedId);
+                order.Orderplaced = orderPlacedes.First(c => c.Id == order.OrderplacedId);
+            }
+            await _uintOfWork.BegeinTransaction();
+            try
+            {
+                await _uintOfWork.UpdateRange(orders);
+                await _notificationService.SendOrderReciveNotifcation(orders);
+                var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
+                {
+                    CreatedOn = DateTime.UtcNow
+                };
+                var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
+                foreach (var order in orders)
+                {
+                    receiptOfTheOrderStatusDetalis.Add(new ReceiptOfTheOrderStatusDetali()
+                    {
+                        OrderCode = order.Code,
+                        ClientId = order.ClientId,
+                        Cost = order.Cost,
+                        AgentCost = order.AgentCost,
+                        AgentId = (int)order.AgentId,
+                        MoneyPlacedId = order.MoenyPlacedId,
+                        OrderPlacedId = order.OrderplacedId,
+                        OrderStateId = order.OrderStateId,
+                    });
+                }
+                receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
+                await _uintOfWork.Add(receiptOfTheOrderStatus);
+                await _uintOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.RoleBack();
+                return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
+            }
             return new ErrorResponse<string, IEnumerable<string>>();
+
         }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {
