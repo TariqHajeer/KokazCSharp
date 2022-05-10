@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
@@ -19,12 +20,15 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             _kokazContext = kokazContext;
         }
-        
+
         public async Task Add<TEntity>(TEntity entity) where TEntity : class
         {
             await Repository<TEntity>().AddAsync(entity);
         }
-
+        public async Task AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
+        {
+            await Repository<TEntity>().AddRangeAsync(entities);
+        }
         public async Task BegeinTransaction()
         {
             _dbContextTransaction = await _kokazContext.Database.BeginTransactionAsync();
@@ -62,6 +66,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task Update<TEntity>(TEntity entity) where TEntity : class
         {
             await Repository<TEntity>().Update(entity);
+        }
+
+        public async Task UpdateRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
+        {
+            await Repository<TEntity>().Update(entities);
         }
     }
 }

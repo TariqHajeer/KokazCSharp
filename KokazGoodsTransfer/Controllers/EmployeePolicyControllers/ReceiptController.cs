@@ -54,9 +54,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Where(c => c.ClientId == clientId && c.ClientPaymentId == null).ToList();
             return Ok(_mapper.Map<ReceiptDto[]>(repiq));
         }
+        [HttpGet("{id}")]
         public async Task<ActionResult<ReceiptDto>> GetById(int id)
         {
-            return Ok(_mapper.Map<ReceiptDto>(await _context.Receipts.FindAsync(id)));
+            var receipt = await _context.Receipts.FindAsync(id);
+            _context.Entry(receipt).Reference(c => c.Client).Load();
+            return Ok(_mapper.Map<ReceiptDto>(receipt));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

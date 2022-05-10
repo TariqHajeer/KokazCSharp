@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.HubsConfig
         //{
 
         //}
-        public async Task AllNotification(string userId, NotficationDto[] notficationDto)
+        public async Task AllNotification(string userId, NotificationDto[] notficationDto)
         {
 
             var x = JsonConvert.SerializeObject(new { notifications = notficationDto });

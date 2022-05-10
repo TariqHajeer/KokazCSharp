@@ -54,7 +54,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoneyPlaced)
                 .Include(c => c.OrderPlaced)
                 .ToListAsync();
-            var dto = _mapper.Map<NotficationDto[]>(nos);
+            var dto = _mapper.Map<NotificationDto[]>(nos);
             await notificationHub.AllNotification(AuthoticateUserId().ToString(), dto);
             return Ok();
         }

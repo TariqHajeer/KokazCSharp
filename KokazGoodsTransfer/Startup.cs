@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer
     public class Startup
     {
         // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
-        //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -F
+        //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models    -F
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
@@ -223,7 +223,8 @@ namespace KokazGoodsTransfer
             services.AddScoped(typeof(IIndexService<>), typeof(IndexService<>));
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITreasuryService, TreasuryService>();
-            services.AddScoped<IOrderService,OrderService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }

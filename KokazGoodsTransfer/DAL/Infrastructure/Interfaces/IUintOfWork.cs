@@ -10,7 +10,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         IRepository<TEntity> Repository<TEntity>() where TEntity : class;
         Task Commit();
         Task Update<TEntity>(TEntity entity) where TEntity : class;
+        Task UpdateRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         Task Add<TEntity>(TEntity entity) where TEntity : class;
+        Task AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         Task BegeinTransaction();
         Task RoleBack();
 

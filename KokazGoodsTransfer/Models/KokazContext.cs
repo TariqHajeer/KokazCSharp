@@ -870,7 +870,9 @@ namespace KokazGoodsTransfer.Models
 
             modelBuilder.Entity<ReceiptOfTheOrderStatusDetali>(entity =>
             {
-                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.AgentCost).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Cost).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.OrderCode)
                     .IsRequired()

@@ -22,6 +22,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 
 
         }
+        public virtual async Task AddRangeAsync(IEnumerable<T> entityes)
+        {
+            await _kokazContext.AddRangeAsync(entityes);
+            await _kokazContext.SaveChangesAsync();
+        }
         public virtual async Task AddAsync(T entity)
         {
             await _kokazContext.AddAsync(entity);
@@ -169,7 +174,5 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return await query.ToListAsync();
         }
-
-
     }
 }

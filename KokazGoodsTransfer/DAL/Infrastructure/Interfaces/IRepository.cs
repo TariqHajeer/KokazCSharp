@@ -9,6 +9,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
     public interface IRepository<T> where T : class
     {
         Task AddAsync(T entity);
+        Task AddRangeAsync(IEnumerable<T> entityes);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
