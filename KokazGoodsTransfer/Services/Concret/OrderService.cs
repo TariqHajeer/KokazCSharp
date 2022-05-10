@@ -20,12 +20,12 @@ namespace KokazGoodsTransfer.Services.Concret
         public OrderService(IUintOfWork uintOfWork, INotificationService notificationService)
         {
             _uintOfWork = uintOfWork;
-            _notificationService = notificationService; 
+            _notificationService = notificationService;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code,c=>c.Client);
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             if (!orders.Any())
             {
@@ -55,7 +55,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (lastOrderAdded.OrderplacedId == (int)MoneyPalcedEnum.InsideCompany)
                     return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>("الشحنة داخل الشركة");
             }
-
             return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>(orders);
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
