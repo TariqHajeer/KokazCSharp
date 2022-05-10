@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client,c=>c.Agent,c=>c.MoenyPlaced,c=>c.Orderplaced);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client, c => c.Agent, c => c.MoenyPlaced, c => c.Orderplaced, c => c.Country);
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             if (!orders.Any())
             {
@@ -62,19 +62,19 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
         }
-        public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
             var moneyPlacedes = await _uintOfWork.Repository<MoenyPlaced>().GetAll();
             var orderPlacedes = await _uintOfWork.Repository<OrderPlaced>().GetAll();
             var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
-            if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.Delivered || c.OrderplacedId == OrderplacedEnum.PartialReturned))
+            if (!receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.Delivered || c.OrderplacedId == OrderplacedEnum.PartialReturned))
             {
-                var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.Delivered || c.OrderplacedId == OrderplacedEnum.PartialReturned));
+                var wrongData = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => !(c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.Delivered || c.OrderplacedId == OrderplacedEnum.PartialReturned));
                 var worngDataIds = wrongData.Select(c => c.Id);
                 var worngOrders = await _uintOfWork.Repository<Order>().GetAsync(c => worngDataIds.Contains(c.Id));
                 List<string> errors = new List<string>();
-                foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
+                foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
                 {
                     string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
                     errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");
@@ -85,11 +85,11 @@ namespace KokazGoodsTransfer.Services.Concret
             List<Notfication> notfications = new List<Notfication>();
             List<Notfication> addednotfications = new List<Notfication>();
 
-            var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id));
+            var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Select(c => c.Id));
 
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
             List<OrderLog> logs = new List<OrderLog>();
-            foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
+            foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
                 var order = orders.First(c => c.Id == item.Id);
 
@@ -162,14 +162,50 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.MoenyPlaced = moneyPlacedes.First(c => c.Id == order.MoenyPlacedId);
                 order.Orderplaced = orderPlacedes.First(c => c.Id == order.OrderplacedId);
             }
+            
             await _uintOfWork.BegeinTransaction();
-            await _uintOfWork.UpdateRange(orders);
-            await _uintOfWork.AddRange(logs);
-            await _uintOfWork.UpdateRange(orders);
-            await _notificationService.SendOrderReciveNotifcation(orders);
-            await _uintOfWork.Commit();
-            await _treasuryService.IncreaseAmountByOrderFromAgent(orders);
-            return response;
+            try
+            {
+                await _uintOfWork.UpdateRange(orders);
+                await _uintOfWork.AddRange(logs);
+                await _uintOfWork.UpdateRange(orders);
+                await _notificationService.SendOrderReciveNotifcation(orders);
+
+                var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
+                {
+                    CreatedOn = DateTime.UtcNow
+                };
+                var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
+                foreach (var order in orders)
+                {
+                    receiptOfTheOrderStatusDetalis.Add(new ReceiptOfTheOrderStatusDetali()
+                    {
+                        OrderCode = order.Code,
+                        ClientId = order.ClientId,
+                        Cost = order.Cost,
+                        AgentCost = order.AgentCost,
+                        AgentId = (int)order.AgentId,
+                        MoneyPlacedId = order.MoenyPlacedId,
+                        OrderPlacedId = order.OrderplacedId,
+                        OrderStateId = order.OrderStateId,
+                    });
+                }
+                receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
+                await _uintOfWork.Add(receiptOfTheOrderStatus);
+
+                await _treasuryService.IncreaseAmountByOrderFromAgent(receiptOfTheOrderStatus);
+                await _uintOfWork.Commit();
+                return response;
+            }
+            catch(Exception ex)
+            {
+                await _uintOfWork.RoleBack();
+            }
+            return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
+        }
+        public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto>  receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        {
+            return new ErrorResponse<string, IEnumerable<string>>();
         }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {

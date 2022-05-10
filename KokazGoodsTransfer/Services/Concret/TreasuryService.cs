@@ -9,6 +9,8 @@ using KokazGoodsTransfer.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using KokazGoodsTransfer.Models.Static;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -175,10 +177,24 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(treausry);
         }
 
-        public Task IncreaseAmountByOrderFromAgent(IEnumerable<Order> orders)
+        public async Task IncreaseAmountByOrderFromAgent(ReceiptOfTheOrderStatus receiptOfTheOrderStatus)
         {
-            
-            throw new NotImplementedException();
+            var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoneyPlacedId != (int)MoneyPalcedEnum.OutSideCompany).ToList();
+            if (receiptOfTheOrderStatusDetalis.Any())
+            {
+                var treaury = await _repository.GetById(_userService.AuthoticateUserId());
+                var total = receiptOfTheOrderStatusDetalis.Sum(c => c.Cost - c.AgentCost);
+                treaury.Total += total;
+                await _uintOfWork.Update(treaury);
+                var history = new TreasuryHistory()
+                {
+                    Amount = total,
+                    ReceiptOfTheOrderStatusId = receiptOfTheOrderStatus.Id,
+                    TreasuryId = treaury.Id,
+                    CreatedOnUtc = DateTime.UtcNow,
+                };
+                await _uintOfWork.Add(history);
+            }
         }
     }
 }
