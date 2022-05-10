@@ -1512,9 +1512,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         }
         [HttpGet("GetOrderToReciveForDelivredOrders/{code}")]
-        public async Task<ActionResult<GenaricErrorResponse<Order, string, string>>> GetOrderToReciveForDelivredOrders(string code)
+        public async Task<ActionResult<GenaricErrorResponse<Order, string, string>>> GetOrderToReciveFromAgent(string code)
         {
-            return Ok(await _orderService.GetOrderToReciveForDelivredOrders(code));
+            return Ok(await _orderService.GetOrderToReciveFromAgent(code));
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)

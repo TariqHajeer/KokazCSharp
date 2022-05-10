@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _notificationService = notificationService; 
         }
 
-        public async Task<GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>> GetOrderToReciveForDelivredOrders(string code)
+        public async Task<GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code);
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
