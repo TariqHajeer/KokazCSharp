@@ -8,6 +8,7 @@ using System.Linq;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models.Static;
 using System;
+using AutoMapper;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -15,21 +16,25 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         private readonly IUintOfWork _uintOfWork;
         private readonly INotificationService _notificationService;
+        private readonly ITreasuryService _treasuryService;
+        private readonly IMapper _mapper;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
-        public OrderService(IUintOfWork uintOfWork, INotificationService notificationService)
+        public OrderService(IUintOfWork uintOfWork, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
+            _treasuryService = treasuryService;
+            _mapper = mapper;
         }
 
-        public async Task<GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
+        public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code,c=>c.Client);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client);
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             if (!orders.Any())
             {
-                return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>("الشحنة غير موجودة");
+                return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة غير موجودة");
             }
             ///التأكد من ان الشحنة ليست عند العميل او في المخزن
             {
@@ -49,13 +54,13 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var lastOrderPlacedAdded = lastOrderAdded.OrderplacedId;
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
-                    return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>("الشحنة في المخزن");
+                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة في المخزن");
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Client)
-                    return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>("الشحنة عند العميل");
+                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة عند العميل");
                 if (lastOrderAdded.OrderplacedId == (int)MoneyPalcedEnum.InsideCompany)
-                    return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>("الشحنة داخل الشركة");
+                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة داخل الشركة");
             }
-            return new GenaricErrorResponse<IEnumerable<Order>, string, IEnumerable<string>>(orders);
+            return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {

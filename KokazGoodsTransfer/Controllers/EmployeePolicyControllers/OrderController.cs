@@ -1511,8 +1511,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
 
         }
-        [HttpGet("GetOrderToReciveForDelivredOrders/{code}")]
-        public async Task<ActionResult<GenaricErrorResponse<Order, string, string>>> GetOrderToReciveFromAgent(string code)
+        [HttpGet("GetOrderToReciveFromAgent/{code}")]
+        public async Task<ActionResult<GenaricErrorResponse<IEnumerable<OrderDto>, string, string>>> GetOrderToReciveFromAgent(string code)
         {
             return Ok(await _orderService.GetOrderToReciveFromAgent(code));
         }
