@@ -5,6 +5,8 @@ using KokazGoodsTransfer.Services.Helper;
 using System.Collections.Generic;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.DAL.Helper;
+using System.Linq.Expressions;
+using System;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -18,6 +20,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task IncreaseAmountByOrderFromAgent(ReceiptOfTheOrderStatus receiptOfTheOrderStatus);
         Task DisActive(int id);
         Task Active(int id);
+        Task<bool> Any(Expression<Func<Treasury,bool>> expression);
 
 
     }

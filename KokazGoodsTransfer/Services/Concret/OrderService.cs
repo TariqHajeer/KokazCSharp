@@ -74,7 +74,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 var worngDataIds = wrongData.Select(c => c.Id);
                 var worngOrders = await _uintOfWork.Repository<Order>().GetAsync(c => worngDataIds.Contains(c.Id));
                 List<string> errors = new List<string>();
-                foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
                 {
                     string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
                     errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");

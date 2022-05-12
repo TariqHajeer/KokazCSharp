@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -21,14 +22,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class EmployeeAuthController : AbstractController
     {
-
-        public EmployeeAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly ITreasuryService _treasuryService;
+        public EmployeeAuthController(KokazContext context, IMapper mapper, Logging logging, ITreasuryService treasuryService) : base(context, mapper, logging)
         {
+            _treasuryService = treasuryService;
         }
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var user =await this._context.Users
+            var user = await this._context.Users
                 .Include(c => c.UserGroups)
                 .ThenInclude(c => c.Group)
                 .ThenInclude(c => c.GroupPrivileges)
@@ -51,7 +53,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 climes.Add(new Claim("Type", "Employee"));
             else
                 climes.Add(new Claim("Type", "Agent"));
-
+            var haveTreasury = await _treasuryService.Any(c => c.Id == user.Id);
+            if (haveTreasury)
+            {
+                climes.Add(new Claim("treasury", true.ToString()));
+            }
+            else
+            {
+                climes.Add(new Claim("treasury", false.ToString()));
+            }
             climes.Add(new Claim(ClaimTypes.Name, user.Name));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -65,6 +75,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             AuthenticatedUserDto authenticatedUserDto = _mapper.Map<AuthenticatedUserDto>(user);
             authenticatedUserDto.Token = token;
             authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
+            authenticatedUserDto.HaveTreasury = haveTreasury;
             return Ok(authenticatedUserDto);
         }
 

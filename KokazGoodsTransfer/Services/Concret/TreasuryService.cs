@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using KokazGoodsTransfer.Models.Static;
+using System.Linq.Expressions;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -195,6 +196,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 };
                 await _uintOfWork.Add(history);
             }
+        }
+
+        public async Task<bool> Any(Expression<Func<Treasury, bool>> expression)
+        {
+            return await _repository.Any(expression);
         }
     }
 }
