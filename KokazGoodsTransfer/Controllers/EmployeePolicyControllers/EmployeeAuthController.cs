@@ -53,7 +53,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 climes.Add(new Claim("Type", "Employee"));
             else
                 climes.Add(new Claim("Type", "Agent"));
-            var haveTreasury = await _treasuryService.Any(c => c.Id == user.Id);
+            var haveTreasury = await _treasuryService.Any(c => c.Id == user.Id && c.IsActive);
             if (haveTreasury)
             {
                 climes.Add(new Claim("treasury", true.ToString()));
