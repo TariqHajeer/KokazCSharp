@@ -88,9 +88,14 @@ namespace KokazGoodsTransfer.Services.Concret
             var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Select(c => c.Id));
 
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
-
-            orders = orders.Except(orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.FirstOrDefault(r => r.EqualToOrder(order)) != null));
-            receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => orders.Select(order => order.Id).Contains(c.Id))).ToList();
+            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Any(r => r.EqualToOrder(order))).ToList();
+            orders = orders.Except(repatedOrders).ToList();
+            var exptedOrdersIds = repatedOrders.Select(c => c.Id);
+            receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => !exptedOrdersIds.Contains(c.Id));
+            if (!receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Any())
+            {
+                return new ErrorResponse<string, IEnumerable<string>>();
+            }
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
