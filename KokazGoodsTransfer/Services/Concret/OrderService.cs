@@ -88,6 +88,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Select(c => c.Id));
 
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
+
+            orders = orders.Except(orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.FirstOrDefault(r => r.EqualToOrder(order)) != null));
+            receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => orders.Select(order => order.Id).Contains(c.Id)));
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
@@ -199,7 +202,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.RoleBack();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
-           
+
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {
@@ -207,6 +210,10 @@ namespace KokazGoodsTransfer.Services.Concret
             var orderPlacedes = await _uintOfWork.Repository<OrderPlaced>().GetAll();
             var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
+
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id));
+            receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => orders.FirstOrDefault(o => c.EqualToOrder(o)) != null));
+            orders = orders.Where(c => receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(r => r.Id).Contains(c.Id));
             if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable))
             {
                 var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable));
@@ -224,9 +231,6 @@ namespace KokazGoodsTransfer.Services.Concret
             List<Notfication> notfications = new List<Notfication>();
             List<Notfication> addednotfications = new List<Notfication>();
 
-            var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id));
-
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
             {
