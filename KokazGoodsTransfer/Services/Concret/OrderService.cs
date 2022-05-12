@@ -74,6 +74,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var worngDataIds = wrongData.Select(c => c.Id);
                 var worngOrders = await _uintOfWork.Repository<Order>().GetAsync(c => worngDataIds.Contains(c.Id));
                 List<string> errors = new List<string>();
+                foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
                 {
                     string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
                     errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");
@@ -89,7 +90,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
 
             orders = orders.Except(orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.FirstOrDefault(r => r.EqualToOrder(order)) != null));
-            receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => orders.Select(order => order.Id).Contains(c.Id)));
+            receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos = receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Where(c => orders.Select(order => order.Id).Contains(c.Id))).ToList();
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
