@@ -216,9 +216,15 @@ namespace KokazGoodsTransfer.Services.Concret
             var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id));
-            receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Except(receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => orders.FirstOrDefault(o => c.EqualToOrder(o)) != null));
-            orders = orders.Where(c => receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(r => r.Id).Contains(c.Id));
+            var orders = (await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id))).ToList();
+            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentDtos.Any(r => r.EqualToOrder(order))).ToList();
+            orders = orders.Except(repatedOrders).ToList();
+            var exptedOrdersIds = repatedOrders.Select(c => c.Id);
+            receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !exptedOrdersIds.Contains(c.Id));
+            if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.Any())
+            {
+                return new ErrorResponse<string, IEnumerable<string>>();
+            }
             if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable))
             {
                 var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.CompletelyReturned || c.OrderplacedId == OrderplacedEnum.Unacceptable || c.OrderplacedId == OrderplacedEnum.Unacceptable));
