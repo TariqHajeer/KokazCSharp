@@ -1360,7 +1360,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ClientPaymentId = clientPayment.Id,
                     CashMovmentId = null,
                     TreasuryId = AuthoticateUserId(),
-                    Amount = total,
+                    Amount = -total,
                     CreatedOnUtc = DateTime.UtcNow
                 };
                 _context.Update(treasury);
@@ -1466,7 +1466,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 {
                     ClientPaymentId = clientPaymnet.Id,
                     TreasuryId = AuthoticateUserId(),
-                    Amount = total,
+                    Amount = -total,
                     CreatedOnUtc = DateTime.UtcNow
                 };
                 this._context.Update(treasury);

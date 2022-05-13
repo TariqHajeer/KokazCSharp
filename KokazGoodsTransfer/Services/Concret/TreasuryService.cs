@@ -146,7 +146,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = amount,
+                    Amount = -amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,

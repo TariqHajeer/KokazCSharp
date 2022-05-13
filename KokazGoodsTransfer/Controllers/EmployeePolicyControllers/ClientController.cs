@@ -135,7 +135,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 _context.Update(treasuer);
                 var history = new TreasuryHistory()
                 {
-                    Amount = Math.Abs(accountDto.Amount),
+                    Amount = accountDto.Amount,
                     ReceiptId = receipt.Id,
                     TreasuryId = treasuer.Id,
                     CreatedOnUtc = DateTime.Now,
