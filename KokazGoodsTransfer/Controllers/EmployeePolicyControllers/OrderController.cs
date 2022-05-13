@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using KokazGoodsTransfer.Services.Interfaces;
+using KokazGoodsTransfer.DAL.Helper;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -1117,7 +1118,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         order.ApproveAgentEditOrderRequests.Clear();
                     }
-                    
+
                     this._context.Update(order);
 
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
@@ -1966,9 +1967,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("ReceiptOfTheOrderStatus/{id}")]
-        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto,string,IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
+        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
         {
             return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
+        }
+        [HttpGet("ReceiptOfTheOrderStatus")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDetaliDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto));
         }
     }
 }

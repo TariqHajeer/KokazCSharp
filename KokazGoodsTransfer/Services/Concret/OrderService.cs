@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models.Static;
 using System;
 using AutoMapper;
+using KokazGoodsTransfer.DAL.Helper;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -363,8 +364,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id)
         {
-            var response= (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced" })).FirstOrDefault() ;
-            var dto= _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
+            var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced" })).FirstOrDefault();
+            var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
         }
 
@@ -381,6 +382,17 @@ namespace KokazGoodsTransfer.Services.Concret
                 OrderplacedEnum.Unacceptable => "مرفوض",
                 OrderplacedEnum.Delayed => "مؤجل",
                 _ => "غير معلوم",
+            };
+        }
+
+        public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
+        {
+            var response = (await _receiptOfTheOrderStatusRepository.GetAsync(Paging));
+            var dtos = _mapper.Map<ReceiptOfTheOrderStatusDto[]>(response.Data);
+            return new PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>()
+            {
+                Total = response.Total,
+                Data = dtos
             };
         }
     }

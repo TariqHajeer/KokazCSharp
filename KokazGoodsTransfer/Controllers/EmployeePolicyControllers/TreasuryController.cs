@@ -39,8 +39,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
         }
-        [HttpPatch("GiveMoney")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromBody] decimal amount)
+        [HttpPatch("GiveMoney/{id}")]
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromForm] decimal amount)
         {
             var treasury =await _treasuryService.GetById(id);
             if (treasury == null)
@@ -48,7 +48,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var data = await _treasuryService.IncreaseAmount(id, amount);
             return Ok(data);
         }
-        [HttpPatch("GetMoney")]
+        [HttpPatch("GetMoney/{id}")]
         public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] decimal amount)
         {
             var treasury =await _treasuryService.GetById(id);
