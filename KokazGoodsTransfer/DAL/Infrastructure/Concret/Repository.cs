@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             return await _kokazContext.Set<T>().FindAsync(Id);
         }
-        
+
 
         public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
@@ -65,6 +65,21 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var query = _kokazContext.Set<T>().AsQueryable();
             if (filter != null)
                 query = query.Where(filter);
+            if (propertySelectors?.Any() == true)
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            var total = await query.CountAsync();
+            return new PagingResualt<IEnumerable<T>>()
+            {
+                Data = await query.ToListAsync(),
+                Total = total,
+            };
+        }
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors)
+        {
+            var query = _kokazContext.Set<T>().AsQueryable();
             if (propertySelectors?.Any() == true)
                 foreach (var item in propertySelectors)
                 {
