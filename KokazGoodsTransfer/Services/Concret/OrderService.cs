@@ -364,7 +364,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id)
         {
-            var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced" })).FirstOrDefault();
+            var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced", "ReceiptOfTheOrderStatusDetalis.Client" })).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
         }
