@@ -23,5 +23,6 @@ namespace KokazGoodsTransfer.Models
         public virtual OrderPlaced OrderPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
         public virtual ReceiptOfTheOrderStatus ReceiptOfTheOrderStatus { get; set; }
+        
     }
 }

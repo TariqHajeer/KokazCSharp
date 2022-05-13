@@ -42,8 +42,8 @@ namespace KokazGoodsTransfer.Services.Concret
                         clientNotigaction = new Notfication()
                         {
                             ClientId = order.ClientId,
-                            OrderPlacedId = moenyPlacedId,
-                            MoneyPlacedId = order.MoenyPlacedId,
+                            OrderPlacedId = order.OrderplacedId,
+                            MoneyPlacedId = moenyPlacedId,
                             IsSeen = false,
                             OrderCount = 1
                         };

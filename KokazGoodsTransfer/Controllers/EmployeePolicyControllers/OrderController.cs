@@ -1965,6 +1965,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = await query.ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
-
+        [HttpGet("ReceiptOfTheOrderStatus/{id}")]
+        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto,string,IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
+        }
     }
 }

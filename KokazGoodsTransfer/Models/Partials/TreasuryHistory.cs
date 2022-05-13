@@ -8,6 +8,10 @@
             {
                 if (ClientPaymentId != null)
                     return "تسديد";
+                if (ReceiptOfTheOrderStatusId != null)
+                {
+                    return "استلام شحنة";
+                }
                 if(ReceiptId!=null)
                 {
                     if (Receipt.IsPay)

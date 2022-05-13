@@ -17,15 +17,19 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUintOfWork _uintOfWork;
         private readonly INotificationService _notificationService;
         private readonly ITreasuryService _treasuryService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IRepository<ReceiptOfTheOrderStatus> _receiptOfTheOrderStatusRepository;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
-        public OrderService(IUintOfWork uintOfWork, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper)
+        public OrderService(IUintOfWork uintOfWork, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
             _treasuryService = treasuryService;
             _mapper = mapper;
+            _userService = userService;
+            _receiptOfTheOrderStatusRepository = receiptOfTheOrderStatusRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -178,7 +182,8 @@ namespace KokazGoodsTransfer.Services.Concret
 
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.UtcNow,
+                    RecvierId = _userService.AuthoticateUserId()
                 };
                 var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
                 foreach (var order in orders)
@@ -326,7 +331,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _notificationService.SendOrderReciveNotifcation(orders);
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.UtcNow,
+                    RecvierId = _userService.AuthoticateUserId()
                 };
                 var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
                 foreach (var order in orders)
@@ -355,6 +361,13 @@ namespace KokazGoodsTransfer.Services.Concret
             return new ErrorResponse<string, IEnumerable<string>>();
 
         }
+        public async Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id)
+        {
+            var response= (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced" })).FirstOrDefault() ;
+            var dto= _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
+            return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
+        }
+
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {
             return orderplacedEnum switch

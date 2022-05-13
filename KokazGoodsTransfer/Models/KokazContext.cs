@@ -866,6 +866,12 @@ namespace KokazGoodsTransfer.Models
                 entity.ToTable("ReceiptOfTheOrderStatus");
 
                 entity.Property(e => e.CreatedOn).HasColumnType("date");
+
+                entity.HasOne(d => d.Recvier)
+                    .WithMany(p => p.ReceiptOfTheOrderStatuses)
+                    .HasForeignKey(d => d.RecvierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ReceiptOf__Recvi__58671BC9");
             });
 
             modelBuilder.Entity<ReceiptOfTheOrderStatusDetali>(entity =>

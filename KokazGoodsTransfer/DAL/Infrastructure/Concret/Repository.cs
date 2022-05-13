@@ -77,6 +77,18 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Total = total,
             };
         }
+        public virtual async Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors)
+        {
+            var query = _kokazContext.Set<T>().AsQueryable();
+            if (filter != null)
+                query = query.Where(filter);
+            if (propertySelectors?.Any() == true)
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            return await query.ToListAsync();
+        }
         public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
 

@@ -18,6 +18,7 @@ namespace KokazGoodsTransfer.Models
             Orders = new HashSet<Order>();
             OutComes = new HashSet<OutCome>();
             ReceiptOfTheOrderStatusDetalis = new HashSet<ReceiptOfTheOrderStatusDetali>();
+            ReceiptOfTheOrderStatuses = new HashSet<ReceiptOfTheOrderStatus>();
             UserGroups = new HashSet<UserGroup>();
             UserPhones = new HashSet<UserPhone>();
         }
@@ -44,6 +45,7 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<OutCome> OutComes { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
+        public virtual ICollection<ReceiptOfTheOrderStatus> ReceiptOfTheOrderStatuses { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
         public virtual ICollection<UserPhone> UserPhones { get; set; }
     }
