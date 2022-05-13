@@ -890,6 +890,12 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__ReceiptOf__Agent__23F3538A");
 
+                entity.HasOne(d => d.Client)
+                    .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ReceiptOf__Clien__595B4002");
+
                 entity.HasOne(d => d.MoneyPlaced)
                     .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
                     .HasForeignKey(d => d.MoneyPlacedId)
