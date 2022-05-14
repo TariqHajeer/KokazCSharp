@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -30,7 +25,7 @@ namespace KokazGoodsTransfer
     public class Startup
     {
         // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
-        //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -F
+        //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models    -F
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
@@ -104,7 +99,7 @@ namespace KokazGoodsTransfer
             }
 
             );
-
+            services.AddHttpContextAccessor();
             services.AddAuthorization(option =>
             {
                 option.AddPolicy("Employee", policy =>
@@ -120,6 +115,10 @@ namespace KokazGoodsTransfer
                 {
                     policy.RequireClaim("Type", "Agent");
 
+                });
+                option.AddPolicy("TreasuryOfficial", policy =>
+                {
+                    policy.RequireClaim("TreasuryOfficial", true.ToString());
                 });
             });
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
@@ -222,6 +221,10 @@ namespace KokazGoodsTransfer
             services.AddScoped<IOutcomeTypeService, OutcomeTypeService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped(typeof(IIndexService<>), typeof(IndexService<>));
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITreasuryService, TreasuryService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }

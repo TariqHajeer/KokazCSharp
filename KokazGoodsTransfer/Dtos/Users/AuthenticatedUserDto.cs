@@ -11,6 +11,7 @@ namespace KokazGoodsTransfer.Dtos.Users
         public string Token { get; set; }
         public List<UserPrivilegeDto> Privileges { get; set; }
         public string Policy { get; set; }
+        public bool HaveTreasury { get; set; }
     }
     public class UserPrivilegeDto
     {

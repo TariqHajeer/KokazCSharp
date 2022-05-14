@@ -17,6 +17,8 @@ namespace KokazGoodsTransfer.Models
             OrderLogs = new HashSet<OrderLog>();
             Orders = new HashSet<Order>();
             OutComes = new HashSet<OutCome>();
+            ReceiptOfTheOrderStatusDetalis = new HashSet<ReceiptOfTheOrderStatusDetali>();
+            ReceiptOfTheOrderStatuses = new HashSet<ReceiptOfTheOrderStatus>();
             UserGroups = new HashSet<UserGroup>();
             UserPhones = new HashSet<UserPhone>();
         }
@@ -33,6 +35,7 @@ namespace KokazGoodsTransfer.Models
         public string Password { get; set; }
         public bool IsActive { get; set; }
 
+        public virtual Treasury Treasury { get; set; }
         public virtual ICollection<AgentCountr> AgentCountrs { get; set; }
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
@@ -41,6 +44,8 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<OutCome> OutComes { get; set; }
+        public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
+        public virtual ICollection<ReceiptOfTheOrderStatus> ReceiptOfTheOrderStatuses { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
         public virtual ICollection<UserPhone> UserPhones { get; set; }
     }

@@ -579,7 +579,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.OrderPlaced)
                 .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true)
                 .OrderByDescending(c => c.Id);
-            var response = _mapper.Map<NotficationDto[]>(notifactions);
+            var response = _mapper.Map<NotificationDto[]>(notifactions);
             response = response.OrderBy(c => c.Note).ThenBy(c => c.Id).ToArray();
             return Ok(response);
 

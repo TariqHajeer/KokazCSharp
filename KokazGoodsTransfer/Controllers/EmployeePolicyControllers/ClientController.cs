@@ -113,20 +113,43 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("Account")]
         public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
         {
-            Receipt receipt = new Receipt()
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                IsPay = accountDto.IsPay,
-                About = accountDto.About,
-                CreatedBy = AuthoticateUserName(),
-                ClientId = accountDto.ClinetId,
-                Date = DateTime.Now,
-                Amount = accountDto.Amount,
-                Manager = accountDto.Manager,
-                Note = accountDto.Note,
-            };
-            await this._context.AddAsync(receipt);
-            await this._context.SaveChangesAsync();
-            return Ok(receipt.Id);
+                Receipt receipt = new Receipt()
+                {
+                    IsPay = accountDto.IsPay,
+                    About = accountDto.About,
+                    CreatedBy = AuthoticateUserName(),
+                    ClientId = accountDto.ClinetId,
+                    Date = DateTime.Now,
+                    Amount = accountDto.Amount,
+                    Manager = accountDto.Manager,
+                    Note = accountDto.Note,
+                };
+
+                await this._context.AddAsync(receipt);
+                await this._context.SaveChangesAsync();
+                var treasuer = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasuer.Total += accountDto.Amount;
+                _context.Update(treasuer);
+                var history = new TreasuryHistory()
+                {
+                    Amount = accountDto.Amount,
+                    ReceiptId = receipt.Id,
+                    TreasuryId = treasuer.Id,
+                    CreatedOnUtc = DateTime.Now,
+                };
+                await _context.AddAsync(history);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return Ok(receipt.Id);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest();
+            }
         }
         [HttpPost("GiveOrDiscountPoints")]
         public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)

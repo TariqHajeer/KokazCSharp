@@ -16,6 +16,11 @@ namespace KokazGoodsTransfer.Services.Helper
         {
             Errors = new List<string>();
         }
+        public ErrorRepsonse(string error)
+        {
+            Errors = new List<string>();
+            Errors.Add(error);
+        }
         public T Data { get; set; }
         public List<string> Errors { get; set; }
         public bool NotFound { get; set; }

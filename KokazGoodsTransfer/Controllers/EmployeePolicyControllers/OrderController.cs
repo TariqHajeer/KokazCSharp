@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using KokazGoodsTransfer.Services.Interfaces;
+using KokazGoodsTransfer.DAL.Helper;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -25,16 +26,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
+        private readonly IOrderService _orderService;
         ErrorMessage err;
         NotificationHub notificationHub;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper, logging)
         {
             this.err = new ErrorMessage();
             this.err.Controller = "Order";
             this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
+            _orderService = orderService;
         }
 
         [HttpGet]
@@ -965,75 +968,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 _logging.WriteExption(ex);
                 return BadRequest();
             }
-
-            //var ids = dateWithId.Ids;
-            //var orders = this._context.Orders
-            //    .Include(c => c.Agent)
-            //    .ThenInclude(c => c.UserPhones)
-            //    .Include(c => c.Client)
-            //    .Include(c => c.Country)
-            //    .Where(c => ids.Contains(c.Id)).ToList();
-
-            //if (orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store) != null)
-            //{
-            //    this.err.Messges.Add($"الشحنة رقم{orders.FirstOrDefault(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Code} ليست في المخزن");
-            //    return Conflict(err);
-            //}
-
-            //var oldPrint = this._context.Printeds.Where(c => c.Type == PrintType.Agent && c.PrintNmber == this._context.Printeds.Where(c => c.Type == PrintType.Agent).Max(c => c.PrintNmber)).FirstOrDefault();
-            //var printNumber = oldPrint?.PrintNmber ?? 0;
-            //++printNumber;
-            //var agent = orders.FirstOrDefault().Agent;
-            //var newPrint = new Printed()
-            //{
-            //    PrintNmber = printNumber,
-            //    Date = dateWithId.Date,
-            //    Type = PrintType.Agent,
-            //    PrinterName = this.AuthoticateUserName(),
-            //    DestinationName = agent.Name,
-            //    DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? "",
-            //};
-            //var transaction = this._context.Database.BeginTransaction();
-            //try
-            //{
-            //    this._context.Printeds.Add(newPrint);
-            //    this._context.SaveChanges();
-            //    foreach (var item in orders)
-            //    {
-
-
-            //        item.OrderplacedId = (int)OrderplacedEnum.Way;
-            //        this._context.Update(item);
-            //        this._context.Entry(item).Reference(c => c.Region).Load();
-            //        var orderPrint = new OrderPrint()
-            //        {
-            //            PrintId = newPrint.Id,
-            //            OrderId = item.Id
-            //        };
-            //        var AgentPrint = new AgnetPrint()
-            //        {
-            //            Code = item.Code,
-            //            ClientName = item.Client.Name,
-            //            Note = item.Note,
-            //            Total = item.Cost,
-            //            Country = item.Country.Name,
-            //            PrintId = newPrint.Id,
-            //            Phone = item.RecipientPhones,
-            //            Region = item.Region?.Name
-            //        };
-            //        this._context.Add(orderPrint);
-            //        this._context.Add(AgentPrint);
-            //    }
-            //    this._context.SaveChanges();
-            //    transaction.Commit();
-            //    return Ok(new { printNumber });
-            //}
-            //catch (Exception ex)
-            //{
-            //    transaction.Rollback();
-            //    _logging.WriteExption(ex);
-            //    return BadRequest();
-            //}
+        }
+        [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
+        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
+        {
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
+        }
+        [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
+        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        {
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
         }
         /// <summary>
         /// <!--استلام حالة شحنة-->
@@ -1050,10 +994,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 List<Notfication> notfications = new List<Notfication>();
                 List<Notfication> addednotfications = new List<Notfication>();
                 var orders = await this._context.Orders.Where(c => orderStates.Select(c => c.Id).Contains(c.Id)).ToListAsync();
+                var receiptOfTheOrderStatusDetalis = new List<ReceiptOfTheOrderStatusDetali>();
                 foreach (var item in orderStates)
                 {
                     var order = orders.Find(c => c.Id == item.Id);
-
 
                     OrderLog log = order;
                     this._context.Add(log);
@@ -1061,11 +1005,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     order.MoenyPlacedId = item.MoenyPlacedId;
                     this._context.Entry(order).Reference(c => c.MoenyPlaced).Load();
                     this._context.Entry(order).Reference(c => c.Orderplaced).Load();
+
                     order.Note = item.Note;
 
                     if (order.DeliveryCost != item.DeliveryCost)
+                    {
                         if (order.OldDeliveryCost == null)
+                        {
                             order.OldDeliveryCost = order.DeliveryCost;
+                        }
+                    }
                     order.DeliveryCost = item.DeliveryCost;
                     order.AgentCost = item.AgentCost;
                     order.SystemNote = "UpdateOrdersStatusFromAgent";
@@ -1169,6 +1118,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     {
                         order.ApproveAgentEditOrderRequests.Clear();
                     }
+
                     this._context.Update(order);
 
                     if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderplacedId != (int)OrderplacedEnum.Way)
@@ -1210,19 +1160,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     addednotfications.Add(item);
                     this._context.Add(item);
                 }
-                this._context.SaveChanges();
                 {
                     var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
                     foreach (var item in newnotifications)
                     {
                         var key = item.Key;
-                        List<NotficationDto> notficationDtos = new List<NotficationDto>();
+                        List<NotificationDto> notficationDtos = new List<NotificationDto>();
                         foreach (var groupItem in item)
                         {
-                            notficationDtos.Add(_mapper.Map<NotficationDto>(groupItem));
+                            notficationDtos.Add(_mapper.Map<NotificationDto>(groupItem));
                         }
                         await notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
-                        ;
                     }
                 }
                 return Ok();
@@ -1281,7 +1229,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClient")]
-        public IActionResult DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
             var orders = this._context.Orders
             .Include(c => c.Client)
@@ -1305,7 +1253,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
 
             };
-
+            var total = 0m;
             var transaction = this._context.Database.BeginTransaction();
             try
             {
@@ -1314,6 +1262,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
                 {
                     var recepits = this._context.Receipts.Where(c => c.ClientPaymentId == null && c.ClientId == client.Id).ToList();
+                    total += recepits.Sum(c => c.Amount);
                     recepits.ForEach(c =>
                     {
                         c.ClientPaymentId = clientPayment.Id;
@@ -1350,7 +1299,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         }
 
                     }
-
                     item.IsClientDiliverdMoney = true;
                     var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
                     item.ClientPaied = item.ShouldToPay();
@@ -1376,7 +1324,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         OrderPlacedId = item.OrderplacedId,
                         PayForClient = currentPay
                     };
-
+                    total += currentPay;
                     this._context.Add(orderClientPaymnet);
                     this._context.Add(clientPaymentDetials);
                     this._context.SaveChanges();
@@ -1396,6 +1344,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     };
                     this._context.Add(discount);
                     this._context.SaveChanges();
+                    total -= discount.Money;
+
                 }
                 this._context.Add(new Notfication()
                 {
@@ -1403,6 +1353,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ClientId = client.Id
                 });
                 this._context.SaveChanges();
+                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasury.Total -= total;
+                var history = new TreasuryHistory()
+                {
+                    ClientPaymentId = clientPayment.Id,
+                    CashMovmentId = null,
+                    TreasuryId = AuthoticateUserId(),
+                    Amount = -total,
+                    CreatedOnUtc = DateTime.UtcNow
+                };
+                _context.Update(treasury);
+                await _context.AddAsync(history);
+                await _context.SaveChangesAsync();
                 transaction.Commit();
                 semaphore.Release();
                 return Ok(new { printNumber = clientPayment.Id });
@@ -1424,7 +1387,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public IActionResult DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
+        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
         {
             var ids = idsAndDate.Ids;
             var orders = this._context.Orders
@@ -1450,6 +1413,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
             };
             var transaction = this._context.Database.BeginTransaction();
+            var total = 0m;
             try
             {
                 this._context.Add(clientPaymnet);
@@ -1491,11 +1455,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Date = item.Date,
                         Note = item.Note,
                     };
+                    total += cureentPay;
                     this._context.Add(orderClientPayment);
                     this._context.Add(clientPaymnetDetial);
                 }
                 this._context.SaveChanges();
-
+                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
+                treasury.Total -= total;
+                var history = new TreasuryHistory()
+                {
+                    ClientPaymentId = clientPaymnet.Id,
+                    TreasuryId = AuthoticateUserId(),
+                    Amount = -total,
+                    CreatedOnUtc = DateTime.UtcNow
+                };
+                this._context.Update(treasury);
+                await this._context.AddAsync(history);
+                await _context.SaveChangesAsync();
                 transaction.Commit();
                 semaphore.Release();
                 return Ok(new { printNumber = clientPaymnet.Id });
@@ -1509,6 +1485,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             }
 
+        }
+        [HttpGet("GetOrderToReciveFromAgent/{code}")]
+        public async Task<ActionResult<GenaricErrorResponse<IEnumerable<OrderDto>, string, string>>> GetOrderToReciveFromAgent(string code)
+        {
+            return Ok(await _orderService.GetOrderToReciveFromAgent(code));
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
@@ -1549,7 +1530,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 }
 
             }
-
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
         [HttpGet("GetEarnings")]
@@ -1949,10 +1929,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     foreach (var item in newnotifications)
                     {
                         var key = item.Key;
-                        List<NotficationDto> notficationDtos = new List<NotficationDto>();
+                        List<NotificationDto> notficationDtos = new List<NotificationDto>();
                         foreach (var groupItem in item)
                         {
-                            notficationDtos.Add(_mapper.Map<NotficationDto>(groupItem));
+                            notficationDtos.Add(_mapper.Map<NotificationDto>(groupItem));
                         }
                         await notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
                     }
@@ -1986,6 +1966,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = await query.ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
-
+        [HttpGet("ReceiptOfTheOrderStatus/{id}")]
+        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
+        }
+        [HttpGet("ReceiptOfTheOrderStatus")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDetaliDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto));
+        }
     }
 }

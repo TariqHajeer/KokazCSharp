@@ -7,6 +7,11 @@ namespace KokazGoodsTransfer.Models
 {
     public partial class Receipt
     {
+        public Receipt()
+        {
+            TreasuryHistories = new HashSet<TreasuryHistory>();
+        }
+
         public int Id { get; set; }
         public int ClientId { get; set; }
         public decimal Amount { get; set; }
@@ -20,5 +25,6 @@ namespace KokazGoodsTransfer.Models
 
         public virtual Client Client { get; set; }
         public virtual ClientPayment ClientPayment { get; set; }
+        public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
     }
 }
