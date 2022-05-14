@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
     {
         public NotificationProfile()
         {
-            CreateMap<Notfication, NotficationDto>()
+            CreateMap<Notfication, NotificationDto>()
                 .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);

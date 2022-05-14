@@ -7,6 +7,10 @@ namespace KokazGoodsTransfer.Models.Static
 {
     public static class OrderHelper
     {
+        public static decimal GetFromAgent(this Order order)
+        {
+            return 0;
+        }
         public static decimal ShouldToPay(this Order order)
         {
             if (order.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)

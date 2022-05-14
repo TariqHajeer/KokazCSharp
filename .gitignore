@@ -6,6 +6,7 @@ bin
 .vs
 /.vs
 Export.bat
+export.bat
 KokazGoodsTransfer/obj
 PublishToHerohuBat.bat
 /.vscode
