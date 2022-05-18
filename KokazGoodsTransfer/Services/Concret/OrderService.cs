@@ -36,11 +36,12 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client, c => c.Agent, c => c.MoenyPlaced, c => c.Orderplaced, c => c.Country);
-            var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
+
             if (!orders.Any())
             {
                 return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة غير موجودة");
             }
+            var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             ///التأكد من ان الشحنة ليست عند العميل او في المخزن
             {
                 var orderInSotre = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store);
