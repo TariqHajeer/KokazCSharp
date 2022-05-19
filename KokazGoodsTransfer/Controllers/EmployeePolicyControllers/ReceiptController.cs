@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery]AccountFilterDto accountFilterDto)
+        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery] AccountFilterDto accountFilterDto)
         {
             var repiq = this._context.Receipts.AsQueryable();
             if (accountFilterDto.ClientId != null)
@@ -41,7 +41,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var totalRreq = repiq.Count();
             var replist = repiq.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                 .Include(c => c.Client)
-                .Include(c=>c.ClientPayment)
+                .Include(c => c.ClientPayment)
                 .ToList();
             var data = _mapper.Map<ReceiptDto[]>(replist);
             return Ok(new { data, total = totalRreq });
@@ -53,6 +53,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .Include(c => c.ClientPayment)
                 .Where(c => c.ClientId == clientId && c.ClientPaymentId == null).ToList();
             return Ok(_mapper.Map<ReceiptDto[]>(repiq));
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ReceiptDto>> GetById(int id)
+        {
+            var receipt = await _context.Receipts.FindAsync(id);
+            _context.Entry(receipt).Reference(c => c.Client).Load();
+            return Ok(_mapper.Map<ReceiptDto>(receipt));
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

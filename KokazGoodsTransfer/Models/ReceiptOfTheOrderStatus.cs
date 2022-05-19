@@ -5,18 +5,20 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderState
+    public partial class ReceiptOfTheOrderStatus
     {
-        public OrderState()
+        public ReceiptOfTheOrderStatus()
         {
-            Orders = new HashSet<Order>();
             ReceiptOfTheOrderStatusDetalis = new HashSet<ReceiptOfTheOrderStatusDetali>();
+            TreasuryHistories = new HashSet<TreasuryHistory>();
         }
 
         public int Id { get; set; }
-        public string State { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public int RecvierId { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual User Recvier { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
+        public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
     }
 }

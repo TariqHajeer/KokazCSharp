@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.NotifcationDtos
 {
-    public class NotficationDto
+    public class NotificationDto
     {
         public int Id { get; set; }
         public string Note { get; set; }
