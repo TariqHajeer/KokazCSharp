@@ -41,7 +41,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _dbContextTransaction = null;
 
         }
-
         public IRepository<TEntity> Repository<TEntity>() where TEntity : class
         {
             if (_repositories == null)
@@ -56,7 +55,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             return (Repository<TEntity>)_repositories[type];
         }
 
-        public async Task RoleBack()
+        public async Task Rollback()
         {
             await _dbContextTransaction.RollbackAsync();
             _dbContextTransaction.Dispose();

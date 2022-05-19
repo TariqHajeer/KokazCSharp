@@ -140,7 +140,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 throw ex;
             }
 

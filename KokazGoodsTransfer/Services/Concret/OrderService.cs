@@ -10,20 +10,23 @@ using KokazGoodsTransfer.Models.Static;
 using System;
 using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
+using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class OrderService : IOrderService
+    public partial class OrderService : IOrderService
     {
+        private readonly IOrderRepository _repository;
         private readonly IUintOfWork _uintOfWork;
         private readonly INotificationService _notificationService;
         private readonly ITreasuryService _treasuryService;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IRepository<ReceiptOfTheOrderStatus> _receiptOfTheOrderStatusRepository;
+        private readonly Logging _logging;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
-        public OrderService(IUintOfWork uintOfWork, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -31,6 +34,8 @@ namespace KokazGoodsTransfer.Services.Concret
             _mapper = mapper;
             _userService = userService;
             _receiptOfTheOrderStatusRepository = receiptOfTheOrderStatusRepository;
+            _repository = repository;
+            _logging = logging;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -211,7 +216,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
 
@@ -357,7 +362,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
             return new ErrorResponse<string, IEnumerable<string>>();
@@ -369,7 +374,11 @@ namespace KokazGoodsTransfer.Services.Concret
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
         }
-
+        public async Task<IEnumerable<OrderDto>> GetOrders(Paging paging, OrderFilter orderFilter)
+        {
+            var data = await _repository.Get(paging, orderFilter);
+            return null;
+        }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {
             return orderplacedEnum switch
@@ -385,7 +394,70 @@ namespace KokazGoodsTransfer.Services.Concret
                 _ => "غير معلوم",
             };
         }
+        public async Task<GenaricErrorResponse<int, string, string>> MakeOrderInWay(DateWithId<int[]> dateWithId)
+        {
+            var ids = dateWithId.Ids;
+            var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), new string[] { "Agent.UserPhones", "Client", "Country", "Region" });
+            if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
+            {
+                var errors = orders.Where(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Select(c => $"الشحنة رقم{c.Code} ليست في المخزن");
+                return new GenaricErrorResponse<int, string, string>(errors, true);
+            }
+            var agent = orders.FirstOrDefault().Agent;
+            var agnetPrint = new AgentPrint()
+            {
+                Date = dateWithId.Date,
+                PrinterName = _userService.AuthoticateUserName(),
+                DestinationName = agent.Name,
+                DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? ""
+            };
+            await _uintOfWork.BegeinTransaction();
+            var agnetOrderPrints = new List<AgentOrderPrint>();
+            var agentPrintsDetials = new List<AgentPrintDetail>();
+            try
+            {
+                await _uintOfWork.Repository<AgentPrint>().AddAsync(agnetPrint);
+                foreach (var item in orders)
+                {
 
+
+                    item.OrderplacedId = (int)OrderplacedEnum.Way;
+
+                    var agnetOrderPrint = new AgentOrderPrint()
+                    {
+                        OrderId = item.Id,
+                        AgentPrintId = agnetPrint.Id
+                    };
+                    var agentPrintDetials = new AgentPrintDetail()
+                    {
+                        Code = item.Code,
+                        ClientName = item.Client.Name,
+                        Note = item.Note,
+                        Total = item.Cost,
+                        Country = item.Country.Name,
+                        AgentPrintId = agnetPrint.Id,
+                        Phone = item.RecipientPhones,
+                        Region = item.Region?.Name,
+                        OrderCreated = item.Date,
+                        ClientNote = item.ClientNote,
+                        Address = item.Address
+                    };
+                    agnetOrderPrints.Add(agnetOrderPrint);
+                    agentPrintsDetials.Add(agentPrintDetials);
+                }
+                await _uintOfWork.UpdateRange(orders);
+                await _uintOfWork.AddRange(agnetOrderPrints);
+                await _uintOfWork.AddRange(agentPrintsDetials);
+                await _uintOfWork.Commit();
+                return new GenaricErrorResponse<int, string, string>(agnetPrint.Id);
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.Rollback();
+                _logging.WriteExption(ex);
+                return new GenaricErrorResponse<int, string, string>("حدث خطأ ما ", false, true);
+            }
+        }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
         {
             var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" });
@@ -396,5 +468,9 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = dtos
             };
         }
+    }
+    public partial class OrderService : IOrderService
+    {
+
     }
 }
