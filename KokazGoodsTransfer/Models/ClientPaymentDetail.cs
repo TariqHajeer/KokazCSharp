@@ -20,6 +20,7 @@ namespace KokazGoodsTransfer.Models
         public DateTime? Date { get; set; }
         public string Note { get; set; }
         public decimal? PayForClient { get; set; }
+        public string ClientNote { get; set; }
 
         public virtual ClientPayment ClientPayment { get; set; }
         public virtual MoenyPlaced MoneyPlaced { get; set; }

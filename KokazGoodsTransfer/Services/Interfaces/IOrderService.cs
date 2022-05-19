@@ -25,4 +25,11 @@ namespace KokazGoodsTransfer.Services.Interfaces
     public partial interface IOrderService
     {
     }
+    /// <summary>
+    /// Realted with Client
+    /// </summary>
+    public partial interface IOrderService
+    {
+        Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
+    }
 }

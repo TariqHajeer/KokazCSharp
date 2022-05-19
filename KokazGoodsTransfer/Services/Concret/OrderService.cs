@@ -14,6 +14,9 @@ using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
+    /// <summary>
+    /// Related With Employee
+    /// </summary>
     public partial class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
@@ -438,7 +441,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentPrintId = agnetPrint.Id,
                         Phone = item.RecipientPhones,
                         Region = item.Region?.Name,
-                        OrderCreated = item.Date,
+                        Date = item.Date,
                         ClientNote = item.ClientNote,
                         Address = item.Address
                     };
@@ -468,9 +471,25 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = dtos
             };
         }
+
+        
     }
+    /// <summary>
+    /// Related With Agent
+    /// </summary>
     public partial class OrderService : IOrderService
     {
 
+    }
+    /// <summary>
+    /// Related with Client
+    /// </summary>
+    public partial class OrderService : IOrderService
+    {
+        public Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        {
+
+            throw new NotImplementedException();
+        }
     }
 }
