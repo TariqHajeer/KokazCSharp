@@ -439,7 +439,8 @@ namespace KokazGoodsTransfer.Services.Concret
                         Phone = item.RecipientPhones,
                         Region = item.Region?.Name,
                         OrderCreated = item.Date,
-                        ClientNote = item.ClientNote
+                        ClientNote = item.ClientNote,
+                        Address = item.Address
                     };
                     agnetOrderPrints.Add(agnetOrderPrint);
                     agentPrintsDetials.Add(agentPrintDetials);
@@ -470,6 +471,6 @@ namespace KokazGoodsTransfer.Services.Concret
     }
     public partial class OrderService : IOrderService
     {
-         
+
     }
 }

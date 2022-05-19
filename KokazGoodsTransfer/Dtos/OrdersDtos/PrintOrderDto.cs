@@ -49,6 +49,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Region { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? OrderCreated { get; set; }
+        public string Address { get; set; }
         public int? MoneyPlacedId { get; set; }
         public int? OrderPlacedId { get; set; }
         public decimal PayForClient { get; set; }
