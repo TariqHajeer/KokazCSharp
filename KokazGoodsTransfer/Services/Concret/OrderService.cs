@@ -14,7 +14,7 @@ using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    public class OrderService : IOrderService
+    public partial class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
         private readonly IUintOfWork _uintOfWork;
@@ -446,7 +446,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.UpdateRange(orders);
                 await _uintOfWork.AddRange(agnetOrderPrints);
                 await _uintOfWork.AddRange(agentPrintsDetials);
-
+                await _uintOfWork.Commit();
                 return new GenaricErrorResponse<int, string, string>(agnetPrint.Id);
             }
             catch (Exception ex)
@@ -466,5 +466,9 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = dtos
             };
         }
+    }
+    public partial class OrderService : IOrderService
+    {
+         
     }
 }

@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Dtos.Common
         {
             get
             {
-                return string.IsNullOrEmpty(Error) && !Errors.Any() && !DictionaryErrors.Any();
+                return string.IsNullOrEmpty(Error) && !(Errors?.Any()==true) && !(DictionaryErrors?.Any()==true);
             }
         }
         public T Data { get; set; }
