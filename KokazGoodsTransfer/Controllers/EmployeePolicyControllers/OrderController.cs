@@ -1058,7 +1058,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         Note = item.Note,
                         MoneyPlacedId = item.MoenyPlacedId,
                         OrderPlacedId = item.OrderplacedId,
-                        PayForClient = currentPay
+                        PayForClient = currentPay,
+                        Date = item.Date,
+                        ClientNote = item.ClientNote                        
                     };
                     total += currentPay;
                     this._context.Add(orderClientPaymnet);
