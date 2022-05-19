@@ -438,7 +438,8 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentPrintId = agnetPrint.Id,
                         Phone = item.RecipientPhones,
                         Region = item.Region?.Name,
-                        OrderCreated = item.Date
+                        OrderCreated = item.Date,
+                        ClientNote = item.ClientNote
                     };
                     agnetOrderPrints.Add(agnetOrderPrint);
                     agentPrintsDetials.Add(agentPrintDetials);

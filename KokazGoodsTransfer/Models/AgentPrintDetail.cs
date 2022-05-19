@@ -17,6 +17,7 @@ namespace KokazGoodsTransfer.Models
         public string Region { get; set; }
         public int AgentPrintId { get; set; }
         public DateTime? OrderCreated { get; set; }
+        public string ClientNote { get; set; }
 
         public virtual AgentPrint AgentPrint { get; set; }
     }
