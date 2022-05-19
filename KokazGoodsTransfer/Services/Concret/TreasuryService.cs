@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
                 {
 
@@ -125,7 +125,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }
@@ -159,7 +159,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }
