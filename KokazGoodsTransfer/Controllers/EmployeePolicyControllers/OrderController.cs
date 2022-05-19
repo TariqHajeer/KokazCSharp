@@ -1190,6 +1190,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PayForClient = cureentPay,
                         Date = item.Date,
                         Note = item.Note,
+                        ClientNote= item.ClientNote
                     };
                     total += cureentPay;
                     this._context.Add(orderClientPayment);

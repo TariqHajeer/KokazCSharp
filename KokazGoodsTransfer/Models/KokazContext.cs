@@ -147,7 +147,7 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(30);
 
-                entity.Property(e => e.OrderCreated).HasColumnType("date");
+                entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
