@@ -89,7 +89,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 {
                     query = query.Include(item);
                 }
-            if (orderBy == null)
+            if (orderBy != null)
                 query = orderBy(query);
             var total = await query.CountAsync();
             return new PagingResualt<IEnumerable<T>>()
