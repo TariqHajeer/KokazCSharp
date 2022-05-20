@@ -81,7 +81,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Total = total,
             };
         }
-        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors)
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
             var query = _kokazContext.Set<T>().AsQueryable();
             if (propertySelectors?.Any() == true)
@@ -89,6 +89,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 {
                     query = query.Include(item);
                 }
+            if (orderBy == null)
+                query = orderBy(query);
             var total = await query.CountAsync();
             return new PagingResualt<IEnumerable<T>>()
             {
