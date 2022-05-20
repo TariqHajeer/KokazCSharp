@@ -15,9 +15,13 @@ namespace KokazGoodsTransfer.Models
         public int? CashMovmentId { get; set; }
         public int? ReceiptId { get; set; }
         public int? ReceiptOfTheOrderStatusId { get; set; }
+        public int? IncomeId { get; set; }
+        public int? OutcomeId { get; set; }
 
         public virtual CashMovment CashMovment { get; set; }
         public virtual ClientPayment ClientPayment { get; set; }
+        public virtual Income Income { get; set; }
+        public virtual OutCome Outcome { get; set; }
         public virtual Receipt Receipt { get; set; }
         public virtual ReceiptOfTheOrderStatus ReceiptOfTheOrderStatus { get; set; }
         public virtual Treasury Treasury { get; set; }
