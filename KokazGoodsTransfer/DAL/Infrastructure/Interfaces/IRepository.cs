@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using KokazGoodsTransfer.DAL.Helper;
+using System.Linq;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
@@ -26,6 +27,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task LoadCollection<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> propertyExpression) where TProperty : class;
         Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class;
         Task<int> Count(Expression<Func<T, bool>> filter = null);
-        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null);
+        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
     }
 }
