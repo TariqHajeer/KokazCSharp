@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OutComeController : AbstractEmployeePolicyController
     {
-        public OutComeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        private readonly IOutcomeService _outcomeService;
+        public OutComeController(KokazContext context, IMapper mapper, Logging logging, IOutcomeService outcomeService) : base(context, mapper, logging)
         {
+            _outcomeService = outcomeService;
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] Filtering filtering, [FromQuery]PagingDto pagingDto)
+        public IActionResult Get([FromQuery] Filtering filtering, [FromQuery] PagingDto pagingDto)
         {
             var outComeIQ = (IQueryable<OutCome>)this._context.OutComes
                 .Include(c => c.User)
@@ -60,17 +63,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// </example>
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateOutComeDto createOutComeDto)
+        public async Task<ActionResult<OutComeDto>> Create([FromBody] CreateOutComeDto createOutComeDto)
         {
             try
             {
-                var outCome = _mapper.Map<OutCome>(createOutComeDto);
-                outCome.UserId = AuthoticateUserId();
-                this._context.Add(outCome);
-                this._context.SaveChanges();
-                this._context.Entry(outCome).Reference(c => c.User).Load();
-                this._context.Entry(outCome).Reference(c => c.OutComeType).Load();
-                return Ok(_mapper.Map<OutComeDto>(outCome));
+                var result = await _outcomeService.AddAsync(createOutComeDto);
+                if (result.Sucess)
+                    return Ok(result.Data);
+                return Conflict();
             }
             catch (Exception ex)
             {
@@ -79,19 +79,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("CreateMulitpleOutCome")]
-        public ActionResult CreateMultiple([FromBody]IList<CreateOutComeDto> createOutComeDtos)
+        public async Task<IActionResult> CreateMultiple([FromBody] IList<CreateOutComeDto> createOutComeDtos)
         {
             try
             {
-                var userId = AuthoticateUserId();
-                foreach (var item in createOutComeDtos)
-                {
-                    var outCome = _mapper.Map<OutCome>(item);
-                    outCome.UserId = userId;
-                    this._context.Add(outCome);
-                }
-                this._context.SaveChanges();
-
+                await _outcomeService.AddRangeAsync(createOutComeDtos);
                 return Ok();
             }
             catch (Exception ex)
@@ -111,7 +103,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateOuteComeDto dto)
         {
-            var outcome = this._context.OutComes.Find(dto.Id); 
+            var outcome = this._context.OutComes.Find(dto.Id);
             outcome = _mapper.Map<UpdateOuteComeDto, OutCome>(dto, outcome);
             this._context.Update(outcome);
             this._context.SaveChanges();

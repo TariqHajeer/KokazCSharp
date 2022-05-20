@@ -972,6 +972,16 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.ClientPaymentId)
                     .HasConstraintName("FK__TreasuryH__Clien__65C116E7");
 
+                entity.HasOne(d => d.Income)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.IncomeId)
+                    .HasConstraintName("FK__TreasuryH__Incom__6991A7CB");
+
+                entity.HasOne(d => d.Outcome)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.OutcomeId)
+                    .HasConstraintName("FK__TreasuryH__Outco__6A85CC04");
+
                 entity.HasOne(d => d.Receipt)
                     .WithMany(p => p.TreasuryHistories)
                     .HasForeignKey(d => d.ReceiptId)

@@ -463,7 +463,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
         {
-            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" });
+            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
             var dtos = _mapper.Map<ReceiptOfTheOrderStatusDto[]>(response.Data);
             return new PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>()
             {
@@ -472,7 +472,7 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
-        
+
     }
     /// <summary>
     /// Related With Agent

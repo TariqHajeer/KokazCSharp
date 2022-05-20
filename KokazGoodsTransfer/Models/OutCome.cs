@@ -7,6 +7,11 @@ namespace KokazGoodsTransfer.Models
 {
     public partial class OutCome
     {
+        public OutCome()
+        {
+            TreasuryHistories = new HashSet<TreasuryHistory>();
+        }
+
         public int Id { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
@@ -17,5 +22,6 @@ namespace KokazGoodsTransfer.Models
 
         public virtual OutComeType OutComeType { get; set; }
         public virtual User User { get; set; }
+        public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
     }
 }

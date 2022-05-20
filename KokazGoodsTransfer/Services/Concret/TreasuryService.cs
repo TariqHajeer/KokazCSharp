@@ -76,7 +76,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var treasury = await _repository.GetById(id);
             if (treasury == null)
                 return null;
-            var history = await _historyRepositroy.GetAsync(new Paging() { Page = 1, RowCount = 10 }, c => c.TreasuryId == id, new string[] { "Receipt" });
+            var history = await _historyRepositroy.GetAsync(new Paging() { Page = 1, RowCount = 10 }, c => c.TreasuryId == id, new string[] { "Receipt" }, orderBy: c => c.OrderByDescending(h => h.Id));
             var treasuryDto = _mapper.Map<TreasuryDto>(treasury);
             treasuryDto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
             {
