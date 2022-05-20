@@ -92,8 +92,9 @@ namespace KokazGoodsTransfer.Services.Concret
             return response;
         }
 
-
-
-
+        public virtual Task<IEnumerable<TDTO>> AddRangeAsync(IEnumerable<CreateDto> entities)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
