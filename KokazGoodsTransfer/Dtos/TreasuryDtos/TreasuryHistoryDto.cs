@@ -11,5 +11,7 @@ namespace KokazGoodsTransfer.Dtos.TreasuryDtos
         public int? CashMovmentId { get; set; }
         public int? ReceiptId { get; set; }
         public int? ReceiptOfTheOrderStatusId { get; set; }
+        public int? IncomeId { get; set; }
+        public int? OutcomeId { get; set; }
     }
 }
