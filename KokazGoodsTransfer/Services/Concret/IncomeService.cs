@@ -80,6 +80,14 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return null;
         }
-
+        public override async Task<IncomeDto> GetById(int id)
+        {
+            var entity = await _repository.GetById(id);
+            if (entity == null)
+                return null;
+            await _repository.LoadRefernces(entity, c => c.User);
+            await _repository.LoadRefernces(entity, c => c.IncomeType);
+            return _mapper.Map<IncomeDto>(entity);
+        }
     }
 }
