@@ -83,10 +83,10 @@ namespace KokazGoodsTransfer.Services.Concret
         public override async Task<OutComeDto> GetById(int id)
         {
             var entity = await _repository.GetById(id);
-            await _repository.LoadRefernces(entity, c => c.User);
-            await _repository.LoadRefernces(entity,c=>c.OutComeType);
             if (entity == null)
                 return null;
+            await _repository.LoadRefernces(entity, c => c.User);
+            await _repository.LoadRefernces(entity,c=>c.OutComeType);
             return _mapper.Map<OutComeDto>(entity);
         }
     }
