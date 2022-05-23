@@ -53,6 +53,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok(await _IncomeService.GetById(id));
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateIncomeDto creatrIncomeDto)
         {

@@ -46,6 +46,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             return Ok(new { data = _mapper.Map<OutComeDto[]>(outComes), total });
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok(await _outcomeService.GetById(id));
+        }
         /// <summary>
         /// 
         /// </summary>
