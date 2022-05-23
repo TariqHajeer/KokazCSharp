@@ -80,5 +80,14 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return null;
         }
+        public override async Task<OutComeDto> GetById(int id)
+        {
+            var entity = await _repository.GetById(id);
+            if (entity == null)
+                return null;
+            await _repository.LoadRefernces(entity, c => c.User);
+            await _repository.LoadRefernces(entity,c=>c.OutComeType);
+            return _mapper.Map<OutComeDto>(entity);
+        }
     }
 }

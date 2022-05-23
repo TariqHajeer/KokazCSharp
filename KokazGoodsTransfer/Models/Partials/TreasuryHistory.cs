@@ -17,7 +17,11 @@
                     if (Receipt.IsPay)
                         return "صرف";
                     return "قبض";
-                }    
+                }
+                if (IncomeId != null)
+                    return "واردات";
+                if (OutcomeId != null)
+                    return "صادرات";
                 if (CashMovmentId != null)
                     if (Amount > 0)
                         return "إعطاء";
