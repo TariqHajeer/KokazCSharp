@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task Add<TEntity>(TEntity entity) where TEntity : class;
         Task AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         Task BegeinTransaction();
-        Task RoleBack();
+        Task Rollback();
 
     }
 }

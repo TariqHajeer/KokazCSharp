@@ -207,7 +207,10 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.ReceiptOfTheOrderStatusDetalis, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<ReceiptOfTheOrderStatusDetaliDto[]>(obj.ReceiptOfTheOrderStatusDetalis);
-                }));
+                }))
+                .ForMember(c => c.OrderTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.Cost)))
+                .ForMember(c => c.AgentTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.AgentCost)))
+                .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId == (int)MoneyPalcedEnum.Delivered || c.MoneyPlacedId == (int)MoneyPalcedEnum.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
         }
     }
 }

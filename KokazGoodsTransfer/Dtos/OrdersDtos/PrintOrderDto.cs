@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
-    
+
     public class PrintOrdersDto
     {
         public int Id { get; set; }
@@ -34,11 +34,11 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Note { get; set; }
         public string Region { get; set; }
     }
-    public  class PrintDto
+    public class PrintDto
     {
         public string Code { get; set; }
         public decimal Total { get; set; }
-        
+
         public string Phone { get; set; }
         public string Country { get; set; }
         public string LastTotal { get; set; }
@@ -48,6 +48,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Note { get; set; }
         public string Region { get; set; }
         public DateTime? Date { get; set; }
+        public string Address { get; set; }
         public int? MoneyPlacedId { get; set; }
         public int? OrderPlacedId { get; set; }
         public decimal PayForClient { get; set; }

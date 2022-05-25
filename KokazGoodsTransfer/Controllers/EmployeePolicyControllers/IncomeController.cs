@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class IncomeController : AbstractEmployeePolicyController
     {
-        public IncomeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        private readonly IIncomeService _IncomeService;
+        public IncomeController(KokazContext context, IMapper mapper, Logging logging, IIncomeService incomeService) : base(context, mapper, logging)
         {
+            _IncomeService = incomeService;
         }
         [HttpGet]
-        public IActionResult Get([FromQuery]Filtering filtering, [FromQuery]PagingDto pagingDto)
+        public IActionResult Get([FromQuery] Filtering filtering, [FromQuery] PagingDto pagingDto)
         {
             try
             {
@@ -50,18 +53,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok(await _IncomeService.GetById(id));
+        }
         [HttpPost]
-        public IActionResult Create([FromBody] CreateIncomeDto creatrIncomeDto)
+        public async Task<IActionResult> Create([FromBody] CreateIncomeDto creatrIncomeDto)
         {
             try
             {
-                var income = _mapper.Map<Income>(creatrIncomeDto);
-                income.UserId = AuthoticateUserId();
-                this._context.Add(income);
-                this._context.SaveChanges();
-                this._context.Entry(income).Reference(c => c.User).Load();
-                this._context.Entry(income).Reference(c => c.IncomeType).Load();
-                return Ok(_mapper.Map<IncomeDto>(income));
+                var result = await _IncomeService.AddAsync(creatrIncomeDto);
+                if (result.Sucess)
+                return Ok(result.Data);
+                return Conflict();
             }
             catch (Exception ex)
             {
@@ -70,18 +75,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("AddMultiple")]
-        public IActionResult Create([FromBody]IList<CreateIncomeDto> createIncomeDtos)
+        public async Task<IActionResult> Create([FromBody] IList<CreateIncomeDto> createIncomeDtos)
         {
             try
             {
-                var userId = AuthoticateUserId();
-                foreach (var item in createIncomeDtos)
-                {
-                    var incmoe = _mapper.Map<Income>(item);
-                    incmoe.UserId = userId;
-                    this._context.Add(incmoe);
-                }
-                this._context.SaveChanges();
+                await _IncomeService.AddRangeAsync(createIncomeDtos);
                 return Ok();
             }
             catch (Exception ex)
@@ -99,7 +97,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPatch]
-        public IActionResult UpdateIncome([FromBody]UpdateIncomeDto dto)
+        public IActionResult UpdateIncome([FromBody] UpdateIncomeDto dto)
         {
             var income = this._context.Incomes.Find(dto.Id);
             income = _mapper.Map<UpdateIncomeDto, Income>(dto, income);

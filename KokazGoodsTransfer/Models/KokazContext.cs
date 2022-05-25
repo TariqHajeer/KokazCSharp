@@ -147,6 +147,8 @@ namespace KokazGoodsTransfer.Models
                     .IsRequired()
                     .HasMaxLength(30);
 
+                entity.Property(e => e.Date).HasColumnType("date");
+
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -871,7 +873,7 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.ReceiptOfTheOrderStatuses)
                     .HasForeignKey(d => d.RecvierId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ReceiptOf__Recvi__58671BC9");
+                    .HasConstraintName("FK__ReceiptOf__Recvi__5B438874");
             });
 
             modelBuilder.Entity<ReceiptOfTheOrderStatusDetali>(entity =>
@@ -906,7 +908,7 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
                     .HasForeignKey(d => d.OrderPlacedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ReceiptOf__Order__45544755");
+                    .HasConstraintName("FK__ReceiptOf__Order__5E1FF51F");
 
                 entity.HasOne(d => d.OrderState)
                     .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
@@ -949,7 +951,7 @@ namespace KokazGoodsTransfer.Models
                     .WithOne(p => p.Treasury)
                     .HasForeignKey<Treasury>(d => d.Id)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Treasury__Id__1699586C");
+                    .HasConstraintName("FK__Treasury__Id__60FC61CA");
             });
 
             modelBuilder.Entity<TreasuryHistory>(entity =>
@@ -968,7 +970,17 @@ namespace KokazGoodsTransfer.Models
                 entity.HasOne(d => d.ClientPayment)
                     .WithMany(p => p.TreasuryHistories)
                     .HasForeignKey(d => d.ClientPaymentId)
-                    .HasConstraintName("FK__TreasuryH__Clien__1D4655FB");
+                    .HasConstraintName("FK__TreasuryH__Clien__65C116E7");
+
+                entity.HasOne(d => d.Income)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.IncomeId)
+                    .HasConstraintName("FK__TreasuryH__Incom__6991A7CB");
+
+                entity.HasOne(d => d.Outcome)
+                    .WithMany(p => p.TreasuryHistories)
+                    .HasForeignKey(d => d.OutcomeId)
+                    .HasConstraintName("FK__TreasuryH__Outco__6A85CC04");
 
                 entity.HasOne(d => d.Receipt)
                     .WithMany(p => p.TreasuryHistories)

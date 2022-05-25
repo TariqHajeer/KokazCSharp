@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
                 {
 
@@ -76,7 +76,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var treasury = await _repository.GetById(id);
             if (treasury == null)
                 return null;
-            var history = await _historyRepositroy.GetAsync(new Paging() { Page = 1, RowCount = 10 }, c => c.TreasuryId == id, new string[] { "Receipt" });
+            var history = await _historyRepositroy.GetAsync(new Paging() { Page = 1, RowCount = 10 }, c => c.TreasuryId == id, new string[] { "Receipt" }, orderBy: c => c.OrderByDescending(h => h.Id));
             var treasuryDto = _mapper.Map<TreasuryDto>(treasury);
             treasuryDto.History = new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
             {
@@ -125,7 +125,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }
@@ -159,7 +159,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                await _uintOfWork.RoleBack();
+                await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }

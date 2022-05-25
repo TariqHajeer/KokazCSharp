@@ -225,6 +225,10 @@ namespace KokazGoodsTransfer
             services.AddScoped<ITreasuryService, TreasuryService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IIncomeService,IncomeService>();
+            services.AddScoped<IOutcomeService, OutcomeService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
     }
