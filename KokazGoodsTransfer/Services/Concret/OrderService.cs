@@ -208,6 +208,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         MoneyPlacedId = order.MoenyPlacedId,
                         OrderPlacedId = order.OrderplacedId,
                         OrderStateId = order.OrderStateId,
+                        OrderId = order.Id
                     });
                 }
                 receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
@@ -357,6 +358,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         MoneyPlacedId = order.MoenyPlacedId,
                         OrderPlacedId = order.OrderplacedId,
                         OrderStateId = order.OrderStateId,
+                        OrderId = order.Id
                     });
                 }
                 receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
