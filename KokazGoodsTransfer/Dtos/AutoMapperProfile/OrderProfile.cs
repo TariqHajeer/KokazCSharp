@@ -87,16 +87,21 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             {
                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderClientPaymnets.Select(c => c.ClientPayment));
             }))
-            .ForMember(c => c.ReceiptOfTheOrderStatus, opt => opt.MapFrom((src, dest, i, context) =>
+            .ForMember(c => c.ReceiptOfTheOrderStatusDetalis, opt => opt.MapFrom((obj, dto, i, context) =>
             {
-                var status = src.ReceiptOfTheOrderStatusDetalis.Select(c => c.ReceiptOfTheOrderStatus).ToList();
-                status.ForEach(c =>
-                {
-                    c.ReceiptOfTheOrderStatusDetalis = null;
-                });
-                return context.Mapper.Map<ReceiptOfTheOrderStatusDto[]>(src.ReceiptOfTheOrderStatusDetalis.Select(c => c.ReceiptOfTheOrderStatus));
+                return context.Mapper.Map<ReceiptOfTheOrderStatusDetaliOrderDto[]>(dto.ReceiptOfTheOrderStatusDetalis);
             }));
-
+            CreateMap<ReceiptOfTheOrderStatusDetali, ReceiptOfTheOrderStatusDetaliOrderDto>()
+                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+                }))
+                .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                }))
+                .ForMember(c => c.Reciver, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.Recvier.Name))
+                .ForMember(c => c.CreatedOn, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.CreatedOn));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
                 {

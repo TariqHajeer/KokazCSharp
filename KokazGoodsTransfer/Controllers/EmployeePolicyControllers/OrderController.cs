@@ -550,6 +550,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         .ThenInclude(c => c.AgentPrint)
                    .Include(c => c.ReceiptOfTheOrderStatusDetalis)
                         .ThenInclude(c => c.ReceiptOfTheOrderStatus)
+                        .ThenInclude(c=>c.Recvier)
                .FirstOrDefault(c => c.Id == id);
             return Ok(_mapper.Map<OrderDto>(order));
         }
