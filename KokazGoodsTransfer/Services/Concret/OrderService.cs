@@ -465,9 +465,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 return new GenaricErrorResponse<int, string, string>("حدث خطأ ما ", false, true);
             }
         }
-        public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
+        public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
-            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+            if (string.IsNullOrEmpty(code))
+                return await GetReceiptOfTheOrderStatus(Paging);
+
+            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, c => c.ReceiptOfTheOrderStatusDetalis.Any(c => c.OrderCode == code), new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
             var ids = response.Data.Select(c => c.Id);
 
             var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).ToDictionary(c => c.ReceiptOfTheOrderStatusId, c => c);
@@ -506,6 +509,35 @@ namespace KokazGoodsTransfer.Services.Concret
         {
 
             throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// private function 
+    /// </summary>
+    partial class OrderService
+    {
+        private async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
+        {
+            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+            var ids = response.Data.Select(c => c.Id);
+
+            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).ToDictionary(c => c.ReceiptOfTheOrderStatusId, c => c);
+
+            var dtos = _mapper.Map<List<ReceiptOfTheOrderStatusDto>>(response.Data);
+            dtos.ForEach(c =>
+            {
+                if (types.ContainsKey(c.Id))
+                {
+                    var orderPlaced = types.Where(t => t.Key == c.Id).Select(c => c.Value.OrderPlaced.Name);
+                    c.Types = String.Join(',', orderPlaced);
+                }
+            });
+            return new PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>()
+            {
+                Total = response.Total,
+                Data = dtos
+            };
         }
     }
 }

@@ -550,7 +550,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         .ThenInclude(c => c.AgentPrint)
                    .Include(c => c.ReceiptOfTheOrderStatusDetalis)
                         .ThenInclude(c => c.ReceiptOfTheOrderStatus)
-                        .ThenInclude(c=>c.Recvier)
+                        .ThenInclude(c => c.Recvier)
                .FirstOrDefault(c => c.Id == id);
             return Ok(_mapper.Map<OrderDto>(order));
         }
@@ -1714,9 +1714,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
         }
         [HttpGet("ReceiptOfTheOrderStatus")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
         {
-            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto));
+            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
         }
     }
 }
