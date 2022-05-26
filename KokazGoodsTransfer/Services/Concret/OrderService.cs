@@ -522,14 +522,14 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
             var ids = response.Data.Select(c => c.Id);
 
-            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).ToDictionary(c => c.ReceiptOfTheOrderStatusId, c => c);
-
+            var groups = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).GroupBy(c => c.ReceiptOfTheOrderStatusId);
+            var types = groups.ToDictionary(c => c.Key, c => c.ToList());
             var dtos = _mapper.Map<List<ReceiptOfTheOrderStatusDto>>(response.Data);
             dtos.ForEach(c =>
             {
                 if (types.ContainsKey(c.Id))
                 {
-                    var orderPlaced = types.Where(t => t.Key == c.Id).Select(c => c.Value.OrderPlaced.Name);
+                    var orderPlaced = types.Where(t => t.Key == c.Id).SelectMany(c => c.Value.Select(c => c.OrderPlaced.Name));
                     c.Types = String.Join(',', orderPlaced);
                 }
             });
