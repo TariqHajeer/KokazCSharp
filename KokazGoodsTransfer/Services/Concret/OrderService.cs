@@ -477,7 +477,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 if (types.ContainsKey(c.Id))
                 {
-                    var moneyPalced = types.Select(c => c.Value.MoneyPlaced.Name);
+                    var moneyPalced = types.Where(t => t.Key == c.Id).Select(c => c.Value.MoneyPlaced.Name);
                     c.Types = String.Join(',', moneyPalced);
                 }
             });
