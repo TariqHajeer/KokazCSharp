@@ -11,5 +11,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public decimal AgentTotal { get; set; }
         public decimal OrderTotal { get; set; }
         public decimal TreasuryIncome { get; set; }
+        public string Types { get; set; }
     }
 }
