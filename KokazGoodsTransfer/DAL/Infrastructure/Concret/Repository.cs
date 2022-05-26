@@ -71,7 +71,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                     query = query.Include(item);
                 }
             var total = await query.CountAsync();
-            if(orderBy != null)
+            if (orderBy != null)
             {
                 query = orderBy(query);
             }
@@ -206,6 +206,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 }
             }
             return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter,  Expression<Func<T, Projection>> projection,params Expression<Func<T, object>>[] propertySelectors)
+        {
+            var query = Query.Where(filter);
+            query = IncludeLmbda(query, propertySelectors);
+            return await query.Select<T, Projection>(projection).ToListAsync();
         }
     }
 }

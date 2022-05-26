@@ -1,16 +1,16 @@
-﻿using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
-using KokazGoodsTransfer.Models;
-using System.Linq;
-using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Models.Static;
-using System;
-using AutoMapper;
+﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
+using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
+using KokazGoodsTransfer.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -26,10 +26,11 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IRepository<ReceiptOfTheOrderStatus> _receiptOfTheOrderStatusRepository;
+        private readonly IRepository<ReceiptOfTheOrderStatusDetali> _receiptOfTheOrderStatusDetalisRepository;
         private readonly Logging _logging;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -39,6 +40,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _receiptOfTheOrderStatusRepository = receiptOfTheOrderStatusRepository;
             _repository = repository;
             _logging = logging;
+            _receiptOfTheOrderStatusDetalisRepository = receiptOfTheOrderStatusDetalisRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -466,7 +468,19 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
         {
             var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
-            var dtos = _mapper.Map<ReceiptOfTheOrderStatusDto[]>(response.Data);
+            var ids = response.Data.Select(c => c.Id);
+
+            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.MoneyPlaced }, c => c.MoneyPlaced)).ToDictionary(c => c.ReceiptOfTheOrderStatusId, c => c);
+
+            var dtos = _mapper.Map<List<ReceiptOfTheOrderStatusDto>>(response.Data);
+            dtos.ForEach(c =>
+            {
+                if (types.ContainsKey(c.Id))
+                {
+                    var moneyPalced = types.Select(c => c.Value.MoneyPlaced.Name);
+                    c.Types = String.Join(',', moneyPalced);
+                }
+            });
             return new PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>()
             {
                 Total = response.Total,

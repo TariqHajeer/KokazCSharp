@@ -1714,7 +1714,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
         }
         [HttpGet("ReceiptOfTheOrderStatus")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDetaliDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
         {
             return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto));
         }
