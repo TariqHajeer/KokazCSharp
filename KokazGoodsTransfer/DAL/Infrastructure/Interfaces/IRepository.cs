@@ -28,5 +28,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class;
         Task<int> Count(Expression<Func<T, bool>> filter = null);
         Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+        Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter, Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
     }
 }

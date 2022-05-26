@@ -50,6 +50,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? CurrentCountry { get; set; }
         public int? PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
-
+        public List<ReceiptOfTheOrderStatusDetaliOrderDto>  ReceiptOfTheOrderStatusDetalis { get; set; }
     }
 }

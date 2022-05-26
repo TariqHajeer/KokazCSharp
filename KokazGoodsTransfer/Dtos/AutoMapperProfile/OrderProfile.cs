@@ -86,8 +86,22 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             .ForMember(c => c.ClientPrint, opt => opt.MapFrom((obj, dto, i, context) =>
             {
                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderClientPaymnets.Select(c => c.ClientPayment));
+            }))
+            .ForMember(c => c.ReceiptOfTheOrderStatusDetalis, opt => opt.MapFrom((src, dest, i, context) =>
+            {
+                return context.Mapper.Map<ReceiptOfTheOrderStatusDetaliOrderDto[]>(src.ReceiptOfTheOrderStatusDetalis);
             }));
-
+            CreateMap<ReceiptOfTheOrderStatusDetali, ReceiptOfTheOrderStatusDetaliOrderDto>()
+                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+                }))
+                .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                }))
+                .ForMember(c => c.Reciver, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.Recvier.Name))
+                .ForMember(c => c.CreatedOn, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.CreatedOn));
             CreateMap<OrderLog, OrderLogDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
                 {
