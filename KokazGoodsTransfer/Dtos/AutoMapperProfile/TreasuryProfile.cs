@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         {
             CreateMap<Treasury, TreasuryDto>()
                 .ForMember(c => c.History, opt => opt.Ignore())
-                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.IdNavigation?.Name:""));
+                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.IdNavigation != null ? src.IdNavigation.Name : ""));
             CreateMap<TreasuryHistory, TreasuryHistoryDto>();
             CreateMap<CreateTreasuryDto, Treasury>()
                 .ForMember(c => c.CreateOnUtc, opt => opt.MapFrom(src => DateTime.UtcNow))
