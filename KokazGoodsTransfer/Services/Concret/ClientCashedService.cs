@@ -46,7 +46,7 @@ namespace KokazGoodsTransfer.Services.Concret
             return await base.Delete(id);
         }
 
-        public async Task<ClientDto> GetById(int id)
+        public override async Task<ClientDto> GetById(int id)
         {
             var client = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.ClientPhones);
             return _mapper.Map<ClientDto>(client);
