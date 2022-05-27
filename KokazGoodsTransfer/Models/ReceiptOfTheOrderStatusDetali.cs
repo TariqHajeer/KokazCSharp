@@ -17,10 +17,12 @@ namespace KokazGoodsTransfer.Models
         public int MoneyPlacedId { get; set; }
         public int ReceiptOfTheOrderStatusId { get; set; }
         public int OrderPlacedId { get; set; }
+        public int? OrderId { get; set; }
 
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual MoenyPlaced MoneyPlaced { get; set; }
+        public virtual Order Order { get; set; }
         public virtual OrderPlaced OrderPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
         public virtual ReceiptOfTheOrderStatus ReceiptOfTheOrderStatus { get; set; }

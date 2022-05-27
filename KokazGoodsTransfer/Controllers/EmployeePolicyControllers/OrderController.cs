@@ -547,7 +547,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                    .ThenInclude(c => c.ClientPayment)
                    .Include(c => c.OrderLogs)
                    .Include(c => c.AgentOrderPrints)
-                   .ThenInclude(c => c.AgentPrint)
+                        .ThenInclude(c => c.AgentPrint)
+                   .Include(c => c.ReceiptOfTheOrderStatusDetalis)
+                        .ThenInclude(c => c.ReceiptOfTheOrderStatus)
+                        .ThenInclude(c => c.Recvier)
                .FirstOrDefault(c => c.Id == id);
             return Ok(_mapper.Map<OrderDto>(order));
         }
@@ -1060,7 +1063,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         OrderPlacedId = item.OrderplacedId,
                         PayForClient = currentPay,
                         Date = item.Date,
-                        ClientNote = item.ClientNote                        
+                        ClientNote = item.ClientNote
                     };
                     total += currentPay;
                     this._context.Add(orderClientPaymnet);
@@ -1192,7 +1195,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         PayForClient = cureentPay,
                         Date = item.Date,
                         Note = item.Note,
-                        ClientNote= item.ClientNote
+                        ClientNote = item.ClientNote
                     };
                     total += cureentPay;
                     this._context.Add(orderClientPayment);
@@ -1711,9 +1714,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
         }
         [HttpGet("ReceiptOfTheOrderStatus")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDetaliDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto)
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
         {
-            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto));
+            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
         }
     }
 }
