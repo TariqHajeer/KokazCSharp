@@ -639,7 +639,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ThenInclude(c => c.Country)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
-                    .ThenInclude(c => c.AgentCountrs)
+                    .ThenInclude(c => c.AgentCountries)
                         .ThenInclude(c => c.Agent)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
@@ -657,7 +657,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ThenInclude(c => c.Country)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
-                    .ThenInclude(c => c.AgentCountrs)
+                    .ThenInclude(c => c.AgentCountries)
                         .ThenInclude(c => c.Agent)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
@@ -677,7 +677,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ThenInclude(c => c.Country)
                 .Include(c => c.Region)
                 .Include(c => c.Country)
-                    .ThenInclude(c => c.AgentCountrs)
+                    .ThenInclude(c => c.AgentCountries)
                         .ThenInclude(c => c.Agent)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
@@ -758,7 +758,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Accept([FromBody] IdsDto idsDto)
         {
             var order = this._context.Orders.Find(idsDto.OrderId);
-            var agnetCountries = this._context.AgentCountrs.Where(c => c.AgentId == idsDto.AgentId);
+            var agnetCountries = this._context.AgentCountries.Where(c => c.AgentId == idsDto.AgentId);
             if (!agnetCountries.Any(c => c.CountryId == order.CountryId))
             {
                 return Conflict();
@@ -776,7 +776,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             //get data 
             var orders = await this._context.Orders.Where(c => idsDto.Select(dto => dto.OrderId).Contains(c.Id)).ToListAsync();
-            var agentsContries = await this._context.AgentCountrs.Where(c => idsDto.Select(dto => dto.AgentId).Contains(c.AgentId)).ToListAsync();
+            var agentsContries = await this._context.AgentCountries.Where(c => idsDto.Select(dto => dto.AgentId).Contains(c.AgentId)).ToListAsync();
 
             //validation 
             if (idsDto.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())

@@ -46,9 +46,9 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var country = await _repository.GetById(id);
             await _repository.LoadCollection(country, c => c.Clients);
-            await _repository.LoadCollection(country, c => c.AgentCountrs);
+            await _repository.LoadCollection(country, c => c.AgentCountries);
             var response = new ErrorRepsonse<CountryDto>();
-            if (country.AgentCountrs.Any() || country.Clients.Any())
+            if (country.AgentCountries.Any() || country.Clients.Any())
             {
                 response.Errors.Add("Cant.Delete");
                 return response;
@@ -61,7 +61,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(Country).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.AgentCountrs.Select(a => a.Agent));
+                entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.AgentCountries.Select(a => a.Agent));
                 _cache.Set(name, entites);
             }
             return entites;

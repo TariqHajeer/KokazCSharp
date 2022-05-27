@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Models
         {
         }
 
-        public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
+        public virtual DbSet<AgentCountry> AgentCountries { get; set; }
         public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
@@ -66,6 +66,8 @@ namespace KokazGoodsTransfer.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
             }
         }
 
@@ -73,19 +75,20 @@ namespace KokazGoodsTransfer.Models
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<AgentCountr>(entity =>
+            modelBuilder.Entity<AgentCountry>(entity =>
             {
-                entity.HasKey(e => new { e.AgentId, e.CountryId });
+                entity.HasKey(e => new { e.AgentId, e.CountryId })
+                    .HasName("PK_AgentCountr");
 
-                entity.ToTable("AgentCountr");
+                entity.ToTable("AgentCountry");
 
                 entity.HasOne(d => d.Agent)
-                    .WithMany(p => p.AgentCountrs)
+                    .WithMany(p => p.AgentCountries)
                     .HasForeignKey(d => d.AgentId)
                     .HasConstraintName("FK_AgentCountr_Users");
 
                 entity.HasOne(d => d.Country)
-                    .WithMany(p => p.AgentCountrs)
+                    .WithMany(p => p.AgentCountries)
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("FK_AgentCountr_Country");
             });

@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Models
     {
         public Country()
         {
-            AgentCountrs = new HashSet<AgentCountr>();
+            AgentCountries = new HashSet<AgentCountry>();
             Clients = new HashSet<Client>();
             DisAcceptOrders = new HashSet<DisAcceptOrder>();
             InverseMediator = new HashSet<Country>();
@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.Models
         public int Points { get; set; }
 
         public virtual Country Mediator { get; set; }
-        public virtual ICollection<AgentCountr> AgentCountrs { get; set; }
+        public virtual ICollection<AgentCountry> AgentCountries { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<DisAcceptOrder> DisAcceptOrders { get; set; }
         public virtual ICollection<Country> InverseMediator { get; set; }
