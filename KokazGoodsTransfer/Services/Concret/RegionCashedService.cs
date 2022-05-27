@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Regions;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class RegionCashedService : CashService<Region, RegionDto, CreateRegionDto, UpdateRegionDto>, IRegionCashedService
     {
 
-        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
+        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper, cache, logging)
         {
         }
         public override async Task<ErrorRepsonse<RegionDto>> AddAsync(CreateRegionDto createDto)
@@ -31,7 +32,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.AddAsync(entity);
             await _repository.LoadRefernces(entity, c => c.Country);
             response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(entity));
-             RemoveCash();
+            RemoveCash();
             return response;
         }
         public override async Task<ErrorRepsonse<RegionDto>> Update(UpdateRegionDto updateDto)
@@ -53,7 +54,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(region);
             var response = new ErrorRepsonse<RegionDto>(_mapper.Map<RegionDto>(region));
             if (!response.Errors.Any())
-                 RemoveCash();
+                RemoveCash();
             return response;
         }
         public override async Task<IEnumerable<RegionDto>> GetCashed()

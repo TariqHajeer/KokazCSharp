@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Groups;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -13,7 +14,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class GroupService : IndexCURDService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
     {
         private readonly IRepository<Privilege> _privilegeRepository;
-        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper) : base(repository, mapper)
+        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
         {
             _privilegeRepository = privilegeRepository;
         }

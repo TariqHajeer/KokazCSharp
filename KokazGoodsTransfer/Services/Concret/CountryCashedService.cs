@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Countries;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class CountryCashedService : CashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>, ICountryCashedService
     {
-        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper, cache)
+        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper, cache, logging)
         {
         }
 

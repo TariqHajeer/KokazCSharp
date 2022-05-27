@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -11,7 +12,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class OutcomeTypeService : IndexCURDService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>, IOutcomeTypeService
     {
         private readonly IRepository<OutCome> _outcomeRepository;
-        public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper) : base(repository, mapper)
+        public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
         {
             _outcomeRepository = outcomeRepository;
         }

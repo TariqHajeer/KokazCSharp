@@ -27,13 +27,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly IOrderService _orderService;
-        ErrorMessage err;
-        NotificationHub notificationHub;
+        private readonly NotificationHub notificationHub;
+        readonly ErrorMessage err;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper, logging)
         {
-            this.err = new ErrorMessage();
-            this.err.Controller = "Order";
+            err = new ErrorMessage
+            {
+                Controller = "Order"
+            };
             this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
@@ -1438,7 +1440,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             order.UpdatedBy = AuthoticateUserName();
             order.SystemNote = "MakeStoreOrderCompletelyReturned";
             this._context.Update(order);
-            OrderLog orderLog = new OrderLog();
             this._context.SaveChanges();
             return Ok(_mapper.Map<OrderDto>(order));
         }
