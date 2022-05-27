@@ -29,6 +29,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Ok(response.Data);
             return Conflict(response.Errors);
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TreasuryDto>>> GetAll() => Ok(await _treasuryService.GetAll());
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<TreasuryDto>> Get(int id)
         {
@@ -42,7 +45,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch("GiveMoney/{id}")]
         public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromForm] decimal amount)
         {
-            var treasury =await _treasuryService.GetById(id);
+            var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
             var data = await _treasuryService.IncreaseAmount(id, amount);
@@ -51,7 +54,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch("GetMoney/{id}")]
         public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] decimal amount)
         {
-            var treasury =await _treasuryService.GetById(id);
+            var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
             var data = await _treasuryService.DecreaseAmount(id, amount);

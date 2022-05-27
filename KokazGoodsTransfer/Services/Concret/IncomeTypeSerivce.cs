@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.IncomeTypes;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -10,8 +11,8 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class IncomeTypeSerivce : IndexCURDService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>, IIncomeTypeSerive
     {
-        IRepository<Income> _incomeReposiory;
-        public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper) : base(repository, mapper)
+        private readonly IRepository<Income> _incomeReposiory;
+        public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper,Logging logging) : base(repository, mapper, logging)
         {
             _incomeReposiory = incomeReposiory;
         }

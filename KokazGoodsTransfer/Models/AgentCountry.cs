@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class AgentCountr
+    public partial class AgentCountry
     {
         public int AgentId { get; set; }
         public int CountryId { get; set; }

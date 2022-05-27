@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Models
         {
         }
 
-        public virtual DbSet<AgentCountr> AgentCountrs { get; set; }
+        public virtual DbSet<AgentCountry> AgentCountries { get; set; }
         public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
@@ -75,19 +75,20 @@ namespace KokazGoodsTransfer.Models
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<AgentCountr>(entity =>
+            modelBuilder.Entity<AgentCountry>(entity =>
             {
-                entity.HasKey(e => new { e.AgentId, e.CountryId });
+                entity.HasKey(e => new { e.AgentId, e.CountryId })
+                    .HasName("PK_AgentCountr");
 
-                entity.ToTable("AgentCountr");
+                entity.ToTable("AgentCountry");
 
                 entity.HasOne(d => d.Agent)
-                    .WithMany(p => p.AgentCountrs)
+                    .WithMany(p => p.AgentCountries)
                     .HasForeignKey(d => d.AgentId)
                     .HasConstraintName("FK_AgentCountr_Users");
 
                 entity.HasOne(d => d.Country)
-                    .WithMany(p => p.AgentCountrs)
+                    .WithMany(p => p.AgentCountries)
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("FK_AgentCountr_Country");
             });

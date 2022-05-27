@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using KokazGoodsTransfer.Models.Static;
 using System.Linq.Expressions;
+using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -22,13 +23,20 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IRepository<Treasury> _repository;
         private readonly IRepository<TreasuryHistory> _historyRepositroy;
-        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper)
+        private readonly Logging _logging;
+        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper, Logging logging)
         {
             _mapper = mapper;
             _uintOfWork = uintOfWork;
             _userService = userService;
             _repository = repository;
             _historyRepositroy = historyRepositroy;
+            _logging = logging;
+        }
+        public async Task<IEnumerable<TreasuryDto>> GetAll()
+        {
+            var Treasuries= await _repository.GetAll(c => c.IdNavigation);
+            return _mapper.Map<IEnumerable<TreasuryDto>>(Treasuries);
         }
         public async Task<ErrorRepsonse<TreasuryDto>> Create(CreateTreasuryDto createTreasuryDto)
         {
@@ -63,6 +71,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);   
                 await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
                 {
@@ -125,6 +134,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
@@ -159,6 +169,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
@@ -202,5 +213,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return await _repository.Any(expression);
         }
+
+        
     }
 }

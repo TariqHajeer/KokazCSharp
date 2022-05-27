@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class IndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> : CRUDService<TEntity, TDTO, CreateDto, UpdateDto>, IIndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class, IIndex where TDTO : class where CreateDto : class, INameEntity where UpdateDto : class, IIndex
     {
 
-        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper) : base(repository, mapper)
+        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
         {
         }
         public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)

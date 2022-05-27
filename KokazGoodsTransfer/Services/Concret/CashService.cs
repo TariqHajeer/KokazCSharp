@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -17,7 +18,7 @@ namespace KokazGoodsTransfer.Services.Concret
     {
 
         protected readonly IMemoryCache _cache;
-        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache) : base(repository, mapper)
+        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper,logging)
         {
             _cache = cache;
 
