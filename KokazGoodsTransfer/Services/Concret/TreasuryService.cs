@@ -33,6 +33,11 @@ namespace KokazGoodsTransfer.Services.Concret
             _historyRepositroy = historyRepositroy;
             _logging = logging;
         }
+        public async Task<IEnumerable<TreasuryDto>> GetAll()
+        {
+            var Treasuries= await _repository.GetAll(c => c.IdNavigation);
+            return _mapper.Map<IEnumerable<TreasuryDto>>(Treasuries);
+        }
         public async Task<ErrorRepsonse<TreasuryDto>> Create(CreateTreasuryDto createTreasuryDto)
         {
             if (await _uintOfWork.Repository<Treasury>().Any(c => c.Id == createTreasuryDto.UserId))
@@ -208,5 +213,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return await _repository.Any(expression);
         }
+
+        
     }
 }

@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Dtos.TreasuryDtos
         public decimal Total { get; set; }
         public DateTime CreateOnUtc { get; set; }
         public bool IsActive { get; set; }
+        public string UserName { get; set; }
         public PagingResualt<IEnumerable<TreasuryHistoryDto>> History { get; set; }
     }
 
