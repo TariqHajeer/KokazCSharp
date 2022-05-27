@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.IncomesDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         private readonly IUserService _userService;
         private readonly IUintOfWork _uintOfWork;
-        public IncomeService(IUintOfWork uintOfWork, IRepository<Income> repository, IMapper mapper, IUserService userService) : base(repository, mapper)
+        public IncomeService(IUintOfWork uintOfWork, IRepository<Income> repository, IMapper mapper, IUserService userService, Logging logging) : base(repository, mapper,logging)
         {
             _userService = userService;
             _uintOfWork = uintOfWork;
@@ -76,6 +77,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
             }
             return null;

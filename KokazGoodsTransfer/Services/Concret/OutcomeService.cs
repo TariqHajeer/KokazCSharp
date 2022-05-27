@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IUintOfWork _uintOfWork;
         public OutcomeService(IRepository<OutCome> repository, IMapper mapper,
-            IUserService userService, IUintOfWork uintOfWork) : base(repository, mapper)
+            IUserService userService, IUintOfWork uintOfWork, Logging logging) : base(repository, mapper, logging)
         {
             _userService = userService;
             _uintOfWork = uintOfWork;
@@ -76,6 +77,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
             }
             return null;
@@ -86,7 +88,7 @@ namespace KokazGoodsTransfer.Services.Concret
             if (entity == null)
                 return null;
             await _repository.LoadRefernces(entity, c => c.User);
-            await _repository.LoadRefernces(entity,c=>c.OutComeType);
+            await _repository.LoadRefernces(entity, c => c.OutComeType);
             return _mapper.Map<OutComeDto>(entity);
         }
     }

@@ -222,6 +222,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
@@ -369,6 +370,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
@@ -380,11 +382,6 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced", "ReceiptOfTheOrderStatusDetalis.Client" })).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
-        }
-        public async Task<IEnumerable<OrderDto>> GetOrders(Paging paging, OrderFilter orderFilter)
-        {
-            var data = await _repository.Get(paging, orderFilter);
-            return null;
         }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {
