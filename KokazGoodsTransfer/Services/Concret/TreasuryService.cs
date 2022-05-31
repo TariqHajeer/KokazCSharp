@@ -33,6 +33,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _historyRepositroy = historyRepositroy;
             _logging = logging;
+            _cashMovmentRepositroy = cashMovmentRepositroy; 
         }
         public async Task<IEnumerable<TreasuryDto>> GetAll()
         {
@@ -219,7 +220,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId)
         {
             PagingResualt<IEnumerable<CashMovment>> pagingResult;
-            if (treasueryId != null)
+           if (treasueryId != null)
             {
                 pagingResult = await _cashMovmentRepositroy.GetAsync(paging, c => c.TreasuryId == treasueryId, c => c.Treasury.IdNavigation);
             }
@@ -233,6 +234,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<CashMovmentDto[]>(pagingResult.Data)
             };
 
+        }
+        public async Task<CashMovmentDto> GetCashMovmentById(int id)
+        {
+            var cashMovment = await _cashMovmentRepositroy.GetById(id);
+            await _cashMovmentRepositroy.LoadRefernces(cashMovment, c => c.Treasury.IdNavigation);
+            return _mapper.Map<CashMovmentDto>(cashMovment);
         }
 
 

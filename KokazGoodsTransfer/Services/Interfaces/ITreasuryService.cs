@@ -23,6 +23,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task Active(int id);
         Task<bool> Any(Expression<Func<Treasury,bool>> expression);
         Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId);
+        Task<CashMovmentDto> GetCashMovmentById(int id);
 
 
     }
