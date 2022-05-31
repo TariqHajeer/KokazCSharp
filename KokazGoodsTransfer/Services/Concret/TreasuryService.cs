@@ -23,8 +23,9 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IRepository<Treasury> _repository;
         private readonly IRepository<TreasuryHistory> _historyRepositroy;
+        private readonly IRepository<CashMovment> _cashMovmentRepositroy;
         private readonly Logging _logging;
-        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper, Logging logging)
+        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper, Logging logging, IRepository<CashMovment> cashMovmentRepositroy)
         {
             _mapper = mapper;
             _uintOfWork = uintOfWork;
@@ -214,6 +215,24 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<bool> Any(Expression<Func<Treasury, bool>> expression)
         {
             return await _repository.Any(expression);
+        }
+        public async Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId)
+        {
+            PagingResualt<IEnumerable<CashMovment>> pagingResult;
+            if (treasueryId != null)
+            {
+                pagingResult = await _cashMovmentRepositroy.GetAsync(paging, c => c.TreasuryId == treasueryId, c => c.Treasury.IdNavigation);
+            }
+            else
+            {
+                pagingResult = await _cashMovmentRepositroy.GetAsync(paging, null, c => c.Treasury.IdNavigation);
+            }
+            return new PagingResualt<IEnumerable<CashMovmentDto>>()
+            {
+                Total = pagingResult.Total,
+                Data = _mapper.Map<CashMovmentDto[]>(pagingResult.Data)
+            };
+
         }
 
 

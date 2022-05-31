@@ -72,5 +72,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _treasuryService.Active(id);
             return Ok();
         }
-    }
+        [HttpGet("CashMovment")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<CashMovmentDto>>>> GetCashMovment([FromQuery] PagingDto paging, int? treausryId)
+        {
+            return Ok(await _treasuryService.GetCashMovment(paging, treausryId));
+        }
+/    }
 }
