@@ -52,7 +52,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(data);
         }
         [HttpPatch("GetMoney/{id}")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, CreateCashMovmentDto createCashMovment)
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] CreateCashMovmentDto createCashMovment)
         {
             var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
