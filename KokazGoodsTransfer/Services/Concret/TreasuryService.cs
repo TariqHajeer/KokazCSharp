@@ -35,7 +35,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<IEnumerable<TreasuryDto>> GetAll()
         {
-            var Treasuries= await _repository.GetAll(c => c.IdNavigation);
+            var Treasuries = await _repository.GetAll(c => c.IdNavigation);
             return _mapper.Map<IEnumerable<TreasuryDto>>(Treasuries);
         }
         public async Task<ErrorRepsonse<TreasuryDto>> Create(CreateTreasuryDto createTreasuryDto)
@@ -71,7 +71,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                _logging.WriteExption(ex);   
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
                 {
@@ -104,7 +104,7 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
-        public async Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, decimal amount)
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, CreateCashMovmentDto createCashMovment)
         {
             var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
             await _uintOfWork.BegeinTransaction();
@@ -112,7 +112,8 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var cashMovment = new CashMovment()
                 {
-                    Amount = amount,
+                    Amount = createCashMovment.Amount,
+                    Note = createCashMovment.Note,
                     CreatedBy = _userService.AuthoticateUserName(),
                     CreatedOnUtc = DateTime.UtcNow,
                     TreasuryId = treausry.Id,
@@ -121,13 +122,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = amount,
+                    Amount = createCashMovment.Amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,
                 };
                 await _uintOfWork.Add(history);
-                treausry.Total += amount;
+                treausry.Total += createCashMovment.Amount;
                 await _uintOfWork.Update(treausry);
                 await _uintOfWork.Commit();
                 return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
@@ -139,7 +140,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }
-        public async Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, decimal amount)
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, CreateCashMovmentDto createCashMovment)
         {
             var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
             await _uintOfWork.BegeinTransaction();
@@ -147,7 +148,8 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var cashMovment = new CashMovment()
                 {
-                    Amount = -amount,
+                    Amount = -createCashMovment.Amount,
+                    Note = createCashMovment.Note,
                     CreatedBy = _userService.AuthoticateUserName(),
                     CreatedOnUtc = DateTime.UtcNow,
                     TreasuryId = treausry.Id,
@@ -156,13 +158,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = -amount,
+                    Amount = -createCashMovment.Amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,
                 };
                 await _uintOfWork.Add(history);
-                treausry.Total -= amount;
+                treausry.Total -= createCashMovment.Amount;
                 await _uintOfWork.Update(treausry);
                 await _uintOfWork.Commit();
                 return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
@@ -214,6 +216,6 @@ namespace KokazGoodsTransfer.Services.Concret
             return await _repository.Any(expression);
         }
 
-        
+
     }
 }

@@ -202,6 +202,8 @@ namespace KokazGoodsTransfer.Models
 
                 entity.Property(e => e.CreatedOnUtc).HasColumnType("date");
 
+                entity.Property(e => e.Note).HasMaxLength(100);
+
                 entity.HasOne(d => d.Treasury)
                     .WithMany(p => p.CashMovments)
                     .HasForeignKey(d => d.TreasuryId)
