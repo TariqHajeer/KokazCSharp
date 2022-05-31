@@ -77,5 +77,5 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetCashMovment(paging, treausryId));
         }
-/    }
+    }
 }
