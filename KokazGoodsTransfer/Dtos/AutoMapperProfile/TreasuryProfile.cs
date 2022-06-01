@@ -26,6 +26,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.TreasuryId, opt => opt.MapFrom(src => src.TreasuryId))
                 .ForMember(c => c.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(c => c.CreatedOnUtc, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<CashMovment, CashMovmentDto>()
+                .ForMember(c => c.TreasuryUserName, opt => opt.MapFrom(src => src.Treasury.IdNavigation.Name));
 
 
         }

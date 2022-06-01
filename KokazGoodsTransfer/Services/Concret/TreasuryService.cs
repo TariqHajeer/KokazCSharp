@@ -23,8 +23,9 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IRepository<Treasury> _repository;
         private readonly IRepository<TreasuryHistory> _historyRepositroy;
+        private readonly IRepository<CashMovment> _cashMovmentRepositroy;
         private readonly Logging _logging;
-        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper, Logging logging)
+        public TreasuryService(IUintOfWork uintOfWork, IRepository<Treasury> repository, IRepository<TreasuryHistory> historyRepositroy, IUserService userService, IMapper mapper, Logging logging, IRepository<CashMovment> cashMovmentRepositroy)
         {
             _mapper = mapper;
             _uintOfWork = uintOfWork;
@@ -32,10 +33,11 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _historyRepositroy = historyRepositroy;
             _logging = logging;
+            _cashMovmentRepositroy = cashMovmentRepositroy; 
         }
         public async Task<IEnumerable<TreasuryDto>> GetAll()
         {
-            var Treasuries= await _repository.GetAll(c => c.IdNavigation);
+            var Treasuries = await _repository.GetAll(c => c.IdNavigation);
             return _mapper.Map<IEnumerable<TreasuryDto>>(Treasuries);
         }
         public async Task<ErrorRepsonse<TreasuryDto>> Create(CreateTreasuryDto createTreasuryDto)
@@ -71,7 +73,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
-                _logging.WriteExption(ex);   
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorRepsonse<TreasuryDto>("حصل خطأ ما ")
                 {
@@ -104,7 +106,7 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
-        public async Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, decimal amount)
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> IncreaseAmount(int id, CreateCashMovmentDto createCashMovment)
         {
             var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
             await _uintOfWork.BegeinTransaction();
@@ -112,7 +114,8 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var cashMovment = new CashMovment()
                 {
-                    Amount = amount,
+                    Amount = createCashMovment.Amount,
+                    Note = createCashMovment.Note,
                     CreatedBy = _userService.AuthoticateUserName(),
                     CreatedOnUtc = DateTime.UtcNow,
                     TreasuryId = treausry.Id,
@@ -121,13 +124,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = amount,
+                    Amount = createCashMovment.Amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,
                 };
                 await _uintOfWork.Add(history);
-                treausry.Total += amount;
+                treausry.Total += createCashMovment.Amount;
                 await _uintOfWork.Update(treausry);
                 await _uintOfWork.Commit();
                 return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
@@ -139,7 +142,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 return new ErrorRepsonse<TreasuryHistoryDto>("حدث خطأ ما ");
             }
         }
-        public async Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, decimal amount)
+        public async Task<ErrorRepsonse<TreasuryHistoryDto>> DecreaseAmount(int id, CreateCashMovmentDto createCashMovment)
         {
             var treausry = await _uintOfWork.Repository<Treasury>().GetById(id);
             await _uintOfWork.BegeinTransaction();
@@ -147,7 +150,8 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var cashMovment = new CashMovment()
                 {
-                    Amount = -amount,
+                    Amount = -createCashMovment.Amount,
+                    Note = createCashMovment.Note,
                     CreatedBy = _userService.AuthoticateUserName(),
                     CreatedOnUtc = DateTime.UtcNow,
                     TreasuryId = treausry.Id,
@@ -156,13 +160,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 var history = new TreasuryHistory()
                 {
                     CreatedOnUtc = cashMovment.CreatedOnUtc,
-                    Amount = -amount,
+                    Amount = -createCashMovment.Amount,
                     CashMovment = cashMovment,
                     CashMovmentId = cashMovment.Id,
                     TreasuryId = id,
                 };
                 await _uintOfWork.Add(history);
-                treausry.Total -= amount;
+                treausry.Total -= createCashMovment.Amount;
                 await _uintOfWork.Update(treausry);
                 await _uintOfWork.Commit();
                 return new ErrorRepsonse<TreasuryHistoryDto>(_mapper.Map<TreasuryHistoryDto>(history));
@@ -213,7 +217,30 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return await _repository.Any(expression);
         }
+        public async Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId)
+        {
+            PagingResualt<IEnumerable<CashMovment>> pagingResult;
+           if (treasueryId != null)
+            {
+                pagingResult = await _cashMovmentRepositroy.GetAsync(paging, c => c.TreasuryId == treasueryId, c => c.Treasury.IdNavigation);
+            }
+            else
+            {
+                pagingResult = await _cashMovmentRepositroy.GetAsync(paging, null, c => c.Treasury.IdNavigation);
+            }
+            return new PagingResualt<IEnumerable<CashMovmentDto>>()
+            {
+                Total = pagingResult.Total,
+                Data = _mapper.Map<CashMovmentDto[]>(pagingResult.Data)
+            };
 
-        
+        }   
+        public async Task<CashMovmentDto> GetCashMovmentById(int id)
+        {
+            var cashMovment = await _cashMovmentRepositroy.FirstOrDefualt(c=>c.Id==id,c=>c.Treasury.IdNavigation);
+            return _mapper.Map<CashMovmentDto>(cashMovment);
+        }
+
+
     }
 }

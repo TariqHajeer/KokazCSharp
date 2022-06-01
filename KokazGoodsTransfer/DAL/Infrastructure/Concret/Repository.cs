@@ -118,13 +118,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             {
                 query = query.Where(filter);
             }
-            var totalTask = query.CountAsync();
+            var total =await query.CountAsync();
             query = IncludeLmbda(query, propertySelectors);
-            var dataTask = query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
+            var data =await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
             var result = new PagingResualt<IEnumerable<T>>()
             {
-                Total = await totalTask,
-                Data = await dataTask
+                Total = total,
+                Data = data
             };
             return result;
         }
