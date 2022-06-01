@@ -234,11 +234,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<CashMovmentDto[]>(pagingResult.Data)
             };
 
-        }
+        }   
         public async Task<CashMovmentDto> GetCashMovmentById(int id)
         {
-            var cashMovment = await _cashMovmentRepositroy.GetById(id);
-            await _cashMovmentRepositroy.LoadRefernces(cashMovment, c => c.Treasury.IdNavigation);
+            var cashMovment = await _cashMovmentRepositroy.FirstOrDefualt(c=>c.Id==id,c=>c.Treasury.IdNavigation);
             return _mapper.Map<CashMovmentDto>(cashMovment);
         }
 
