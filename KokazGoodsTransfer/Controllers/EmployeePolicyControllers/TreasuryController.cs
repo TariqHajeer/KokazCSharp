@@ -43,21 +43,21 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
         }
         [HttpPatch("GiveMoney/{id}")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromForm] decimal amount)
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromForm] CreateCashMovmentDto createCashMovment)
         {
             var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
-            var data = await _treasuryService.IncreaseAmount(id, amount);
+            var data = await _treasuryService.IncreaseAmount(id, createCashMovment);
             return Ok(data);
         }
         [HttpPatch("GetMoney/{id}")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] decimal amount)
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] CreateCashMovmentDto createCashMovment)
         {
             var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
                 return NotFound();
-            var data = await _treasuryService.DecreaseAmount(id, amount);
+            var data = await _treasuryService.DecreaseAmount(id, createCashMovment);
             return Ok(data);
         }
         [HttpPatch("DisActive")]
@@ -71,6 +71,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             await _treasuryService.Active(id);
             return Ok();
+        }
+        [HttpGet("CashMovment")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<CashMovmentDto>>>> GetCashMovment([FromQuery] PagingDto paging, int? treausryId)
+        {
+            return Ok(await _treasuryService.GetCashMovment(paging, treausryId));
+        }
+        [HttpGet("CashMovment/{id}")]
+        public async Task<ActionResult<CashMovmentDto>> GetById(int id)
+        {
+            return Ok(await _treasuryService.GetCashMovmentById(id));
         }
     }
 }
