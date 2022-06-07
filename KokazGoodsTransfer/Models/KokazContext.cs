@@ -117,7 +117,7 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("AgentPrint");
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.Date).HasColumnType("datetime");
 
                 entity.Property(e => e.DestinationName)
                     .IsRequired()
@@ -247,7 +247,7 @@ namespace KokazGoodsTransfer.Models
             {
                 entity.ToTable("ClientPayment");
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.Date).HasColumnType("datetime");
 
                 entity.Property(e => e.DestinationName)
                     .IsRequired()
