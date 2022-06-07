@@ -13,8 +13,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         public CountryProfile()
         {
             CreateMap<Country, CountryDto>()
-                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountrs.Count() == 0))
-                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountrs.Count() == 0 && src.Clients.Count() == 0))
+                .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountries.Count() == 0))
+                .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountries.Count() == 0 && src.Clients.Count() == 0))
                 .ForMember(c => c.Mediator, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<CountryDto>(obj.Mediator);
@@ -28,10 +28,10 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    if (obj.AgentCountrs == null)
+                    if (obj.AgentCountries == null)
                         return null;
-                    obj.AgentCountrs.ToList().ForEach(c => c.Agent.AgentCountrs = null);
-                    return context.Mapper.Map<UserDto[]>(obj.AgentCountrs.Select(c => c.Agent));
+                    obj.AgentCountries.ToList().ForEach(c => c.Agent.AgentCountries = null);
+                    return context.Mapper.Map<UserDto[]>(obj.AgentCountries.Select(c => c.Agent));
                 })).MaxDepth(2);
             CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()

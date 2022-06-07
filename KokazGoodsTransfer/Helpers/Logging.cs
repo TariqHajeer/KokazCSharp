@@ -11,14 +11,12 @@ namespace KokazGoodsTransfer.Helpers
 {
     public class Logging
     {
-        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private const string logfileName = "Log.Txt";
 
         private readonly string logfilePath;
-        IWebHostEnvironment _env;
         public Logging(IWebHostEnvironment env)
         {
-            _env = env;
             logfilePath = Path.Combine(env.WebRootPath, logfileName);
         }
         public async void WriteExption(Exception exception)
@@ -71,8 +69,8 @@ namespace KokazGoodsTransfer.Helpers
             // is no longer locked by another process.
             try
             {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
-                    return inputStream.Length > 0;
+                using FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None);
+                return inputStream.Length > 0;
             }
             catch (Exception)
             {

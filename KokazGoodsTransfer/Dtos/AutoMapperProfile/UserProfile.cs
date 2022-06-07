@@ -24,32 +24,32 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.GroupsId, opt => opt.MapFrom(src => src.UserGroups.Select(c => c.GroupId)))
                 .ForMember(c => c.Countries, opt => opt.MapFrom((user, dto, i, context) =>
                 {
-                    if (user.AgentCountrs == null)
+                    if (user.AgentCountries == null)
                     {
                         return null;
                     }
                     else
                     {
 
-                        user.AgentCountrs.ToList().ForEach(c =>
+                        user.AgentCountries.ToList().ForEach(c =>
                         {
                             if (c.Country != null)
-                                c.Country.AgentCountrs = null;
+                                c.Country.AgentCountries = null;
                         });
                     }
-                    return context.Mapper.Map<CountryDto[]>(user.AgentCountrs.Select(c => c.Country));
+                    return context.Mapper.Map<CountryDto[]>(user.AgentCountries.Select(c => c.Country));
                 }));
             CreateMap<CreateUserDto, User>()
             .ForMember(des => des.IsActive, opt => opt.MapFrom(src => true))
             .ForMember(des => des.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))
-            .ForMember(des => des.AgentCountrs, opt => opt.MapFrom((dto, obk, i, context) =>
+            .ForMember(des => des.AgentCountries, opt => opt.MapFrom((dto, obk, i, context) =>
             {
-                var agentCountr = new List<AgentCountr>();
+                var agentCountr = new List<AgentCountry>();
                 if (dto.Countries != null && dto.Countries.Any())
                 {
                     dto.Countries.Distinct().ToList().ForEach(countryId =>
                     {
-                        agentCountr.Add(new AgentCountr()
+                        agentCountr.Add(new AgentCountry()
                         {
                             CountryId = countryId
                         });
@@ -99,14 +99,14 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }
                 return obj.UserGroups;
             }))
-            .ForMember(src => src.AgentCountrs, opt => opt.MapFrom((dto, obj, i, context) =>
+            .ForMember(src => src.AgentCountries, opt => opt.MapFrom((dto, obj, i, context) =>
             {
                 if (!dto.CanWorkAsAgent)
                     return null;
-                var agentCountries = new List<AgentCountr>();
+                var agentCountries = new List<AgentCountry>();
                 foreach (var item in dto.Countries)
                 {
-                    agentCountries.Add(new AgentCountr()
+                    agentCountries.Add(new AgentCountry()
                     {
                         AgentId = obj.Id,
                         CountryId = item

@@ -222,6 +222,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
@@ -369,6 +370,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await _uintOfWork.Rollback();
                 return new ErrorResponse<string, IEnumerable<string>>("حدث خطأ ما ");
             }
@@ -380,11 +382,6 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced", "ReceiptOfTheOrderStatusDetalis.Client" })).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
-        }
-        public async Task<IEnumerable<OrderDto>> GetOrders(Paging paging, OrderFilter orderFilter)
-        {
-            var data = await _repository.Get(paging, orderFilter);
-            return null;
         }
         string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
         {
@@ -467,20 +464,27 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
+            PagingResualt<IEnumerable<ReceiptOfTheOrderStatus>> response;
             if (string.IsNullOrEmpty(code))
-                return await GetReceiptOfTheOrderStatus(Paging);
+            {
+                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+            }
+            else
+            {
+                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, c => c.ReceiptOfTheOrderStatusDetalis.Any(c => c.OrderCode == code), new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
 
-            var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, c => c.ReceiptOfTheOrderStatusDetalis.Any(c => c.OrderCode == code), new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+            }
+
             var ids = response.Data.Select(c => c.Id);
 
-            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).ToDictionary(c => c.ReceiptOfTheOrderStatusId, c => c);
+            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).GroupBy(c => c.ReceiptOfTheOrderStatusId).ToDictionary(c => c.Key, c => c.ToList());
 
             var dtos = _mapper.Map<List<ReceiptOfTheOrderStatusDto>>(response.Data);
             dtos.ForEach(c =>
             {
                 if (types.ContainsKey(c.Id))
                 {
-                    var orderPlaced = types.Where(t => t.Key == c.Id).Select(c => c.Value.OrderPlaced.Name);
+                    var orderPlaced = types.Where(t => t.Key == c.Id).SelectMany(c => c.Value.Select(c => c.OrderPlaced.Name)).ToHashSet();
                     c.Types = String.Join(',', orderPlaced);
                 }
             });

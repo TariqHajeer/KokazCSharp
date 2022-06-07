@@ -1,7 +1,17 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [Kokaz]    Script Date: 5/3/2022 7:08:34 AM ******/
+/****** Object:  Database [Kokaz]    Script Date: 5/27/2022 3:13:18 PM ******/
 CREATE DATABASE [Kokaz]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Kokaz', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Kokaz.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'Kokaz_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Kokaz_log.ldf' , SIZE = 466944KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Kokaz].[dbo].[sp_fulltext_database] @action = 'enable'
+end
 GO
 ALTER DATABASE [Kokaz] SET ANSI_NULL_DEFAULT OFF 
 GO
@@ -123,7 +133,7 @@ ALTER DATABASE SCOPED CONFIGURATION SET XTP_QUERY_EXECUTION_STATISTICS = OFF;
 GO
 USE [Kokaz]
 GO
-/****** Object:  Table [dbo].[AgentCountr]    Script Date: 5/3/2022 7:08:34 AM ******/
+/****** Object:  Table [dbo].[AgentCountr]    Script Date: 5/27/2022 3:13:18 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -138,7 +148,7 @@ CREATE TABLE [dbo].[AgentCountr](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AgentOrderPrint]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[AgentOrderPrint]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -153,7 +163,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AgentPrint]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[AgentPrint]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -170,7 +180,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AgentPrintDetails]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[AgentPrintDetails]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -185,13 +195,16 @@ CREATE TABLE [dbo].[AgentPrintDetails](
 	[Note] [nvarchar](max) NULL,
 	[Region] [nvarchar](50) NULL,
 	[AgentPrintId] [int] NOT NULL,
+	[ClientNote] [nvarchar](max) NULL,
+	[Address] [nvarchar](max) NULL,
+	[Date] [date] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ApproveAgentEditOrderRequest]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[ApproveAgentEditOrderRequest]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -209,7 +222,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CashMovment]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[CashMovment]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -226,7 +239,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ClientPayment]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[ClientPayment]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -243,7 +256,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ClientPaymentDetails]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[ClientPaymentDetails]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -262,13 +275,14 @@ CREATE TABLE [dbo].[ClientPaymentDetails](
 	[Date] [date] NULL,
 	[Note] [nvarchar](max) NULL,
 	[PayForClient] [money] NULL,
+	[ClientNote] [nvarchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[clientPhones]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[clientPhones]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -283,7 +297,7 @@ CREATE TABLE [dbo].[clientPhones](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Clients]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Clients]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -306,7 +320,7 @@ CREATE TABLE [dbo].[Clients](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Country]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Country]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -324,7 +338,7 @@ CREATE TABLE [dbo].[Country](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DisAcceptOrder]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[DisAcceptOrder]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -352,7 +366,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Discount]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Discount]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -368,7 +382,7 @@ CREATE TABLE [dbo].[Discount](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EditRequest]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[EditRequest]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -388,7 +402,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Group]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Group]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -402,7 +416,7 @@ CREATE TABLE [dbo].[Group](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GroupPrivilege]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[GroupPrivilege]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -417,7 +431,7 @@ CREATE TABLE [dbo].[GroupPrivilege](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Income]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Income]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -436,7 +450,7 @@ CREATE TABLE [dbo].[Income](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[IncomeType]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[IncomeType]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -450,7 +464,7 @@ CREATE TABLE [dbo].[IncomeType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Market]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Market]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -469,7 +483,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MoenyPlaced]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[MoenyPlaced]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -483,7 +497,7 @@ CREATE TABLE [dbo].[MoenyPlaced](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Notfication]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Notfication]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -502,7 +516,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Order]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Order]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -548,7 +562,7 @@ CREATE TABLE [dbo].[Order](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderClientPaymnet]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderClientPaymnet]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -563,7 +577,7 @@ CREATE TABLE [dbo].[OrderClientPaymnet](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderFromExcel]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderFromExcel]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -585,7 +599,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderItem]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderItem]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -601,7 +615,7 @@ CREATE TABLE [dbo].[OrderItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderLog]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderLog]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -641,7 +655,7 @@ CREATE TABLE [dbo].[OrderLog](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderPlaced]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderPlaced]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -655,7 +669,7 @@ CREATE TABLE [dbo].[OrderPlaced](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderState]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderState]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -669,7 +683,7 @@ CREATE TABLE [dbo].[OrderState](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderType]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OrderType]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -683,7 +697,7 @@ CREATE TABLE [dbo].[OrderType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OutCome]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OutCome]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -702,7 +716,7 @@ CREATE TABLE [dbo].[OutCome](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OutComeType]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[OutComeType]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -716,7 +730,7 @@ CREATE TABLE [dbo].[OutComeType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PaymentRequest]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[PaymentRequest]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -734,7 +748,7 @@ CREATE TABLE [dbo].[PaymentRequest](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PaymentWay]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[PaymentWay]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -748,7 +762,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PointsSetting]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[PointsSetting]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -763,7 +777,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Privilege]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Privilege]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -778,7 +792,7 @@ CREATE TABLE [dbo].[Privilege](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Receipt]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Receipt]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -800,7 +814,45 @@ CREATE TABLE [dbo].[Receipt](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Region]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[ReceiptOfTheOrderStatus]    Script Date: 5/27/2022 3:13:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ReceiptOfTheOrderStatus](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CreatedOn] [date] NOT NULL,
+	[RecvierId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ReceiptOfTheOrderStatusDetalis]    Script Date: 5/27/2022 3:13:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ReceiptOfTheOrderStatusDetalis](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[OrderCode] [nvarchar](50) NOT NULL,
+	[ClientId] [int] NOT NULL,
+	[Cost] [decimal](18, 2) NOT NULL,
+	[AgentCost] [decimal](18, 2) NOT NULL,
+	[AgentId] [int] NOT NULL,
+	[OrderStateId] [int] NOT NULL,
+	[MoneyPlacedId] [int] NOT NULL,
+	[ReceiptOfTheOrderStatusId] [int] NOT NULL,
+	[OrderPlacedId] [int] NOT NULL,
+	[OrderId] [int] NULL,
+ CONSTRAINT [PK__ReceiptO__3214EC07520CF795] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Region]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -815,7 +867,7 @@ CREATE TABLE [dbo].[Region](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Treasury]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Treasury]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -831,7 +883,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TreasuryHistory]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[TreasuryHistory]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -843,13 +895,17 @@ CREATE TABLE [dbo].[TreasuryHistory](
 	[CreatedOnUtc] [date] NOT NULL,
 	[ClientPaymentId] [int] NULL,
 	[CashMovmentId] [int] NULL,
+	[ReceiptId] [int] NULL,
+	[ReceiptOfTheOrderStatusId] [int] NULL,
+	[IncomeId] [int] NULL,
+	[OutcomeId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserGroup]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[UserGroup]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -864,7 +920,7 @@ CREATE TABLE [dbo].[UserGroup](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserPhone]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[UserPhone]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -879,7 +935,7 @@ CREATE TABLE [dbo].[UserPhone](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -924,50 +980,182 @@ INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (3, 13755)
 INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (3, 13756)
 INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (3, 13757)
 INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (3, 13758)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13759)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13760)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13761)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13762)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13763)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13764)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13765)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13766)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13767)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13768)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (4, 13769)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13770)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13771)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13772)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13773)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13774)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13775)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13776)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13777)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13778)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (5, 13779)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (6, 13780)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (7, 13781)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (14, 13782)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (15, 13783)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (16, 13784)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (16, 13785)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (16, 13786)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (17, 13787)
+INSERT [dbo].[AgentOrderPrint] ([AgentPrintId], [OrderId]) VALUES (17, 13788)
 SET IDENTITY_INSERT [dbo].[AgentPrint] ON 
 
 INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (1, N'admin', CAST(N'2022-04-16' AS Date), N'مندوب نقل البيانات', N'99999999999')
 INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (2, N'admin', CAST(N'2022-04-16' AS Date), N'مندوب نقل البيانات', N'99999999999')
 INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (3, N'admin', CAST(N'2022-04-16' AS Date), N'مندوب نقل البيانات', N'99999999999')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (4, N'admin', CAST(N'2022-05-06' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (5, N'admin', CAST(N'2022-05-10' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (6, N'admin', CAST(N'2022-05-19' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (7, N'admin', CAST(N'2022-05-19' AS Date), N'مندوب نقل البيانات', N'99999999999')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (14, N'admin', CAST(N'2022-05-19' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (15, N'admin', CAST(N'2022-05-19' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (16, N'admin', CAST(N'2022-05-19' AS Date), N'bb', N'12937012987')
+INSERT [dbo].[AgentPrint] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (17, N'admin', CAST(N'2022-05-19' AS Date), N'bb', N'12937012987')
 SET IDENTITY_INSERT [dbo].[AgentPrint] OFF
 SET IDENTITY_INSERT [dbo].[AgentPrintDetails] ON 
 
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (1, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'15165165165', N'عميل نقل البيانات', NULL, NULL, 1)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (2, N'2', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321321321', N'عميل نقل البيانات', NULL, NULL, 1)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (3, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'15165165165', N'عميل نقل البيانات', NULL, NULL, 2)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (4, N'3', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'13213213213', N'عميل نقل البيانات', NULL, NULL, 2)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (5, N'4', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 2)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (6, N'5', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'23132132132', N'عميل نقل البيانات', NULL, NULL, 2)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (7, N'12', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (8, N'11', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32213213213', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (9, N'10', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (10, N'13', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (11, N'9', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (12, N'14', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'12321321321', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (13, N'7', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321321321', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (14, N'6', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321323213', N'عميل نقل البيانات', NULL, NULL, 3)
-INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId]) VALUES (15, N'8', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'01321321321', N'عميل نقل البيانات', NULL, NULL, 3)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (1, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'15165165165', N'عميل نقل البيانات', NULL, NULL, 1, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (2, N'2', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321321321', N'عميل نقل البيانات', NULL, NULL, 1, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (3, N'1', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'15165165165', N'عميل نقل البيانات', NULL, NULL, 2, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (4, N'3', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'13213213213', N'عميل نقل البيانات', NULL, NULL, 2, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (5, N'4', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 2, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (6, N'5', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'23132132132', N'عميل نقل البيانات', NULL, NULL, 2, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (7, N'12', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (8, N'11', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32213213213', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (9, N'10', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (10, N'13', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (11, N'9', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (12, N'14', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'12321321321', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (13, N'7', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321321321', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (14, N'6', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21321323213', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (15, N'8', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'01321321321', N'عميل نقل البيانات', NULL, NULL, 3, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (16, N'200', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'23123132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (17, N'210', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (18, N'209', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'32321321321', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (19, N'208', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (20, N'206', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (21, N'207', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'21321321321', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (22, N'205', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'21321321321', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (23, N'204', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (24, N'203', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'12313213213', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (25, N'202', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (26, N'201', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'23132132132', N'عميل1', NULL, NULL, 4, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (27, N'1', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12312312312', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (28, N'10', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12936128937', N'عميل جديد كتير ', N'', NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (29, N'9', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12381293109', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (30, N'8', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'21312312312', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (31, N'6', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12312312312', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (32, N'5', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'23871293712', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (33, N'4', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12312739129', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (34, N'3', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12312839172', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (35, N'2', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'12321312312', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (36, N'7', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'21312312312', N'عميل جديد كتير ', NULL, NULL, 5, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (37, N'500', CAST(1000000.00 AS Decimal(18, 2)), N'مدينة2', N'09320129301', N'عميل 10 ', NULL, NULL, 6, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (38, N'501', CAST(100000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21381209830', N'عميل 10 ', N'ملاحظات', NULL, 7, NULL, NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (45, N'502', CAST(120938129.00 AS Decimal(18, 2)), N'مدينة2', N'12931289389', N'عميل 10 ', NULL, NULL, 14, N'مممممممممممممممم', NULL, NULL)
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (46, N'600', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'21308912309', N'عميل 10 ', NULL, NULL, 15, NULL, NULL, CAST(N'2022-05-19' AS Date))
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (47, N'702', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'29034828937', N'عميل 10 ', NULL, NULL, 16, NULL, NULL, CAST(N'2022-05-19' AS Date))
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (48, N'701', CAST(10000.00 AS Decimal(18, 2)), N'مدينة2', N'32423094823', N'عميل 10 ', NULL, NULL, 16, NULL, NULL, CAST(N'2022-05-19' AS Date))
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (49, N'700', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'91209380912', N'عميل 10 ', NULL, NULL, 16, NULL, NULL, CAST(N'2022-05-19' AS Date))
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (50, N'8001', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'20983809127', N'عميل 10 ', NULL, NULL, 17, NULL, NULL, CAST(N'2022-05-19' AS Date))
+INSERT [dbo].[AgentPrintDetails] ([Id], [Code], [Total], [Country], [Phone], [ClientName], [Note], [Region], [AgentPrintId], [ClientNote], [Address], [Date]) VALUES (51, N'8000', CAST(100000.00 AS Decimal(18, 2)), N'مدينة2', N'93120930192', N'عميل 10 ', NULL, NULL, 17, NULL, NULL, CAST(N'2022-05-19' AS Date))
 SET IDENTITY_INSERT [dbo].[AgentPrintDetails] OFF
+SET IDENTITY_INSERT [dbo].[CashMovment] ON 
+
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (1, CAST(15000.00 AS Decimal(18, 2)), 1070, CAST(N'2022-05-03' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (2, CAST(100000.00 AS Decimal(18, 2)), 1071, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (3, CAST(100000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (4, CAST(100.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (5, CAST(-300.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (6, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (7, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (8, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (9, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (10, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (11, CAST(1000.00 AS Decimal(18, 2)), 1072, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (12, CAST(100.00 AS Decimal(18, 2)), 1073, CAST(N'2022-05-04' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (13, CAST(10000.00 AS Decimal(18, 2)), 65, CAST(N'2022-05-05' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (14, CAST(1500.00 AS Decimal(18, 2)), 1074, CAST(N'2022-05-13' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (15, CAST(500.00 AS Decimal(18, 2)), 1074, CAST(N'2022-05-13' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (16, CAST(-300.00 AS Decimal(18, 2)), 1074, CAST(N'2022-05-13' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (17, CAST(1000.00 AS Decimal(18, 2)), 1075, CAST(N'2022-05-13' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (18, CAST(1000000.00 AS Decimal(18, 2)), 1075, CAST(N'2022-05-13' AS Date), N'موظف تجريب صندوق 3')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (19, CAST(-22000.00 AS Decimal(18, 2)), 1075, CAST(N'2022-05-13' AS Date), N'موظف تجريب صندوق 3')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (20, CAST(-1090000.00 AS Decimal(18, 2)), 1075, CAST(N'2022-05-13' AS Date), N'موظف تجريب صندوق 3')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (21, CAST(-500.00 AS Decimal(18, 2)), 1073, CAST(N'2022-05-13' AS Date), N'موظف تجريب صندوق 3')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (23, CAST(100.00 AS Decimal(18, 2)), 1076, CAST(N'2022-05-14' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (24, CAST(123023525.00 AS Decimal(18, 2)), 65, CAST(N'2022-05-20' AS Date), N'admin')
+INSERT [dbo].[CashMovment] ([Id], [Amount], [TreasuryId], [CreatedOnUtc], [CreatedBy]) VALUES (25, CAST(-13132.00 AS Decimal(18, 2)), 65, CAST(N'2022-05-20' AS Date), N'admin')
+SET IDENTITY_INSERT [dbo].[CashMovment] OFF
 SET IDENTITY_INSERT [dbo].[ClientPayment] ON 
 
 INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (1, N'admin', CAST(N'2022-04-21' AS Date), N'عميل نقل البيانات', N'99999999999')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (2, N'موظف تجريب الصندوق2', CAST(N'2022-05-13' AS Date), N'عميل جديد كتير ', N'13213213213')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (3, N'موظف تجريب صندوق 3', CAST(N'2022-05-14' AS Date), N'عميل1', N'21831289739')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (4, N'موظف تجريب صندوق 3', CAST(N'2022-05-14' AS Date), N'عميل نقل البيانات', N'99999999999')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (5, N'admin', CAST(N'2022-05-14' AS Date), N'عميل 10 ', N'13213213213')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (6, N'admin', CAST(N'2022-05-19' AS Date), N'عميل 10 ', N'13213213213')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (7, N'admin', CAST(N'2022-05-19' AS Date), N'عميل 10 ', N'13213213213')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (8, N'admin', CAST(N'2022-05-19' AS Date), N'عميل 10 ', N'13213213213')
+INSERT [dbo].[ClientPayment] ([Id], [PrinterName], [Date], [DestinationName], [DestinationPhone]) VALUES (9, N'admin', CAST(N'2022-05-19' AS Date), N'عميل 10 ', N'13213213213')
 SET IDENTITY_INSERT [dbo].[ClientPayment] OFF
 SET IDENTITY_INSERT [dbo].[ClientPaymentDetails] ON 
 
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (1, 1, N'1', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (2, 1, N'2', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (3, 1, N'3', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (4, 1, N'4', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (5, 1, N'5', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (6, 1, N'6', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (7, 1, N'7', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (8, 1, N'8', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'0', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (9, 1, N'9', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (10, 1, N'10', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (11, 1, N'11', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (12, 1, N'12', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (13, 1, N'13', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
-INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient]) VALUES (14, 1, N'14', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (1, 1, N'1', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (2, 1, N'2', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (3, 1, N'3', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (4, 1, N'4', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (5, 1, N'5', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (6, 1, N'6', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (7, 1, N'7', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'2', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (8, 1, N'8', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'0', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (9, 1, N'9', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (10, 1, N'10', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (11, 1, N'11', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (12, 1, N'12', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (13, 1, N'13', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'3', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (14, 1, N'14', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'م', N'1', 1, 3, CAST(N'2022-04-16' AS Date), NULL, 995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (15, 2, N'1', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12312312312', 4, 4, NULL, N'string', 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (16, 3, N'200', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'23123132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (17, 3, N'201', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'23132132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (18, 3, N'202', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', 1, 3, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (19, 3, N'203', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12313213213', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (20, 3, N'204', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (21, 3, N'205', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'21321321321', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (22, 3, N'206', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (23, 3, N'207', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'21321321321', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (24, 3, N'208', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (25, 3, N'209', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32321321321', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (26, 3, N'210', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32132132132', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (27, 4, N'4', CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', 4, 5, NULL, NULL, -95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (28, 4, N'9', CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'32132132132', 4, 5, NULL, NULL, -995000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (29, 5, N'2', CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'مدينة2', N'12321312312', 4, 5, NULL, NULL, 0.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (30, 5, N'3', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12312839172', 4, 4, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (31, 5, N'4', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12312739129', 4, 4, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (32, 5, N'5', CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'مدينة2', N'23871293712', 4, 5, NULL, NULL, 0.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (33, 5, N'6', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12312312312', 4, 4, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (34, 5, N'7', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'21312312312', 4, 4, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (35, 5, N'8', CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'مدينة2', N'21312312312', 4, 5, NULL, NULL, 0.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (36, 5, N'9', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12381293109', 1, 3, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (37, 5, N'10', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12936128937', 4, 4, NULL, N'', 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (38, 6, N'500', NULL, CAST(1000000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'09320129301', 1, 3, NULL, NULL, 998000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (39, 6, N'501', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(5000.00 AS Decimal(18, 2)), N'مدينة تجريب نقل البيانات', N'21381209830', 1, 3, NULL, N'ملاحظات', 95000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (40, 6, N'502', NULL, CAST(120938129.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'12931289389', 1, 3, NULL, NULL, 120936129.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (41, 7, N'600', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'21308912309', 1, 3, NULL, NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (42, 8, N'700', NULL, CAST(100000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'91209380912', 1, 3, CAST(N'2022-05-19' AS Date), NULL, 98000.0000, NULL)
+INSERT [dbo].[ClientPaymentDetails] ([Id], [ClientPaymentId], [Code], [LastTotal], [Total], [DeliveryCost], [Country], [Phone], [MoneyPlacedId], [OrderPlacedId], [Date], [Note], [PayForClient], [ClientNote]) VALUES (43, 9, N'701', NULL, CAST(10000.00 AS Decimal(18, 2)), CAST(2000.00 AS Decimal(18, 2)), N'مدينة2', N'32423094823', 1, 3, CAST(N'2022-05-19' AS Date), NULL, 8000.0000, NULL)
 SET IDENTITY_INSERT [dbo].[ClientPaymentDetails] OFF
 SET IDENTITY_INSERT [dbo].[clientPhones] ON 
 
@@ -975,13 +1163,15 @@ INSERT [dbo].[clientPhones] ([Id], [ClientId], [Phone]) VALUES (1301, 1294, N'23
 INSERT [dbo].[clientPhones] ([Id], [ClientId], [Phone]) VALUES (2301, 2294, N'21831289739')
 INSERT [dbo].[clientPhones] ([Id], [ClientId], [Phone]) VALUES (2302, 2295, N'54565654564')
 INSERT [dbo].[clientPhones] ([Id], [ClientId], [Phone]) VALUES (2303, 2296, N'99999999999')
+INSERT [dbo].[clientPhones] ([Id], [ClientId], [Phone]) VALUES (2304, 2297, N'13213213213')
 SET IDENTITY_INSERT [dbo].[clientPhones] OFF
 SET IDENTITY_INSERT [dbo].[Clients] ON 
 
 INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (1294, N'kkkknnnk', 2, N'ccc', CAST(N'2022-02-10' AS Date), N'nvnvn', N'zzz', N'9336ebf25087d91c818ee6e9ec29f8c1', 65, N'asd@asd.com', 40)
-INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2294, N'عميل1', 2, N'sadjasld', CAST(N'2022-03-04' AS Date), NULL, N'client1', N'202cb962ac59075b964b07152d234b70', 65, NULL, 100)
+INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2294, N'عميل1', 2, N'sadjasld', CAST(N'2022-03-04' AS Date), NULL, N'client1', N'202cb962ac59075b964b07152d234b70', 65, NULL, 210)
 INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2295, N'عميل تسديد شركات ', NULL, N' ', CAST(N'2022-03-06' AS Date), NULL, N'client3', N'202cb962ac59075b964b07152d234b70', 65, NULL, 0)
-INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2296, N'عميل نقل البيانات', 34, N'شسمينماشسم', CAST(N'2022-04-01' AS Date), N'asdasd', N'clientTransfer', N'202cb962ac59075b964b07152d234b70', 65, N'transfer@gmail.com', 220)
+INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2296, N'عميل نقل البيانات', 34, N'شسمينماشسم', CAST(N'2022-04-01' AS Date), N'asdasd', N'clientTransfer', N'202cb962ac59075b964b07152d234b70', 65, N'transfer@gmail.com', 200)
+INSERT [dbo].[Clients] ([Id], [Name], [CountryId], [Address], [FirstDate], [Note], [UserName], [Password], [UserId], [Mail], [Points]) VALUES (2297, N'عميل 10 ', 2, N' sad', CAST(N'2022-05-10' AS Date), N'sad', N'client100', N'202cb962ac59075b964b07152d234b70', 65, N'', 130)
 SET IDENTITY_INSERT [dbo].[Clients] OFF
 SET IDENTITY_INSERT [dbo].[Country] ON 
 
@@ -1064,11 +1254,24 @@ INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 53)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 54)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 55)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 56)
+INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 57)
+INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 58)
+INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (1, 59)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (9, 1)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (9, 2)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (9, 3)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (9, 4)
 INSERT [dbo].[GroupPrivilege] ([GroupId], [PrivilegId]) VALUES (9, 5)
+SET IDENTITY_INSERT [dbo].[Income] ON 
+
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (1, CAST(22.00 AS Decimal(18, 2)), CAST(N'2022-05-05' AS Date), CAST(6.00 AS Decimal(18, 2)), N'يسنمبتايسنت', 65, 5)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (2, CAST(18.00 AS Decimal(18, 2)), CAST(N'2022-04-30' AS Date), CAST(4.00 AS Decimal(18, 2)), N'ميسابهع', 65, 4)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (3, CAST(14.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), CAST(4.00 AS Decimal(18, 2)), N'ينبنتيسن', 65, 4)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (4, CAST(13132.00 AS Decimal(18, 2)), CAST(N'2022-05-10' AS Date), CAST(10.00 AS Decimal(18, 2)), NULL, 65, 1002)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (5, CAST(25000.00 AS Decimal(18, 2)), CAST(N'2022-05-10' AS Date), CAST(250.00 AS Decimal(18, 2)), N';lkdssa', 65, 4)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (6, CAST(10000.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), CAST(150.00 AS Decimal(18, 2)), N'dscsad', 65, 1002)
+INSERT [dbo].[Income] ([Id], [Amount], [Date], [Earining], [Note], [userId], [IncomeTypeId]) VALUES (7, CAST(1050.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), CAST(8464.00 AS Decimal(18, 2)), N'سيبسي', 65, 5)
+SET IDENTITY_INSERT [dbo].[Income] OFF
 SET IDENTITY_INSERT [dbo].[IncomeType] ON 
 
 INSERT [dbo].[IncomeType] ([Id], [Name]) VALUES (4, N'type 4')
@@ -1081,231 +1284,112 @@ INSERT [dbo].[MoenyPlaced] ([Id], [Name]) VALUES (3, N'داخل الشركة')
 INSERT [dbo].[MoenyPlaced] ([Id], [Name]) VALUES (4, N'تم تسليمها')
 SET IDENTITY_INSERT [dbo].[Notfication] ON 
 
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (101, 1294, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (102, 1294, N'الطلب 2 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (103, 1294, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (104, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (105, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (106, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (107, 1294, N'تم تسديدك برقم 1', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (108, 1294, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (109, 1294, N'الطلب 4 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (110, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (111, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (112, 1294, N'تم تسديدك برقم 2', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (113, 1294, N'الطلب 10 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (114, 1294, N'الطلب 12 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (115, 1294, N'الطلب 11 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (116, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (117, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (118, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (119, 1294, N'تم تسديدك برقم 3', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (120, 1294, N'الطلب 100 اصبح تم التسليم و موقع المبلغ  مندوب', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (121, 1294, NULL, 1, 4, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (122, 1294, N'الطلب 100 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (123, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (124, 1294, N'الطلب 200 اصبح تم التسليم و موقع المبلغ  مندوب', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (125, 1294, N'الطلب 202 اصبح تم التسليم و موقع المبلغ  مندوب', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (126, 1294, N'الطلب 201 اصبح تم التسليم و موقع المبلغ  مندوب', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (127, 1294, NULL, 3, 4, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (128, 1294, N'الطلب 202 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (129, 1294, N'الطلب 201 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (130, 1294, N'الطلب 200 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (131, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (132, 1294, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (133, 1294, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (134, 1294, N'الطلب 200 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (135, 1294, N'الطلب 201 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (136, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (137, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (138, 1294, N'الطلب 300 اصبح تم التسليم و موقع المبلغ  مندوب', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (139, 1294, NULL, 1, 4, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (140, 1294, N'الطلب 300 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (141, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (142, 1294, N'الطلب 500 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (143, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (144, 1294, N'تم تسديدك برقم 4', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (145, 1294, N'الطلب 500 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (146, 1294, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (147, 1294, N'الطلب 600 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (148, 1294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (149, 1294, N'تم تسديدك برقم 5', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (150, 2294, N'تم تسديدك برقم 6', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (151, 2294, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (152, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (153, 2294, N'تم تسديدك برقم 7', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (154, 2295, N'الطلب 4 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (155, 2295, N'الطلب 3 اصبح مرفوض و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (156, 2295, N'الطلب 2 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (157, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (158, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (159, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (160, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (161, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (162, 2295, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (163, 2295, NULL, 1, 4, 4, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (164, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (165, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (166, 2295, N'الطلب 2 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (167, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (168, 2295, N'الطلب 3 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (169, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (170, 2295, N'الطلب 4 اصبح مرفوض و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (171, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (172, 2295, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (173, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (174, 2295, N'الطلب 6 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (175, 2295, NULL, 1, 4, 4, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (176, 2295, N'الطلب 2 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (177, 2295, N'الطلب 3 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (178, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (179, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (180, 2295, N'الطلب 2 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (181, 2295, N'الطلب 6 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (182, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (183, 2295, N'الطلب 5 اصبح مرفوض و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (184, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (185, 2295, N'الطلب 4 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (186, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (187, 2295, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (188, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (189, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (190, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (191, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (192, 2295, N'الطلب 2 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (193, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (194, 2295, N'الطلب 2 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (195, 2295, N'الطلب 3 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (196, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (197, 2295, N'الطلب 4 اصبح مرفوض و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (198, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (199, 2294, N'الطلب 4 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-GO
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (200, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (201, 2294, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (202, 2294, N'الطلب 2 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (203, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (204, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (205, 2295, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (206, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (207, 2295, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (208, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (209, 2295, N'الطلب 6 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (210, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (211, 2295, N'الطلب 6 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (212, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (213, 2295, N'الطلب 7 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (214, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (215, 2295, N'الطلب 7 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (216, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (217, 2295, N'الطلب 7 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (218, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (219, 2295, N'الطلب 8 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (220, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (221, 2295, N'الطلب 9 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (222, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (223, 2294, N'تم تسديدك برقم 33', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (224, 2294, N'الطلب 100 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (225, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (226, 2294, N'الطلب 101 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (227, 2294, NULL, 1, 1, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (228, 2294, N'تم تسديدك برقم 34', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (229, 2294, N'الطلب 101 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (230, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (231, 2294, N'تم تسديدك برقم 35', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (232, 2294, N'الطلب 200 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (233, 2294, NULL, 1, 1, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (234, 2294, N'تم تسديدك برقم 36', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (235, 2294, N'الطلب 200 اصبح مرتجع جزئي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (236, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (237, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (238, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (239, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (240, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (241, 2295, N'الطلب 2 اصبح مرتجع جزئي و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (242, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (243, 2295, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (244, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (245, 2295, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (246, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (247, 2295, N'الطلب 4 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (248, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (249, 2295, N'الطلب 4 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (250, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (251, 2295, N'الطلب 5 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (252, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (253, 2294, N'تم تسديدك برقم 45', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (254, 2294, N'الطلب 1001 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (255, 2294, NULL, 1, 1, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (256, 2294, N'تم تسديدك برقم 46', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (257, 2294, N'تم تسديدك برقم 47', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (258, 2294, N'الطلب 2001 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (259, 2294, NULL, 1, 1, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (260, 2294, N'الطلب 2000 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (261, 2294, NULL, 1, 1, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (262, 2294, N'تم تسديدك برقم 48', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (263, 2294, N'الطلب 2000 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (264, 2294, NULL, 1, 3, 3, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (265, 2294, N'تم تسديدك برقم 49', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (266, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (267, 2295, NULL, 1, 1, 2, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (268, 2295, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (269, 2295, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (270, 2294, N'الطلب 150 اصبح مرتجع كلي و موقع المبلغ  مندوب', NULL, NULL, NULL, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (271, 2294, NULL, 1, 5, 2, 1)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (272, 2294, N'تم تسديدك برقم 53', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (273, 2294, N'الطلب 250 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (274, 2294, N'تم تسديدك برقم 54', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (275, 2294, N'الطلب 350 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (276, 2294, N'الطلب 351 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (277, 2294, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (278, 2294, N'تم تسديدك برقم 55', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (279, 2294, N'تم تسديدك برقم 56', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (280, 2294, N'الطلب 352 اصبح تم التسليم و موقع المبلغ  خارج الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (281, 2294, N'الطلب 352 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1270, 2296, N'الطلب 1 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1271, 2296, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1272, 2296, N'تم تسديدك برقم 57', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1273, 2296, N'الطلب 2 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1274, 2296, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1275, 2296, N'تم تسديدك برقم 58', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1276, 2296, N'تم تسديدك برقم 59', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1277, 2296, N'تم تسديدك برقم 60', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1278, 2296, N'الطلب 1 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1279, 2296, NULL, 1, 3, 3, 0)
-INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1280, 2296, N'تم تسديدك برقم 1', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1317, 2296, N'الطلب 9 اصبح مرتجع كلي و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1318, 2296, NULL, 1, 5, 3, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1319, 2297, N'الطلب 10 اصبح تم التسليم و موقع المبلغ  داخل الشركة', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1320, 2297, NULL, 1, 4, 3, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1321, 2297, N'تم تسديدك برقم 2', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1322, 2296, N'الطلب 10 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1323, 2294, N'تم تسديدك برقم 3', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1324, 2296, N'تم تسديدك برقم 4', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1325, 2296, N'الطلب 3 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1326, 2297, N'تم تسديدك برقم 5', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1327, 2297, N'تم تسديدك برقم 6', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1328, 2297, N'تم تسديدك برقم 7', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1329, 2297, N'تم تسديدك برقم 8', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1330, 2297, N'تم تسديدك برقم 9', NULL, NULL, NULL, 0)
+INSERT [dbo].[Notfication] ([Id], [ClientId], [Note], [OrderCount], [OrderPlacedId], [MoneyPlacedId], [IsSeen]) VALUES (1331, 2297, N'الطلب 500 اصبح تم التسليم و موقع المبلغ  تم تسليمها', NULL, NULL, NULL, 0)
 SET IDENTITY_INSERT [dbo].[Notfication] OFF
 SET IDENTITY_INSERT [dbo].[Order] ON 
 
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13745, N'1', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'15165165165', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, N'UpdateOrdersStatusFromAgent', 5000.0000, NULL, 95000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13746, N'2', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13747, N'3', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'13213213213', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13748, N'4', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13745, N'1', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'15165165165', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'UpdateOrdersStatusFromAgent', 5000.0000, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13746, N'2', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, N'admin', 3, 4, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, N'', 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipmentService', NULL, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13747, N'3', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'13213213213', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13748, N'4', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 4, 5, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheReturnedShipment', NULL, NULL, 0.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13749, N'5', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'23132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13750, N'6', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321323213', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13750, N'6', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321323213', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 95000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13751, N'7', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13752, N'8', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'01321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13753, N'9', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
-INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13754, N'10', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13753, N'9', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 4, 5, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheReturnedShipment', NULL, NULL, 0.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13754, N'10', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 995000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13755, N'11', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32213213213', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13756, N'12', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13757, N'13', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
 INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13758, N'14', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'12321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-04-16T04:35:56.000' AS DateTime), NULL, NULL, 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 995000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13759, N'200', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'23123132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13760, N'201', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'23132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13761, N'202', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13762, N'203', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12313213213', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13763, N'204', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13764, N'205', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13765, N'206', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13766, N'207', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13767, N'208', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13768, N'209', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32321321321', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13769, N'210', 2294, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-06T00:00:10.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13770, N'1', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, N'string', 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13771, N'2', 2297, 2, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'12321312312', NULL, NULL, NULL, N'admin', 4, 5, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheReturnedShipment', 2000.0000, NULL, 0.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13772, N'3', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312839172', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13773, N'4', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312739129', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13774, N'5', 2297, 2, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'23871293712', NULL, NULL, NULL, N'admin', 4, 5, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheReturnedShipment', 2000.0000, NULL, 0.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13775, N'6', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13776, N'7', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'21312312312', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13777, N'8', 2297, 2, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), NULL, N'21312312312', NULL, NULL, NULL, N'admin', 4, 5, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheReturnedShipment', 2000.0000, NULL, 0.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13778, N'9', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12381293109', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13779, N'10', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12936128937', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-10T22:32:55.000' AS DateTime), NULL, N'', 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13780, N'500', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'09320129301', NULL, NULL, NULL, N'admin', 4, 4, CAST(N'2022-05-19T14:00:17.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 3, 0, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment', NULL, NULL, 998000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13781, N'501', 2297, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21381209830', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T14:08:24.000' AS DateTime), NULL, N'ملاحظات', 1069, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 95000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13782, N'502', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(120938129.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12931289389', NULL, NULL, N'مممممممممممممممم', N'admin', 1, 3, CAST(N'2022-05-19T21:17:50.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 120936129.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13783, N'600', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'21308912309', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:44:07.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13784, N'700', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'91209380912', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:49:24.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 98000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13785, N'701', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(10000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'32423094823', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:49:24.000' AS DateTime), NULL, NULL, 1067, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 8000.0000, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13786, N'702', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'29034828937', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:49:24.000' AS DateTime), NULL, NULL, 1067, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13787, N'8000', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'93120930192', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:56:48.000' AS DateTime), NULL, NULL, 1067, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0)
+INSERT [dbo].[Order] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [CreatedBy], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [IsDollar], [UpdatedBy], [UpdatedDate], [SystemNote], [OldDeliveryCost], [IsSend], [ClientPaied], [CurrentCountry], [PrintedTimes], [AgentRequestStatus]) VALUES (13788, N'8001', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'20983809127', NULL, NULL, NULL, N'admin', 1, 3, CAST(N'2022-05-19T22:56:48.000' AS DateTime), NULL, NULL, 1067, 1, 0, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0)
 SET IDENTITY_INSERT [dbo].[Order] OFF
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13745, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13746, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13747, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13748, 1)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13748, 4)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13749, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13750, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13751, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13752, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13753, 1)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13753, 4)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13754, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13755, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13756, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13757, 1)
 INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13758, 1)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13759, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13760, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13761, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13762, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13763, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13764, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13765, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13766, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13767, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13768, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13769, 3)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13770, 2)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13771, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13772, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13773, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13774, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13775, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13776, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13777, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13778, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13779, 5)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13780, 6)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13781, 6)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13782, 6)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13783, 7)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13784, 8)
+INSERT [dbo].[OrderClientPaymnet] ([OrderId], [ClientPaymentId]) VALUES (13785, 9)
 SET IDENTITY_INSERT [dbo].[OrderFromExcel] ON 
 
 INSERT [dbo].[OrderFromExcel] ([Id], [Code], [RecipientName], [Country], [Cost], [Address], [Phone], [Note], [ClientId], [CreateDate]) VALUES (33, N'222757', N'علي قحطان', N'بابل', CAST(20000.00 AS Decimal(18, 2)), N'بابل الحلة شارع 80 حي عسكري', N'7824200822', N'مشد القدم', 2294, CAST(N'2022-04-13' AS Date))
@@ -1326,6 +1410,22 @@ SET IDENTITY_INSERT [dbo].[OrderFromExcel] OFF
 SET IDENTITY_INSERT [dbo].[OrderLog] ON 
 
 INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10029, N'1', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'15165165165', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 0, 0, 1, N'admin', 13745, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10030, N'1', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'15165165165', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13745, NULL, NULL, N'UpdateOrdersStatusFromAgent')
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10035, N'1', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13770, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10037, N'2', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321321321', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13746, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10038, N'1', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, 2, 4, NULL, NULL, N'string', 1067, 1, 0, 0, 1, N'admin', 13770, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipmentService')
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10039, N'3', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312839172', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13772, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10040, N'4', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312739129', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13773, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10041, N'4', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13748, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10042, N'6', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13775, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10043, N'6', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321323213', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13750, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10044, N'6', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'21321323213', NULL, NULL, NULL, 2, 4, NULL, NULL, NULL, 1069, 1, 1, 0, 3, N'admin', 13750, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment')
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10045, N'6', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12312312312', NULL, NULL, NULL, 2, 4, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13775, NULL, NULL, N'ReceiptOfTheStatusOfTheDeliveredShipment')
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10046, N'7', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'21312312312', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 0, 0, 1, N'admin', 13776, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10048, N'10', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'12936128937', NULL, NULL, NULL, 1, 3, NULL, NULL, N'', 1067, 1, 0, 0, 1, N'admin', 13779, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10049, N'10', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'32132132132', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13754, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10050, N'3', 2296, 34, CAST(5000.00 AS Decimal(18, 2)), CAST(100000.00 AS Decimal(18, 2)), NULL, CAST(3000.00 AS Decimal(18, 2)), NULL, N'13213213213', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1069, 1, 1, 0, 1, N'admin', 13747, NULL, NULL, NULL)
+INSERT [dbo].[OrderLog] ([Id], [Code], [ClientId], [CountryId], [DeliveryCost], [Cost], [OldCost], [AgentCost], [RecipientName], [RecipientPhones], [RegionId], [Address], [ClientNote], [MoenyPlacedId], [OrderplacedId], [Date], [DiliveryDate], [Note], [AgentId], [seen], [IsClientDiliverdMoney], [IsSync], [OrderStateId], [UpdatedBy], [OrderId], [IsDollar], [UpdatedDate], [SystemNote]) VALUES (10051, N'500', 2297, 2, CAST(2000.00 AS Decimal(18, 2)), CAST(1000000.00 AS Decimal(18, 2)), NULL, CAST(1000.00 AS Decimal(18, 2)), NULL, N'09320129301', NULL, NULL, NULL, 1, 3, NULL, NULL, NULL, 1067, 1, 1, 0, 1, N'admin', 13780, NULL, NULL, NULL)
 SET IDENTITY_INSERT [dbo].[OrderLog] OFF
 INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (1, N'عند العميل')
 INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (2, N'في المخزن')
@@ -1338,6 +1438,14 @@ INSERT [dbo].[OrderPlaced] ([Id], [Name]) VALUES (8, N'مؤجل')
 INSERT [dbo].[OrderState] ([Id], [State]) VALUES (1, N'قيد المعالجة')
 INSERT [dbo].[OrderState] ([Id], [State]) VALUES (2, N'يحب اخذ النقود من العميل')
 INSERT [dbo].[OrderState] ([Id], [State]) VALUES (3, N'منتهية')
+SET IDENTITY_INSERT [dbo].[OutCome] ON 
+
+INSERT [dbo].[OutCome] ([Id], [Amount], [Date], [Reason], [Note], [userId], [OutComeTypeId]) VALUES (1, CAST(10.00 AS Decimal(18, 2)), CAST(N'2022-05-12' AS Date), N'مهتصهبص', N'هعاسيهعب', 65, 1)
+INSERT [dbo].[OutCome] ([Id], [Amount], [Date], [Reason], [Note], [userId], [OutComeTypeId]) VALUES (2, CAST(4.00 AS Decimal(18, 2)), CAST(N'2022-05-11' AS Date), N'يسبمنمتيس', N'نمتسينبت', 65, 2)
+INSERT [dbo].[OutCome] ([Id], [Amount], [Date], [Reason], [Note], [userId], [OutComeTypeId]) VALUES (3, CAST(17.00 AS Decimal(18, 2)), CAST(N'2022-05-19' AS Date), N'نتشستينس', N'نتشسشيتن', 65, 1)
+INSERT [dbo].[OutCome] ([Id], [Amount], [Date], [Reason], [Note], [userId], [OutComeTypeId]) VALUES (4, CAST(15000.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), N'alskldjsk', N'jkasdj', 65, 1)
+INSERT [dbo].[OutCome] ([Id], [Amount], [Date], [Reason], [Note], [userId], [OutComeTypeId]) VALUES (5, CAST(10000.00 AS Decimal(18, 2)), CAST(N'2022-05-21' AS Date), N'dfdsf', N'sdis', 65, 1)
+SET IDENTITY_INSERT [dbo].[OutCome] OFF
 SET IDENTITY_INSERT [dbo].[OutComeType] ON 
 
 INSERT [dbo].[OutComeType] ([Id], [Name]) VALUES (1, N'نوع 1 شسيش')
@@ -1410,10 +1518,66 @@ INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (53, N'عرض التق
 INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (54, N'طباعة عميل', N'PrintClient')
 INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (55, N'طباعة مندوب', N'PrintAgent')
 INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (56, N'تسديد', N'Pay')
+INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (57, N'إدارة الصناديق', N'TreasuryManagment')
+INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (58, N'استلام الشحنات المسلمة', N'ReceiptOfTheStatusOfTheDeliveredShipment')
+INSERT [dbo].[Privilege] ([Id], [Name], [SysName]) VALUES (59, N'استلام الشحنات المرتجعة', N'ReceiptOfTheStatusOfTheReturnedShipment')
 SET IDENTITY_INSERT [dbo].[Receipt] ON 
 
 INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (1, 2296, CAST(10000.00 AS Decimal(18, 2)), CAST(N'2022-04-21' AS Date), N'ملاحظات', N'admin', N'ذلك عن اي شي ', N'اناا', 0, 1)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (2, 2294, CAST(-1000.00 AS Decimal(18, 2)), CAST(N'2022-05-06' AS Date), N'سيب', N'admin', N'شسيكمت', N'نتسيابنتا', 1, 3)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (3, 2295, CAST(500.00 AS Decimal(18, 2)), CAST(N'2022-05-06' AS Date), N'ييسمبنايسنتب', N'admin', N'سيمنب', N'نتلسيبتلا', 0, NULL)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (4, 2297, CAST(500.00 AS Decimal(18, 2)), CAST(N'2022-05-13' AS Date), N'sdf', N'موظف تجريب الصندوق2', N'dsf', N'sdf', 0, 2)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (5, 2297, CAST(1500.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), N'sdf', N'موظف تجريب صندوق 3', N'asd', N'sdf', 0, 5)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (6, 2297, CAST(-500.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), N'ملاحظات', N'موظف تجريب صندوق 3', N'تجريب', N'طارق', 1, 5)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (7, 2297, CAST(-100.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), N'شسي', N'موظف صندوق 10', N'شس', N'شسي', 1, 5)
+INSERT [dbo].[Receipt] ([Id], [ClientId], [Amount], [Date], [Note], [CreatedBy], [About], [Manager], [IsPay], [ClientPaymentId]) VALUES (8, 2297, CAST(50.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), N'سيب', N'موظف صندوق 10', N'شسيشي', N'شسي', 0, 5)
 SET IDENTITY_INSERT [dbo].[Receipt] OFF
+SET IDENTITY_INSERT [dbo].[ReceiptOfTheOrderStatus] ON 
+
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (5, CAST(N'2022-05-10' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (7, CAST(N'2022-05-10' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (8, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (9, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (10, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (11, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (12, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (13, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (14, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (15, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (16, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (17, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (18, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (19, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (20, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (21, CAST(N'2022-05-13' AS Date), 65)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (22, CAST(N'2022-05-13' AS Date), 1074)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (23, CAST(N'2022-05-13' AS Date), 1075)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (24, CAST(N'2022-05-14' AS Date), 1076)
+INSERT [dbo].[ReceiptOfTheOrderStatus] ([Id], [CreatedOn], [RecvierId]) VALUES (25, CAST(N'2022-05-25' AS Date), 65)
+SET IDENTITY_INSERT [dbo].[ReceiptOfTheOrderStatus] OFF
+SET IDENTITY_INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ON 
+
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (3, N'1', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 2, 5, 4, 13770)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (5, N'2', 2296, CAST(100000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 3, 7, 4, 13746)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (6, N'1', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 8, 4, 13770)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (7, N'2', 2297, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), 1067, 1, 3, 9, 5, 13771)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (8, N'3', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 10, 4, 13772)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (9, N'4', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 11, 4, 13773)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (10, N'4', 2296, CAST(100000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 2, 12, 4, 13748)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (11, N'4', 2296, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), 1069, 2, 3, 13, 5, 13748)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (12, N'5', 2297, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), 1067, 1, 3, 14, 5, 13774)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (13, N'6', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 2, 15, 4, 13775)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (14, N'6', 2296, CAST(100000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 2, 16, 4, 13750)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (15, N'6', 2296, CAST(100000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 4, 17, 4, 13750)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (16, N'6', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 18, 4, 13775)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (17, N'7', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 19, 4, 13776)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (18, N'8', 2297, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), 1067, 1, 3, 20, 5, 13777)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (19, N'9', 2296, CAST(0.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), 1069, 2, 3, 21, 5, 13753)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (20, N'10', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 1, 3, 22, 4, 13779)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (21, N'10', 2296, CAST(1000000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 4, 23, 4, 13754)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (22, N'3', 2296, CAST(100000.00 AS Decimal(18, 2)), CAST(3000.00 AS Decimal(18, 2)), 1069, 3, 4, 24, 4, 13747)
+INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] ([Id], [OrderCode], [ClientId], [Cost], [AgentCost], [AgentId], [OrderStateId], [MoneyPlacedId], [ReceiptOfTheOrderStatusId], [OrderPlacedId], [OrderId]) VALUES (23, N'500', 2297, CAST(1000000.00 AS Decimal(18, 2)), CAST(1000.00 AS Decimal(18, 2)), 1067, 3, 4, 25, 4, 13780)
+SET IDENTITY_INSERT [dbo].[ReceiptOfTheOrderStatusDetalis] OFF
 SET IDENTITY_INSERT [dbo].[Region] ON 
 
 INSERT [dbo].[Region] ([Id], [Name], [CountryId]) VALUES (7, N'r3', 3)
@@ -1429,8 +1593,51 @@ INSERT [dbo].[Region] ([Id], [Name], [CountryId]) VALUES (21, N'Region1', 1)
 INSERT [dbo].[Region] ([Id], [Name], [CountryId]) VALUES (22, N'تجريب', 3)
 INSERT [dbo].[Region] ([Id], [Name], [CountryId]) VALUES (23, N'C1Region2', 1)
 SET IDENTITY_INSERT [dbo].[Region] OFF
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (65, CAST(1010050.00 AS Decimal(18, 2)), CAST(N'2022-05-05' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1070, CAST(15000.00 AS Decimal(18, 2)), CAST(N'2022-05-03' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1071, CAST(100000.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1072, CAST(104800.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), 0)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1073, CAST(-400.00 AS Decimal(18, 2)), CAST(N'2022-05-04' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1074, CAST(2700.00 AS Decimal(18, 2)), CAST(N'2022-05-13' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1075, CAST(0.00 AS Decimal(18, 2)), CAST(N'2022-05-13' AS Date), 1)
+INSERT [dbo].[Treasury] ([Id], [Total], [CreateOnUtc], [IsActive]) VALUES (1076, CAST(97050.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), 1)
+SET IDENTITY_INSERT [dbo].[TreasuryHistory] ON 
+
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (40, 1076, CAST(100.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), NULL, 23, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (41, 1076, CAST(97000.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), NULL, NULL, NULL, 24, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (42, 1076, CAST(-100.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), NULL, NULL, 7, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (43, 1076, CAST(50.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), NULL, NULL, 8, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (44, 65, CAST(-5988950.00 AS Decimal(18, 2)), CAST(N'2022-05-14' AS Date), 5, NULL, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (45, 65, CAST(-122029129.00 AS Decimal(18, 2)), CAST(N'2022-05-19' AS Date), 6, NULL, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (46, 65, CAST(-98000.00 AS Decimal(18, 2)), CAST(N'2022-05-19' AS Date), 7, NULL, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (47, 65, CAST(-98000.00 AS Decimal(18, 2)), CAST(N'2022-05-19' AS Date), 8, NULL, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (48, 65, CAST(-8000.00 AS Decimal(18, 2)), CAST(N'2022-05-19' AS Date), 9, NULL, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (49, 65, CAST(14.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 3, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (50, 65, CAST(18.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 2, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (51, 65, CAST(22.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 1, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (52, 65, CAST(123023525.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, 24, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (53, 65, CAST(13132.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 4, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (54, 65, CAST(-13132.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, 25, NULL, NULL, NULL, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (55, 65, CAST(10000.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 6, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (56, 65, CAST(25000.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 5, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (57, 65, CAST(1050.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, 7, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (58, 65, CAST(-15000.00 AS Decimal(18, 2)), CAST(N'2022-05-20' AS Date), NULL, NULL, NULL, NULL, NULL, 4)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (59, 65, CAST(-10000.00 AS Decimal(18, 2)), CAST(N'2022-05-21' AS Date), NULL, NULL, NULL, NULL, 5, NULL)
+INSERT [dbo].[TreasuryHistory] ([Id], [TreasuryId], [Amount], [CreatedOnUtc], [ClientPaymentId], [CashMovmentId], [ReceiptId], [ReceiptOfTheOrderStatusId], [IncomeId], [OutcomeId]) VALUES (60, 65, CAST(999000.00 AS Decimal(18, 2)), CAST(N'2022-05-25' AS Date), NULL, NULL, NULL, 25, NULL, NULL)
+SET IDENTITY_INSERT [dbo].[TreasuryHistory] OFF
 INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (65, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (65, 9)
 INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1070, 9)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1071, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1071, 9)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1072, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1073, 9)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1074, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1074, 9)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1075, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1075, 9)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1076, 1)
+INSERT [dbo].[UserGroup] ([UserId], [GroupId]) VALUES (1076, 9)
 SET IDENTITY_INSERT [dbo].[UserPhone] ON 
 
 INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (58, 66, N'15161561651')
@@ -1439,6 +1646,12 @@ INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1059, 1067, N'1293701
 INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1060, 1068, N'32493827490')
 INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1061, 1069, N'99999999999')
 INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1062, 1070, N'23132132132')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1063, 1071, N'23131321321')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1064, 1072, N'51156165165')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1065, 1073, N'33213213232')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1066, 1074, N'23132131131')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1067, 1075, N'23213212313')
+INSERT [dbo].[UserPhone] ([Id], [UserId], [Phone]) VALUES (1068, 1076, N'21321321321')
 SET IDENTITY_INSERT [dbo].[UserPhone] OFF
 SET IDENTITY_INSERT [dbo].[Users] ON 
 
@@ -1449,14 +1662,20 @@ INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [
 INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1068, N'zz', NULL, NULL, CAST(N'2022-02-10' AS Date), N'skldjkldasjfklasdjfldaksh', 1, CAST(31313.00 AS Decimal(18, 2)), N'zz', N'202cb962ac59075b964b07152d234b70', 1)
 INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1069, N'مندوب نقل البيانات', NULL, NULL, CAST(N'2022-04-01' AS Date), N'يصبمتاشيسبشس', 1, CAST(3000.00 AS Decimal(18, 2)), N'agnetTransfer', N'202cb962ac59075b964b07152d234b70', 1)
 INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1070, N'موظف تجريب الصندوق', N'sdfsa', NULL, CAST(N'2022-05-02' AS Date), N'sdfsad', 0, NULL, N'user1', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1071, N'موظف 2', N'lksdjf', NULL, CAST(N'2022-05-04' AS Date), N'lskdjf', 0, NULL, N'user2', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1072, N'موظف3', N'LKJSHDSFKJLKJKDSF', NULL, CAST(N'2022-05-04' AS Date), N'KJDFKJSH', 0, NULL, N'USER3', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1073, N'موظف 10', N'sdf', NULL, CAST(N'2022-05-04' AS Date), N'32', 0, NULL, N'user10', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1074, N'موظف تجريب الصندوق2', NULL, NULL, CAST(N'2022-05-13' AS Date), NULL, 0, NULL, N'userTest2', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1075, N'موظف تجريب صندوق 3', NULL, NULL, CAST(N'2022-05-13' AS Date), NULL, 0, NULL, N'userTest3', N'202cb962ac59075b964b07152d234b70', 1)
+INSERT [dbo].[Users] ([Id], [Name], [Experince], [Adress], [HireDate], [Note], [CanWorkAsAgent], [Salary], [UserName], [Password], [IsActive]) VALUES (1076, N'موظف صندوق 10', N'qsdkjlf', NULL, CAST(N'2022-05-14' AS Date), N'dsklfj', 0, NULL, N'test10', N'202cb962ac59075b964b07152d234b70', 1)
 SET IDENTITY_INSERT [dbo].[Users] OFF
-/****** Object:  Index [UQ__PointsSe__DA826786C9B4659A]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Index [UQ__PointsSe__DA826786C9B4659A]    Script Date: 5/27/2022 3:13:19 PM ******/
 ALTER TABLE [dbo].[PointsSetting] ADD UNIQUE NONCLUSTERED 
 (
 	[Points] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [UQ__PointsSe__FA951B46C519FCD7]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  Index [UQ__PointsSe__FA951B46C519FCD7]    Script Date: 5/27/2022 3:13:19 PM ******/
 ALTER TABLE [dbo].[PointsSetting] ADD UNIQUE NONCLUSTERED 
 (
 	[Money] ASC
@@ -1525,6 +1744,9 @@ REFERENCES [dbo].[Order] ([Id])
 GO
 ALTER TABLE [dbo].[ApproveAgentEditOrderRequest]  WITH CHECK ADD FOREIGN KEY([OrderPlacedId])
 REFERENCES [dbo].[OrderPlaced] ([Id])
+GO
+ALTER TABLE [dbo].[CashMovment]  WITH CHECK ADD FOREIGN KEY([TreasuryId])
+REFERENCES [dbo].[Treasury] ([Id])
 GO
 ALTER TABLE [dbo].[ClientPaymentDetails]  WITH CHECK ADD FOREIGN KEY([ClientPaymentId])
 REFERENCES [dbo].[ClientPayment] ([Id])
@@ -1733,6 +1955,38 @@ REFERENCES [dbo].[Clients] ([Id])
 GO
 ALTER TABLE [dbo].[Receipt] CHECK CONSTRAINT [FK_Receipt_Clients]
 GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatus]  WITH CHECK ADD FOREIGN KEY([RecvierId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD  CONSTRAINT [FK__ReceiptOf__Agent__23F3538A] FOREIGN KEY([AgentId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis] CHECK CONSTRAINT [FK__ReceiptOf__Agent__23F3538A]
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD FOREIGN KEY([ClientId])
+REFERENCES [dbo].[Clients] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD  CONSTRAINT [FK__ReceiptOf__Money__25DB9BFC] FOREIGN KEY([MoneyPlacedId])
+REFERENCES [dbo].[MoenyPlaced] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis] CHECK CONSTRAINT [FK__ReceiptOf__Money__25DB9BFC]
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD  CONSTRAINT [FK__ReceiptOf__Order__24E777C3] FOREIGN KEY([OrderStateId])
+REFERENCES [dbo].[OrderState] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis] CHECK CONSTRAINT [FK__ReceiptOf__Order__24E777C3]
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD FOREIGN KEY([OrderPlacedId])
+REFERENCES [dbo].[OrderPlaced] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD FOREIGN KEY([OrderId])
+REFERENCES [dbo].[Order] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis]  WITH CHECK ADD  CONSTRAINT [FK__ReceiptOf__Recei__26CFC035] FOREIGN KEY([ReceiptOfTheOrderStatusId])
+REFERENCES [dbo].[ReceiptOfTheOrderStatus] ([Id])
+GO
+ALTER TABLE [dbo].[ReceiptOfTheOrderStatusDetalis] CHECK CONSTRAINT [FK__ReceiptOf__Recei__26CFC035]
+GO
 ALTER TABLE [dbo].[Region]  WITH CHECK ADD  CONSTRAINT [FK_Reginos_Country] FOREIGN KEY([CountryId])
 REFERENCES [dbo].[Country] ([Id])
 ON DELETE CASCADE
@@ -1747,6 +2001,18 @@ REFERENCES [dbo].[CashMovment] ([Id])
 GO
 ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([ClientPaymentId])
 REFERENCES [dbo].[ClientPayment] ([Id])
+GO
+ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([IncomeId])
+REFERENCES [dbo].[Income] ([Id])
+GO
+ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([OutcomeId])
+REFERENCES [dbo].[OutCome] ([Id])
+GO
+ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([ReceiptId])
+REFERENCES [dbo].[Receipt] ([Id])
+GO
+ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([ReceiptOfTheOrderStatusId])
+REFERENCES [dbo].[ReceiptOfTheOrderStatus] ([Id])
 GO
 ALTER TABLE [dbo].[TreasuryHistory]  WITH CHECK ADD FOREIGN KEY([TreasuryId])
 REFERENCES [dbo].[Treasury] ([Id])
@@ -1769,7 +2035,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserPhone] CHECK CONSTRAINT [FK_UserPhone_Users]
 GO
-/****** Object:  StoredProcedure [dbo].[OrderWithClientPrint]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[OrderWithClientPrint]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1811,7 +2077,7 @@ join
  p.Type = 'Client'
 end
 GO
-/****** Object:  StoredProcedure [dbo].[sp_changeAgnetPrintTables]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[sp_changeAgnetPrintTables]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1861,7 +2127,7 @@ DEALLOCATE printedC;
 Set IDENTITY_INSERT dbo.AgentPrint OFF
 end
 GO
-/****** Object:  StoredProcedure [dbo].[sp_empty]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[sp_empty]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1899,7 +2165,7 @@ delete from Region;
 
 end;
 GO
-/****** Object:  StoredProcedure [dbo].[sp_innerProc]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[sp_innerProc]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1916,7 +2182,7 @@ values ('cccc',1000,null,0,10);
 ROLLBACK;
 end ;
 GO
-/****** Object:  StoredProcedure [dbo].[sp_outerProc]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[sp_outerProc]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1930,7 +2196,7 @@ exec sp_innerProc ;
 ROLLBACK;
 end ;
 GO
-/****** Object:  StoredProcedure [dbo].[sp_TransferClientPrintToClientPaymet]    Script Date: 5/3/2022 7:08:35 AM ******/
+/****** Object:  StoredProcedure [dbo].[sp_TransferClientPrintToClientPaymet]    Script Date: 5/27/2022 3:13:19 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

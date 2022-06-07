@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Users;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Helper;
@@ -20,7 +21,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy) : base(repository, mapper, cache)
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging) : base(repository, mapper, cache, logging)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;
@@ -92,7 +93,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var name = typeof(User).FullName;
             if (!_cache.TryGetValue(name, out IEnumerable<UserDto> entites))
             {
-                entites = await GetAsync(c => c.CanWorkAsAgent == true, c => c.AgentCountrs.Select(c => c.Country), c => c.UserPhones);
+                entites = await GetAsync(c => c.CanWorkAsAgent == true, c => c.AgentCountries.Select(c => c.Country), c => c.UserPhones);
                 _cache.Set(name, entites);
             }
             return entites;
@@ -100,7 +101,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public override async Task<UserDto> GetById(int id)
         {
-            var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountrs.Select(c => c.Country));
+            var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountries.Select(c => c.Country));
             var dto = _mapper.Map<UserDto>(user);
             if (dto.CanWorkAsAgent)
             {
@@ -156,8 +157,8 @@ namespace KokazGoodsTransfer.Services.Concret
         public override async Task<ErrorRepsonse<UserDto>> Update(UpdateUserDto updateDto)
         {
             var user = await _repository.GetById(updateDto.Id);
-            await _repository.LoadCollection(user, c => c.AgentCountrs);
-            bool requeirdReacsh = user.CanWorkAsAgent == true ? true : updateDto.CanWorkAsAgent != user.CanWorkAsAgent;
+            await _repository.LoadCollection(user, c => c.AgentCountries);
+            bool requeirdReacsh = user.CanWorkAsAgent == true || updateDto.CanWorkAsAgent != user.CanWorkAsAgent;
             var similerUserByname = await _repository.Any(c => c.Name.ToLower() == updateDto.Name.ToLower() && c.Id != updateDto.Id);
             if (similerUserByname)
             {
@@ -169,7 +170,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 };
             }
             updateDto.UserName = updateDto.UserName.Trim();
-            if(!String.IsNullOrWhiteSpace(updateDto.UserName))
+            if (!String.IsNullOrWhiteSpace(updateDto.UserName))
             {
                 var similerUserByUserName = await _repository.Any(c => c.UserName.ToLower() == updateDto.UserName.ToLower() && c.Id != updateDto.Id);
                 if (similerUserByUserName)
@@ -182,8 +183,8 @@ namespace KokazGoodsTransfer.Services.Concret
                     };
                 }
             }
-            
-            user.AgentCountrs.Clear();
+
+            user.AgentCountries.Clear();
             _mapper.Map<UpdateUserDto, User>(updateDto, user);
             await _repository.Update(user);
 

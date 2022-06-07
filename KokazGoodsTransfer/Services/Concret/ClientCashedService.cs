@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using KokazGoodsTransfer.Helpers;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork) : base(repository, mapper, cache)
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging) : base(repository, mapper, cache,logging)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
@@ -46,7 +47,7 @@ namespace KokazGoodsTransfer.Services.Concret
             return await base.Delete(id);
         }
 
-        public async Task<ClientDto> GetById(int id)
+        public override async Task<ClientDto> GetById(int id)
         {
             var client = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.ClientPhones);
             return _mapper.Map<ClientDto>(client);

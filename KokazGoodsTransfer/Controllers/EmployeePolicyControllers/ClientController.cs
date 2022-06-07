@@ -147,6 +147,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
+                _logging.WriteExption(ex);
                 await transaction.RollbackAsync();
                 return BadRequest();
             }

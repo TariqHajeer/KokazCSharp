@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
@@ -17,10 +18,12 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         protected readonly IRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
-        public CRUDService(IRepository<TEntity> repository, IMapper mapper)
+        protected readonly Logging _logging;
+        public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging)
         {
             _repository = repository;
             _mapper = mapper;
+            _logging = logging;
         }
         public virtual async Task<TDTO> GetById(int id)
         {
