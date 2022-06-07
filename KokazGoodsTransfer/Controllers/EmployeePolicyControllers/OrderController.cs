@@ -1130,9 +1130,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
+        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(int[] ids)
         {
-            var ids = idsAndDate.Ids;
             var orders = this._context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
@@ -1150,7 +1149,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var clientPaymnet = new ClientPayment()
             {
-                Date = idsAndDate.Date,
+                Date = DateTime.UtcNow,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
