@@ -907,9 +907,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
         }
         [HttpPut("MakeOrderInWay")]
-        public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] DateWithId<int[]> dateWithId)
+        public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
         {
-            var result = await _orderService.MakeOrderInWay(dateWithId);
+            var result = await _orderService.MakeOrderInWay(ids);
             return GetResult(result);
         }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
@@ -978,7 +978,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             .Include(c => c.Country)
             .Include(c => c.Orderplaced)
             .Include(c => c.MoenyPlaced)
-            .Where(c => deleiverMoneyForClientDto.DateWithId.Ids.Contains(c.Id)).ToList();
+            .Where(c => deleiverMoneyForClientDto.Ids.Contains(c.Id)).ToList();
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
@@ -988,7 +988,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             semaphore.Wait();
             var clientPayment = new ClientPayment()
             {
-                Date = deleiverMoneyForClientDto.DateWithId.Date,
+                Date = DateTime.UtcNow,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
@@ -1130,9 +1130,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="ids"></param>
         /// <returns></returns>
         [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(DateWithId<int[]> idsAndDate)
+        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(int[] ids)
         {
-            var ids = idsAndDate.Ids;
             var orders = this._context.Orders
                 .Include(c => c.Client)
                 .ThenInclude(c => c.ClientPhones)
@@ -1150,7 +1149,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
             var clientPaymnet = new ClientPayment()
             {
-                Date = idsAndDate.Date,
+                Date = DateTime.UtcNow,
                 PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
