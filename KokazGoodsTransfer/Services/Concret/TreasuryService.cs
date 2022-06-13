@@ -98,7 +98,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto)
         {
-            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c => c.TreasuryId == id);
+            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c => c.TreasuryId == id, new string[] { "Receipt" });
             return new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
             {
                 Total = hisotres.Total,
