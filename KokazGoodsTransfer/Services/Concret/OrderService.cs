@@ -398,9 +398,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 _ => "غير معلوم",
             };
         }
-        public async Task<GenaricErrorResponse<int, string, string>> MakeOrderInWay(DateWithId<int[]> dateWithId)
+        public async Task<GenaricErrorResponse<int, string, string>> MakeOrderInWay(int[] ids)
         {
-            var ids = dateWithId.Ids;
             var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), new string[] { "Agent.UserPhones", "Client", "Country", "Region" });
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
@@ -410,7 +409,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var agent = orders.FirstOrDefault().Agent;
             var agnetPrint = new AgentPrint()
             {
-                Date = dateWithId.Date,
+                Date = DateTime.UtcNow,
                 PrinterName = _userService.AuthoticateUserName(),
                 DestinationName = agent.Name,
                 DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? ""
