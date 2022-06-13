@@ -949,7 +949,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(clientPayments), total });
         }
         [HttpGet("GetAgentPrint")]
-        public IActionResult GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
+        public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
         {
             var ordersPrint = this._context.AgentPrints.AsQueryable();
             if (number != null)
@@ -960,8 +960,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
             }
-            var total = ordersPrint.Count();
-            var orders = ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+            var total =await ordersPrint.CountAsync();
+            var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
         /// <summary>
