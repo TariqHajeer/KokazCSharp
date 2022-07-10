@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class RegionCashedService : CashService<Region, RegionDto, CreateRegionDto, UpdateRegionDto>, IRegionCashedService
     {
 
-        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper, cache, logging)
+        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
         {
         }
         public override async Task<ErrorRepsonse<RegionDto>> AddAsync(CreateRegionDto createDto)

@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,19 @@ namespace KokazGoodsTransfer.Services.Concret
         protected readonly IRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
         protected readonly Logging _logging;
-        public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging)
+        protected readonly int _BranchId;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
             _logging = logging;
+            _httpContextAccessor = httpContextAccessor;
+            string branchId = _httpContextAccessor.HttpContext.Request.Headers["BranchId"];
+            if (branchId == null)
+                _BranchId = 2;
+            _BranchId = Convert.ToInt32(branchId);
+
         }
         public virtual async Task<TDTO> GetById(int id)
         {

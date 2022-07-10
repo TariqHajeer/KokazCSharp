@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class IndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> : CRUDService<TEntity, TDTO, CreateDto, UpdateDto>, IIndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class, IIndex where TDTO : class where CreateDto : class, INameEntity where UpdateDto : class, IIndex
     {
 
-        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
+        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
         }
         public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)

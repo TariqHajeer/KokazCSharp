@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging) : base(repository, mapper, cache, logging)
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;

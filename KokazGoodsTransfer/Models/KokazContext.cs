@@ -1,4 +1,5 @@
 ﻿using System;
+using KokazGoodsTransfer.Models.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Models
             : base(options)
         {
         }
-
+        public virtual DbSet<Branch> Branches { get; set; }
         public virtual DbSet<AgentCountry> AgentCountries { get; set; }
         public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
@@ -1052,7 +1053,7 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_UserPhone_Users");
             });
-
+            modelBuilder.ApplyAllConfigurations();
             OnModelCreatingPartial(modelBuilder);
         }
 

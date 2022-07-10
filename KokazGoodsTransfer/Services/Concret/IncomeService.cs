@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         private readonly IUserService _userService;
         private readonly IUintOfWork _uintOfWork;
-        public IncomeService(IUintOfWork uintOfWork, IRepository<Income> repository, IMapper mapper, IUserService userService, Logging logging) : base(repository, mapper,logging)
+        public IncomeService(IUintOfWork uintOfWork, IRepository<Income> repository, IMapper mapper, IUserService userService, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper,logging, httpContextAccessor)
         {
             _userService = userService;
             _uintOfWork = uintOfWork;

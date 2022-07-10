@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -34,7 +35,6 @@ namespace KokazGoodsTransfer.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
-
         public virtual Treasury Treasury { get; set; }
         public virtual ICollection<AgentCountry> AgentCountries { get; set; }
         public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
@@ -48,5 +48,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<ReceiptOfTheOrderStatus> ReceiptOfTheOrderStatuses { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
         public virtual ICollection<UserPhone> UserPhones { get; set; }
+        public virtual ICollection<UserBranch> Branches { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.Services.Concret
     {
 
         protected readonly IMemoryCache _cache;
-        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper,logging)
+        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper,logging,httpContextAccessor)
         {
             _cache = cache;
 

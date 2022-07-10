@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using KokazGoodsTransfer.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -19,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging) : base(repository, mapper, cache,logging)
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache,logging,httpContextAccessor)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;

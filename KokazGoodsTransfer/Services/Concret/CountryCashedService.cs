@@ -10,13 +10,14 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
     public class CountryCashedService : CashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>, ICountryCashedService
     {
-        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging) : base(repository, mapper, cache, logging)
+        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
         {
         }
 

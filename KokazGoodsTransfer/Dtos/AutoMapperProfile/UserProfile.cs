@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Dtos.BranchDtos;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Users;
@@ -10,7 +11,7 @@ using System.Linq;
 
 namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 {
-    public class UserProfile:Profile
+    public class UserProfile : Profile
     {
         public UserProfile()
         {
@@ -119,7 +120,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.Privileges, opt => opt.MapFrom((user, authDto, i, context) =>
                 {
                     return context.Mapper.Map<UserPrivilegeDto[]>(user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(c => c.Privileg).Distinct()));
-                }));
+                }))
+             .ForMember(c => c.Branches, opt => opt.MapFrom((src, dest, i, context) =>
+             {
+                 return context.Mapper.Map<IEnumerable<BranchDto>>(src.Branches.Select(c => c.Branch));
+             }));
         }
     }
 }

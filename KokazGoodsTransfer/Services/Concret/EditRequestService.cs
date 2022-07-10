@@ -4,11 +4,13 @@ using KokazGoodsTransfer.Dtos.EditRequestDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+
 namespace KokazGoodsTransfer.Services.Concret
 {
     public class EditRequestService : CRUDService<EditRequest, EditRequestDto, CreateEditRequestDto, UpdateEditRequestDto>, IEditRequestService
     {
-        public EditRequestService(IRepository<EditRequest> repository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
+        public EditRequestService(IRepository<EditRequest> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
         }
     }

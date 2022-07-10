@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20220710174859_Add-Branches")]
+    partial class AddBranches
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1507,21 +1509,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "BranchId");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("UserBranch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
                 {
                     b.Property<int>("UserId")
@@ -2224,25 +2211,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Treasury");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("Users")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.User", "User")
-                        .WithMany("Branches")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Group", "Group")
@@ -2281,11 +2249,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentOrderPrints");
 
                     b.Navigation("AgentPrintDetails");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -2477,8 +2440,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentCountries");
 
                     b.Navigation("ApproveAgentEditOrderRequests");
-
-                    b.Navigation("Branches");
 
                     b.Navigation("Clients");
 

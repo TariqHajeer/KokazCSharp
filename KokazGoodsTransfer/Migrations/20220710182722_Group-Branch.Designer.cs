@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20220710182722_Group-Branch")]
+    partial class GroupBranch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -566,11 +568,16 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.ToTable("Group");
                 });
@@ -1775,6 +1782,17 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.Group", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.GroupPrivilege", b =>

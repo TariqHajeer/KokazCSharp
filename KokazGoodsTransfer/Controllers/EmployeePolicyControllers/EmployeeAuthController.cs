@@ -10,11 +10,11 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using KokazGoodsTransfer.Services.Interfaces;
+using KokazGoodsTransfer.Dtos.BranchDtos;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -32,9 +32,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var user = await this._context.Users
                 .Include(c => c.UserGroups)
-                .ThenInclude(c => c.Group)
-                .ThenInclude(c => c.GroupPrivileges)
-                .ThenInclude(c => c.Privileg)
+                    .ThenInclude(c => c.Group)
+                        .ThenInclude(c => c.GroupPrivileges)
+                            .ThenInclude(c => c.Privileg)
+                .Include(c => c.Branches)
+                    .ThenInclude(c => c.Branch)
                 .Where(c => c.UserName == loginDto.UserName).FirstOrDefaultAsync();
             if (user == null)
                 return Conflict();
@@ -76,6 +78,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             authenticatedUserDto.Token = token;
             authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
             authenticatedUserDto.HaveTreasury = haveTreasury;
+            var branches = user.Branches.Select(c => c.Branch);
             return Ok(authenticatedUserDto);
         }
 

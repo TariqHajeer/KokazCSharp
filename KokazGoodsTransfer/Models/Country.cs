@@ -35,5 +35,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<Order> OrderCurrentCountryNavigations { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Region> Regions { get; set; }
+        public virtual ICollection<Branch> Branches { get; set; }
     }
 }

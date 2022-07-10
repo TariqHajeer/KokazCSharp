@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Dtos.BranchDtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace KokazGoodsTransfer.Dtos.Users
         public List<UserPrivilegeDto> Privileges { get; set; }
         public string Policy { get; set; }
         public bool HaveTreasury { get; set; }
+        public IEnumerable<BranchDto> Branches { get; set; }
     }
     public class UserPrivilegeDto
     {

@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class GroupService : IndexCURDService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
     {
         private readonly IRepository<Privilege> _privilegeRepository;
-        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging) : base(repository, mapper, logging)
+        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
             _privilegeRepository = privilegeRepository;
         }
