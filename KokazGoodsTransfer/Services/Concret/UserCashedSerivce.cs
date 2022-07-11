@@ -65,11 +65,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
                 agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
             }
-            dtos.ToList().ForEach(c =>
-            {
-
-                c.BranchesIds = c.BranchesIds.Intersect(_branchesIds).ToArray();
-            });
             return dtos;
         }
         public override async Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)
@@ -107,7 +102,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public override async Task<UserDto> GetById(int id)
         {
-            var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountries.Select(c => c.Country));
+            var user = await _repository.FirstOrDefualt(c => c.Id == id, c=>c.Branches,c => c.UserPhones, c => c.UserGroups, c => c.AgentCountries.Select(c => c.Country));
             var dto = _mapper.Map<UserDto>(user);
             if (dto.CanWorkAsAgent)
             {
