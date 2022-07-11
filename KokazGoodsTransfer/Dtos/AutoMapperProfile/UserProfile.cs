@@ -89,7 +89,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     });
                 }
                 return userGroup;
-            }));
+            }))
+            .ForMember(c => c.Branches, opt => opt.MapFrom(src => src.BranchesIds.Select(c => new UserBranch() { BranchId = c })));
             CreateMap<UpdateUserDto, User>()
             .ForMember(c => c.Password, opt => opt.MapFrom(src => String.IsNullOrEmpty(src.Password) ? String.Empty : MD5Hash.GetMd5Hash(src.Password)))
             .ForMember(des => des.Salary, opt => opt.MapFrom(src => src.CanWorkAsAgent == true ? src.Salary : (decimal?)null))
