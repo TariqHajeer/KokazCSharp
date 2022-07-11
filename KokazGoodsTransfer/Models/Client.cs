@@ -1,11 +1,13 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Client
+    public partial class Client: IHaveBranch
     {
         public Client()
         {
@@ -33,6 +35,7 @@ namespace KokazGoodsTransfer.Models
         public int UserId { get; set; }
         public string Mail { get; set; }
         public int Points { get; set; }
+        public int BranchId { get; set; }
 
         public virtual Country Country { get; set; }
         public virtual User User { get; set; }
@@ -47,5 +50,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }
+        public Branch Branch { get; set; }
     }
 }

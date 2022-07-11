@@ -65,6 +65,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 climes.Add(new Claim("treasury", false.ToString()));
             }
             climes.Add(new Claim(ClaimTypes.Name, user.Name));
+            foreach (var item in user.Branches)
+            {
+                climes.Add(new Claim("BranchId", item.BranchId.ToString()));
+            }
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(climes),
@@ -78,7 +82,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             authenticatedUserDto.Token = token;
             authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
             authenticatedUserDto.HaveTreasury = haveTreasury;
-            var branches = user.Branches.Select(c => c.Branch);
             return Ok(authenticatedUserDto);
         }
 

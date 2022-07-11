@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Dtos.Users
         public string Password { get; set; }
         public int[] GroupsId { get; set; }
         public bool IsActive { get; set; }
-
+        public int[] BranchesIds { get; set; }
         public PhoneDto[] Phones { get; set; }
         public UserStatics UserStatics { get; set; }
 

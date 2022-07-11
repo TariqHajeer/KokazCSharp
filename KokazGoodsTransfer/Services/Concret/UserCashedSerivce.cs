@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging, httpContextAccessor)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;
@@ -65,6 +65,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
                 agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
             }
+            dtos.ToList().ForEach(c =>
+            {
+
+                c.BranchesIds = c.BranchesIds.Intersect(_branchesIds).ToArray();
+            });
             return dtos;
         }
         public override async Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)

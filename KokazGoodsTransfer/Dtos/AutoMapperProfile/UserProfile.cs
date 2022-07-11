@@ -39,7 +39,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                         });
                     }
                     return context.Mapper.Map<CountryDto[]>(user.AgentCountries.Select(c => c.Country));
-                }));
+                }))
+                .ForMember(c => c.BranchesIds, opt => opt.MapFrom(src => src.Branches.Select(c => c.BranchId).ToArray()));
             CreateMap<CreateUserDto, User>()
             .ForMember(des => des.IsActive, opt => opt.MapFrom(src => true))
             .ForMember(des => des.Password, opt => opt.MapFrom(src => MD5Hash.GetMd5Hash(src.Password)))

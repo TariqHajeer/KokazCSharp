@@ -3,8 +3,10 @@ using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.BranchDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -13,6 +15,14 @@ namespace KokazGoodsTransfer.Services.Concret
         public BranchService(IRepository<Branch> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging,httpContextAccessor)
         {
         }
+        public override async Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)
+        {
+            var any =await _repository.Any(c=>c.CountryId==createDto.CountryId);
+            if (any)
+            {
 
+            }
+            return await base.AddAsync(createDto);
+        }
     }
 }

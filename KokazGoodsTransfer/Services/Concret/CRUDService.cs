@@ -20,19 +20,20 @@ namespace KokazGoodsTransfer.Services.Concret
         protected readonly IRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
         protected readonly Logging _logging;
-        protected readonly int _BranchId;
+        protected readonly int _currentBranch;
         protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly int[] _branchesIds;
         public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
             _logging = logging;
             _httpContextAccessor = httpContextAccessor;
-            string branchId = _httpContextAccessor.HttpContext.Request.Headers["BranchId"];
+            string branchId = _httpContextAccessor.HttpContext.Request.Headers["branchId"];
             if (branchId == null)
-                _BranchId = 2;
-            _BranchId = Convert.ToInt32(branchId);
-
+                _currentBranch = 2;
+            _currentBranch = Convert.ToInt32(branchId);
+            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "BranchId").Select(c => Convert.ToInt32(c)).ToArray();
         }
         public virtual async Task<TDTO> GetById(int id)
         {
