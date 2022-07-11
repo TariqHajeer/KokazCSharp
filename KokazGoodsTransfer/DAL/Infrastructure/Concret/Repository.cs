@@ -7,6 +7,8 @@ using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Infrastrcuter;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
@@ -15,12 +17,22 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         protected readonly KokazContext _kokazContext;
         protected IQueryable<T> Query;
-        public Repository(KokazContext kokazContext)
+        public Repository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
-            this._kokazContext = kokazContext;
+            var currentBranch = Convert.ToInt32(httpContextAccessor.HttpContext.Request.Headers["branchId"]);
+            if (currentBranch == 0)
+            {
+                //currentBranch = kokazContext.Branches.First().Id;
+                currentBranch = 2;
+            }
+                this._kokazContext = kokazContext;
             Query = _kokazContext.Set<T>().AsQueryable();
-
-
+            if (typeof(T) is IHaveBranch)
+            {
+                var temp = (IQueryable<IHaveBranch>)Query;
+                temp = temp.Where(c => c.BranchId == currentBranch);
+                Query = (IQueryable<T>)temp;
+            }
         }
         public virtual async Task AddRangeAsync(IEnumerable<T> entityes)
         {
@@ -118,9 +130,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             {
                 query = query.Where(filter);
             }
-            var total =await query.CountAsync();
+            var total = await query.CountAsync();
             query = IncludeLmbda(query, propertySelectors);
-            var data =await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
+            var data = await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
             var result = new PagingResualt<IEnumerable<T>>()
             {
                 Total = total,
@@ -208,7 +220,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter,  Expression<Func<T, Projection>> projection,params Expression<Func<T, object>>[] propertySelectors)
+        public async Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter, Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors)
         {
             var query = Query.Where(filter);
             query = IncludeLmbda(query, propertySelectors);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
+using Microsoft.AspNetCore.Http;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
@@ -14,11 +15,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         private readonly KokazContext _kokazContext;
         private IDbContextTransaction _dbContextTransaction;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private Dictionary<string, object> _repositories;
-        public UnitOfWork(KokazContext kokazContext)
+        public UnitOfWork(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
             _kokazContext = kokazContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task Add<TEntity>(TEntity entity) where TEntity : class
@@ -49,7 +51,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var type = typeof(TEntity).Name;
             if (!_repositories.ContainsKey(type))
             {
-                var repositoryInstance = new Repository<TEntity>(_kokazContext);
+                var repositoryInstance = new Repository<TEntity>(_kokazContext,_httpContextAccessor);
                 _repositories.Add(type, repositoryInstance);
             }
             return (Repository<TEntity>)_repositories[type];

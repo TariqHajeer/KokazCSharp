@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Http;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
     public class IndexRepository<T> : Repository<T>, IIndexRepository<T> where T : class, IIndex
     {
-        public IndexRepository(KokazContext kokazContext) : base(kokazContext)
+        public IndexRepository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor) : base(kokazContext,httpContextAccessor)
         {
         }
 

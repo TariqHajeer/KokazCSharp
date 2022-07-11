@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        public OrderRepository(KokazContext kokazContext) : base(kokazContext)
+        public OrderRepository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor) : base(kokazContext, httpContextAccessor)
         {
         }
 
@@ -99,7 +100,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 ///chould check this query 
                 query = query.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= filter.AgentPrintEndDate);
             }
-            
+
             var totalTask = query.CountAsync();
             var dataTask = query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
             await Task.WhenAll(totalTask, dataTask);

@@ -33,7 +33,7 @@ namespace KokazGoodsTransfer.Services.Concret
             if (branchId == null)
                 _currentBranch = 2;
             _currentBranch = Convert.ToInt32(branchId);
-            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "BranchId").Select(c => Convert.ToInt32(c)).ToArray();
+            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").Select(c => Convert.ToInt32(c)).ToArray();
         }
         public virtual async Task<TDTO> GetById(int id)
         {
