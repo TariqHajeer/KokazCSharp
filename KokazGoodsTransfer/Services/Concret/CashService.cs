@@ -19,15 +19,17 @@ namespace KokazGoodsTransfer.Services.Concret
     {
 
         protected readonly IMemoryCache _cache;
-        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper,logging,httpContextAccessor)
+        protected readonly string cashName;
+        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
             _cache = cache;
+            cashName = typeof(TEntity).FullName + _currentBranch;
 
         }
         public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)
         {
             var repsonse = await base.AddAsync(createDto);
-             RemoveCash();
+            RemoveCash();
             return repsonse;
         }
 
@@ -35,7 +37,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var repsonse = await base.Delete(id);
             if (!repsonse.Errors.Any())
-                 RemoveCash();
+                RemoveCash();
             return repsonse;
 
         }
@@ -43,25 +45,23 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var response = await base.Update(updateDto);
             if (!response.Errors.Any())
-                 RemoveCash();
+                RemoveCash();
             return response;
         }
         public virtual async Task<IEnumerable<TDTO>> GetCashed()
         {
-            var name = typeof(TEntity).FullName;
-            if (!_cache.TryGetValue(name, out IEnumerable<TDTO> entites))
+            if (!_cache.TryGetValue(cashName, out IEnumerable<TDTO> entites))
             {
                 var list = await GetAsync();
                 entites = _mapper.Map<TDTO[]>(list);
-                _cache.Set(name, entites, new TimeSpan(8, 0, 0));
+                _cache.Set(cashName, entites, new TimeSpan(8, 0, 0));
             }
             return entites;
         }
 
         public void RemoveCash()
         {
-            var name = typeof(TEntity).FullName;
-            _cache.Remove(name);
+            _cache.Remove(cashName);
         }
     }
 }

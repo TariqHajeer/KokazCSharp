@@ -59,11 +59,10 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<IEnumerable<CountryDto>> GetCashed()
         {
-            var name = typeof(Country).FullName;
-            if (!_cache.TryGetValue(name, out IEnumerable<CountryDto> entites))
+            if (!_cache.TryGetValue(cashName, out IEnumerable<CountryDto> entites))
             {
                 entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.AgentCountries.Select(a => a.Agent));
-                _cache.Set(name, entites);
+                _cache.Set(cashName, entites);
             }
             return entites;
         }
