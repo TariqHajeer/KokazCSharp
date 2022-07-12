@@ -58,7 +58,9 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<IEnumerable<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
         {
-            var dtos = await base.GetAll(propertySelectors);
+            var list = await _repository.GetAsync(c => (c.CanWorkAsAgent == true && c.BranchId == _currentBranch) || (c.CanWorkAsAgent == false && c.Branches.Any(c => _branchesIds.Contains(c.BranchId))));
+
+            var dtos = _mapper.Map<UserDto[]>(list).ToList();
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
             foreach (var agent in agents)
             {
@@ -81,6 +83,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 return response;
             }
             var user = _mapper.Map<User>(createDto);
+            if (user.CanWorkAsAgent)
+                user.BranchId = _currentBranch;
             await _repository.AddAsync(user);
             response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
             if (user.CanWorkAsAgent)
@@ -102,7 +106,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public override async Task<UserDto> GetById(int id)
         {
-            var user = await _repository.FirstOrDefualt(c => c.Id == id, c=>c.Branches,c => c.UserPhones, c => c.UserGroups, c => c.AgentCountries.Select(c => c.Country));
+            var user = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Branches, c => c.UserPhones, c => c.UserGroups, c => c.AgentCountries.Select(c => c.Country));
             var dto = _mapper.Map<UserDto>(user);
             if (dto.CanWorkAsAgent)
             {

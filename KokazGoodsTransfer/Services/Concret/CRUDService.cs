@@ -33,7 +33,9 @@ namespace KokazGoodsTransfer.Services.Concret
             if (branchId == null)
                 _currentBranch = 2;
             _currentBranch = Convert.ToInt32(branchId);
-            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").Select(c => Convert.ToInt32(c)).ToArray();
+            var branches = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").ToList();
+            var values = branches.Select(c => c.Value);
+            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").Select(c => Convert.ToInt32(c.Value)).ToArray();
         }
         public virtual async Task<TDTO> GetById(int id)
         {

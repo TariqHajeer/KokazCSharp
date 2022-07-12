@@ -17,30 +17,45 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         protected readonly KokazContext _kokazContext;
         protected IQueryable<T> Query;
+        private readonly int branchId;
         public Repository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
-            var currentBranch = Convert.ToInt32(httpContextAccessor.HttpContext.Request.Headers["branchId"]);
-            if (currentBranch == 0)
-            {
-                //currentBranch = kokazContext.Branches.First().Id;
-                currentBranch = 2;
-            }
-                this._kokazContext = kokazContext;
+            this._kokazContext = kokazContext;
             Query = _kokazContext.Set<T>().AsQueryable();
-            if (typeof(T) is IHaveBranch)
+            branchId = int.Parse(httpContextAccessor.HttpContext.Request.Headers["branchId"]);
+            if (IsIHaveBranch())
             {
-                var temp = (IQueryable<IHaveBranch>)Query;
-                temp = temp.Where(c => c.BranchId == currentBranch);
-                Query = (IQueryable<T>)temp;
+                Query = Query.Where(c => ((IHaveBranch)c).BranchId == branchId);
             }
+            if (IsIMaybeHaveBranch())
+            {
+                Query = Query.Where(c => ((IMaybeHaveBranch)c).BranchId == null || ((IMaybeHaveBranch)c).BranchId == branchId);
+            }
+
+        }
+        private bool IsIMaybeHaveBranch()
+        {
+            return typeof(IMaybeHaveBranch).IsAssignableFrom(typeof(T));
+        }
+        private bool IsIHaveBranch()
+        {
+            return typeof(IHaveBranch).IsAssignableFrom(typeof(T));
         }
         public virtual async Task AddRangeAsync(IEnumerable<T> entityes)
         {
+            if (IsIHaveBranch())
+            {
+                entityes.ToList().ForEach(c => ((IHaveBranch)c).BranchId = branchId);
+            }
             await _kokazContext.AddRangeAsync(entityes);
             await _kokazContext.SaveChangesAsync();
         }
         public virtual async Task AddAsync(T entity)
         {
+            if (IsIHaveBranch())
+            {
+                ((IHaveBranch)entity).BranchId = branchId;
+            }
             await _kokazContext.AddAsync(entity);
             await _kokazContext.SaveChangesAsync();
         }
@@ -52,7 +67,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 
         public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
-            var query = this._kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -74,7 +89,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
-            var query = _kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             if (filter != null)
                 query = query.Where(filter);
             if (propertySelectors?.Any() == true)
@@ -95,7 +110,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
-            var query = _kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             if (propertySelectors?.Any() == true)
                 foreach (var item in propertySelectors)
                 {
@@ -112,7 +127,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public virtual async Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors)
         {
-            var query = _kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             if (filter != null)
                 query = query.Where(filter);
             if (propertySelectors?.Any() == true)
@@ -125,7 +140,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
 
-            var query = this._kokazContext.Set<T>().AsQueryable();
+            var query = this.Query;
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -142,7 +157,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public virtual async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors)
         {
-            var query = _kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             query = IncludeLmbda(query, propertySelectors);
             return await query.ToListAsync();
         }
@@ -175,7 +190,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
-            var query = _kokazContext.Set<T>().AsQueryable();
+            var query = Query;
             query = IncludeLmbda(query, propertySelectors);
             if (filter != null)
                 query = query.Where(filter);
@@ -185,8 +200,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<bool> Any(Expression<Func<T, bool>> filter = null)
         {
             if (filter != null)
-                return await _kokazContext.Set<T>().AnyAsync(filter);
-            return await _kokazContext.Set<T>().AnyAsync();
+                return await Query.AnyAsync(filter);
+            return await Query.AnyAsync();
         }
 
         public async Task LoadCollection<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> propertyExpression) where TProperty : class
@@ -202,8 +217,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<int> Count(Expression<Func<T, bool>> filter = null)
         {
             if (filter == null)
-                return await _kokazContext.Set<T>().CountAsync();
-            return await _kokazContext.Set<T>().CountAsync(filter);
+                return await Query.CountAsync();
+            return await Query.CountAsync(filter);
         }
 
         public async Task<IEnumerable<T>> GetAll(string[] propertySelectors)
