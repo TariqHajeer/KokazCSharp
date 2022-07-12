@@ -7,7 +7,7 @@ namespace KokazGoodsTransfer.Dtos.Users
 {
     public class CreateUserDto
     {
-        
+
         public string Name { get; set; }
         //public int DepartmentId { get; set; }
         public string Experince { get; set; }
