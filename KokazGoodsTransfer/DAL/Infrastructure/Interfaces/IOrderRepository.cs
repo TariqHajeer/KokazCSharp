@@ -11,5 +11,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
     public interface IOrderRepository : IRepository<Order>
     {
         Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, string[] propertySelectors = null);
+        Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter);
+        Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter);
+        
+
     }
 }

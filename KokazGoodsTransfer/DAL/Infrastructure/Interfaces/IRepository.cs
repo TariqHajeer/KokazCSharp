@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task AddRangeAsync(IEnumerable<T> entityes);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter, string[] propertySelectors);
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
         Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);

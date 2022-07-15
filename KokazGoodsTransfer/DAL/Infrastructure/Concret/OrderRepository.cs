@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -132,6 +133,135 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                .FirstOrDefaultAsync(c => c.Id == Id);
 
         }
+        public async Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter)
+        {
+            var orderIQ = Query
+                    .Include(c => c.Client)
+                    .Include(c => c.Country)
+                    .Include(c => c.Client)
+                .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Client)
+                .ThenInclude(c => c.Country)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                    .ThenInclude(c => c.AgentCountries)
+                        .ThenInclude(c => c.Agent)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
+               .AsQueryable();
+            if (orderFilter.CountryId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            if (orderFilter.ClientId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.MonePlacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+            }
+            if (orderFilter.OrderplacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.AgentId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
+            }
+            if (orderFilter.IsClientDiliverdMoney != null)
+            {
+                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
+            }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
+            }
+            if (orderFilter.AgentPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
+            }
+            if (orderFilter.CreatedDate != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Date == orderFilter.CreatedDate);
+            }
+            if (orderFilter.Note != "" && orderFilter.Note != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Note.Contains(orderFilter.Note));
+            }
+            if (orderFilter.AgentPrintStartDate != null)
+            {
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+            }
+            if (orderFilter.AgentPrintEndDate != null)
+            {
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+            }
+            return await orderIQ.ToListAsync();
+        }
 
+        public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        {
+            List<Order> orders = new List<Order>();
+            if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
+            {
+                var list =await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                   .Include(c => c.Region)
+                   .Include(c => c.Country)
+                   .Include(c => c.MoenyPlaced)
+                   .Include(c => c.Orderplaced)
+                   .Include(c => c.Agent)
+                   .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+                   .ToListAsync();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
+            }
+            if (orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+
+                var list = await Query.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+               .Include(c => c.Region)
+               .Include(c => c.Country)
+               .Include(c => c.Orderplaced)
+               .Include(c => c.MoenyPlaced)
+               .Include(c => c.Agent)
+               .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.AgentOrderPrints)
+                   .ThenInclude(c => c.AgentPrint)
+               .ToListAsync();
+                if (list != null && list.Count() > 0)
+                {
+                    orders.AddRange(list);
+                }
+            }
+            return orders;
+        }
     }
 }

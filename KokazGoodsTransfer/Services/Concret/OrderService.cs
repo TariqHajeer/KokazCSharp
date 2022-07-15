@@ -29,11 +29,12 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<ReceiptOfTheOrderStatus> _receiptOfTheOrderStatusRepository;
         private readonly IRepository<ReceiptOfTheOrderStatusDetali> _receiptOfTheOrderStatusDetalisRepository;
         private readonly ICountryCashedService _countryCashedService;
+        private readonly IRepository<Country> _countryRepository;
         private readonly Logging _logging;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -46,6 +47,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _receiptOfTheOrderStatusDetalisRepository = receiptOfTheOrderStatusDetalisRepository;
             _countryCashedService = countryCashedService;
             currentUser = httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
+            _countryRepository = countryRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -713,6 +715,60 @@ namespace KokazGoodsTransfer.Services.Concret
             var order = await _repository.GetById(id);
             return _mapper.Map<OrderDto>(order);
         }
+
+        public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        {
+            var orders = await _repository.OrdersDontFinished(orderDontFinishedFilter);
+            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> NewOrderDontSned()
+        {
+            var includes = new string[] { "Client.ClientPhones", "Client.Country", "Region", "Country.AgentCountries.Agent", "OrderItems.OrderTpye" };
+            var orders = await _repository.GetByFilterInclue(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client, includes);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> OrderAtClient(OrderFilter orderFilter)
+        {
+            var orders = await _repository.OrderAtClient(orderFilter);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<PayForClientDto> GetByCodeAndClient(int clientId, string code)
+        {
+            var includes = new string[] { "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var order = await _repository.FirstOrDefualt(c => c.ClientId == clientId && c.Code == code, includes);
+            if (order == null)
+                throw new ConfilectException("الشحنة غير موجودة");
+            if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
+            {
+                throw new ConfilectException("تم تسليم كلفة الشحنة من قبل");
+            }
+            if (order.OrderplacedId == (int)OrderplacedEnum.Client)
+            {
+                throw new ConfilectException("الشحنة عند العميل");
+            }
+            if (order.OrderplacedId == (int)OrderplacedEnum.Store)
+            {
+                throw new ConfilectException("الشحنة داخل المخزن");
+            }
+            await _repository.LoadRefernces(order, c => c.MoenyPlaced);
+            await _repository.LoadRefernces(order, c => c.Orderplaced);
+            await _repository.LoadRefernces(order, c => c.Country);
+            await _repository.LoadRefernces(order, c => c.Region);
+            await _repository.LoadRefernces(order, c => c.Agent);
+            await _countryRepository.LoadCollection(order.Country, c => c.Regions);
+            return _mapper.Map<PayForClientDto>(order);
+        }
+
+        public async Task ReiveMoneyFromClient(int[] ids)
+        {
+            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            orders.ToList().ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
+            await _repository.Update(orders);
+        }
+        
     }
 
 

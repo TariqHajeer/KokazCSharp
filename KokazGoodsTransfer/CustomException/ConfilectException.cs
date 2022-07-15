@@ -5,19 +5,30 @@ namespace KokazGoodsTransfer.CustomException
     public class ConfilectException:Exception
     {
         IEnumerable<string> errors;
-        public IEnumerable<string> Errors
+        public ConfliectErrorMessage Errors
         {
-            get { return errors; }
+            get { return new ConfliectErrorMessage( errors); }
         }
         public ConfilectException( string error)
         {
-            var errors = new List<string>();
-            errors.Add(error);
+            var errors = new List<string>
+            {
+                error
+            };
             this.errors= errors;
         }
         public ConfilectException(IEnumerable<string> errors)
         {
             this.errors = errors;
         }
+        public class ConfliectErrorMessage
+        {
+            public ConfliectErrorMessage(IEnumerable<string> errors)
+            {
+                Errors = errors;
+            }
+            public IEnumerable<string> Errors { get; set; }
+        }
     }
+    
 }
