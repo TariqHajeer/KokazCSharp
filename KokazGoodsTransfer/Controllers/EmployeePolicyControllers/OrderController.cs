@@ -1426,7 +1426,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 transaction.Rollback();
                 throw ex;
-                return BadRequest();
             }
         }
         [HttpPost("ForzenInWay")]
