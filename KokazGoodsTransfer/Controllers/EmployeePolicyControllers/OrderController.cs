@@ -1429,23 +1429,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
         }
         [HttpPost("ForzenInWay")]
-        public async Task<IActionResult> ForzenInWay([FromForm] FrozenOrder frozenOrder)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromForm] FrozenOrder frozenOrder)
         {
-            var query = this._context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way);
-            if (frozenOrder.AgentId != null)
-            {
-                query = query.Where(c => c.AgentId == (int)frozenOrder.AgentId);
-            }
-            var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
-            query = query.Where(c => c.Date <= date);
-            query = query.Include(c => c.Client)
-                 .Include(c => c.Region)
-                 .Include(c => c.Agent)
-                 .Include(c => c.Country)
-                 .Include(c => c.Orderplaced)
-                 .Include(c => c.MoenyPlaced);
-            var orders = await query.ToListAsync();
-            return Ok(_mapper.Map<OrderDto[]>(orders));
+            return Ok(await _orderService.ForzenInWay(frozenOrder));
         }
         [HttpGet("ReceiptOfTheOrderStatus/{id}")]
         public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)

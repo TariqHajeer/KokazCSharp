@@ -28,5 +28,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
         Task Delete(int id);
+        Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
     }
 }

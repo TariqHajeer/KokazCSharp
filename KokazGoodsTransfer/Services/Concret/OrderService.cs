@@ -692,6 +692,21 @@ namespace KokazGoodsTransfer.Services.Concret
             var order = await _repository.FirstOrDefualt(c => c.Id == id);
             await _repository.Delete(order);
         }
+
+        public async Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder)
+        {
+            var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
+            IEnumerable<Order> orders;
+            if (frozenOrder.AgentId != null)
+            {
+                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.Orderplaced, c => c.MoenyPlaced);
+            }
+            else
+            {
+                orders = await _repository.GetAsync(c => c.Date <= date && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.Orderplaced, c => c.MoenyPlaced);
+            }
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
     }
 
 
