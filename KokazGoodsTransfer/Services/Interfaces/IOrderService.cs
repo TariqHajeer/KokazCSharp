@@ -29,5 +29,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
+        Task<OrderDto> GetById(int id);
     }
 }

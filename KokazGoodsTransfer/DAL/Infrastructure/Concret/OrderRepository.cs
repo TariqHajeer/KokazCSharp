@@ -99,14 +99,39 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 query = query.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= filter.AgentPrintEndDate);
             }
 
-            var totalTask = query.CountAsync();
-            var dataTask = query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
-            await Task.WhenAll(totalTask, dataTask);
+            var total = await query.CountAsync();
+            var data = paging == null ? await query.ToListAsync() : await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
             return new PagingResualt<IEnumerable<Order>>()
             {
-                Total = await totalTask,
-                Data = await dataTask,
+                Total = total,
+                Data = data,
             };
         }
+        public override async Task<Order> GetById(int Id)
+        {
+            return await Query.Include(c => c.Client)
+                       .ThenInclude(c => c.ClientPhones)
+                       .Include(c => c.Client)
+                       .ThenInclude(c => c.Country)
+                   .Include(c => c.Agent)
+                       .ThenInclude(c => c.UserPhones)
+                   .Include(c => c.Region)
+                   .Include(c => c.Country)
+                   .Include(c => c.Orderplaced)
+                   .Include(c => c.MoenyPlaced)
+                   .Include(c => c.OrderItems)
+                       .ThenInclude(c => c.OrderTpye)
+                   .Include(c => c.OrderClientPaymnets)
+                   .ThenInclude(c => c.ClientPayment)
+                   .Include(c => c.OrderLogs)
+                   .Include(c => c.AgentOrderPrints)
+                        .ThenInclude(c => c.AgentPrint)
+                   .Include(c => c.ReceiptOfTheOrderStatusDetalis)
+                        .ThenInclude(c => c.ReceiptOfTheOrderStatus)
+                        .ThenInclude(c => c.Recvier)
+               .FirstOrDefaultAsync(c => c.Id == Id);
+
+        }
+
     }
 }

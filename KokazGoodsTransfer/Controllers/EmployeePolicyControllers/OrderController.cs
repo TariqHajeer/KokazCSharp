@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : AbstractEmployeePolicyController
+    public partial class OrderController : AbstractEmployeePolicyController
     {
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
@@ -48,12 +48,78 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var result = await _orderService.GetOrderFiltered(pagingDto, orderFilter);
             return Ok(new { data = result.Data, total = result.Total });
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
             await _orderService.CreateOrder(createOrdersFromEmployee);
             return Ok();
         }
+        [HttpPost("createMultiple")]
+        public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
+        {
+            await _orderService.CreateOrders(createMultipleOrders);
+            return Ok();
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _orderService.Delete(id);
+            return Ok();
+
+        }
+        [HttpGet("WithoutPaging")]
+        public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
+        {
+            var result = await _orderService.GetOrderFiltered(null, orderFilter);
+            return Ok(new { data = result.Data, total = result.Total });
+        }
+        [HttpPost("ForzenInWay")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromForm] FrozenOrder frozenOrder)
+        {
+            return Ok(await _orderService.ForzenInWay(frozenOrder));
+        }
+        [HttpGet("ReceiptOfTheOrderStatus/{id}")]
+        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
+        }
+        [HttpGet("ReceiptOfTheOrderStatus")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
+        {
+            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok(await _orderService.GetById(id));
+        }
+        [HttpGet("orderPlace")]
+        public async Task<IActionResult> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
+        [HttpGet("MoenyPlaced")]
+        public async Task<IActionResult> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
+        [HttpPut("MakeOrderInWay")]
+        public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
+        {
+            var result = await _orderService.MakeOrderInWay(ids);
+            return GetResult(result);
+        }
+        [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
+        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
+        {
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
+        }
+        [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
+        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
+        {
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
+        }
+
+    }
+    public partial class OrderController
+    {
+
 
         [HttpPatch]
         public IActionResult Edit([FromBody] UpdateOrder updateOrder)
@@ -112,220 +178,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
 
         }
-        [HttpPost("createMultiple")]
-        public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
-        {
-            await _orderService.CreateOrders(createMultipleOrders);
-            return Ok();
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _orderService.Delete(id);
-            return Ok();
 
-        }
-        [HttpGet("WithoutPaging")]
-        public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
-        {
-            var orderIQ = this._context.Orders
-                .Include(c => c.Client)
-                    .ThenInclude(c => c.ClientPhones)
-                .Include(c => c.Agent)
-                    .ThenInclude(c => c.UserPhones)
-                .Include(c => c.Region)
-                .Include(c => c.Country)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.OrderItems)
-                    .ThenInclude(c => c.OrderTpye)
-                .Include(c => c.AgentOrderPrints)
-                .ThenInclude(c => c.AgentPrint)
-                 .Include(c => c.OrderClientPaymnets)
-                 .ThenInclude(c => c.ClientPayment)
-            .AsQueryable();
-            if (orderFilter.CountryId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
-            }
-            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
-            {
-                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
-            }
-            if (orderFilter.ClientId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
-            }
-            if (orderFilter.RegionId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
-            }
-            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
-            }
-            if (orderFilter.MonePlacedId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
-            }
-            if (orderFilter.OrderplacedId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
-            }
-            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
-            }
-            if (orderFilter.AgentId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
-            }
-            if (orderFilter.IsClientDiliverdMoney != null)
-            {
-                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
-            }
-            if (orderFilter.ClientPrintNumber != null)
-            {
-                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
-            }
-            if (orderFilter.AgentPrintNumber != null)
-            {
-                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
-            }
-            if (orderFilter.CreatedDate != null)
-            {
-                orderIQ = orderIQ.Where(c => c.Date.Value.Date == orderFilter.CreatedDate.Value.Date);
-            }
-            if (orderFilter.AgentPrintStartDate != null)
-            {
-                ///TODO :
-                ///chould check this query 
-                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
-            }
-            if (orderFilter.AgentPrintEndDate != null)
-            {
-                ///TODO :
-                ///chould check this query 
-                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
-            }
-            var total = await orderIQ.CountAsync();
-            var orders = await orderIQ
-                .ToListAsync();
-            return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
 
-        }
-        [HttpGet("TrakingOrder")]
-        public IActionResult Get([FromQuery] int agentId, int? nextCountry)
-        {
-            var orders = this._context.Orders
-                .Include(c => c.Country)
-                .Include(c => c.Client)
-                .Where(c => c.AgentId == agentId && c.OrderplacedId == (int)OrderplacedEnum.Way && c.Country.MediatorId != null).AsQueryable();
-            if (nextCountry != null)
-            {
-                orders = orders.Where(c => c.CurrentCountry != nextCountry);
-            }
-            var dto = _mapper.Map<OrderDto[]>(orders).ToList();
-
-            if (nextCountry != null)
-            {
-                Dictionary<int, List<Country>> paths = new Dictionary<int, List<Country>>();
-                dto.ForEach(c =>
-                {
-                    if (!paths.ContainsKey(c.Country.Id))
-                    {
-                        paths.Add(c.Country.Id, GetPath(this._context.Countries.Find(c.Country.Id)));
-                    }
-                    var path = paths[c.Country.Id];
-                    bool test = false;
-                    foreach (var item in path)
-                    {
-                        if (test)
-                        {
-
-                            c.NextCountryDto = _mapper.Map<CountryDto>(item);
-                            break;
-                        }
-                        if (item.Id == c.CurrentCountry)
-                        {
-                            test = true;
-                        }
-                    }
-                });
-            }
-            return Ok(dto);
-        }
-        [HttpPut("MoveToNextStep")]
-        public IActionResult MoveToNextStep([FromBody] int[] ids)
-        {
-            var orders = this._context.Orders
-                .Include(c => c.Country)
-                .Where(c => ids.Contains(c.Id)).ToList();
-            Dictionary<int, List<Country>> paths = new Dictionary<int, List<Country>>();
-            foreach (var item in orders)
-            {
-                if (!paths.ContainsKey(item.CountryId))
-                {
-                    paths.Add(item.CountryId, GetPath(item.Country));
-                }
-                var path = paths[item.Country.Id];
-                bool test = false;
-                foreach (var country in path)
-                {
-                    if (test)
-                    {
-                        item.CurrentCountry = country.Id;
-                    }
-                    if (country.Id == item.CurrentCountry)
-                    {
-                        test = true;
-                    }
-                }
-            }
-            this._context.SaveChanges();
-            return Ok();
-        }
-        List<Country> GetPath(Country country, List<Country> countries = null)
-        {
-            if (country.MediatorId != null)
-            {
-                var mid = this._context.Countries.Find(country.MediatorId);
-                countries = GetPath(mid, countries);
-
-            }
-            if (countries == null)
-                countries = new List<Country>();
-            countries.Add(country);
-            return countries;
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var order = this._context.Orders
-               .Include(c => c.Client)
-                       .ThenInclude(c => c.ClientPhones)
-                       .Include(c => c.Client)
-                       .ThenInclude(c => c.Country)
-                   .Include(c => c.Agent)
-                       .ThenInclude(c => c.UserPhones)
-                   .Include(c => c.Region)
-                   .Include(c => c.Country)
-                   .Include(c => c.Orderplaced)
-                   .Include(c => c.MoenyPlaced)
-                   .Include(c => c.OrderItems)
-                       .ThenInclude(c => c.OrderTpye)
-                   .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.OrderLogs)
-                   .Include(c => c.AgentOrderPrints)
-                        .ThenInclude(c => c.AgentPrint)
-                   .Include(c => c.ReceiptOfTheOrderStatusDetalis)
-                        .ThenInclude(c => c.ReceiptOfTheOrderStatus)
-                        .ThenInclude(c => c.Recvier)
-               .FirstOrDefault(c => c.Id == id);
-            return Ok(_mapper.Map<OrderDto>(order));
-        }
         [HttpGet("OrdersDontFinished")]
         public async Task<IActionResult> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
         {
@@ -370,10 +224,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var o = _mapper.Map<PayForClientDto[]>(orders);
             return Ok(o);
         }
-        [HttpGet("orderPlace")]
-        public async Task<IActionResult> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
-        [HttpGet("MoenyPlaced")]
-        public async Task<IActionResult> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
+        
         [HttpGet("chekcCode")]
         public async Task<ActionResult<bool>> CheckCode([FromQuery] string code, int clientid)
         {
@@ -651,22 +502,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 .ToList();
             return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
         }
-        [HttpPut("MakeOrderInWay")]
-        public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
-        {
-            var result = await _orderService.MakeOrderInWay(ids);
-            return GetResult(result);
-        }
-        [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
-        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
-        {
-            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
-        }
-        [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
-        public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
-        {
-            return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
-        }
+        
         [HttpGet("GetClientprint")]
         public async Task<IActionResult> GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
         {
@@ -1428,20 +1264,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 throw ex;
             }
         }
-        [HttpPost("ForzenInWay")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromForm] FrozenOrder frozenOrder)
-        {
-            return Ok(await _orderService.ForzenInWay(frozenOrder));
-        }
-        [HttpGet("ReceiptOfTheOrderStatus/{id}")]
-        public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
-        {
-            return Ok(await _orderService.GetReceiptOfTheOrderStatusById(id));
-        }
-        [HttpGet("ReceiptOfTheOrderStatus")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
-        {
-            return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
-        }
+        
     }
 }

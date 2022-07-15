@@ -707,6 +707,12 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
+
+        public async Task<OrderDto> GetById(int id)
+        {
+            var order = await _repository.GetById(id);
+            return _mapper.Map<OrderDto>(order);
+        }
     }
 
 
