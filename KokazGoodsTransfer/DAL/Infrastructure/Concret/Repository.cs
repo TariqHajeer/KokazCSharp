@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         protected readonly KokazContext _kokazContext;
         protected IQueryable<T> Query;
-        private readonly int branchId;
+        protected readonly int branchId;
         public Repository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
             this._kokazContext = kokazContext;
@@ -77,7 +77,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             query = IncludeLmbda(query, propertySelectors);
             return await query.ToListAsync();
         }
-        private IQueryable<T> IncludeLmbda(IQueryable<T> query, params Expression<Func<T, object>>[] propertySelectors)
+        protected IQueryable<T> IncludeLmbda(IQueryable<T> query, params Expression<Func<T, object>>[] propertySelectors)
         {
             if (propertySelectors != null)
             {

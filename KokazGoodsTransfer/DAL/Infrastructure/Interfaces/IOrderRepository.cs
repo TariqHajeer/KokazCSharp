@@ -10,6 +10,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, params Expression<Func<Order, object>>[] propertySelectors);
+        Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, string[] propertySelectors = null);
     }
 }

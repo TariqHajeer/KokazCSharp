@@ -11,7 +11,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int ClientId { get; set; }
         public int CountryId { get; set; }
         public int AgentId { get; set; }
-        public int OrderplacedId { get; set; }
         public string RecipientName { get; set; }
         public decimal Cost { get; set; }
         public string RecipientPhones { set; get; }

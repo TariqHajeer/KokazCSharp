@@ -22,7 +22,12 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 
             CreateMap<CreateOrdersFromEmployee, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)));
-            CreateMap<CreateMultipleOrder, Order>();
+            CreateMap<CreateMultipleOrder, Order>()
+                .ForMember(c => c.Seen, opt => opt.MapFrom(src => true))
+                .ForMember(c => c.MoenyPlacedId, opt => opt.MapFrom(src => (int)MoneyPalcedEnum.OutSideCompany))
+                .ForMember(c => c.IsClientDiliverdMoney, opt => opt.MapFrom(src => false))
+                .ForMember(c => c.OrderStateId, opt => opt.MapFrom(src => (int)OrderStateEnum.Processing))
+                .ForMember(c => c.OrderplacedId, opt => opt.MapFrom(src => (int)OrderplacedEnum.Store));
 
             CreateMap<DisAcceptOrder, OrderDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

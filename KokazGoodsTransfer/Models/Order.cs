@@ -1,11 +1,13 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Order
+    public partial class Order : IHaveBranch
     {
         public Order()
         {
@@ -51,7 +53,8 @@ namespace KokazGoodsTransfer.Models
         public int? CurrentCountry { get; set; }
         public int PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
-
+        public int BranchId { get; set; }
+        public int? SecondBranchId { get; set; }
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
@@ -66,5 +69,9 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
+        public Branch Branch { get; set; }
+        [ForeignKey(nameof(SecondBranchId))]
+        public virtual Branch SecondBranch { get; set; }
+
     }
 }

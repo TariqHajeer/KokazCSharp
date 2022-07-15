@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.CustomException;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Common;
@@ -7,9 +8,12 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
@@ -27,10 +31,12 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IMapper _mapper;
         private readonly IRepository<ReceiptOfTheOrderStatus> _receiptOfTheOrderStatusRepository;
         private readonly IRepository<ReceiptOfTheOrderStatusDetali> _receiptOfTheOrderStatusDetalisRepository;
+        private readonly ICountryCashedService _countryCashedService;
         private readonly Logging _logging;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository)
+        private readonly string currentUser;
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -41,6 +47,8 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _logging = logging;
             _receiptOfTheOrderStatusDetalisRepository = receiptOfTheOrderStatusDetalisRepository;
+            _countryCashedService = countryCashedService;
+            currentUser = httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -494,7 +502,166 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
+        {
+            var pagingResult = await _repository.Get(pagingDto, orderFilter, new string[] { "Client", "Agent", "Region", "Country", "Orderplaced", "MoenyPlaced", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" });
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Data = _mapper.Map<OrderDto[]>(pagingResult.Data),
+                Total = pagingResult.Total
+            };
+        }
+        public async Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders)
+        {
+            {
+                var clientsIds = createMultipleOrders.Select(c => c.ClientId);
+                var codes = createMultipleOrders.Select(c => c.Code);
 
+                var exsitinOrders = await _uintOfWork.Repository<Order>().GetAsync(c => codes.Contains(c.Code) && clientsIds.Contains(c.ClientId));
+                if (exsitinOrders.Any())
+                {
+                    exsitinOrders = exsitinOrders.Where(eo => createMultipleOrders.Any(co => co.ClientId == eo.ClientId && eo.Code == co.Code));
+                    if (exsitinOrders.Any())
+                    {
+                        throw new ConfilectException(exsitinOrders.Select(c => $"الكود{c.Code} مكرر"));
+                    }
+                }
+
+            }
+            var mainCountryId = (await _countryCashedService.GetAsync(c => c.IsMain == true)).First().Id;
+            var agnetsIds = createMultipleOrders.Select(c => c.AgentId);
+            var agnets = await _uintOfWork.Repository<User>().Select(c => agnetsIds.Contains(c.Id), c => new { c.Id, c.Salary });
+            await _uintOfWork.BegeinTransaction();
+            try
+            {
+                var orders = createMultipleOrders.Select(item =>
+                 {
+                     var order = _mapper.Map<Order>(item);
+                     order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
+                     order.Date = item.Date;
+                     order.CurrentCountry = mainCountryId;
+                     order.CreatedBy = currentUser;
+                     return order;
+                 });
+                await _uintOfWork.AddRange(orders);
+                await _uintOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+
+                await _uintOfWork.Rollback();
+                _logging.WriteExption(ex);
+                throw ex;
+            }
+        }
+
+        public async Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee)
+        {
+            var country = await _countryCashedService.GetById(createOrdersFromEmployee.CountryId);
+            await _uintOfWork.BegeinTransaction();
+            try
+            {
+                var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
+                order.CurrentCountry = country.Id;
+                order.CreatedBy = currentUser;
+                if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
+                {
+                    throw new ConfilectException($"الكود{order.Code} مكرر");
+                }
+                if (createOrdersFromEmployee.RegionId == null)
+                {
+                    if (!String.IsNullOrWhiteSpace(createOrdersFromEmployee.RegionName))
+                    {
+                        var region = new Region()
+                        {
+                            Name = createOrdersFromEmployee.RegionName,
+                            CountryId = createOrdersFromEmployee.CountryId
+                        };
+                        await _uintOfWork.Add(region);
+                        order.RegionId = region.Id;
+                        order.Seen = true;
+                    }
+                    order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
+                }
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.DeliveryCost = country.DeliveryCost;
+                if (order.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)
+                {
+                    order.IsClientDiliverdMoney = true;
+
+                }
+                else
+                {
+                    order.IsClientDiliverdMoney = false;
+                }
+                await _uintOfWork.Add(order);
+
+                if (createOrdersFromEmployee.OrderTypeDtos != null)
+                {
+
+                    foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
+                    {
+                        int orderId;
+                        if (item.OrderTypeId != null)
+                        {
+                            orderId = (int)item.OrderTypeId;
+                        }
+                        else
+                        {
+                            OrderType orderType = new OrderType()
+                            {
+                                Name = item.OrderTypeName
+                            };
+                            await _uintOfWork.Add(orderType);
+                            orderId = orderType.Id;
+                        }
+                        OrderItem orderItem = new OrderItem()
+                        {
+                            OrderId = order.Id,
+                            Count = item.Count,
+                            OrderTpyeId = orderId
+                        };
+                        await _uintOfWork.Add(orderItem);
+                    }
+                }
+
+                await _uintOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                await _uintOfWork.Rollback();
+                _logging.WriteExption(ex);
+                throw ex;
+            }
+        }
+
+        public async Task<bool> Any(Expression<Func<Order, bool>> expression)
+        {
+            return await _repository.Any(expression);
+        }
+
+        public async Task<IEnumerable<CodeStatus>> GetCodeStatuses(int clientId, string[] codes)
+        {
+            List<CodeStatus> codeStatuses = new List<CodeStatus>();
+            var nonAvilableCode = await _repository.Select(c => c.ClientId == clientId && codes.Contains(c.Code), c => c.Code);
+            codeStatuses.AddRange(codes.Except(nonAvilableCode).Select(c => new CodeStatus()
+            {
+                Code = c,
+                Avilabe = true
+            }));
+            codeStatuses.AddRange(nonAvilableCode.Select(c => new CodeStatus()
+            {
+                Avilabe = false,
+                Code = c
+            }));
+            return codeStatuses;
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null)
+        {
+            var orders = await _repository.GetByFilterInclue(expression, propertySelector);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
     }
     /// <summary>
     /// Related With Agent

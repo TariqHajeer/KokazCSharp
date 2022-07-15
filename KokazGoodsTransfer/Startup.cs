@@ -19,6 +19,7 @@ using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.DAL.Infrastructure.Concret;
 using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.Services.Concret;
+using KokazGoodsTransfer.Middlewares;
 
 namespace KokazGoodsTransfer
 {
@@ -182,7 +183,7 @@ namespace KokazGoodsTransfer
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseMiddleware<ErrorMiddlewares>();
             app.UseRouting();
 
             app.UseCors("EnableCORS");

@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<IEnumerable<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
         {
-            var list = await _repository.GetAsync(c => (c.CanWorkAsAgent == true && c.BranchId == _currentBranch) || (c.CanWorkAsAgent == false && c.Branches.Any(c => _branchesIds.Contains(c.BranchId))));
+            var list = await _repository.GetAsync(c => (c.CanWorkAsAgent == true && c.BranchId == _currentBranch) || (c.CanWorkAsAgent == false && c.Branches.Any(c => c.BranchId == _currentBranch)));
 
             var dtos = _mapper.Map<UserDto[]>(list).ToList();
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();

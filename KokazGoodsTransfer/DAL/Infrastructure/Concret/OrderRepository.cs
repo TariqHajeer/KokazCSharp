@@ -16,21 +16,19 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         public OrderRepository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor) : base(kokazContext, httpContextAccessor)
         {
+            Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }
 
-        public async Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, params Expression<Func<Order, object>>[] propertySelectors)
+        public async Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, string[] propertySelectors = null)
         {
-            var query = _kokazContext.Orders.Include(c => c.Client)
-                    .Include(c => c.Agent)
-                    .Include(c => c.Region)
-                    .Include(c => c.Country)
-                    .Include(c => c.Orderplaced)
-                    .Include(c => c.MoenyPlaced)
-                    .Include(c => c.OrderClientPaymnets)
-                        .ThenInclude(c => c.ClientPayment)
-                    .Include(c => c.AgentOrderPrints)
-                        .ThenInclude(c => c.AgentPrint)
-               .AsQueryable();
+            var query = Query;
+            if (propertySelectors.Any() == true)
+            {
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            }
             if (filter.CountryId != null)
             {
                 query = query.Where(c => c.CountryId == filter.CountryId);
