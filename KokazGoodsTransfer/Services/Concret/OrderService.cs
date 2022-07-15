@@ -18,9 +18,6 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
-    /// <summary>
-    /// Related With Employee
-    /// </summary>
     public partial class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
@@ -662,31 +659,11 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetByFilterInclue(expression, propertySelector);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
-    }
-    /// <summary>
-    /// Related With Agent
-    /// </summary>
-    public partial class OrderService : IOrderService
-    {
-
-    }
-    /// <summary>
-    /// Related with Client
-    /// </summary>
-    public partial class OrderService : IOrderService
-    {
         public Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
 
             throw new NotImplementedException();
         }
-    }
-
-    /// <summary>
-    /// private function 
-    /// </summary>
-    partial class OrderService
-    {
         private async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
         {
             var response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
@@ -709,5 +686,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = dtos
             };
         }
+
+        public async Task Delete(int id)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == id);
+            await _repository.Delete(order);
+        }
     }
+
+
 }

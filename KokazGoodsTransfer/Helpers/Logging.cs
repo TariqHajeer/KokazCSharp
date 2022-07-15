@@ -42,17 +42,10 @@ namespace KokazGoodsTransfer.Helpers
         public static string GetExption(Exception exception)
         {
             var ex = exception;
-            string text = "";
-            var st = new StackTrace(ex, true);
-            var frame = st.GetFrame(0);
-            var line = frame.GetFileLineNumber();
-            var method = frame.GetMethod();
-            var exfile = frame.GetFileName();
-            var date = DateTime.UtcNow;
-            text += date.ToString() + Environment.NewLine;
-            text += exfile + Environment.NewLine;
-            text += method + Environment.NewLine;
-            text += line + Environment.NewLine;
+            var type = ex.GetType().FullName;
+            string text = "Type: " + type + Environment.NewLine;
+            text += DateTime.UtcNow.ToString() + Environment.NewLine;
+            text += $"Stack Trace: {ex.StackTrace}{Environment.NewLine}";
 
             while (ex != null)
             {

@@ -26,18 +26,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
         Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders);
         Task<bool> Any(Expression<Func<Order, bool>> expression);
-    }
-    /// <summary>
-    /// Related With Agent
-    /// </summary>
-    public partial interface IOrderService
-    {
-    }
-    /// <summary>
-    /// Realted with Client
-    /// </summary>
-    public partial interface IOrderService
-    {
         Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
+        Task Delete(int id);
     }
 }

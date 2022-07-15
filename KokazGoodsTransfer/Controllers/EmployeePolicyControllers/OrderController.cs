@@ -134,20 +134,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var order = this._context.Orders.Find(id);
-                this._context.Remove(order);
-                this._context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            await _orderService.Delete(id);
+            return Ok();
+
         }
         [HttpGet("WithoutPaging")]
         public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)

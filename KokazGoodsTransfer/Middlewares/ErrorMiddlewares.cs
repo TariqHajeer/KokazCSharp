@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.CustomException;
+using KokazGoodsTransfer.Helpers;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Text.Json;
@@ -9,21 +10,26 @@ namespace KokazGoodsTransfer.Middlewares
     public class ErrorMiddlewares
     {
         private readonly RequestDelegate _next;
+        private  Logging _logging;
         public ErrorMiddlewares(RequestDelegate next)
         {
             _next = next;
+            
         }
         public async Task Invoke(HttpContext context)
         {
+            
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
             {
+                _logging = context.RequestServices.GetService(typeof(Logging)) as Logging;
+                _logging.WriteExption(ex);
                 var response = context.Response;
                 response.ContentType = "application/json";
-                dynamic responseBody = "";
+                dynamic responseBody;
                 switch (ex)
                 {
                     case ConfilectException cex:
@@ -33,8 +39,10 @@ namespace KokazGoodsTransfer.Middlewares
                         }
                         break;
                     default:
-                        response.StatusCode = StatusCodes.Status400BadRequest;
-                        responseBody = ex.Message;
+                        {
+                            response.StatusCode = StatusCodes.Status400BadRequest;
+                            responseBody = ex.Message;
+                        }
                         break;
 
                 }
