@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class OutComeController : AbstractEmployeePolicyController
     {
         private readonly IOutcomeService _outcomeService;
-        public OutComeController(KokazContext context, IMapper mapper, Logging logging, IOutcomeService outcomeService) : base(context, mapper, logging)
+        public OutComeController(KokazContext context, IMapper mapper, IOutcomeService outcomeService) : base(context, mapper)
         {
             _outcomeService = outcomeService;
         }
@@ -70,32 +70,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<ActionResult<OutComeDto>> Create([FromBody] CreateOutComeDto createOutComeDto)
         {
-            try
-            {
-                var result = await _outcomeService.AddAsync(createOutComeDto);
-                if (result.Sucess)
-                    return Ok(result.Data);
-                return Conflict();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var result = await _outcomeService.AddAsync(createOutComeDto);
+            if (result.Sucess)
+                return Ok(result.Data);
+            return Conflict();
+
         }
         [HttpPost("CreateMulitpleOutCome")]
         public async Task<IActionResult> CreateMultiple([FromBody] IList<CreateOutComeDto> createOutComeDtos)
         {
-            try
-            {
-                await _outcomeService.AddRangeAsync(createOutComeDtos);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            await _outcomeService.AddRangeAsync(createOutComeDtos);
+            return Ok();
+
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

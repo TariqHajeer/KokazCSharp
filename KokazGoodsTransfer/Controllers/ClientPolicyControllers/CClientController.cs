@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CClientController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public CClientController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
+        public CClientController(KokazContext context, IMapper mapper,  NotificationHub notificationHub) : base(context, mapper)
         {
             _notificationHub = notificationHub;
         }

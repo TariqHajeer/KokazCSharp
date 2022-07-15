@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class PaymentRequestController : AbstractEmployeePolicyController
     {
-        public PaymentRequestController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public PaymentRequestController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpGet]

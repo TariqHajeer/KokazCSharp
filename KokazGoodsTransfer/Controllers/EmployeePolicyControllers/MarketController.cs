@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class MarketController : AbstractEmployeePolicyController
     {
         IWebHostEnvironment env;
-        public MarketController(KokazContext context, IMapper mapper, IWebHostEnvironment env, Logging logging) : base(context, mapper, logging)
+        public MarketController(KokazContext context, IMapper mapper, IWebHostEnvironment env) : base(context, mapper)
         {
             this.env = env;
         }

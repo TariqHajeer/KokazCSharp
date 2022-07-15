@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class ClientAuthController : AbstractController
     {
-        public ClientAuthController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public ClientAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpPost]

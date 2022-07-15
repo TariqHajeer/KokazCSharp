@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OutComeTypeDtos;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -18,7 +13,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class OutComeTypeController : AbstractEmployeePolicyController
     {
         private readonly IOutcomeTypeService _outcomeTypeService;
-        public OutComeTypeController(IOutcomeTypeService outcomeTypeService, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public OutComeTypeController(IOutcomeTypeService outcomeTypeService, KokazContext context, IMapper mapper) : base(context, mapper)
         {
             _outcomeTypeService = outcomeTypeService;
         }
@@ -40,41 +35,28 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateOutComeTypeDto updateOutComeTypeDto)
         {
-            try
+            var result = await _outcomeTypeService.Update(updateOutComeTypeDto);
+            if (result.Errors.Any())
             {
-                var result = await _outcomeTypeService.Update(updateOutComeTypeDto);
-                if (result.Errors.Any())
-                {
-                    return Conflict();
-                }
-                return Ok(result.Data);
+                return Conflict();
             }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            return Ok(result.Data);
+
 
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var result = await _outcomeTypeService.Delete(id);
-                if (result.Sucess)
-                    return Ok(result.Data);
-                if (result.NotFound)
-                    return NotFound();
-                if (result.CantDelete)
-                    return Conflict();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var result = await _outcomeTypeService.Delete(id);
+            if (result.Sucess)
+                return Ok(result.Data);
+            if (result.NotFound)
+                return NotFound();
+            if (result.CantDelete)
+                return Conflict();
+            return Ok();
+
         }
     }
 }

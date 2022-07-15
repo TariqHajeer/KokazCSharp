@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class TreasuryController : AbstractEmployeePolicyController
     {
         private readonly ITreasuryService _treasuryService;
-        public TreasuryController(KokazContext context, IMapper mapper, Logging logging, ITreasuryService treasuryService) : base(context, mapper, logging)
+        public TreasuryController(KokazContext context, IMapper mapper, ITreasuryService treasuryService) : base(context, mapper)
         {
             _treasuryService = treasuryService;
         }

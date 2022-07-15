@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class OrderTypeController : AbstractEmployeePolicyController
     {
-        public OrderTypeController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public OrderTypeController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
@@ -51,46 +51,32 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public IActionResult Update([FromBody] UpdateOrderTypeDto updateOrderTypeDto)
         {
-            try
-            {
-                var orderType = this._context.OrderTypes.Find(updateOrderTypeDto.Id);
-                if (orderType == null)
-                    return NotFound();
-                if (this._context.OrderTypes.Where(c => c.Id != updateOrderTypeDto.Id && c.Name == updateOrderTypeDto.Name).Any())
-                    return Conflict();
-                orderType.Name = updateOrderTypeDto.Name;
-                this._context.Update(orderType);
-                this._context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var orderType = this._context.OrderTypes.Find(updateOrderTypeDto.Id);
+            if (orderType == null)
+                return NotFound();
+            if (this._context.OrderTypes.Where(c => c.Id != updateOrderTypeDto.Id && c.Name == updateOrderTypeDto.Name).Any())
+                return Conflict();
+            orderType.Name = updateOrderTypeDto.Name;
+            this._context.Update(orderType);
+            this._context.SaveChanges();
+            return Ok();
+
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            try
-            {
-                var orderType = this._context.OrderTypes
-                    .Include(c => c.OrderItems)
-                    .Where(c => c.Id == id).SingleOrDefault();
-                if (orderType == null)
-                    return NotFound();
-                this._context.Entry(orderType).Collection(c => c.OrderItems).Load();
-                if (orderType.OrderItems.Count() != 0)
-                    return Conflict();
-                this._context.Remove(orderType);
-                this._context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var orderType = this._context.OrderTypes
+                .Include(c => c.OrderItems)
+                .Where(c => c.Id == id).SingleOrDefault();
+            if (orderType == null)
+                return NotFound();
+            this._context.Entry(orderType).Collection(c => c.OrderItems).Load();
+            if (orderType.OrderItems.Count() != 0)
+                return Conflict();
+            this._context.Remove(orderType);
+            this._context.SaveChanges();
+            return Ok();
+
 
         }
 

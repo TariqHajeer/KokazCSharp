@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly IGroupService _groupService;
-        public GroupController(IGroupService groupService, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public GroupController(IGroupService groupService, KokazContext context, IMapper mapper) : base(context, mapper)
         {
             _groupService = groupService;
         }
@@ -58,20 +58,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public async Task<ActionResult<GroupDto>> Update([FromBody] UpdateGroupDto updateGroupDto)
         {
-            try
-            {
-                var result = await _groupService.Update(updateGroupDto);
-                if (result.Sucess)
-                    return Ok(result.Data);
-                if (result.NotFound)
-                    return NotFound();
-                return Conflict(result);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _groupService.Update(updateGroupDto);
+            if (result.Sucess)
+                return Ok(result.Data);
+            if (result.NotFound)
+                return NotFound();
+            return Conflict(result);
         }
 
 

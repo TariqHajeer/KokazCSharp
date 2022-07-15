@@ -14,12 +14,10 @@ namespace KokazGoodsTransfer.Controllers
     {
         protected KokazContext _context;
         protected IMapper _mapper;
-        protected readonly Logging _logging;
-        public AbstractController(KokazContext context, IMapper mapper,Logging logging)
+        public AbstractController(KokazContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _logging = logging;
         }
         protected int AuthoticateUserId()
         {

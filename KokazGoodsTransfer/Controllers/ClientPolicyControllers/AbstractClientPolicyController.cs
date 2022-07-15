@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [Authorize(Policy = "Client")]
     public class AbstractClientPolicyController : AbstractController
     {
-        public AbstractClientPolicyController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public AbstractClientPolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
     }

@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CStaticsController : AbstractClientPolicyController
     {
         NotificationHub notificationHub;
-        public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging) : base(context, mapper, logging)
+        public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
         {
             this.notificationHub = notificationHub;
         }

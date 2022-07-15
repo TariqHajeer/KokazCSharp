@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CPaymentRequestController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public CPaymentRequestController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
+        public CPaymentRequestController(KokazContext context, IMapper mapper,  NotificationHub notificationHub) : base(context, mapper)
         {
             this._notificationHub = notificationHub;
         }

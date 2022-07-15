@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IRegionCashedService _regionCashedService;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IUserCashedService _userCashedService;
-        public RegionController(KokazContext context, IMapper mapper, Logging logging, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService,IUserCashedService userCashedService) : base(context, mapper, logging)
+        public RegionController(KokazContext context, IMapper mapper, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService, IUserCashedService userCashedService) : base(context, mapper)
         {
             _regionCashedService = regionCashedService;
             _countryCashedService = countryCashedService;
@@ -36,54 +36,35 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRegionDto createRegionDto)
         {
-            try
-            {
-                var result = await _regionCashedService.AddAsync(createRegionDto);
-                RemoveRelatedCash();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _regionCashedService.AddAsync(createRegionDto);
+            RemoveRelatedCash();
+            return Ok(result.Data);
+
 
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var result = await _regionCashedService.Delete(id);
-                if (result.Errors.Any())
-                    return Conflict();
-                RemoveRelatedCash();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest(ex.Message);
-            }
+
+            var result = await _regionCashedService.Delete(id);
+            if (result.Errors.Any())
+                return Conflict();
+            RemoveRelatedCash();
+            return Ok();
+
         }
         [HttpPatch]
         public async Task<IActionResult> UpdateRegion([FromBody] UpdateRegionDto updateRegion)
         {
-            try
+
+            var result = await _regionCashedService.Update(updateRegion);
+            if (result.Errors.Any())
             {
-                var result = await _regionCashedService.Update(updateRegion);
-                if (result.Errors.Any())
-                {
-                    return Conflict();
-                }
-                RemoveRelatedCash();
-                return Ok();
+                return Conflict();
             }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            RemoveRelatedCash();
+            return Ok();
+
         }
     }
 }

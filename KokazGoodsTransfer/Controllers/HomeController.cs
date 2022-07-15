@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers
     public class HomeController : AbstractController
     {
         private readonly ICountryCashedService _countryCashedService;
-        public HomeController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        public HomeController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService) : base(context, mapper)
         {
             _countryCashedService = countryCashedService;
         }

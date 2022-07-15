@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class CPointController : AbstractClientPolicyController
     {
-        public CPointController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public CPointController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpGet("MyPoints")]
@@ -27,9 +27,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet]
         public IActionResult Get()
         {
-
-            var points = this._context.PointsSettings.ToList();
-            return Ok(_mapper.Map<PointSettingsDto[]>(points));
+            return Ok(_mapper.Map<PointSettingsDto[]>(this._context.PointsSettings.ToList()));
         }
     }
 }

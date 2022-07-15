@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [Authorize(Policy = "Agent")]
     public class AbstractAgentController : AbstractController
     {
-        public AbstractAgentController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper,logging)
+        public AbstractAgentController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
     }

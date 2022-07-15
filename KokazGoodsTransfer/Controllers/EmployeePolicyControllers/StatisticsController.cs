@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class StatisticsController : AbstractEmployeePolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public StatisticsController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
+        public StatisticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
         {
             this._notificationHub = notificationHub;
         }
@@ -47,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orderInNigative = await (clientOrder.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true)).SumAsync(c => c.Cost - c.DeliveryCost)) * -1;
             var orderInPositve = await (clientOrder.Where(c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent).SumAsync(c => c.Cost - c.AgentCost));
 
-            var totalAccount = await this._context.Receipts.Where(c => c.ClientPaymentId== null).SumAsync(c => c.Amount);
+            var totalAccount = await this._context.Receipts.Where(c => c.ClientPaymentId == null).SumAsync(c => c.Amount);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
@@ -106,23 +106,23 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             ShipmentTotal = ShipmentTotal.Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
             AggregateDto aggregateDto = new AggregateDto()
             {
-                ShipmentTotal =await ShipmentTotal.SumAsync(c => c.DeliveryCost - c.AgentCost),
-                TotalIncome =await TotalIncome.SumAsync(c => c.Earining),
-                TotalOutCome =await TotalOutCome.SumAsync(c => c.Amount)
+                ShipmentTotal = await ShipmentTotal.SumAsync(c => c.DeliveryCost - c.AgentCost),
+                TotalIncome = await TotalIncome.SumAsync(c => c.Earining),
+                TotalOutCome = await TotalOutCome.SumAsync(c => c.Amount)
             };
             return Ok(aggregateDto);
         }
         [HttpGet("AgnetStatics")]
-        public async  Task<IActionResult> AgnetStatics()
+        public async Task<IActionResult> AgnetStatics()
         {
-            var agent =await this._context.Users.Where(c => c.CanWorkAsAgent == true).ToListAsync();
+            var agent = await this._context.Users.Where(c => c.CanWorkAsAgent == true).ToListAsync();
             List<UserDto> userDtos = new List<UserDto>();
             foreach (var item in agent)
             {
                 var user = _mapper.Map<UserDto>(item);
                 user.UserStatics = new UserStatics
                 {
-                    OrderInStore =await this._context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).CountAsync(),
+                    OrderInStore = await this._context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).CountAsync(),
                     OrderInWay = await this._context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).CountAsync()
                 };
                 userDtos.Add(user);
@@ -144,7 +144,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         private async Task<ClientBlanaceDto> GetClientBalanceById(Client item)
         {
-            var totalAccountTask = await this._context.Receipts.Where(c => c.ClientId == item.Id && c.ClientPaymentId== null).SumAsync(c => c.Amount);
+            var totalAccountTask = await this._context.Receipts.Where(c => c.ClientId == item.Id && c.ClientPaymentId == null).SumAsync(c => c.Amount);
             var clientOrder = await this._context.Orders.Where(c => c.ClientId == item.Id).ToListAsync();
             var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
             var totalAccount = totalAccountTask;

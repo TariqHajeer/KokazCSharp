@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class COrderController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper, logging)
+        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper)
         {
             _notificationHub = notificationHub;
         }
@@ -149,9 +149,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 dbTransacrion.Rollback();
-                _logging.WriteExption(ex);
-                return BadRequest();
-
+                throw ex;
             }
         }
         [HttpPost("UploadExcel")]
@@ -309,8 +307,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 await dbTransacrion.RollbackAsync();
-                _logging.WriteExption(ex);
-                return BadRequest();
+                throw ex;
             }
 
         }
@@ -414,8 +411,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
-                _logging.WriteExption(ex);
-                return Conflict();
+                throw ex;
             }
         }
         async Task<bool> CodeExist(string code)

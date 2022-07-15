@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
         private readonly IIncomeTypeSerive _incomeTypeSerive;
-        public IncomeTypeController(IIncomeTypeSerive incomeTypeSerive, KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public IncomeTypeController(IIncomeTypeSerive incomeTypeSerive, KokazContext context, IMapper mapper) : base(context, mapper)
         {
             _incomeTypeSerive = incomeTypeSerive;
         }
@@ -43,40 +43,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateIncomeTypeDto updateIncomeTypeDto)
         {
-            try
+            var result = await _incomeTypeSerive.Update(updateIncomeTypeDto);
+            if (result.Errors.Any())
             {
-                var result = await _incomeTypeSerive.Update(updateIncomeTypeDto);
-                if (result.Errors.Any())
-                {
-                    return Conflict();
-                }
-                return Ok(result.Data);
+                return Conflict();
             }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            return Ok(result.Data);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var result = await _incomeTypeSerive.Delete(id);
-                if (result.Sucess)
-                    return Ok(result.Data);
-                if (result.NotFound)
-                    return NotFound();
-                if (result.CantDelete)
-                    return Conflict();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _incomeTypeSerive.Delete(id);
+            if (result.Sucess)
+                return Ok(result.Data);
+            if (result.NotFound)
+                return NotFound();
+            if (result.CantDelete)
+                return Conflict();
+            return Ok();
+
         }
     }
 }

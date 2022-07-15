@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class ClientController : AbstractEmployeePolicyController
     {
         private readonly IClientCashedService _clientCashedService;
-        public ClientController(KokazContext context, IMapper mapper, Logging logging, IClientCashedService clientCashedService) : base(context, mapper, logging)
+        public ClientController(KokazContext context, IMapper mapper, IClientCashedService clientCashedService) : base(context, mapper)
         {
             _clientCashedService = clientCashedService;
         }
@@ -30,19 +30,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [Authorize(Roles = "AddClient")]
         public async Task<IActionResult> CreateClient(CreateClientDto createClientDto)
         {
-            try
-            {
-                createClientDto.UserId = (int)AuthoticateUserId();
-                var result = await _clientCashedService.AddAsync(createClientDto);
-                if (result.Errors.Any())
-                    return Conflict();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            createClientDto.UserId = (int)AuthoticateUserId();
+            var result = await _clientCashedService.AddAsync(createClientDto);
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok(result.Data);
         }
         [HttpGet]
         public async Task<IActionResult> Get() => Ok(await _clientCashedService.GetCashed());
@@ -51,64 +44,36 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("addPhone")]
         public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
-            try
-            {
-                var result = await _clientCashedService.AddPhone(addPhoneDto);
-                if (result.Errors.Any())
-                    return Conflict();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _clientCashedService.AddPhone(addPhoneDto);
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok(result.Data);
+
         }
         [HttpPut("deletePhone/{id}")]
         public async Task<IActionResult> DeletePhone(int id)
         {
-            try
-            {
-                await _clientCashedService.DeletePhone(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            await _clientCashedService.DeletePhone(id);
+            return Ok();
+
         }
         [HttpPatch]
         public async Task<IActionResult> UpdateClient([FromBody] UpdateClientDto updateClientDto)
         {
-            try
-            {
-                var result = await _clientCashedService.Update(updateClientDto);
-                if (result.Errors.Any())
-                    return Conflict();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _clientCashedService.Update(updateClientDto);
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok(result.Data);
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            try
-            {
-                var result = await _clientCashedService.Delete(id);
-                if (result.Errors.Any())
-                    return Conflict();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _clientCashedService.Delete(id);
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok();
+
         }
         [HttpPost("Account")]
         public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
@@ -147,9 +112,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
-                _logging.WriteExption(ex);
                 await transaction.RollbackAsync();
-                return BadRequest();
+                throw ex;
             }
         }
         [HttpPost("GiveOrDiscountPoints")]

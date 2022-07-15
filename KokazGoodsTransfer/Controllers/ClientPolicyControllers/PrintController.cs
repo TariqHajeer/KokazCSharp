@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class PrintController : AbstractClientPolicyController
     {
-        public PrintController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public PrintController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpGet("{printNumber}")]

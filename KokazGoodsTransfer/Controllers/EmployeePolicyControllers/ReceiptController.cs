@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class ReceiptController : AbstractEmployeePolicyController
     {
-        public ReceiptController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public ReceiptController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
 

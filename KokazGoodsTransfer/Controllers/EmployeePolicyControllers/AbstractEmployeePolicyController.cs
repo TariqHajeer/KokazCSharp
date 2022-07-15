@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class AbstractEmployeePolicyController : AbstractController
     {
 
-        public AbstractEmployeePolicyController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public AbstractEmployeePolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         public ActionResult<GenaricErrorResponse<T1, T2, T3>> GetResult<T1, T2, T3>(GenaricErrorResponse<T1, T2, T3> response)

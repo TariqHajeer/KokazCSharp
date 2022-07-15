@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class IncomeController : AbstractEmployeePolicyController
     {
         private readonly IIncomeService _IncomeService;
-        public IncomeController(KokazContext context, IMapper mapper, Logging logging, IIncomeService incomeService) : base(context, mapper, logging)
+        public IncomeController(KokazContext context, IMapper mapper, IIncomeService incomeService) : base(context, mapper)
         {
             _IncomeService = incomeService;
         }
@@ -61,32 +61,18 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateIncomeDto creatrIncomeDto)
         {
-            try
-            {
-                var result = await _IncomeService.AddAsync(creatrIncomeDto);
-                if (result.Sucess)
+            var result = await _IncomeService.AddAsync(creatrIncomeDto);
+            if (result.Sucess)
                 return Ok(result.Data);
-                return Conflict();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            return Conflict();
+
         }
         [HttpPost("AddMultiple")]
         public async Task<IActionResult> Create([FromBody] IList<CreateIncomeDto> createIncomeDtos)
         {
-            try
-            {
-                await _IncomeService.AddRangeAsync(createIncomeDtos);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            await _IncomeService.AddRangeAsync(createIncomeDtos);
+            return Ok();
+
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -100,7 +86,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult UpdateIncome([FromBody] UpdateIncomeDto dto)
         {
             var income = this._context.Incomes.Find(dto.Id);
-            income = _mapper.Map<UpdateIncomeDto, Income>(dto, income);
+            income = _mapper.Map(dto, income);
             this._context.Update(income);
             this._context.SaveChanges();
             return Ok(income);

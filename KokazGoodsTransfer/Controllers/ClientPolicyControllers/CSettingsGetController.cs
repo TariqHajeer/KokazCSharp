@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRegionCashedService _regionCashedService;
-        public CSettingsGetController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper, logging)
+        public CSettingsGetController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper)
         {
 
             _countryCashedService = countryCashedService;

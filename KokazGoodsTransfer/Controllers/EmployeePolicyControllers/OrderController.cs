@@ -30,7 +30,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly NotificationHub notificationHub;
         readonly ErrorMessage err;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, Logging logging, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper, logging)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper)
         {
             err = new ErrorMessage
             {
@@ -45,16 +45,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
-            try
-            {
-                var result = await _orderService.GetOrderFiltered(pagingDto, orderFilter);
-                return Ok(new { data = result.Data, total = result.Total });
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _orderService.GetOrderFiltered(pagingDto, orderFilter);
+            return Ok(new { data = result.Data, total = result.Total });
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
@@ -67,65 +59,58 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public IActionResult Edit([FromBody] UpdateOrder updateOrder)
         {
 
-            try
+            var order = this._context.Orders.Find(updateOrder.Id);
+            OrderLog log = order;
+            this._context.Add(log);
+            if (order.Code != updateOrder.Code)
             {
-                var order = this._context.Orders.Find(updateOrder.Id);
-                OrderLog log = order;
-                this._context.Add(log);
-                if (order.Code != updateOrder.Code)
+                if (this._context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
                 {
-                    if (this._context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
-                    {
-                        this.err.Messges.Add($"الكود{order.Code} مكرر");
-                        return Conflict(err);
-                    }
+                    this.err.Messges.Add($"الكود{order.Code} مكرر");
+                    return Conflict(err);
                 }
-                order.Code = updateOrder.Code;
+            }
+            order.Code = updateOrder.Code;
 
-                if (order.AgentId != updateOrder.AgentId)
-                {
-                    order.OrderStateId = (int)OrderStateEnum.Processing;
-                    order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                    order.OrderplacedId = (int)OrderplacedEnum.Store;
-                }
-                if (order.ClientId != updateOrder.ClientId)
-                {
-                    if (order.IsClientDiliverdMoney)
-                    {
-                        order.IsClientDiliverdMoney = false;
-                        Receipt receipt = new Receipt()
-                        {
-                            IsPay = true,
-                            ClientId = order.ClientId,
-                            Amount = ((order.Cost - order.DeliveryCost) * -1),
-                            CreatedBy = "النظام",
-                            Manager = "",
-                            Date = DateTime.Now,
-                            About = "",
-                            Note = " بعد تعديل طلب بكود " + order.Code,
-                        };
-                        this._context.Add(receipt);
-                    }
-                }
-                order.DeliveryCost = updateOrder.DeliveryCost;
-                order.Cost = updateOrder.Cost;
-                order.ClientId = updateOrder.ClientId;
-                order.AgentId = updateOrder.AgentId;
-                order.CountryId = updateOrder.CountryId;
-                order.RegionId = updateOrder.RegionId;
-                order.Address = updateOrder.Address;
-                order.RecipientName = updateOrder.RecipientName;
-                order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
-                order.Note = updateOrder.Note;
-                this._context.Update(order);
-                this._context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
+            if (order.AgentId != updateOrder.AgentId)
             {
-                _logging.WriteExption(ex);
-                return BadRequest(ex.Message);
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
             }
+            if (order.ClientId != updateOrder.ClientId)
+            {
+                if (order.IsClientDiliverdMoney)
+                {
+                    order.IsClientDiliverdMoney = false;
+                    Receipt receipt = new Receipt()
+                    {
+                        IsPay = true,
+                        ClientId = order.ClientId,
+                        Amount = ((order.Cost - order.DeliveryCost) * -1),
+                        CreatedBy = "النظام",
+                        Manager = "",
+                        Date = DateTime.Now,
+                        About = "",
+                        Note = " بعد تعديل طلب بكود " + order.Code,
+                    };
+                    this._context.Add(receipt);
+                }
+            }
+            order.DeliveryCost = updateOrder.DeliveryCost;
+            order.Cost = updateOrder.Cost;
+            order.ClientId = updateOrder.ClientId;
+            order.AgentId = updateOrder.AgentId;
+            order.CountryId = updateOrder.CountryId;
+            order.RegionId = updateOrder.RegionId;
+            order.Address = updateOrder.Address;
+            order.RecipientName = updateOrder.RecipientName;
+            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+            order.Note = updateOrder.Note;
+            this._context.Update(order);
+            this._context.SaveChanges();
+            return Ok();
+
         }
         [HttpPost("createMultiple")]
         public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
@@ -143,98 +128,91 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("WithoutPaging")]
         public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
         {
-            try
+            var orderIQ = this._context.Orders
+                .Include(c => c.Client)
+                    .ThenInclude(c => c.ClientPhones)
+                .Include(c => c.Agent)
+                    .ThenInclude(c => c.UserPhones)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.OrderItems)
+                    .ThenInclude(c => c.OrderTpye)
+                .Include(c => c.AgentOrderPrints)
+                .ThenInclude(c => c.AgentPrint)
+                 .Include(c => c.OrderClientPaymnets)
+                 .ThenInclude(c => c.ClientPayment)
+            .AsQueryable();
+            if (orderFilter.CountryId != null)
             {
-                var orderIQ = this._context.Orders
-                    .Include(c => c.Client)
-                        .ThenInclude(c => c.ClientPhones)
-                    .Include(c => c.Agent)
-                        .ThenInclude(c => c.UserPhones)
-                    .Include(c => c.Region)
-                    .Include(c => c.Country)
-                    .Include(c => c.Orderplaced)
-                    .Include(c => c.MoenyPlaced)
-                    .Include(c => c.OrderItems)
-                        .ThenInclude(c => c.OrderTpye)
-                    .Include(c => c.AgentOrderPrints)
-                    .ThenInclude(c => c.AgentPrint)
-                     .Include(c => c.OrderClientPaymnets)
-                     .ThenInclude(c => c.ClientPayment)
-                .AsQueryable();
-                if (orderFilter.CountryId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
-                }
-                if (orderFilter.Code != string.Empty && orderFilter.Code != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
-                }
-                if (orderFilter.ClientId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
-                }
-                if (orderFilter.RegionId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
-                }
-                if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
-                }
-                if (orderFilter.MonePlacedId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
-                }
-                if (orderFilter.OrderplacedId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
-                }
-                if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
-                }
-                if (orderFilter.AgentId != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
-                }
-                if (orderFilter.IsClientDiliverdMoney != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
-                }
-                if (orderFilter.ClientPrintNumber != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
-                }
-                if (orderFilter.AgentPrintNumber != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
-                }
-                if (orderFilter.CreatedDate != null)
-                {
-                    orderIQ = orderIQ.Where(c => c.Date.Value.Date == orderFilter.CreatedDate.Value.Date);
-                }
-                if (orderFilter.AgentPrintStartDate != null)
-                {
-                    ///TODO :
-                    ///chould check this query 
-                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
-                }
-                if (orderFilter.AgentPrintEndDate != null)
-                {
-                    ///TODO :
-                    ///chould check this query 
-                    orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
-                }
-                var total = await orderIQ.CountAsync();
-                var orders = await orderIQ
-                    .ToListAsync();
-                return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
+                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
             }
-            catch (Exception ex)
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
             {
-                _logging.WriteExption(ex);
-                return BadRequest();
+                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
             }
+            if (orderFilter.ClientId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.ClientId == orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.MonePlacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
+            }
+            if (orderFilter.OrderplacedId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.AgentId != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentId == orderFilter.AgentId);
+            }
+            if (orderFilter.IsClientDiliverdMoney != null)
+            {
+                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
+            }
+            if (orderFilter.ClientPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
+            }
+            if (orderFilter.AgentPrintNumber != null)
+            {
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == orderFilter.AgentPrintNumber));
+            }
+            if (orderFilter.CreatedDate != null)
+            {
+                orderIQ = orderIQ.Where(c => c.Date.Value.Date == orderFilter.CreatedDate.Value.Date);
+            }
+            if (orderFilter.AgentPrintStartDate != null)
+            {
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= orderFilter.AgentPrintStartDate);
+            }
+            if (orderFilter.AgentPrintEndDate != null)
+            {
+                ///TODO :
+                ///chould check this query 
+                orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+            }
+            var total = await orderIQ.CountAsync();
+            var orders = await orderIQ
+                .ToListAsync();
+            return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
+
         }
         [HttpGet("TrakingOrder")]
         public IActionResult Get([FromQuery] int agentId, int? nextCountry)
@@ -885,10 +863,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
                 semaphore.Release();
                 transaction.Rollback();
-                _logging.WriteExption(ex);
-                return BadRequest();
-
-
+                throw ex;
             }
         }
         /// <summary>
@@ -990,9 +965,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 semaphore.Release();
                 transaction.Rollback();
-                _logging.WriteExption(ex);
-                return BadRequest();
-
+                throw ex;
             }
 
         }
@@ -1452,7 +1425,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             catch (Exception ex)
             {
                 transaction.Rollback();
-                _logging.WriteExption(ex);
+                throw ex;
                 return BadRequest();
             }
         }

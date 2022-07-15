@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IRegionCashedService _regionCashedService;
         private readonly IUserCashedService _userCashedService;
         private readonly IClientCashedService _clientCashedService;
-        public CountryController(KokazContext context, IMapper mapper, Logging logging, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService) : base(context, mapper, logging)
+        public CountryController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService) : base(context, mapper)
         {
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
@@ -36,74 +36,49 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CountryDto>>> GetAll() => Ok(await _countryCashedService.GetCashed());
-        
+
 
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCountryDto createCountryDto)
         {
-            try
-            {
-                var result = await _countryCashedService.AddAsync(createCountryDto);
-                if (result.Errors.Any())
-                    return Conflict();
-                RemoveRelatedCash();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var result = await _countryCashedService.AddAsync(createCountryDto);
+            if (result.Errors.Any())
+                return Conflict();
+            RemoveRelatedCash();
+            return Ok(result.Data);
+
         }
         [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateCountryDto updateCountryDto)
         {
-            try
-            {
-                var result = await _countryCashedService.Update(updateCountryDto);
-                if (result.Errors.Any())
-                    return Conflict();
-                RemoveRelatedCash();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _countryCashedService.Update(updateCountryDto);
+            if (result.Errors.Any())
+                return Conflict();
+            RemoveRelatedCash();
+            return Ok();
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var result = await _countryCashedService.Delete(id);
-                if (result.Errors.Any())
-                    return Conflict();
-                RemoveRelatedCash();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var result = await _countryCashedService.Delete(id);
+            if (result.Errors.Any())
+                return Conflict();
+            RemoveRelatedCash();
+            return Ok();
+
         }
         [HttpPut("SetMain/{id}")]
         public async Task<IActionResult> SetIsMain(int id)
         {
-            try
-            {
-                await _countryCashedService.SetMainCountry(id);
-                RemoveRelatedCash();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            await _countryCashedService.SetMainCountry(id);
+            RemoveRelatedCash();
+            return Ok();
+
         }
     }
 }

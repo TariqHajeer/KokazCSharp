@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class PointSettingsController : AbstractEmployeePolicyController
     {
-        public PointSettingsController(KokazContext context, IMapper mapper, Logging logging) : base(context, mapper, logging)
+        public PointSettingsController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
         [HttpGet]

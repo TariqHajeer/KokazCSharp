@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     {
         private readonly NotificationHub _notificationHub;
         private readonly IIndexService<OrderPlaced> _indexService;
-        public AgentOrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IIndexService<OrderPlaced> indexService) : base(context, mapper, logging)
+        public AgentOrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<OrderPlaced> indexService) : base(context, mapper)
         {
             _notificationHub = notificationHub;
             _indexService = indexService;
@@ -36,8 +36,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 .Include(c => c.Country)
                 .Include(c => c.Client)
                 .Include(c => c.Region)
-                .Include(c=>c.AgentOrderPrints)
-                    .ThenInclude(c=>c.AgentPrint)
+                .Include(c => c.AgentOrderPrints)
+                    .ThenInclude(c => c.AgentPrint)
                  .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
         }
@@ -182,7 +182,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
                 TotalOrderInSotre = await this._context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()).CountAsync(),
                 TotalOrderInWay = await this._context.Orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)).CountAsync(),
                 TotlaOwedOrder = await this._context.Orders.Where(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))).CountAsync(),
-                TotlaPrintOrder = await this._context.AgentPrints.Where(c=>c.AgentOrderPrints.Any(c=>c.Order.AgentId==AuthoticateUserId())).CountAsync(),
+                TotlaPrintOrder = await this._context.AgentPrints.Where(c => c.AgentOrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())).CountAsync(),
                 TotalOrderSuspended = await this._context.Orders.Where(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany)).CountAsync()
             };
             return Ok(mainStatics);

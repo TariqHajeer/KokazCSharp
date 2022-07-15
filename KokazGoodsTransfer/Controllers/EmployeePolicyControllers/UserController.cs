@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         private readonly IUserCashedService _userCashedService;
         private readonly ICountryCashedService _countryCashedService;
-        public UserController(KokazContext context, IMapper mapper, Logging logging, IUserCashedService userCashedService, ICountryCashedService countryCashedService) : base(context, mapper, logging)
+        public UserController(KokazContext context, IMapper mapper, IUserCashedService userCashedService, ICountryCashedService countryCashedService) : base(context, mapper)
         {
             _userCashedService = userCashedService;
             _countryCashedService = countryCashedService;
@@ -34,19 +34,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
         {
-            try
-            {
-                var reuslt = await _userCashedService.AddAsync(createUserDto);
-                _countryCashedService.RemoveCash();
-                if (reuslt.Errors.Any())
-                    return Conflict();
-                return Ok(reuslt.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var reuslt = await _userCashedService.AddAsync(createUserDto);
+            _countryCashedService.RemoveCash();
+            if (reuslt.Errors.Any())
+                return Conflict();
+            return Ok(reuslt.Data);
+
         }
 
         [HttpGet("{id}")]
@@ -57,75 +51,44 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("AddPhone")]
         public async Task<IActionResult> AddPhone([FromBody] AddPhoneDto addPhoneDto)
         {
-            try
-            {
-                var data = await _userCashedService.AddPhone(addPhoneDto);
-                _countryCashedService.RemoveCash();
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            var data = await _userCashedService.AddPhone(addPhoneDto);
+            _countryCashedService.RemoveCash();
+            return Ok(data);
+
         }
         [HttpPut("deletePhone/{id}")]
         public async Task<IActionResult> DeletePhone(int id)
         {
-            try
-            {
-                await _userCashedService.DeletePhone(id);
-                _countryCashedService.RemoveCash();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            await _userCashedService.DeletePhone(id);
+            _countryCashedService.RemoveCash();
+            return Ok();
+
         }
         [HttpPut("deleteGroup/{userId}")]
         public async Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
         {
-            try
-            {
-                await _userCashedService.DeleteGroup(userId, groupId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+
+            await _userCashedService.DeleteGroup(userId, groupId);
+            return Ok();
+
+
         }
         [HttpPut("AddToGroup/{userId}")]
         public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
         {
-            try
-            {
-                await _userCashedService.AddToGroup(userId, groupId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            await _userCashedService.AddToGroup(userId, groupId);
+            return Ok();
+
         }
         [HttpPatch]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDto)
         {
-            try
-            {
-                var result = await _userCashedService.Update(updateUserDto);
-                _countryCashedService.RemoveCash();
-                return Ok(result.Data);
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _userCashedService.Update(updateUserDto);
+            _countryCashedService.RemoveCash();
+            return Ok(result.Data);
+
         }
         [HttpGet("UsernameExist/{username}")]
         public async Task<IActionResult> UsernameExist(string username)
@@ -137,20 +100,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            try
-            {
 
-                var result = await _userCashedService.Delete(id);
-                _countryCashedService.RemoveCash();
-                if (result.Errors.Any())
-                    return Conflict();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logging.WriteExption(ex);
-                return BadRequest();
-            }
+            var result = await _userCashedService.Delete(id);
+            _countryCashedService.RemoveCash();
+            if (result.Errors.Any())
+                return Conflict();
+            return Ok();
+
         }
 
     }
