@@ -768,7 +768,13 @@ namespace KokazGoodsTransfer.Services.Concret
             orders.ToList().ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
             await _repository.Update(orders);
         }
-        
+        public async Task<EarningsDto> GetEarnings(PagingDto pagingDto, DateFiter dateFiter)
+        {
+
+            var orders = await _repository.GetAsync(pagingDto, c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned, c => c.Orderplaced, c => c.MoenyPlaced);
+        }
+
+
     }
 
 
