@@ -17,6 +17,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         private IDbContextTransaction _dbContextTransaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private Dictionary<string, object> _repositories;
+
+        public bool IsTransactionOpen => _dbContextTransaction != null;
+
         public UnitOfWork(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
             _kokazContext = kokazContext;
@@ -51,7 +54,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var type = typeof(TEntity).Name;
             if (!_repositories.ContainsKey(type))
             {
-                var repositoryInstance = new Repository<TEntity>(_kokazContext,_httpContextAccessor);
+                var repositoryInstance = new Repository<TEntity>(_kokazContext, _httpContextAccessor);
                 _repositories.Add(type, repositoryInstance);
             }
             return (Repository<TEntity>)_repositories[type];
@@ -72,6 +75,16 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task UpdateRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
         {
             await Repository<TEntity>().Update(entities);
+        }
+
+        public async Task Remove<TEntity>(TEntity entity) where TEntity : class
+        {
+            await Repository<TEntity>().Delete(entity);
+        }
+
+        public async Task RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
+        {
+            await Repository<TEntity>().Delete(entities);
         }
     }
 }

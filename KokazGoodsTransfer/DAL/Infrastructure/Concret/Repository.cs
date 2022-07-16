@@ -177,6 +177,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _kokazContext.Set<T>().Remove(entity);
             await _kokazContext.SaveChangesAsync();
         }
+        public async Task Delete(IEnumerable<T> entities)
+        {
+            _kokazContext.RemoveRange(entities);
+            await _kokazContext.SaveChangesAsync();
+        }
 
         public virtual async Task Update(IEnumerable<T> entites)
         {
@@ -241,7 +246,27 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             var query = Query.Where(filter);
             query = IncludeLmbda(query, propertySelectors);
-            return await query.Select<T, Projection>(projection).ToListAsync();
+            return await query.Select(projection).ToListAsync();
         }
+
+        public async Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter, string[] propertySelectors)
+        {
+            var query = Query.Where(filter);
+            if (propertySelectors?.Any() == true)
+            {
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            }
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<decimal> Sum(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null)
+        {
+            return await Query.Where(filter).SumAsync(selector);
+        }
+
+
     }
 }

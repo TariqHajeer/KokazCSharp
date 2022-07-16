@@ -168,6 +168,94 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.ReiveMoneyFromClient(ids);
             return Ok();
         }
+        [HttpGet("ShipmentsNotReimbursedToTheClient/{clientId}")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ShipmentsNotReimbursedToTheClient(int clientId)
+        {
+            var includes = new string[] { "Agent.UserPhones", "Region", "Country", "MoenyPlaced", "Orderplaced" };
+            var orders = await _orderService.GetAsync(c => c.ClientId == clientId && c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Way, includes);
+            return Ok(orders);
+        }
+        [HttpGet("GetEarnings")]
+        public async Task<IActionResult> GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
+        {
+            return Ok(await _orderService.GetEarnings(pagingDto, dateFiter));
+        }
+        /// <summary>
+        /// طلبات في ذمة المندوب
+        /// </summary>
+        /// <param name="agnetId"></param>
+        /// <returns></returns>
+        [HttpGet("OrderVicdanAgent/{agnetId}")]
+        public IActionResult OrderVicdanAgent(int agnetId)
+        {
+            var includes = new string[] { "Client", "Region", "Country", "Orderplaced", "MoenyPlaced" };
+            var orders = _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
+            return Ok(orders);
+        }
+
+        [HttpPut("Accept")]
+        public async Task<IActionResult> Accept([FromBody] IdsDto idsDto)
+        {
+            await _orderService.Accept(idsDto);
+            return Ok();
+        }
+        [HttpPut("Acceptmultiple")]
+        public async Task<IActionResult> AcceptMultiple([FromBody] List<IdsDto> idsDto)
+        {
+            await _orderService.AcceptMultiple(idsDto);
+            return Ok();
+        }
+
+        [HttpPut("DisAccept")]
+        public async Task<IActionResult> DisAccept([FromBody] DateWithId<int> dateWithId)
+        {
+            await _orderService.DisAccept(dateWithId);
+            return Ok();
+        }
+
+        [HttpPut("DisAcceptmultiple")]
+        public async Task<IActionResult> DisAcceptMultiple([FromBody] DateWithId<List<int>> dateWithIds)
+        {
+            await _orderService.DisAcceptMultiple(dateWithIds);
+            return Ok();
+        }
+
+        [HttpPut("ReSend")]
+        public async Task<IActionResult> ReSend([FromBody] OrderReSend orderReSend)
+        {
+            await _orderService.ReSend(orderReSend);
+            return Ok();
+        }
+
+        [HttpPut("MakeStoreOrderCompletelyReturned")]
+        public async Task<ActionResult<OrderDto>> MakeOrderCompletelyReturned([FromBody] int id)
+        {
+            return Ok(await _orderService.MakeOrderCompletelyReturned(id));
+        }
+        [HttpPatch("AddPrintNumber/{orderId}")]
+        public async Task<IActionResult> AddPrintNumber(int orderId)
+        {
+            await _orderService.AddPrintNumber(orderId);
+            return Ok();
+        }
+        [HttpPatch("AddPrintNumberMultiple")]
+        public async Task<IActionResult> AddPrintNumber([FromBody] int[] orderids)
+        {
+            await _orderService.AddPrintNumber(orderids);
+            return Ok();
+        }
+        [HttpGet("GetOrderByAgent/{orderCode}")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrderByAgent(string orderCode)
+        {
+            return Ok(await _orderService.GetOrderByAgent(orderCode));
+        }
+
+        [HttpPut("TransferOrderToAnotherAgnet")]
+        public async Task<IActionResult> TransferOrderToAnotherAgnet([FromBody] TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto)
+        {
+            await _orderService.TransferOrderToAnotherAgnet(transferOrderToAnotherAgnetDto);
+            return Ok();
+        }
     }
     public partial class OrderController
     {
@@ -231,119 +319,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         }
 
-
-
-        [HttpPut("Accept")]
-        public IActionResult Accept([FromBody] IdsDto idsDto)
-        {
-            var order = this._context.Orders.Find(idsDto.OrderId);
-            var agnetCountries = this._context.AgentCountries.Where(c => c.AgentId == idsDto.AgentId);
-            if (!agnetCountries.Any(c => c.CountryId == order.CountryId))
-            {
-                return Conflict();
-            }
-            order.AgentId = idsDto.AgentId;
-            order.AgentCost = (decimal)this._context.Users.Find(idsDto.AgentId).Salary;
-            order.OrderplacedId = (int)OrderplacedEnum.Store;
-            order.IsSend = true;
-            this._context.Update(order);
-            this._context.SaveChanges();
-            return Ok();
-        }
-        [HttpPut("Acceptmultiple")]
-        public async Task<IActionResult> AcceptMultiple([FromBody] List<IdsDto> idsDto)
-        {
-            //get data 
-            var orders = await this._context.Orders.Where(c => idsDto.Select(dto => dto.OrderId).Contains(c.Id)).ToListAsync();
-            var agentsContries = await this._context.AgentCountries.Where(c => idsDto.Select(dto => dto.AgentId).Contains(c.AgentId)).ToListAsync();
-
-            //validation 
-            if (idsDto.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())
-                return Conflict();
-
-            if (idsDto.Select(c => c.AgentId).Except(agentsContries.Select(c => c.AgentId)).Any())
-                return Conflict();
-
-            foreach (var item in idsDto)
-            {
-                var order = orders.Find(c => c.Id == item.OrderId);
-                var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
-                if (!agentsContries.Any(c => c.CountryId != order.CountryId))
-                {
-                    return Conflict();
-                }
-                order.AgentId = item.AgentId;
-                order.AgentCost = (decimal)this._context.Users.Find(item.AgentId).Salary;
-                order.OrderplacedId = (int)OrderplacedEnum.Store;
-                order.IsSend = true;
-                this._context.Update(order);
-            }
-            this._context.SaveChanges();
-            return Ok();
-        }
-        [HttpPut("DisAccept")]
-        public IActionResult DisAccept([FromBody] DateWithId<int> dateWithId)
-        {
-            var order = this._context.Orders.Find(dateWithId.Ids);
-            DisAcceptOrder disAcceptOrder = new DisAcceptOrder()
-            {
-                Code = order.Code,
-                CountryId = order.CountryId,
-                Cost = order.Cost,
-                ClientNote = order.ClientNote,
-                CreatedBy = order.CreatedBy,
-                Date = order.Date,
-                Address = order.Address,
-                ClientId = order.ClientId,
-                DeliveryCost = order.DeliveryCost,
-                IsDollar = order.IsDollar,
-                RecipientName = order.RecipientName,
-                RecipientPhones = order.RecipientPhones,
-                RegionId = order.RegionId,
-                UpdatedBy = AuthoticateUserName(),
-                UpdatedDate = dateWithId.Date
-            };
-            this._context.Orders.Remove(order);
-            this._context.Add(disAcceptOrder);
-            this._context.SaveChanges();
-            return Ok();
-        }
-        [HttpPut("DisAcceptmultiple")]
-        public async Task<IActionResult> DisAcceptMultiple([FromBody] DateWithId<List<int>> dateWithIds)
-        {
-            var ids = dateWithIds.Ids;
-            var orders = await this._context.Orders.Where(c => ids.Contains(c.Id)).ToListAsync();
-            if (ids.Except(orders.Select(c => c.Id)).Any())
-            {
-                return Conflict();
-            }
-            foreach (var order in orders)
-            {
-                DisAcceptOrder disAcceptOrder = new DisAcceptOrder()
-                {
-                    Code = order.Code,
-                    CountryId = order.CountryId,
-                    Cost = order.Cost,
-                    ClientNote = order.ClientNote,
-                    CreatedBy = order.CreatedBy,
-                    Date = order.Date,
-                    Address = order.Address,
-                    ClientId = order.ClientId,
-                    DeliveryCost = order.DeliveryCost,
-                    IsDollar = order.IsDollar,
-                    RecipientName = order.RecipientName,
-                    RecipientPhones = order.RecipientPhones,
-                    RegionId = order.RegionId,
-                    UpdatedBy = AuthoticateUserName(),
-                    UpdatedDate = dateWithIds.Date
-                };
-                this._context.Orders.Remove(order);
-                this._context.Add(disAcceptOrder);
-            }
-            this._context.SaveChanges();
-            return Ok();
-
-        }
         [HttpGet("DisAccept")]
         public IActionResult DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
@@ -688,76 +663,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             }
 
         }
-        [HttpGet("GetOrderByAgent/{orderCode}")]
-        public IActionResult GetOrderByAgent(string orderCode)
-        {
-            var orders = this._context.Orders.Where(c => c.Code == orderCode)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.Region)
-                .Include(c => c.Country)
-                .Include(c => c.Client)
-                .Include(c => c.Agent)
-                .ToList();
-            if (orders.Count() == 0)
-            {
-                return Conflict(new { message = "الشحنة غير موجودة" });
-            }
-            var lastOrderAdded = orders.Last();
-            var orderInStor = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).ToList();
-            orders = orders.Except(orderInStor).ToList();
 
-            var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered))).ToList();
-            orders = orders.Except(fOrder).ToList();
-            var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany).ToList();
-            orders = orders.Except(orderInCompany).ToList();
-            if (orders.Count() == 0)
-            {
-                if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
-                {
-                    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
-                }
-                if (lastOrderAdded.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-                {
-                    return Conflict(new { message = "الشحنة داخل الشركة" });
-                }
-                else
-                {
-                    return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
-                }
 
-            }
-            return Ok(_mapper.Map<OrderDto[]>(orders));
-        }
-        [HttpGet("GetEarnings")]
-        public IActionResult GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
-        {
-            var ordersQuery = this._context.Orders
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Where(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
-            if (dateFiter.FromDate != null)
-                ordersQuery = ordersQuery.Where(c => c.Date >= dateFiter.FromDate);
-            if (dateFiter.ToDate != null)
-                ordersQuery = ordersQuery.Where(c => c.Date <= dateFiter.ToDate);
-            var totalRecord = ordersQuery.Count();
-            var totalEarinig = ordersQuery.Sum(c => c.DeliveryCost - c.AgentCost);
-            var orders = ordersQuery.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
-            return Ok(new { data = new { orders = _mapper.Map<OrderDto[]>(orders), totalEarinig }, total = totalRecord });
-        }
-        [HttpGet("ShipmentsNotReimbursedToTheClient/{clientId}")]
-        public IActionResult ShipmentsNotReimbursedToTheClient(int clientId)
-        {
-            var orders = this._context.Orders.Where(c => c.ClientId == clientId && c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Way)
-                 .Include(c => c.Agent)
-                     .ThenInclude(c => c.UserPhones)
-                 .Include(c => c.Region)
-                 .Include(c => c.Country)
-                 .Include(c => c.Orderplaced)
-                 .Include(c => c.MoenyPlaced).ToList();
-            return Ok(_mapper.Map<OrderDto[]>(orders));
-        }
-        
+
         [HttpGet("GetOrderByAgnetPrintNumber")]
         public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
         {
@@ -787,109 +695,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var x = _mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
-        /// <summary>
-        /// طلبات في ذمة المندوب
-        /// </summary>
-        /// <param name="agnetId"></param>
-        /// <returns></returns>
-        [HttpGet("OrderVicdanAgent/{agnetId}")]
-        public IActionResult OrderVicdanAgent(int agnetId)
-        {
-            var orders = this._context.Orders.
-                Where(c => c.AgentId == agnetId)
-                .Where(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way))
-                .Include(c => c.Client)
-                 .Include(c => c.Region)
-                 .Include(c => c.Country)
-                 .Include(c => c.Orderplaced)
-                 .Include(c => c.MoenyPlaced);
-            return Ok(_mapper.Map<OrderDto[]>(orders));
-        }
 
-        [HttpPut("ReSend")]
-        public async Task<IActionResult> ReSend([FromBody] OrderReSend orderReSend)
-        {
-            var order = await this._context.Orders.FindAsync(orderReSend.Id);
-            order.CountryId = orderReSend.CountryId;
-            order.RegionId = orderReSend.RegionId;
-            order.AgentId = orderReSend.AgnetId;
-            if (order.OldCost != null)
-            {
-                order.Cost = (decimal)order.OldCost;
-                order.OldCost = null;
-            }
-            order.IsClientDiliverdMoney = false;
 
-            order.OrderStateId = (int)OrderStateEnum.Processing;
-            order.OrderplacedId = (int)OrderplacedEnum.Store;
-            order.DeliveryCost = orderReSend.DeliveryCost;
-            order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-            order.AgentCost = (await this._context.Users.FindAsync(order.AgentId)).Salary ?? 0;
-            this._context.Update(order);
-            await this._context.SaveChangesAsync();
-            return Ok();
-        }
-        [HttpPut("MakeStoreOrderCompletelyReturned")]
-        public IActionResult MakeOrderCompletelyReturned([FromBody] int id)
-        {
-            var order = this._context.Orders.Find(id);
-            OrderLog log = order;
-            this._context.Add(log);
-            if (order.OrderplacedId != (int)OrderplacedEnum.Store)
-            {
-                this.err.Messges.Add($"الشحنة ليست في المخزن");
-                return Conflict(err);
-            }
-            order.OrderplacedId = (int)OrderplacedEnum.CompletelyReturned;
-            order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
-            order.OldCost = order.Cost;
-            order.Cost = 0;
-            if (order.OldDeliveryCost == null)
-                order.OldDeliveryCost = order.DeliveryCost;
-            order.DeliveryCost = 0;
-            order.AgentCost = 0;
-            order.UpdatedDate = DateTime.Now;
-            order.UpdatedBy = AuthoticateUserName();
-            order.SystemNote = "MakeStoreOrderCompletelyReturned";
-            this._context.Update(order);
-            this._context.SaveChanges();
-            return Ok(_mapper.Map<OrderDto>(order));
-        }
-        [HttpPut("TransferOrderToAnotherAgnet")]
-        public IActionResult TransferOrderToAnotherAgnet([FromBody] TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto)
-        {
-            var agnet = this._context.Users.Find(transferOrderToAnotherAgnetDto.NewAgentId);
-            var orders = this._context.Orders.Where(c => transferOrderToAnotherAgnetDto.Ids.Contains(c.Id)).ToList();
-            orders.ForEach(c =>
-            {
-                c.AgentId = agnet.Id;
-                c.AgentCost = agnet.Salary ?? 0;
-
-            });
-            this._context.SaveChanges();
-            return Ok();
-        }
-        [HttpPatch("AddPrintNumber/{orderId}")]
-        public IActionResult AddPrintNumber(int orderId)
-        {
-            var order = this._context.Orders.Find(orderId);
-            order.PrintedTimes += 1;
-            this._context.Update(order);
-            this._context.SaveChanges();
-            return Ok();
-        }
-        [HttpPatch("AddPrintNumberMultiple")]
-        public async Task<IActionResult> AddPrintNumber([FromBody] int[] orderids)
-        {
-            var orders = await this._context.Orders.Where(c => orderids.Contains(c.Id)).ToListAsync();
-            foreach (var item in orders)
-            {
-                item.PrintedTimes += 1;
-                this._context.Update(item);
-            }
-            this._context.SaveChanges();
-            return Ok();
-        }
         [HttpGet("OrderRequestEditState")]
         public IActionResult OrderRequestEditState()
         {

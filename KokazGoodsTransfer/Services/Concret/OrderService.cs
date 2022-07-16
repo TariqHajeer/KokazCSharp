@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
+using LinqKit;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,13 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<ReceiptOfTheOrderStatusDetali> _receiptOfTheOrderStatusDetalisRepository;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRepository<Country> _countryRepository;
+        private readonly IRepository<AgentCountry> _agentCountryRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly Logging _logging;
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, IRepository<User> userRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -48,6 +51,8 @@ namespace KokazGoodsTransfer.Services.Concret
             _countryCashedService = countryCashedService;
             currentUser = httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
             _countryRepository = countryRepository;
+            _agentCountryRepository = agentCountryRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -770,11 +775,234 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<EarningsDto> GetEarnings(PagingDto pagingDto, DateFiter dateFiter)
         {
+            var predicate = PredicateBuilder.New<Order>(true);
+            predicate = predicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
+            if (dateFiter.FromDate != null)
+                predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
+            if (dateFiter.ToDate != null)
+                predicate = predicate.And(c => c.Date <= dateFiter.ToDate);
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Orderplaced, c => c.MoenyPlaced);
+            var sum = await _repository.Sum(c => c.DeliveryCost - c.AgentCost, predicate);
+            return new EarningsDto()
+            {
+                TotalEarinig = sum,
+                TotalRecord = pagingResualt.Total,
+                Orders = _mapper.Map<IEnumerable<OrderDto>>(pagingResualt.Data)
+            };
 
-            var orders = await _repository.GetAsync(pagingDto, c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned, c => c.Orderplaced, c => c.MoenyPlaced);
+
+        }
+        public async Task<IEnumerable<OrderDto>> GetAsync(Expression<Func<Order, bool>> expression, string[] propertySelector = null)
+        {
+            var orders = await _repository.GetByFilterInclue(expression, propertySelector);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+        public async Task Accept(IdsDto idsDto)
+        {
+            var order = await _repository.GetById(idsDto.OrderId);
+            if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
+            {
+                throw new ConfilectException("تضارب المندوب و المدينة");
+            }
+            order.AgentId = idsDto.AgentId;
+            order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == idsDto.AgentId))?.Salary ?? 0;
+            order.OrderplacedId = (int)OrderplacedEnum.Store;
+            order.IsSend = true;
+            await _repository.Update(order);
         }
 
+        public async Task AcceptMultiple(IEnumerable<IdsDto> idsDtos)
+        {
+            //get data 
+            var orders = await _repository.GetAsync(c => idsDtos.Select(dto => dto.OrderId).Contains(c.Id));
+            var agentsContries = await _agentCountryRepository.GetAsync(c => idsDtos.Select(dto => dto.AgentId).Contains(c.AgentId));
 
+            //validation 
+            if (idsDtos.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())
+                throw new ConfilectException("");
+
+            if (idsDtos.Select(c => c.AgentId).Except(agentsContries.Select(c => c.AgentId)).Any())
+                throw new ConfilectException("");
+            var agentsIds = orders.Select(c => c.AgentId);
+            var agents = await _userRepository.GetAsync(c => agentsIds.Contains(c.Id));
+            foreach (var item in idsDtos)
+            {
+                var order = orders.First(c => c.Id == item.OrderId);
+                var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
+                if (!agentsContries.Any(c => c.CountryId != order.CountryId))
+                {
+                    throw new ConfilectException("تضارب المندوب و المدينة");
+                }
+                order.AgentId = item.AgentId;
+                order.AgentCost = agents.First(c => c.Id == item.AgentId)?.Salary ?? 0;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.IsSend = true;
+            }
+            await _repository.Update(orders);
+        }
+
+        public async Task DisAccept(DateWithId<int> dateWithId)
+        {
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == dateWithId.Ids);
+            await _uintOfWork.BegeinTransaction();
+            DisAcceptOrder disAcceptOrder = new DisAcceptOrder()
+            {
+                Code = order.Code,
+                CountryId = order.CountryId,
+                Cost = order.Cost,
+                ClientNote = order.ClientNote,
+                CreatedBy = order.CreatedBy,
+                Date = order.Date,
+                Address = order.Address,
+                ClientId = order.ClientId,
+                DeliveryCost = order.DeliveryCost,
+                IsDollar = order.IsDollar,
+                RecipientName = order.RecipientName,
+                RecipientPhones = order.RecipientPhones,
+                RegionId = order.RegionId,
+                UpdatedBy = currentUser,
+                UpdatedDate = dateWithId.Date
+            };
+            await _uintOfWork.Remove(order);
+            await _uintOfWork.Add(disAcceptOrder);
+            await _uintOfWork.Commit();
+        }
+
+        public async Task DisAcceptMultiple(DateWithId<List<int>> dateWithIds)
+        {
+            var ids = dateWithIds.Ids;
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
+            if (ids.Except(orders.Select(c => c.Id)).Any())
+            {
+                throw new ConfilectException("");
+            }
+            var dis = orders.Select(order => new DisAcceptOrder()
+            {
+                Code = order.Code,
+                CountryId = order.CountryId,
+                Cost = order.Cost,
+                ClientNote = order.ClientNote,
+                CreatedBy = order.CreatedBy,
+                Date = order.Date,
+                Address = order.Address,
+                ClientId = order.ClientId,
+                DeliveryCost = order.DeliveryCost,
+                IsDollar = order.IsDollar,
+                RecipientName = order.RecipientName,
+                RecipientPhones = order.RecipientPhones,
+                RegionId = order.RegionId,
+                UpdatedBy = currentUser,
+                UpdatedDate = dateWithIds.Date
+            });
+            await _uintOfWork.RemoveRange(orders);
+            await _uintOfWork.AddRange(dis);
+            await _uintOfWork.Commit();
+
+        }
+        public async Task ReSend(OrderReSend orderReSend)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == orderReSend.Id);
+            order.CountryId = orderReSend.CountryId;
+            order.RegionId = orderReSend.RegionId;
+            order.AgentId = orderReSend.AgnetId;
+            if (order.OldCost != null)
+            {
+                order.Cost = (decimal)order.OldCost;
+                order.OldCost = null;
+            }
+            order.IsClientDiliverdMoney = false;
+
+            order.OrderStateId = (int)OrderStateEnum.Processing;
+            order.OrderplacedId = (int)OrderplacedEnum.Store;
+            order.DeliveryCost = orderReSend.DeliveryCost;
+            order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+            order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == order.AgentId)).Salary ?? 0;
+            await _repository.Update(order);
+        }
+        public async Task<OrderDto> MakeOrderCompletelyReturned(int id)
+        {
+
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == id);
+            OrderLog log = order;
+            await _uintOfWork.BegeinTransaction();
+            if (order.OrderplacedId != (int)OrderplacedEnum.Store)
+            {
+                throw new ConfilectException("الشحنة ليست في المخزن");
+            }
+            order.OrderplacedId = (int)OrderplacedEnum.CompletelyReturned;
+            order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
+            order.OldCost = order.Cost;
+            order.Cost = 0;
+            if (order.OldDeliveryCost == null)
+                order.OldDeliveryCost = order.DeliveryCost;
+            order.DeliveryCost = 0;
+            order.AgentCost = 0;
+            order.UpdatedDate = DateTime.Now;
+            order.UpdatedBy = currentUser;
+            order.SystemNote = "MakeStoreOrderCompletelyReturned";
+            await _uintOfWork.Update(order);
+            await _uintOfWork.Commit();
+            return _mapper.Map<OrderDto>(order);
+        }
+
+        public async Task AddPrintNumber(int orderId)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == orderId);
+            order.PrintedTimes += 1;
+            await _repository.Update(order);
+        }
+
+        public async Task AddPrintNumber(int[] orderIds)
+        {
+            var orders = await _repository.GetAsync(c => orderIds.Contains(c.Id));
+            orders.ForEach(c => c.PrintedTimes += 1);
+            await _repository.Update(orders);
+        }
+        public async Task<IEnumerable<OrderDto>> GetOrderByAgent(string orderCode)
+        {
+            var orders = await _repository.GetAsync(c => c.Code == orderCode, c => c.Orderplaced, c => c.MoenyPlaced, c => c.Region, c => c.Country, c => c.Client, c => c.Agent);
+            if (orders.Count() == 0)
+            {
+                throw new ConfilectException("الشحنة غير موجودة");
+            }
+            var lastOrderAdded = orders.Last();
+            var orderInStor = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).ToList();
+            orders = orders.Except(orderInStor).ToList();
+
+            var fOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered))).ToList();
+            orders = orders.Except(fOrder).ToList();
+            var orderInCompany = orders.Where(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany).ToList();
+            orders = orders.Except(orderInCompany).ToList();
+            if (orders.Count() == 0)
+            {
+                if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
+                {
+                    throw new ConfilectException("الشحنة ما زالت في المخزن");
+                }
+                if (lastOrderAdded.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                {
+                    throw new ConfilectException("الشحنة داخل الشركة");
+                }
+                else
+                {
+                    throw new ConfilectException("تم إستلام الشحنة مسبقاً");
+                }
+
+            }
+            return _mapper.Map<OrderDto[]>(orders);
+
+        }
+        public async Task TransferOrderToAnotherAgnet(TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto)
+        {
+            var agnet = await _userRepository.GetById(transferOrderToAnotherAgnetDto.NewAgentId);
+            var orders = await _repository.GetAsync(c => transferOrderToAnotherAgnetDto.Ids.Contains(c.Id));
+            orders.ForEach(c =>
+            {
+                c.AgentId = agnet.Id;
+                c.AgentCost = agnet.Salary ?? 0;
+            });
+            await _repository.Update(orders);
+        }
     }
 
 

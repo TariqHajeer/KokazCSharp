@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
@@ -13,8 +11,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task UpdateRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         Task Add<TEntity>(TEntity entity) where TEntity : class;
         Task AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
+        Task Remove<TEntity>(TEntity entity) where TEntity : class;
+        Task RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         Task BegeinTransaction();
         Task Rollback();
+        bool IsTransactionOpen { get; }
 
     }
 }
