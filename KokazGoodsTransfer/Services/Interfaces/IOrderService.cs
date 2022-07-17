@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
         Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders);
         Task<bool> Any(Expression<Func<Order, bool>> expression);
-        Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
+        Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
         Task<OrderDto> GetById(int id);
@@ -47,5 +47,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task AddPrintNumber(int[] orderIds);
         Task<IEnumerable<OrderDto>> GetOrderByAgent(string orderCode);
         Task TransferOrderToAnotherAgnet(TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto);
+        Task Edit(UpdateOrder updateOrder);
     }
 }

@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Helpers;
@@ -256,68 +255,29 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.TransferOrderToAnotherAgnet(transferOrderToAnotherAgnetDto);
             return Ok();
         }
+        [HttpPatch]
+        public async Task<IActionResult> Edit([FromBody] UpdateOrder updateOrder)
+        {
+            await _orderService.Edit(updateOrder);
+            return Ok();
+
+        }
+
+        /// <summary>
+        /// تسديد العميل
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [HttpPut("DeleiverMoneyForClient")]
+        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        {
+            var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
+            return Ok(new { printNumber = id });
+        }
     }
     public partial class OrderController
     {
 
-
-        [HttpPatch]
-        public IActionResult Edit([FromBody] UpdateOrder updateOrder)
-        {
-
-            var order = this._context.Orders.Find(updateOrder.Id);
-            OrderLog log = order;
-            this._context.Add(log);
-            if (order.Code != updateOrder.Code)
-            {
-                if (this._context.Orders.Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
-                {
-                    this.err.Messges.Add($"الكود{order.Code} مكرر");
-                    return Conflict(err);
-                }
-            }
-            order.Code = updateOrder.Code;
-
-            if (order.AgentId != updateOrder.AgentId)
-            {
-                order.OrderStateId = (int)OrderStateEnum.Processing;
-                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.OrderplacedId = (int)OrderplacedEnum.Store;
-            }
-            if (order.ClientId != updateOrder.ClientId)
-            {
-                if (order.IsClientDiliverdMoney)
-                {
-                    order.IsClientDiliverdMoney = false;
-                    Receipt receipt = new Receipt()
-                    {
-                        IsPay = true,
-                        ClientId = order.ClientId,
-                        Amount = ((order.Cost - order.DeliveryCost) * -1),
-                        CreatedBy = "النظام",
-                        Manager = "",
-                        Date = DateTime.Now,
-                        About = "",
-                        Note = " بعد تعديل طلب بكود " + order.Code,
-                    };
-                    this._context.Add(receipt);
-                }
-            }
-            order.DeliveryCost = updateOrder.DeliveryCost;
-            order.Cost = updateOrder.Cost;
-            order.ClientId = updateOrder.ClientId;
-            order.AgentId = updateOrder.AgentId;
-            order.CountryId = updateOrder.CountryId;
-            order.RegionId = updateOrder.RegionId;
-            order.Address = updateOrder.Address;
-            order.RecipientName = updateOrder.RecipientName;
-            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
-            order.Note = updateOrder.Note;
-            this._context.Update(order);
-            this._context.SaveChanges();
-            return Ok();
-
-        }
 
         [HttpGet("DisAccept")]
         public IActionResult DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
@@ -403,163 +363,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
-        /// <summary>
-        /// تسديد العميل
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        [HttpPut("DeleiverMoneyForClient")]
-        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
-        {
-            var orders = this._context.Orders
-            .Include(c => c.Client)
-            .ThenInclude(c => c.ClientPhones)
-            .Include(c => c.Country)
-            .Include(c => c.Orderplaced)
-            .Include(c => c.MoenyPlaced)
-            .Where(c => deleiverMoneyForClientDto.Ids.Contains(c.Id)).ToList();
-            var client = orders.FirstOrDefault().Client;
-            if (orders.Any(c => c.ClientId != client.Id))
-            {
-                this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
-                return Conflict(err);
-            }
-            semaphore.Wait();
-            var clientPayment = new ClientPayment()
-            {
-                Date = DateTime.UtcNow,
-                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
-                DestinationName = client.Name,
-                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-
-            };
-            var total = 0m;
-            var transaction = this._context.Database.BeginTransaction();
-            try
-            {
-                this._context.ClientPayments.Add(clientPayment);
-                this._context.SaveChanges();
-                if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
-                {
-                    var recepits = this._context.Receipts.Where(c => c.ClientPaymentId == null && c.ClientId == client.Id).ToList();
-                    total += recepits.Sum(c => c.Amount);
-                    recepits.ForEach(c =>
-                    {
-                        c.ClientPaymentId = clientPayment.Id;
-                        this._context.Update(c);
-                    });
-                    this._context.SaveChanges();
-                }
-                int totalPoints = 0;
-
-                foreach (var item in orders)
-                {
-
-                    if (!item.IsClientDiliverdMoney)
-                    {
-                        if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
-                        {
-                            totalPoints += item.Country.Points;
-                        }
-                    }
-                    else
-                    {
-                        if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
-                        {
-                            totalPoints -= item.Country.Points;
-                        }
-                    }
-
-                    if (item.OrderplacedId > (int)OrderplacedEnum.Way)
-                    {
-                        item.OrderStateId = (int)OrderStateEnum.Finished;
-                        if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-                        {
-                            item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-                        }
-
-                    }
-                    item.IsClientDiliverdMoney = true;
-                    var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                    item.ClientPaied = item.ShouldToPay();
-                    this._context.Update(item);
-                    this._context.SaveChanges();
-                    var orderClientPaymnet = new OrderClientPaymnet()
-                    {
-                        OrderId = item.Id,
-                        ClientPaymentId = clientPayment.Id
-                    };
-
-                    var clientPaymentDetials = new ClientPaymentDetail()
-                    {
-                        Code = item.Code,
-                        Total = item.Cost,
-                        Country = item.Country.Name,
-                        ClientPaymentId = clientPayment.Id,
-                        Phone = item.RecipientPhones,
-                        DeliveryCost = item.DeliveryCost,
-                        LastTotal = item.OldCost,
-                        Note = item.Note,
-                        MoneyPlacedId = item.MoenyPlacedId,
-                        OrderPlacedId = item.OrderplacedId,
-                        PayForClient = currentPay,
-                        Date = item.Date,
-                        ClientNote = item.ClientNote
-                    };
-                    total += currentPay;
-                    this._context.Add(orderClientPaymnet);
-                    this._context.Add(clientPaymentDetials);
-                    this._context.SaveChanges();
-                }
-                client.Points += totalPoints;
-                this._context.Update(client);
-                this._context.SaveChanges();
-                if (deleiverMoneyForClientDto.PointsSettingId != null)
-                {
-                    var pointSetting = this._context.PointsSettings.Find(deleiverMoneyForClientDto.PointsSettingId);
-
-                    Discount discount = new Discount()
-                    {
-                        Money = pointSetting.Money,
-                        Points = pointSetting.Points,
-                        ClientPaymentId = clientPayment.Id
-                    };
-                    this._context.Add(discount);
-                    this._context.SaveChanges();
-                    total -= discount.Money;
-
-                }
-                this._context.Add(new Notfication()
-                {
-                    Note = "تم تسديدك برقم " + clientPayment.Id,
-                    ClientId = client.Id
-                });
-                this._context.SaveChanges();
-                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
-                treasury.Total -= total;
-                var history = new TreasuryHistory()
-                {
-                    ClientPaymentId = clientPayment.Id,
-                    CashMovmentId = null,
-                    TreasuryId = AuthoticateUserId(),
-                    Amount = -total,
-                    CreatedOnUtc = DateTime.UtcNow
-                };
-                _context.Update(treasury);
-                await _context.AddAsync(history);
-                await _context.SaveChangesAsync();
-                transaction.Commit();
-                semaphore.Release();
-                return Ok(new { printNumber = clientPayment.Id });
-            }
-            catch (Exception ex)
-            {
-
-                semaphore.Release();
-                transaction.Rollback();
-                throw ex;
-            }
-        }
+       
         /// <summary>
         /// تسديد الشركات
         /// </summary>
@@ -590,8 +394,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 DestinationName = client.Name,
                 DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
             };
-            var transaction = this._context.Database.BeginTransaction();
             var total = 0m;
+            var transaction = this._context.Database.BeginTransaction();
             try
             {
                 this._context.Add(clientPaymnet);

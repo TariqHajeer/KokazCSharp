@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
@@ -34,9 +35,11 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<AgentCountry> _agentCountryRepository;
         private readonly IRepository<User> _userRepository;
         private readonly Logging _logging;
+        static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
+        private readonly int currentUserId;
         public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, IRepository<User> userRepository)
         {
             _uintOfWork = uintOfWork;
@@ -53,6 +56,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _countryRepository = countryRepository;
             _agentCountryRepository = agentCountryRepository;
             _userRepository = userRepository;
+            currentUserId = Convert.ToInt32(httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "UserID").Single().Value);
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -666,10 +670,133 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetByFilterInclue(expression, propertySelector);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
-        public Task<GenaricErrorResponse<int, string, string>> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        
+        public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
+            var includes = new string[] { "Client.ClientPhones", "Country", "Orderplaced", "MoenyPlaced" };
+            var orders = await _repository.GetByFilterInclue(c => deleiverMoneyForClientDto.Ids.Contains(c.Id), includes);
+            var client = orders.FirstOrDefault().Client;
+            if (orders.Any(c => c.ClientId != client.Id))
+            {
+                throw new ConfilectException("ليست جميع الشحنات لنفس العميل");
+            }
+            semaphore.Wait();
+            var clientPayment = new ClientPayment()
+            {
+                Date = DateTime.UtcNow,
+                PrinterName = currentUser,
+                DestinationName = client.Name,
+                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
 
-            throw new NotImplementedException();
+            };
+            var total = 0m;
+            await _uintOfWork.BegeinTransaction();
+            await _uintOfWork.Add(clientPayment);
+            if (!orders.All(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
+            {
+                var recepits = await _uintOfWork.Repository<Receipt>().GetAsync(c => c.ClientPaymentId == null && c.ClientId == client.Id);
+                total += recepits.Sum(c => c.Amount);
+                recepits.ForEach(c =>
+                {
+                    c.ClientPaymentId = clientPayment.Id;
+
+                });
+                await _uintOfWork.UpdateRange(recepits);
+            }
+            int totalPoints = 0;
+            foreach (var item in orders)
+            {
+
+                if (!item.IsClientDiliverdMoney)
+                {
+                    if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+                    {
+                        totalPoints += item.Country.Points;
+                    }
+                }
+                else
+                {
+                    if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
+                    {
+                        totalPoints -= item.Country.Points;
+                    }
+                }
+
+                if (item.OrderplacedId > (int)OrderplacedEnum.Way)
+                {
+                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                    {
+                        item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
+                    }
+
+                }
+                item.IsClientDiliverdMoney = true;
+                var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                item.ClientPaied = item.ShouldToPay();
+                await _repository.Update(item);
+                var orderClientPaymnet = new OrderClientPaymnet()
+                {
+                    OrderId = item.Id,
+                    ClientPaymentId = clientPayment.Id
+                };
+
+                var clientPaymentDetials = new ClientPaymentDetail()
+                {
+                    Code = item.Code,
+                    Total = item.Cost,
+                    Country = item.Country.Name,
+                    ClientPaymentId = clientPayment.Id,
+                    Phone = item.RecipientPhones,
+                    DeliveryCost = item.DeliveryCost,
+                    LastTotal = item.OldCost,
+                    Note = item.Note,
+                    MoneyPlacedId = item.MoenyPlacedId,
+                    OrderPlacedId = item.OrderplacedId,
+                    PayForClient = currentPay,
+                    Date = item.Date,
+                    ClientNote = item.ClientNote
+                };
+                total += currentPay;
+                await _uintOfWork.Add(orderClientPaymnet);
+                await _uintOfWork.Add(clientPaymentDetials);
+            }
+            client.Points += totalPoints;
+            await _uintOfWork.Update(client);
+            if (deleiverMoneyForClientDto.PointsSettingId != null)
+            {
+
+                var pointSetting = await _uintOfWork.Repository<PointsSetting>().FirstOrDefualt(c => c.Id == deleiverMoneyForClientDto.PointsSettingId);
+                Discount discount = new Discount()
+                {
+                    Money = pointSetting.Money,
+                    Points = pointSetting.Points,
+                    ClientPaymentId = clientPayment.Id
+                };
+                await _uintOfWork.Add(discount);
+                total -= discount.Money;
+            }
+            await _uintOfWork.Add(new Notfication()
+            {
+                Note = "تم تسديدك برقم " + clientPayment.Id,
+                ClientId = client.Id
+            });
+
+            var treasury = await _uintOfWork.Repository<Treasury>().FirstOrDefualt(c => c.Id == currentUserId);
+            treasury.Total -= total;
+            var history = new TreasuryHistory()
+            {
+                ClientPaymentId = clientPayment.Id,
+                CashMovmentId = null,
+                TreasuryId = currentUserId,
+                Amount = -total,
+                CreatedOnUtc = DateTime.UtcNow
+            };
+            await _uintOfWork.Update(treasury);
+            await _uintOfWork.Add(history);
+            await _uintOfWork.Commit();
+            semaphore.Release();
+            return clientPayment.Id;
         }
         private async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging)
         {
@@ -1002,6 +1129,58 @@ namespace KokazGoodsTransfer.Services.Concret
                 c.AgentCost = agnet.Salary ?? 0;
             });
             await _repository.Update(orders);
+        }
+        public async Task Edit(UpdateOrder updateOrder)
+        {
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
+            OrderLog log = order;
+            if (order.Code != updateOrder.Code)
+            {
+                if (await _uintOfWork.Repository<Order>().Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                {
+                    throw new ConfilectException("الكود{order.Code} مكرر");
+                }
+            }
+            order.Code = updateOrder.Code;
+            if (order.AgentId != updateOrder.AgentId)
+            {
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+            }
+            await _uintOfWork.BegeinTransaction();
+            await _uintOfWork.Add(log);
+            if (order.ClientId != updateOrder.ClientId)
+            {
+                if (order.IsClientDiliverdMoney)
+                {
+                    order.IsClientDiliverdMoney = false;
+                    Receipt receipt = new Receipt()
+                    {
+                        IsPay = true,
+                        ClientId = order.ClientId,
+                        Amount = ((order.Cost - order.DeliveryCost) * -1),
+                        CreatedBy = "النظام",
+                        Manager = "",
+                        Date = DateTime.Now,
+                        About = "",
+                        Note = " بعد تعديل طلب بكود " + order.Code,
+                    };
+                    await _uintOfWork.Add(receipt);
+                }
+            }
+            order.DeliveryCost = updateOrder.DeliveryCost;
+            order.Cost = updateOrder.Cost;
+            order.ClientId = updateOrder.ClientId;
+            order.AgentId = updateOrder.AgentId;
+            order.CountryId = updateOrder.CountryId;
+            order.RegionId = updateOrder.RegionId;
+            order.Address = updateOrder.Address;
+            order.RecipientName = updateOrder.RecipientName;
+            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+            order.Note = updateOrder.Note;
+            await _uintOfWork.Update(order);
+            await _uintOfWork.Commit();
         }
     }
 
