@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
@@ -274,6 +273,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
             return Ok(new { printNumber = id });
         }
+        /// <summary>
+        /// تسديد الشركات
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [HttpPut("DeleiverMoneyForClientWithStatus")]
+        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(int[] ids)
+        {
+            var id = await _orderService.DeleiverMoneyForClientWithStatus(ids);
+            return Ok(new { printNumber = id });
+        }
     }
     public partial class OrderController
     {
@@ -364,109 +374,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
        
-        /// <summary>
-        /// تسديد الشركات
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        [HttpPut("DeleiverMoneyForClientWithStatus")]
-        public async Task<IActionResult> DeleiverMoneyForClientWithStatus(int[] ids)
-        {
-            var orders = this._context.Orders
-                .Include(c => c.Client)
-                .ThenInclude(c => c.ClientPhones)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.Country)
-                .Where(c => ids.Contains(c.Id)).ToList();
-            var client = orders.FirstOrDefault().Client;
-            if (orders.Any(c => c.ClientId != client.Id))
-            {
-                this.err.Messges.Add($"ليست جميع الشحنات لنفس العميل");
-                return Conflict(err);
-            }
-            semaphore.Wait();
-
-            var clientPaymnet = new ClientPayment()
-            {
-                Date = DateTime.UtcNow,
-                PrinterName = User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value,
-                DestinationName = client.Name,
-                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-            };
-            var total = 0m;
-            var transaction = this._context.Database.BeginTransaction();
-            try
-            {
-                this._context.Add(clientPaymnet);
-                this._context.SaveChanges();
-                foreach (var item in orders)
-                {
-                    if (item.OrderplacedId > (int)OrderplacedEnum.Way)
-                    {
-                        item.OrderStateId = (int)OrderStateEnum.Finished;
-                        if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
-                        {
-                            item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
-                        }
-
-                    }
-                    item.IsClientDiliverdMoney = true;
-                    var cureentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                    item.ClientPaied = item.ShouldToPay();
-
-                    this._context.Update(item);
-                    _context.SaveChanges();
-                    var orderClientPayment = new OrderClientPaymnet()
-                    {
-                        OrderId = item.Id,
-                        ClientPaymentId = clientPaymnet.Id
-                    };
-                    var clientPaymnetDetial = new ClientPaymentDetail()
-                    {
-                        Code = item.Code,
-                        Total = item.Cost,
-                        Country = item.Country.Name,
-                        ClientPaymentId = clientPaymnet.Id,
-                        Phone = item.RecipientPhones,
-                        DeliveryCost = item.DeliveryCost,
-                        MoneyPlacedId = item.MoenyPlacedId,
-                        OrderPlacedId = item.OrderplacedId,
-                        LastTotal = item.OldCost,
-                        PayForClient = cureentPay,
-                        Date = item.Date,
-                        Note = item.Note,
-                        ClientNote = item.ClientNote
-                    };
-                    total += cureentPay;
-                    this._context.Add(orderClientPayment);
-                    this._context.Add(clientPaymnetDetial);
-                }
-                this._context.SaveChanges();
-                var treasury = await _context.Treasuries.FindAsync(AuthoticateUserId());
-                treasury.Total -= total;
-                var history = new TreasuryHistory()
-                {
-                    ClientPaymentId = clientPaymnet.Id,
-                    TreasuryId = AuthoticateUserId(),
-                    Amount = -total,
-                    CreatedOnUtc = DateTime.UtcNow
-                };
-                this._context.Update(treasury);
-                await this._context.AddAsync(history);
-                await _context.SaveChangesAsync();
-                transaction.Commit();
-                semaphore.Release();
-                return Ok(new { printNumber = clientPaymnet.Id });
-            }
-            catch (Exception ex)
-            {
-                semaphore.Release();
-                transaction.Rollback();
-                throw ex;
-            }
-
-        }
+       
 
 
 

@@ -670,7 +670,86 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetByFilterInclue(expression, propertySelector);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
-        
+        public async Task<int> DeleiverMoneyForClientWithStatus(int[] ids)
+        {
+            var includes = new string[] { "Client.ClientPhones", "Country", "Orderplaced", "MoenyPlaced" };
+            var orders = await _repository.GetByFilterInclue(c => ids.Contains(c.Id), includes);
+            var client = orders.FirstOrDefault().Client;
+            if (orders.Any(c => c.ClientId != client.Id))
+            {
+                throw new ConfilectException("ليست جميع الشحنات لنفس العميل");
+            }
+            semaphore.Wait();
+            var clientPayment = new ClientPayment()
+            {
+                Date = DateTime.UtcNow,
+                PrinterName = currentUser,
+                DestinationName = client.Name,
+                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
+
+            };
+            var total = 0m;
+            await _uintOfWork.BegeinTransaction();
+            await _uintOfWork.Add(clientPayment);
+            var orderClientPaymnets = new List<OrderClientPaymnet>();
+            var clientPaymentsDeitlas = new List<ClientPaymentDetail>();
+            foreach (var item in orders)
+            {
+                if (item.OrderplacedId > (int)OrderplacedEnum.Way)
+                {
+                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                    if (item.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                    {
+                        item.MoenyPlacedId = (int)MoneyPalcedEnum.Delivered;
+                    }
+
+                }
+                item.IsClientDiliverdMoney = true;
+                var cureentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
+                item.ClientPaied = item.ShouldToPay();
+                await _uintOfWork.Update(item);
+                var orderClientPayment = new OrderClientPaymnet()
+                {
+                    OrderId = item.Id,
+                    ClientPaymentId = clientPayment.Id
+                };
+                var clientPaymnetDetial = new ClientPaymentDetail()
+                {
+                    Code = item.Code,
+                    Total = item.Cost,
+                    Country = item.Country.Name,
+                    ClientPaymentId = clientPayment.Id,
+                    Phone = item.RecipientPhones,
+                    DeliveryCost = item.DeliveryCost,
+                    MoneyPlacedId = item.MoenyPlacedId,
+                    OrderPlacedId = item.OrderplacedId,
+                    LastTotal = item.OldCost,
+                    PayForClient = cureentPay,
+                    Date = item.Date,
+                    Note = item.Note,
+                    ClientNote = item.ClientNote
+                };
+                total += cureentPay;
+                orderClientPaymnets.Add(orderClientPayment);
+                clientPaymentsDeitlas.Add(clientPaymnetDetial);
+            }
+            await _uintOfWork.AddRange(orderClientPaymnets);
+            await _uintOfWork.AddRange(clientPaymentsDeitlas);
+            var treasury = await _uintOfWork.Repository<Treasury>().FirstOrDefualt(c => c.Id == currentUserId);
+            treasury.Total -= total;
+            var history = new TreasuryHistory()
+            {
+                ClientPaymentId = clientPayment.Id,
+                TreasuryId = currentUserId,
+                Amount = -total,
+                CreatedOnUtc = DateTime.UtcNow
+            };
+            await _uintOfWork.Update(treasury);
+            await _uintOfWork.Add(history);
+            await _uintOfWork.Commit();
+            semaphore.Release();
+            return clientPayment.Id;
+        }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
             var includes = new string[] { "Client.ClientPhones", "Country", "Orderplaced", "MoenyPlaced" };
