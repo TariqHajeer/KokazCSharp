@@ -45,11 +45,14 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         }
         public virtual async Task AddRangeAsync(IEnumerable<T> entityes)
         {
+            var data = entityes.ToList();
+
             if (IsIHaveBranch())
             {
-                entityes.ToList().ForEach(c => ((IHaveBranch)c).BranchId = branchId);
+                data.ForEach(entity => ((IHaveBranch)entity).BranchId = branchId);
             }
-            await _kokazContext.AddRangeAsync(entityes);
+
+            await _kokazContext.AddRangeAsync(data);
             await _kokazContext.SaveChangesAsync();
         }
         public virtual async Task AddAsync(T entity)

@@ -2,7 +2,7 @@
 
 namespace KokazGoodsTransfer.Migrations
 {
-    public partial class AddBranchToOrder : Migration
+    public partial class order : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,13 +11,27 @@ namespace KokazGoodsTransfer.Migrations
                 table: "Order",
                 type: "int",
                 nullable: false,
-                defaultValue: 1);
+                defaultValue: 2);
 
             migrationBuilder.AddColumn<int>(
                 name: "SecondBranchId",
                 table: "Order",
                 type: "int",
                 nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "BranchId",
+                table: "DisAcceptOrder",
+                type: "int",
+                nullable: false,
+                defaultValue: 2);
+
+            migrationBuilder.AddColumn<int>(
+                name: "BranchId",
+                table: "ClientPayment",
+                type: "int",
+                nullable: false,
+                defaultValue: 2);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_BranchId",
@@ -28,6 +42,32 @@ namespace KokazGoodsTransfer.Migrations
                 name: "IX_Order_SecondBranchId",
                 table: "Order",
                 column: "SecondBranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DisAcceptOrder_BranchId",
+                table: "DisAcceptOrder",
+                column: "BranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientPayment_BranchId",
+                table: "ClientPayment",
+                column: "BranchId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ClientPayment_Branches_BranchId",
+                table: "ClientPayment",
+                column: "BranchId",
+                principalTable: "Branches",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_DisAcceptOrder_Branches_BranchId",
+                table: "DisAcceptOrder",
+                column: "BranchId",
+                principalTable: "Branches",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Order_Branches_BranchId",
@@ -49,6 +89,14 @@ namespace KokazGoodsTransfer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_ClientPayment_Branches_BranchId",
+                table: "ClientPayment");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_DisAcceptOrder_Branches_BranchId",
+                table: "DisAcceptOrder");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Order_Branches_BranchId",
                 table: "Order");
 
@@ -64,6 +112,14 @@ namespace KokazGoodsTransfer.Migrations
                 name: "IX_Order_SecondBranchId",
                 table: "Order");
 
+            migrationBuilder.DropIndex(
+                name: "IX_DisAcceptOrder_BranchId",
+                table: "DisAcceptOrder");
+
+            migrationBuilder.DropIndex(
+                name: "IX_ClientPayment_BranchId",
+                table: "ClientPayment");
+
             migrationBuilder.DropColumn(
                 name: "BranchId",
                 table: "Order");
@@ -71,6 +127,14 @@ namespace KokazGoodsTransfer.Migrations
             migrationBuilder.DropColumn(
                 name: "SecondBranchId",
                 table: "Order");
+
+            migrationBuilder.DropColumn(
+                name: "BranchId",
+                table: "DisAcceptOrder");
+
+            migrationBuilder.DropColumn(
+                name: "BranchId",
+                table: "ClientPayment");
         }
     }
 }

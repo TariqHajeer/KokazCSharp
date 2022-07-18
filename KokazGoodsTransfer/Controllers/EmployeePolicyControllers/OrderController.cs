@@ -27,13 +27,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IOrderService _orderService;
         private readonly NotificationHub notificationHub;
         readonly ErrorMessage err;
-        static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper)
         {
-            err = new ErrorMessage
-            {
-                Controller = "Order"
-            };
+
             this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
@@ -184,10 +180,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         /// <param name="agnetId"></param>
         /// <returns></returns>
         [HttpGet("OrderVicdanAgent/{agnetId}")]
-        public IActionResult OrderVicdanAgent(int agnetId)
+        public async Task<IActionResult> OrderVicdanAgent(int agnetId)
         {
             var includes = new string[] { "Client", "Region", "Country", "Orderplaced", "MoenyPlaced" };
-            var orders = _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
+            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
             return Ok(orders);
         }
 

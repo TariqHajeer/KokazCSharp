@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20220717201450_ClientPayment-Branch")]
-    partial class ClientPaymentBranch
+    [Migration("20220718211612_order")]
+    partial class order
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -450,6 +450,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -497,6 +500,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -1771,6 +1776,12 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("ClientId")
@@ -1787,6 +1798,8 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK__DisAccept__Regio__17036CC0");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
