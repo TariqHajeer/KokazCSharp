@@ -35,13 +35,20 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<AgentCountry> _agentCountryRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<ClientPayment> _clientPaymentRepository;
+        private readonly IRepository<DisAcceptOrder> _DisAcceptOrderRepository;
         private readonly Logging _logging;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
         private readonly int currentUserId;
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, 
+            ITreasuryService treasuryService, IMapper mapper, IUserService userService, 
+            IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, 
+            IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
+            ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, 
+            IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, 
+            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -59,6 +66,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _userRepository = userRepository;
             currentUserId = Convert.ToInt32(httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "UserID").Single().Value);
             _clientPaymentRepository = clientPaymentRepository;
+            _DisAcceptOrderRepository = disAcceptOrderRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -1271,7 +1279,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw new ConfilectException("رقم الطباعة غير موجود");
             return _mapper.Map<PrintOrdersDto>(printed);
         }
-        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto , int? number, string clientName, string code)
+        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code)
         {
             var exprtion = PredicateBuilder.New<ClientPayment>(true);
             if (number != null)
@@ -1293,7 +1301,48 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 Total = totla,
                 Data = _mapper.Map<IEnumerable<PrintOrdersDto>>(clientPayments)
-            }; 
+            };
+        }
+
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> DisAccpted(PagingDto pagingDto, OrderFilter orderFilter)
+        {
+            var predicate = PredicateBuilder.New<DisAcceptOrder>(true);
+
+            if (orderFilter.CountryId != null)
+            {
+                predicate = predicate.And(c => c.CountryId == orderFilter.CountryId);
+            }
+            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
+            {
+                predicate = predicate.And(c => c.Code.StartsWith(orderFilter.Code));
+            }
+            if (orderFilter.ClientId != null)
+            {
+                predicate = predicate.And(c => c.ClientId == orderFilter.ClientId);
+            }
+            if (orderFilter.RegionId != null)
+            {
+                predicate = predicate.And(c => c.RegionId == orderFilter.RegionId);
+            }
+            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
+            {
+                predicate = predicate.And(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
+            }
+            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
+            {
+                predicate = predicate.And(c => c.RecipientPhones.Contains(orderFilter.Phone));
+            }
+            if (orderFilter.CreatedDate != null)
+            {
+                predicate = predicate.And(c => c.Date == orderFilter.CreatedDate);
+            }
+            var total = await _DisAcceptOrderRepository.Count(predicate);
+            var orders = await _DisAcceptOrderRepository.GetAsync(pagingDto, predicate,c => c.Client, c => c.Region, c => c.Country);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders)
+            };
         }
     }
 

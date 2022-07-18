@@ -295,52 +295,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetClientprint(pagingDto, number, clientName, code));
         }
+        [HttpGet("DisAccept")]
+        public async Task<IActionResult> DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
+        {
+            return Ok(await _orderService.DisAccpted(pagingDto, orderFilter));
+        }
     }
     public partial class OrderController
     {
 
 
-        [HttpGet("DisAccept")]
-        public IActionResult DisAccpted([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
-        {
-            var query = this._context.DisAcceptOrders.
-                AsQueryable();
-            if (orderFilter.CountryId != null)
-            {
-                query = query.Where(c => c.CountryId == orderFilter.CountryId);
-            }
-            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
-            {
-                query = query.Where(c => c.Code.StartsWith(orderFilter.Code));
-            }
-            if (orderFilter.ClientId != null)
-            {
-                query = query.Where(c => c.ClientId == orderFilter.ClientId);
-            }
-            if (orderFilter.RegionId != null)
-            {
-                query = query.Where(c => c.RegionId == orderFilter.RegionId);
-            }
-            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
-            {
-                query = query.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
-            }
-            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
-            {
-                query = query.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
-            }
-            if (orderFilter.CreatedDate != null)
-            {
-                query = query.Where(c => c.Date == orderFilter.CreatedDate);
-            }
-            var total = query.Count();
-            var orders = query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                .Include(c => c.Client)
-                .Include(c => c.Region)
-                .Include(c => c.Country)
-                .ToList();
-            return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
-        }
+
 
         [HttpGet("GetAgentPrint")]
         public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
@@ -375,7 +340,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var x = _mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
-        
+
 
 
         [HttpGet("OrderRequestEditState")]

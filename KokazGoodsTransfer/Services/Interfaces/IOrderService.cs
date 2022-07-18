@@ -51,5 +51,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<int> DeleiverMoneyForClientWithStatus(int[] ids);
         Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber);
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code);
+        Task<PagingResualt<IEnumerable<OrderDto>>> DisAccpted(PagingDto pagingDto, OrderFilter orderFilter);
     }
 }
