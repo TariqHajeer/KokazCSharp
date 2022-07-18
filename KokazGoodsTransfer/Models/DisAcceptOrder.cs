@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class DisAcceptOrder
+    public partial class DisAcceptOrder:IHaveBranch
     {
         public int Id { get; set; }
         public string Code { get; set; }
@@ -27,5 +28,7 @@ namespace KokazGoodsTransfer.Models
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
         public virtual Region Region { get; set; }
+        public int BranchId { get ; set ; }
+        public Branch Branch { get; set; }
     }
 }

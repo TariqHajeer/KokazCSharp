@@ -284,6 +284,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var id = await _orderService.DeleiverMoneyForClientWithStatus(ids);
             return Ok(new { printNumber = id });
         }
+        [HttpGet("GetOrderByClientPrintNumber")]
+        public async Task<IActionResult> GetOrderByClientPrintNumber([FromQuery] int printNumber)
+        {
+            return Ok(await _orderService.GetOrderByClientPrintNumber(printNumber));
+        }
+
+        [HttpGet("GetClientprint")]
+        public async Task<IActionResult> GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
+        {
+            return Ok(await _orderService.GetClientprint(pagingDto, number, clientName, code));
+        }
     }
     public partial class OrderController
     {
@@ -331,32 +342,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
         }
 
-        [HttpGet("GetClientprint")]
-        public async Task<IActionResult> GetClientprint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string clientName, string code)
-        {
-            var clientPaymentIq = this._context.ClientPayments.AsQueryable();
-
-            if (number != null)
-            {
-                clientPaymentIq = clientPaymentIq.Where(c => c.Id == number);
-            }
-            if (clientName != null)
-            {
-                clientPaymentIq = clientPaymentIq.Where(c => c.DestinationName == clientName);
-            }
-            if (!string.IsNullOrEmpty(code))
-            {
-                clientPaymentIq = clientPaymentIq.Where(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
-            }
-
-            var total = await clientPaymentIq.CountAsync();
-            var clientPayments = await clientPaymentIq.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                .Include(c => c.ClientPaymentDetails)
-                .ThenInclude(c => c.OrderPlaced)
-                .ToListAsync();
-
-            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(clientPayments), total });
-        }
         [HttpGet("GetAgentPrint")]
         public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
         {
@@ -373,8 +358,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
-       
-       
+
+
 
 
 
@@ -390,23 +375,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var x = _mapper.Map<PrintOrdersDto>(printed);
             return Ok(x);
         }
-        [HttpGet("GetOrderByClientPrintNumber")]
-        public async Task<IActionResult> GetOrderByClientPrintNumber([FromQuery] int printNumber)
-        {
-            var printed = await this._context.ClientPayments.Where(c => c.Id == printNumber)
-                .Include(c => c.Discounts)
-                .Include(c => c.Receipts)
-                .Include(c => c.ClientPaymentDetails)
-                 .ThenInclude(c => c.OrderPlaced)
-                .FirstOrDefaultAsync();
-            if (printed == null)
-            {
-                this.err.Messges.Add($"رقم الطباعة غير موجود");
-                return Conflict(this.err);
-            }
-            var x = _mapper.Map<PrintOrdersDto>(printed);
-            return Ok(x);
-        }
+        
 
 
         [HttpGet("OrderRequestEditState")]
@@ -425,7 +394,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("DisAproveOrderRequestEditState")]
         public IActionResult DisAproveOrderRequestEditStateCount([FromBody] int[] ids)
         {
-
             var requests = this._context.ApproveAgentEditOrderRequests.Where(c => ids.Contains(c.Id)).ToList();
             requests.ForEach(c =>
             {

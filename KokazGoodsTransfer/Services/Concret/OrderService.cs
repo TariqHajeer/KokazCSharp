@@ -34,13 +34,14 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Country> _countryRepository;
         private readonly IRepository<AgentCountry> _agentCountryRepository;
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<ClientPayment> _clientPaymentRepository;
         private readonly Logging _logging;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
         private readonly int currentUserId;
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, IRepository<User> userRepository)
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, ITreasuryService treasuryService, IMapper mapper, IUserService userService, IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository, ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -57,6 +58,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _agentCountryRepository = agentCountryRepository;
             _userRepository = userRepository;
             currentUserId = Convert.ToInt32(httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "UserID").Single().Value);
+            _clientPaymentRepository = clientPaymentRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -1260,6 +1262,38 @@ namespace KokazGoodsTransfer.Services.Concret
             order.Note = updateOrder.Note;
             await _uintOfWork.Update(order);
             await _uintOfWork.Commit();
+        }
+        public async Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber)
+        {
+            var includes = new string[] { "Discounts", "Receipts", "ClientPaymentDetails.OrderPlaced" };
+            var printed = await _clientPaymentRepository.FirstOrDefualt(c => c.Id == printNumber, includes);
+            if (printed == null)
+                throw new ConfilectException("رقم الطباعة غير موجود");
+            return _mapper.Map<PrintOrdersDto>(printed);
+        }
+        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto , int? number, string clientName, string code)
+        {
+            var exprtion = PredicateBuilder.New<ClientPayment>(true);
+            if (number != null)
+            {
+                exprtion = exprtion.And(c => c.Id == number);
+            }
+            if (clientName != null)
+            {
+                exprtion = exprtion.And(c => c.DestinationName == clientName);
+            }
+            if (!string.IsNullOrEmpty(code))
+            {
+                exprtion = exprtion.And(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
+            }
+            var totla = await _clientPaymentRepository.Count(exprtion);
+            var includes = new string[] { "ClientPaymentDetails.OrderPlaced" };
+            var clientPayments = await _clientPaymentRepository.GetAsync(pagingDto, exprtion, includes, c => c.OrderByDescending(c => c.Id));
+            return new PagingResualt<IEnumerable<PrintOrdersDto>>()
+            {
+                Total = totla,
+                Data = _mapper.Map<IEnumerable<PrintOrdersDto>>(clientPayments)
+            }; 
         }
     }
 

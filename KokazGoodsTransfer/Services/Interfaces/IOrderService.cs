@@ -49,5 +49,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task TransferOrderToAnotherAgnet(TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto);
         Task Edit(UpdateOrder updateOrder);
         Task<int> DeleiverMoneyForClientWithStatus(int[] ids);
+        Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber);
+        Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code);
     }
 }
