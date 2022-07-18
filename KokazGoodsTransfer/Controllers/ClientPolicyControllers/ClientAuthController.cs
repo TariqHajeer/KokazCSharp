@@ -46,6 +46,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             climes.Add(new Claim("UserID", client.Id.ToString()));
             climes.Add(new Claim("Type", "Client"));
             climes.Add(new Claim(ClaimTypes.Name, client.Name));
+            climes.Add(new Claim("branchId", client.BranchId.ToString()));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Expires = DateTime.UtcNow.AddDays(1),

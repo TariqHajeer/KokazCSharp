@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,19 +22,21 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CClientController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public CClientController(KokazContext context, IMapper mapper,  NotificationHub notificationHub) : base(context, mapper)
+        private readonly IClientCashedService _clientCashedService;
+        public CClientController(KokazContext context, IMapper mapper,  NotificationHub notificationHub, IClientCashedService clientCashedService) : base(context, mapper)
         {
             _notificationHub = notificationHub;
+            _clientCashedService = clientCashedService;
         }
         [HttpGet("CheckUserName/{username}")]
         public async Task<IActionResult> CheckUserName(string username)
         {
-            return Ok(await this._context.Clients.AnyAsync(c => c.UserName == username && c.Id != AuthoticateUserId()));
+            return Ok(await _clientCashedService.Any(c => c.UserName == username && c.Id != AuthoticateUserId()));
         }
         [HttpGet("CheckName/{name}")]
         public async Task<IActionResult> CheckName(string name)
         {
-            return Ok(await this._context.Clients.AnyAsync(c => c.Name == name && c.Id != AuthoticateUserId()));
+            return Ok(await _clientCashedService.Any(c => c.Name == name && c.Id != AuthoticateUserId()));
         }
         [HttpPut("updateInformation")]
         public async Task<IActionResult> Update([FromBody] CUpdateClientDto updateClientDto)
@@ -44,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 var clientName = client.Name;
                 var clientUserName = client.UserName;
                 var oldPassword = client.Password;
-                client = _mapper.Map<CUpdateClientDto, Client>(updateClientDto, client);
+                client = _mapper.Map(updateClientDto, client);
                 client.Name = clientName;
                 client.UserName = clientUserName;
 
