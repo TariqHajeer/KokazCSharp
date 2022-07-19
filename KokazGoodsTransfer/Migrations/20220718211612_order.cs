@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Migrations
                 table: "Order",
                 type: "int",
                 nullable: false,
-                defaultValue: 2);
+                defaultValue: 1);
 
             migrationBuilder.AddColumn<int>(
                 name: "SecondBranchId",
@@ -24,14 +24,14 @@ namespace KokazGoodsTransfer.Migrations
                 table: "DisAcceptOrder",
                 type: "int",
                 nullable: false,
-                defaultValue: 2);
+                defaultValue: 1);
 
             migrationBuilder.AddColumn<int>(
                 name: "BranchId",
                 table: "ClientPayment",
                 type: "int",
                 nullable: false,
-                defaultValue: 2);
+                defaultValue: 1);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_BranchId",
