@@ -11,7 +11,7 @@ namespace KokazGoodsTransfer.Migrations
                 table: "Clients",
                 type: "int",
                 nullable: false,
-                defaultValue: 2);
+                defaultValue: 1);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_BranchId",
