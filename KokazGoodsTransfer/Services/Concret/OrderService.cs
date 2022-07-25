@@ -42,12 +42,12 @@ namespace KokazGoodsTransfer.Services.Concret
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
         private readonly string currentUser;
         private readonly int currentUserId;
-        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService, 
-            ITreasuryService treasuryService, IMapper mapper, IUserService userService, 
-            IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging, 
+        public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService,
+            ITreasuryService treasuryService, IMapper mapper, IUserService userService,
+            IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging,
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
-            ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor, 
-            IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository, 
+            ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
+            IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
             IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository)
         {
             _uintOfWork = uintOfWork;
@@ -75,7 +75,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
             if (!orders.Any())
             {
-                return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة غير موجودة");
+                throw new ConfilectException("الشحنة غير موجودة");
             }
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             ///التأكد من ان الشحنة ليست عند العميل او في المخزن
@@ -96,11 +96,11 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var lastOrderPlacedAdded = lastOrderAdded.OrderplacedId;
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
-                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة في المخزن");
+                    throw new ConfilectException("الشحنة في المخزن");
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Client)
-                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة عند العميل");
+                    throw new ConfilectException("الشحنة عند العميل");
                 if (lastOrderAdded.OrderplacedId == (int)MoneyPalcedEnum.InsideCompany)
-                    return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>("الشحنة داخل الشركة");
+                    throw new ConfilectException("الشحنة داخل الشركة"); 
             }
             return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
         }
@@ -1337,7 +1337,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 predicate = predicate.And(c => c.Date == orderFilter.CreatedDate);
             }
             var total = await _DisAcceptOrderRepository.Count(predicate);
-            var orders = await _DisAcceptOrderRepository.GetAsync(pagingDto, predicate,c => c.Client, c => c.Region, c => c.Country);
+            var orders = await _DisAcceptOrderRepository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Region, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = total,
