@@ -330,11 +330,4 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
     }
-    public partial class OrderController
-    {
-
-
-
-
-    }
 }

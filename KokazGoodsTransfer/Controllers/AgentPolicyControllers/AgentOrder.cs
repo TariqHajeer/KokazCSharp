@@ -1,34 +1,27 @@
-﻿using AutoMapper;
-using KokazGoodsTransfer.Dtos.AgentDtos;
+﻿using KokazGoodsTransfer.Dtos.AgentDtos;
 using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KokazGoodsTransfer.Dtos.NotifcationDtos;
-using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AgentOrderController : OldAbstractAgentController
+    public class AgentOrderController : AbstractAgentController
     {
-        private readonly NotificationHub _notificationHub;
         private readonly IIndexService<OrderPlaced> _indexService;
         private readonly IOrderService _orderService;
         private readonly IAgentPrintService _agentPrintService;
-        public AgentOrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<OrderPlaced> indexService,
+        public AgentOrderController(IIndexService<OrderPlaced> indexService,
             IOrderService orderService,
-            IAgentPrintService agentPrintService) : base(context, mapper)
+            IAgentPrintService agentPrintService)
         {
-            _notificationHub = notificationHub;
             _indexService = indexService;
             _orderService = orderService;
             _agentPrintService = agentPrintService;
@@ -44,7 +37,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public async Task<IActionResult> GetInWay()
         {
             var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
-            var orders = await _orderService.GetAsync(c => c.OrderplacedId == (int)OrderplacedEnum.Way 
+            var orders = await _orderService.GetAsync(c => c.OrderplacedId == (int)OrderplacedEnum.Way
             && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None
             || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             return Ok(orders);
@@ -65,7 +58,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId() &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending ||
             c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent ||
-            (c.OrderplacedId == (int)OrderplacedEnum.Way && 
+            (c.OrderplacedId == (int)OrderplacedEnum.Way &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove ||
             c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))), includes);
             return Ok(orders);
