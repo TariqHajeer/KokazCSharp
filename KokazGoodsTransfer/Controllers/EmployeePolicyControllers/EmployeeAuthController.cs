@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeAuthController : AbstractController
+    public class EmployeeAuthController : OldAbstractController
     {
         private readonly ITreasuryService _treasuryService;
         public EmployeeAuthController(KokazContext context, IMapper mapper, ITreasuryService treasuryService) : base(context, mapper)

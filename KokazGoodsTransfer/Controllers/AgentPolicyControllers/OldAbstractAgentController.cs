@@ -14,9 +14,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "Agent")]
-    public class AbstractAgentController : AbstractController
+    public class OldAbstractAgentController : OldAbstractController
     {
-        public AbstractAgentController(KokazContext context, IMapper mapper) : base(context, mapper)
+        public OldAbstractAgentController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
         }
     }

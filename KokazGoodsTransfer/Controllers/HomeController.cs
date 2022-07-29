@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController : AbstractController
+    public class HomeController : OldAbstractController
     {
         private readonly ICountryCashedService _countryCashedService;
         public HomeController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService) : base(context, mapper)

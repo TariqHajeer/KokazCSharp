@@ -25,15 +25,17 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly IOrderService _orderService;
+        private readonly IAgentPrintService _agentPrintService;
         private readonly NotificationHub notificationHub;
         readonly ErrorMessage err;
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService) : base(context, mapper)
+        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService) : base(context, mapper)
         {
 
             this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
             _orderService = orderService;
+            _agentPrintService = agentPrintService;
         }
 
         [HttpGet]
@@ -296,47 +298,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.DisAccpted(pagingDto, orderFilter));
         }
-    }
-    public partial class OrderController
-    {
-
-
-
 
         [HttpGet("GetAgentPrint")]
         public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
         {
-            var ordersPrint = this._context.AgentPrints.AsQueryable();
-            if (number != null)
-            {
-                ordersPrint = ordersPrint.Where(c => c.Id == number);
-            }
-            if (!String.IsNullOrWhiteSpace(agnetName))
-            {
-                ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
-            }
-            var total = await ordersPrint.CountAsync();
-            var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
-            return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
+            return Ok(await _agentPrintService.GetAgentPrint(pagingDto, number, agnetName));
         }
-
-
-
-
-
         [HttpGet("GetOrderByAgnetPrintNumber")]
-        public IActionResult GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
+        public async Task<IActionResult> GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
         {
-            var printed = this._context.AgentPrints.Include(c => c.AgentPrintDetails).FirstOrDefault(c => c.Id == printNumber);
-            if (printed == null)
-            {
-                this.err.Messges.Add($"رقم الطباعة غير موجود");
-                return Conflict(this.err);
-            }
-            var x = _mapper.Map<PrintOrdersDto>(printed);
-            return Ok(x);
+            return Ok(await _agentPrintService.GetOrderByAgnetPrintNumber(printNumber));
         }
-
+    }
+    public partial class OrderController
+    {
 
 
         [HttpGet("OrderRequestEditState")]

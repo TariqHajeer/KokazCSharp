@@ -63,5 +63,30 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return await _repository.Count(filter);
         }
+
+        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName)
+        {
+            var predicte = PredicateBuilder.New<AgentPrint>(true);
+            if (number != null)
+            {
+                predicte = predicte.And(c => c.Id == number);
+            }
+            if (!String.IsNullOrWhiteSpace(agnetName))
+            {
+                predicte = predicte.And(c => c.DestinationName == agnetName);
+            }
+            var data = await _repository.GetAsync(pagingDto, predicte, null, c => c.OrderByDescending(x => x.Id)); ;
+            return new PagingResualt<IEnumerable<PrintOrdersDto>>()
+            {
+                Total = data.Total,
+                Data = _mapper.Map<IEnumerable<PrintOrdersDto>>(data.Data)
+            };
+        }
+
+        public async Task<PrintOrdersDto> GetOrderByAgnetPrintNumber(int printNumber)
+        {
+            var printed = await _repository.FirstOrDefualt(c => c.Id == printNumber, c => c.AgentPrintDetails);
+            return _mapper.Map<PrintOrdersDto>(printed);
+        }
     }
 }

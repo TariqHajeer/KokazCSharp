@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "Employee")]
-    public class AbstractEmployeePolicyController : AbstractController
+    public class AbstractEmployeePolicyController : OldAbstractController
     {
 
         public AbstractEmployeePolicyController(KokazContext context, IMapper mapper) : base(context, mapper)

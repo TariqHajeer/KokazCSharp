@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -8,8 +10,15 @@ using System.Security.Claims;
 namespace KokazGoodsTransfer.Controllers
 {
     [EnableCors("EnableCORS")]
-    public abstract class AbstractController : ControllerBase
+    public abstract class OldAbstractController : ControllerBase
     {
+        protected KokazContext _context;
+        protected IMapper _mapper;
+        public OldAbstractController(KokazContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
         protected int AuthoticateUserId()
         {
             var userIdClaim = User.Claims.ToList().Where(c => c.Type == "UserID").Single();
@@ -23,5 +32,7 @@ namespace KokazGoodsTransfer.Controllers
         {
             return base.Conflict();
         }
+        
+
     }
 }

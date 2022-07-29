@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "Client")]
-    public class AbstractClientPolicyController : AbstractController
+    public class AbstractClientPolicyController : OldAbstractController
     {
         public AbstractClientPolicyController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

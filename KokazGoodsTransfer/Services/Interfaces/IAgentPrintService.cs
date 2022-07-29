@@ -15,6 +15,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetPrint(PagingDto pagingDto, PrintFilterDto printFilterDto);
         Task<PrintOrdersDto> GetPrintById(int printNumber);
         Task<int> Count(Expression<Func<AgentPrint, bool>> filter = null);
+        Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName);
+        Task<PrintOrdersDto> GetOrderByAgnetPrintNumber(int printNumber);
 
     }
 }
