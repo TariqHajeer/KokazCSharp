@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 branchId = int.Parse(branch);
             else
             {
-                branchId = 2    ;
+                branchId = 2;
             }
             if (IsIHaveBranch())
             {

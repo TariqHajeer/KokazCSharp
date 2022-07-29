@@ -9,7 +9,6 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,13 +19,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     [ApiController]
     public class ClientAuthController : AbstractController
     {
-        private readonly IClientCashedService _clientCashedService;
-        public ClientAuthController(IClientCashedService clientCashedService)
+        private readonly KokazContext _context;
+        private readonly IMapper _mapper;
+        public ClientAuthController(KokazContext context, IMapper mapper)
         {
-            _clientCashedService = clientCashedService;
+            _context = context;
+            _mapper = mapper;
         }
         [HttpPost]
-        public async IActionResult Login([FromBody] LoginDto loginDto)
+        public IActionResult Login([FromBody] LoginDto loginDto)
         {
             List<string> errors = new List<string>();
             var appVersion = AppVersion();
@@ -34,7 +35,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
             }
-            var client = await _clientCashedService.GetAsync(c => c.UserName.ToLower() == loginDto.UserName.ToLower());
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
