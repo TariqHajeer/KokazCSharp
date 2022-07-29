@@ -99,32 +99,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpPost("SetOrderPlaced")]
         public async Task<IActionResult> SetOrderState([FromBody] List<AgentOrderStateDto> agentOrderStateDtos)
         {
-            var orders = await this._context.Orders.Where(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id)).ToListAsync();
-            agentOrderStateDtos.ForEach(c =>
-            {
-                var temp = new ApproveAgentEditOrderRequest()
-                {
-                    AgentId = AuthoticateUserId(),
-                    IsApprove = null,
-                    NewAmount = c.Cost,
-                    OrderId = c.Id,
-                    OrderPlacedId = c.OrderplacedId,
-                };
-                this._context.Add(temp);
-            });
-            orders.ForEach(c =>
-            {
-                c.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
-            });
-            await this._context.SaveChangesAsync();
-            var orderRequestEditStateCount = await this._context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).CountAsync();
-            AdminNotification adminNotification = new AdminNotification()
-            {
-
-                OrderRequestEditStateCount = orderRequestEditStateCount,
-
-            };
-            await _notificationHub.AdminNotifcation(adminNotification);
+            await _agentPrintService.SetOrderState(agentOrderStateDtos);
             return Ok();
         }
         [HttpGet("GetOrderPlaced")]

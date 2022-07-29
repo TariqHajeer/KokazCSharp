@@ -22,7 +22,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual DbSet<AgentPrint> AgentPrints { get; set; }
         public virtual DbSet<AgentPrintDetail> AgentPrintDetails { get; set; }
-        public virtual DbSet<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual DbSet<CashMovment> CashMovments { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<ClientPayment> ClientPayments { get; set; }
@@ -164,31 +163,6 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.AgentPrintId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__AgentPrin__Agent__09A971A2");
-            });
-
-            modelBuilder.Entity<ApproveAgentEditOrderRequest>(entity =>
-            {
-                entity.ToTable("ApproveAgentEditOrderRequest");
-
-                entity.Property(e => e.NewAmount).HasColumnType("decimal(18, 2)");
-
-                entity.HasOne(d => d.Agent)
-                    .WithMany(p => p.ApproveAgentEditOrderRequests)
-                    .HasForeignKey(d => d.AgentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__Agent__0B91BA14");
-
-                entity.HasOne(d => d.Order)
-                    .WithMany(p => p.ApproveAgentEditOrderRequests)
-                    .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__Order__0C85DE4D");
-
-                entity.HasOne(d => d.OrderPlaced)
-                    .WithMany(p => p.ApproveAgentEditOrderRequests)
-                    .HasForeignKey(d => d.OrderPlacedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ApproveAg__Order__0D7A0286");
             });
 
             modelBuilder.Entity<CashMovment>(entity =>

@@ -53,5 +53,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code);
         Task<PagingResualt<IEnumerable<OrderDto>>> DisAccpted(PagingDto pagingDto, OrderFilter orderFilter);
         Task<int> Count(Expression<Func<Order, bool>> filter = null);
+        Task<IEnumerable<ApproveAgentEditOrderRequestDto>> GetOrderRequestEditState();
+        Task DisAproveOrderRequestEditState(int[] ids);
+        Task AproveOrderRequestEditState(int[] ids);
     }
 }
