@@ -9,6 +9,7 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +18,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientAuthController : OldAbstractController
+    public class ClientAuthController : AbstractController
     {
-        public ClientAuthController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly IClientCashedService _clientCashedService;
+        public ClientAuthController(IClientCashedService clientCashedService)
         {
+            _clientCashedService = clientCashedService;
         }
         [HttpPost]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+        public async IActionResult Login([FromBody] LoginDto loginDto)
         {
             List<string> errors = new List<string>();
             var appVersion = AppVersion();
@@ -31,6 +34,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
             }
+            var client = await _clientCashedService.GetAsync(c => c.UserName.ToLower() == loginDto.UserName.ToLower());
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
@@ -42,11 +46,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 errors.Add("خطأ بأسم المستخدم و كلمة المرور");
                 return Conflict(new { messages = errors });
             }
-            var climes = new List<Claim>();
-            climes.Add(new Claim("UserID", client.Id.ToString()));
-            climes.Add(new Claim("Type", "Client"));
-            climes.Add(new Claim(ClaimTypes.Name, client.Name));
-            climes.Add(new Claim("branchId", client.BranchId.ToString()));
+            var climes = new List<Claim>
+            {
+                new Claim("UserID", client.Id.ToString()),
+                new Claim("Type", "Client"),
+                new Claim(ClaimTypes.Name, client.Name),
+                new Claim("branchId", client.BranchId.ToString())
+            };
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Expires = DateTime.UtcNow.AddDays(1),

@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CClientController : AbstractClientPolicyController
+    public class CClientController : OldAbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
         private readonly IClientCashedService _clientCashedService;

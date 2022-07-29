@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CPointController : AbstractClientPolicyController
+    public class CPointController : OldAbstractClientPolicyController
     {
         public CPointController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

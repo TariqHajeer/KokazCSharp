@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PrintController : AbstractClientPolicyController
+    public class PrintController : OldAbstractClientPolicyController
     {
         public PrintController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

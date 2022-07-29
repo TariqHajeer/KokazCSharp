@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CSettingsGetController : AbstractClientPolicyController
+    public class CSettingsGetController : OldAbstractClientPolicyController
     {
 
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
