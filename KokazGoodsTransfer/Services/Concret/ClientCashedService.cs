@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache,logging,httpContextAccessor)
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging, httpContextAccessor)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
@@ -28,8 +28,6 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<IEnumerable<ClientDto>> GetCashed()
         {
-
-            
             if (!_cache.TryGetValue(cashName, out IEnumerable<ClientDto> entites))
             {
                 entites = await GetAsync(null, c => c.Country, c => c.ClientPhones);
@@ -145,6 +143,40 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.Rollback();
                 throw ex;
             }
+
+        }
+
+        public async Task<int> Account(AccountDto accountDto)
+        {
+            var userId = AuthoticateUserId();
+
+            await _uintOfWork.BegeinTransaction();
+            Receipt receipt = new Receipt()
+            {
+                IsPay = accountDto.IsPay,
+                About = accountDto.About,
+                CreatedBy = AuthoticateUserName(),
+                ClientId = accountDto.ClinetId,
+                Date = DateTime.Now,
+                Amount = accountDto.Amount,
+                Manager = accountDto.Manager,
+                Note = accountDto.Note,
+            };
+
+            await _uintOfWork.Add(receipt);
+            var treasuer = await _uintOfWork.Repository<Treasury>().FirstOrDefualt(c => c.Id == userId);
+            treasuer.Total += accountDto.Amount;
+            await _uintOfWork.Update(treasuer);
+            var history = new TreasuryHistory()
+            {
+                Amount = accountDto.Amount,
+                ReceiptId = receipt.Id,
+                TreasuryId = treasuer.Id,
+                CreatedOnUtc = DateTime.Now,
+            };
+            await _uintOfWork.Add(history);
+            await _uintOfWork.Commit();
+            return receipt.Id;
 
         }
     }

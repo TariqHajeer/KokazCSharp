@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
@@ -32,10 +33,22 @@ namespace KokazGoodsTransfer.Services.Concret
             string branchId = _httpContextAccessor.HttpContext.Request.Headers["branchId"];
             if (branchId == null)
                 _currentBranch = 2;
-            _currentBranch = Convert.ToInt32(branchId);
+            else
+            {
+                _currentBranch = Convert.ToInt32(branchId);
+            }
             var branches = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").ToList();
             var values = branches.Select(c => c.Value);
             _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").Select(c => Convert.ToInt32(c.Value)).ToArray();
+        }
+        protected int AuthoticateUserId()
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.ToList().Where(c => c.Type == "UserID").Single();
+            return Convert.ToInt32(userIdClaim.Value);
+        }
+        protected string AuthoticateUserName()
+        {
+            return _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
         }
         public virtual async Task<TDTO> GetById(int id)
         {

@@ -204,7 +204,7 @@ namespace KokazGoodsTransfer
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
             });
-        }
+        }   
 
 
 
@@ -230,6 +230,7 @@ namespace KokazGoodsTransfer
             services.AddScoped<IOutcomeService, OutcomeService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
             services.AddScoped<IBranchService, BranchService>();
+            services.AddScoped<IAgentPrintService, AgentPrintService>();
         }
     }
 }

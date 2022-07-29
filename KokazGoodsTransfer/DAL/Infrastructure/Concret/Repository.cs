@@ -22,9 +22,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             this._kokazContext = kokazContext;
             Query = _kokazContext.Set<T>().AsQueryable();
-            var branch = httpContextAccessor.HttpContext.Request.Headers["branchId"];
+            string branch = httpContextAccessor.HttpContext.Request.Headers["branchId"];
             if (!string.IsNullOrEmpty(branch))
                 branchId = int.Parse(branch);
+            else
+            {
+                branchId = 2    ;
+            }
             if (IsIHaveBranch())
             {
                 Query = Query.Where(c => ((IHaveBranch)c).BranchId == branchId);

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class AgentPrint
+    public partial class AgentPrint : IHaveBranch
     {
         public AgentPrint()
         {
@@ -21,5 +22,7 @@ namespace KokazGoodsTransfer.Models
 
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<AgentPrintDetail> AgentPrintDetails { get; set; }
+        public int BranchId { get; set; }
+        public Branch Branch { get; set; }
     }
 }

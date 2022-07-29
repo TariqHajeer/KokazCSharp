@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Dtos.ReceiptDtos;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
@@ -78,43 +71,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("Account")]
         public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
         {
-            var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                Receipt receipt = new Receipt()
-                {
-                    IsPay = accountDto.IsPay,
-                    About = accountDto.About,
-                    CreatedBy = AuthoticateUserName(),
-                    ClientId = accountDto.ClinetId,
-                    Date = DateTime.Now,
-                    Amount = accountDto.Amount,
-                    Manager = accountDto.Manager,
-                    Note = accountDto.Note,
-                };
-
-                await this._context.AddAsync(receipt);
-                await this._context.SaveChangesAsync();
-                var treasuer = await _context.Treasuries.FindAsync(AuthoticateUserId());
-                treasuer.Total += accountDto.Amount;
-                _context.Update(treasuer);
-                var history = new TreasuryHistory()
-                {
-                    Amount = accountDto.Amount,
-                    ReceiptId = receipt.Id,
-                    TreasuryId = treasuer.Id,
-                    CreatedOnUtc = DateTime.Now,
-                };
-                await _context.AddAsync(history);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-                return Ok(receipt.Id);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                throw ex;
-            }
+            return Ok( await _clientCashedService.Account(accountDto));
         }
         [HttpPost("GiveOrDiscountPoints")]
         public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)

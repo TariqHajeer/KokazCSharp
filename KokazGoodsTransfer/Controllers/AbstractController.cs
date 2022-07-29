@@ -26,9 +26,7 @@ namespace KokazGoodsTransfer.Controllers
         }
         protected string AuthoticateUserName()
         {
-            
             return User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
-            
         }
         public override ConflictResult Conflict()
         {

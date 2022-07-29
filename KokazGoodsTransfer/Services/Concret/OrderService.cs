@@ -1344,6 +1344,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(orders)
             };
         }
+
+        public async Task<int> Count(Expression<Func<Order, bool>> filter = null)
+        {
+            return await _repository.Count(filter);
+        }
     }
 
 
