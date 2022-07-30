@@ -29,10 +29,11 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _mapper = mapper;
             _logging = logging;
-            _httpContextAccessorService= httpContextAccessorService;
+            _httpContextAccessorService = httpContextAccessorService;
 
             _branchesIds = httpContextAccessorService.Branches();
-            _currentBranch = httpContextAccessorService.CurrentBranchId();
+            if (_branchesIds.Any())
+                _currentBranch = httpContextAccessorService.CurrentBranchId();
         }
         public virtual async Task<TDTO> GetById(int id)
         {
@@ -111,7 +112,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<TDTO> FirstOrDefualt(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
-            var first=  await _repository.FirstOrDefualt(expression, propertySelectors);
+            var first = await _repository.FirstOrDefualt(expression, propertySelectors);
             return _mapper.Map<TDTO>(first);
         }
     }

@@ -44,7 +44,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 return branchId;
             }
-            throw new System.Exception("Branch Not Exist");
+             throw new System.Exception("Branch Not Exist");
         }
 
         public int AuthoticateUserId()
