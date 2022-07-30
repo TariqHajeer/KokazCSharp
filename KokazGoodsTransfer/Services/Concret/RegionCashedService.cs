@@ -17,7 +17,8 @@ namespace KokazGoodsTransfer.Services.Concret
     public class RegionCashedService : CashService<Region, RegionDto, CreateRegionDto, UpdateRegionDto>, IRegionCashedService
     {
 
-        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
+        public RegionCashedService(IRepository<Region> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessorService httpContextAccessorService)
+            : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
         }
         public override async Task<ErrorRepsonse<RegionDto>> AddAsync(CreateRegionDto createDto)

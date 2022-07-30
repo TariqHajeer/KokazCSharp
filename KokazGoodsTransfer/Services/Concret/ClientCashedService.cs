@@ -20,7 +20,8 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging, httpContextAccessor)
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+            : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
@@ -148,14 +149,14 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<int> Account(AccountDto accountDto)
         {
-            var userId = AuthoticateUserId();
+            var userId = _httpContextAccessorService.AuthoticateUserId();
 
             await _uintOfWork.BegeinTransaction();
             Receipt receipt = new Receipt()
             {
                 IsPay = accountDto.IsPay,
                 About = accountDto.About,
-                CreatedBy = AuthoticateUserName(),
+                CreatedBy = _httpContextAccessorService.AuthoticateUserName(),
                 ClientId = accountDto.ClinetId,
                 Date = DateTime.Now,
                 Amount = accountDto.Amount,

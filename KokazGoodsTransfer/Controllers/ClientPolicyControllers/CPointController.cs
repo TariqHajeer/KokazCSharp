@@ -1,33 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.PointSettingsDtos;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
-using Microsoft.AspNetCore.Http;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CPointController : OldAbstractClientPolicyController
+    public class CPointController : AbstractClientPolicyController
     {
-        public CPointController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly IPointSettingService _pointSettingService;
+        private readonly IClientCashedService _clientCashedService;
+        public CPointController(IPointSettingService pointSettingService, IClientCashedService clientCashedService)
         {
+            _pointSettingService = pointSettingService;
+            _clientCashedService = clientCashedService;
         }
         [HttpGet("MyPoints")]
-        public IActionResult MyPoints()
+        public async Task<IActionResult> MyPoints()
         {
-            var client = this._context.Clients.Find(AuthoticateUserId());
+            var client = await _clientCashedService.FirstOrDefualt(c => c.Id == AuthoticateUserId());
             return Ok(client.Points);
         }
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_mapper.Map<PointSettingsDto[]>(this._context.PointsSettings.ToList()));
+            return Ok(_pointSettingService.GetAll());
         }
     }
 }

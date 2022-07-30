@@ -3,6 +3,7 @@ using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        public OrderRepository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor) : base(kokazContext, httpContextAccessor)
+        public OrderRepository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService) : base(kokazContext, httpContextAccessorService)
         {
             Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }

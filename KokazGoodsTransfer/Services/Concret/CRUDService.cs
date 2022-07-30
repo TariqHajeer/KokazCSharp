@@ -22,33 +22,17 @@ namespace KokazGoodsTransfer.Services.Concret
         protected readonly IMapper _mapper;
         protected readonly Logging _logging;
         protected readonly int _currentBranch;
-        protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly IHttpContextAccessorService _httpContextAccessorService;
         protected readonly int[] _branchesIds;
-        public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor)
+        public CRUDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService)
         {
             _repository = repository;
             _mapper = mapper;
             _logging = logging;
-            _httpContextAccessor = httpContextAccessor;
-            string branchId = _httpContextAccessor.HttpContext.Request.Headers["branchId"];
-            if (branchId == null)
-                _currentBranch = 2;
-            else
-            {
-                _currentBranch = Convert.ToInt32(branchId);
-            }
-            var branches = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").ToList();
-            var values = branches.Select(c => c.Value);
-            _branchesIds = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "branchId").Select(c => Convert.ToInt32(c.Value)).ToArray();
-        }
-        protected int AuthoticateUserId()
-        {
-            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.ToList().Where(c => c.Type == "UserID").Single();
-            return Convert.ToInt32(userIdClaim.Value);
-        }
-        protected string AuthoticateUserName()
-        {
-            return _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
+            _httpContextAccessorService= httpContextAccessorService;
+
+            _branchesIds = httpContextAccessorService.Branches();
+            _currentBranch = httpContextAccessorService.CurrentBranchId();
         }
         public virtual async Task<TDTO> GetById(int id)
         {
@@ -123,6 +107,12 @@ namespace KokazGoodsTransfer.Services.Concret
         public virtual Task<IEnumerable<TDTO>> AddRangeAsync(IEnumerable<CreateDto> entities)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<TDTO> FirstOrDefualt(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            var first=  await _repository.FirstOrDefualt(expression, propertySelectors);
+            return _mapper.Map<TDTO>(first);
         }
     }
 }

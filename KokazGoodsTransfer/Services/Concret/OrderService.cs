@@ -1300,13 +1300,12 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 exprtion = exprtion.And(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
             }
-            var totla = await _clientPaymentRepository.Count(exprtion);
             var includes = new string[] { "ClientPaymentDetails.OrderPlaced" };
-            var clientPayments = await _clientPaymentRepository.GetAsync(pagingDto, exprtion, includes, c => c.OrderByDescending(c => c.Id));
+            var paginResult = await _clientPaymentRepository.GetAsync(pagingDto, exprtion, includes, c => c.OrderByDescending(c => c.Id));
             return new PagingResualt<IEnumerable<PrintOrdersDto>>()
             {
-                Total = totla,
-                Data = _mapper.Map<IEnumerable<PrintOrdersDto>>(clientPayments)
+                Total = paginResult.Total,
+                Data = _mapper.Map<IEnumerable<PrintOrdersDto>>(paginResult.Data)
             };
         }
 
@@ -1342,12 +1341,11 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 predicate = predicate.And(c => c.Date == orderFilter.CreatedDate);
             }
-            var total = await _DisAcceptOrderRepository.Count(predicate);
-            var orders = await _DisAcceptOrderRepository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Region, c => c.Country);
+            var pagingResult = await _DisAcceptOrderRepository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Region, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
-                Total = total,
-                Data = _mapper.Map<IEnumerable<OrderDto>>(orders)
+                Total = pagingResult.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
 

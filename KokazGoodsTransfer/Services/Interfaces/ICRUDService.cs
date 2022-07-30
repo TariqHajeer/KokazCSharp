@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<TDTO>> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors);
         Task<IEnumerable<TDTO>> GetAll(string[] propertySelectors);
         Task<IEnumerable<TDTO>> AddRangeAsync(IEnumerable<CreateDto> entities);
-
+        Task<TDTO> FirstOrDefualt(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] propertySelectors);
 
 
     }
