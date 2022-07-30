@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
-    public class Branches : AbstractEmployeePolicyController
+    public class Branches : OldAbstractEmployeePolicyController
     {
         private readonly IBranchService _branchService;
         public Branches(KokazContext context, IMapper mapper,IBranchService branchService) : base(context, mapper)

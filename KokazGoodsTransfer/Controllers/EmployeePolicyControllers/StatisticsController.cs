@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatisticsController : AbstractEmployeePolicyController
+    public class StatisticsController : OldAbstractEmployeePolicyController
     {
         private readonly NotificationHub _notificationHub;
         public StatisticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)

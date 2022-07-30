@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class GroupController : AbstractEmployeePolicyController
+    public class GroupController : OldAbstractEmployeePolicyController
     {
 
         private readonly IGroupService _groupService;

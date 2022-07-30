@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IncomeController : AbstractEmployeePolicyController
+    public class IncomeController : OldAbstractEmployeePolicyController
     {
         private readonly IIncomeService _IncomeService;
         public IncomeController(KokazContext context, IMapper mapper, IIncomeService incomeService) : base(context, mapper)

@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentWayController : AbstractEmployeePolicyController
+    public class PaymentWayController : OldAbstractEmployeePolicyController
     {
         public PaymentWayController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

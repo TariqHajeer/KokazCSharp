@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientController : AbstractEmployeePolicyController
+    public class ClientController : OldAbstractEmployeePolicyController
     {
         private readonly IClientCashedService _clientCashedService;
         public ClientController(KokazContext context, IMapper mapper, IClientCashedService clientCashedService) : base(context, mapper)

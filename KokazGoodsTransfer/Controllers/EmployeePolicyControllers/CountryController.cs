@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountryController : AbstractEmployeePolicyController
+    public class CountryController : OldAbstractEmployeePolicyController
     {
 
         private readonly ICountryCashedService _countryCashedService;
