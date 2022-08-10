@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public partial class OrderController : AbstractEmployeePolicyController
+    public partial class OrderController : OldAbstractEmployeePolicyController
     {
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
