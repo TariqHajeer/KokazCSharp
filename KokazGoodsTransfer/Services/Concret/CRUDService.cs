@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
@@ -114,6 +115,16 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var first = await _repository.FirstOrDefualt(expression, propertySelectors);
             return _mapper.Map<TDTO>(first);
+        }
+
+        public async Task<PagingResualt<IEnumerable<TDTO>>> GetAsync(PagingDto paging, Expression<Func<TEntity, bool>> filter = null)
+        {
+            var data = await _repository.GetAsync(paging, filter);
+            return new PagingResualt<IEnumerable<TDTO>>()
+            {
+                Data = _mapper.Map<IEnumerable<TDTO>>(data.Data),
+                Total = data.Total
+            };
         }
     }
 }

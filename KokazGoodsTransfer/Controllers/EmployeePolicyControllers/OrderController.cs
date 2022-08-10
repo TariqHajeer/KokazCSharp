@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public partial class OrderController : OldAbstractEmployeePolicyController
+    public partial class OrderController : AbstractEmployeePolicyController
     {
         private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
@@ -28,7 +28,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IAgentPrintService _agentPrintService;
         private readonly NotificationHub notificationHub;
         readonly ErrorMessage err;
-        public OrderController(KokazContext context, IMapper mapper, NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService) : base(context, mapper)
+        public OrderController(NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService)
         {
 
             this.notificationHub = notificationHub;
@@ -98,8 +98,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("MakeOrderInWay")]
         public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
         {
-            var result = await _orderService.MakeOrderInWay(ids);
-            return GetResult(result);
+            var response = await _orderService.MakeOrderInWay(ids);
+            return Ok(response);
         }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)

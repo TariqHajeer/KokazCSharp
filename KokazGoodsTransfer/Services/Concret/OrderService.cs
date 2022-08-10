@@ -429,13 +429,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 _ => "غير معلوم",
             };
         }
-        public async Task<GenaricErrorResponse<int, string, string>> MakeOrderInWay(int[] ids)
+        public async Task<int> MakeOrderInWay(int[] ids)
         {
             var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), new string[] { "Agent.UserPhones", "Client", "Country", "Region" });
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
                 var errors = orders.Where(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Select(c => $"الشحنة رقم{c.Code} ليست في المخزن");
-                return new GenaricErrorResponse<int, string, string>(errors, true);
+                throw new ConfilectException(errors);
             }
             var agent = orders.FirstOrDefault().Agent;
             var agnetPrint = new AgentPrint()
@@ -448,49 +448,40 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.BegeinTransaction();
             var agnetOrderPrints = new List<AgentOrderPrint>();
             var agentPrintsDetials = new List<AgentPrintDetail>();
-            try
+            await _uintOfWork.Repository<AgentPrint>().AddAsync(agnetPrint);
+            foreach (var item in orders)
             {
-                await _uintOfWork.Repository<AgentPrint>().AddAsync(agnetPrint);
-                foreach (var item in orders)
+
+
+                item.OrderplacedId = (int)OrderplacedEnum.Way;
+
+                var agnetOrderPrint = new AgentOrderPrint()
                 {
-
-
-                    item.OrderplacedId = (int)OrderplacedEnum.Way;
-
-                    var agnetOrderPrint = new AgentOrderPrint()
-                    {
-                        OrderId = item.Id,
-                        AgentPrintId = agnetPrint.Id
-                    };
-                    var agentPrintDetials = new AgentPrintDetail()
-                    {
-                        Code = item.Code,
-                        ClientName = item.Client.Name,
-                        Note = item.Note,
-                        Total = item.Cost,
-                        Country = item.Country.Name,
-                        AgentPrintId = agnetPrint.Id,
-                        Phone = item.RecipientPhones,
-                        Region = item.Region?.Name,
-                        Date = item.Date,
-                        ClientNote = item.ClientNote,
-                        Address = item.Address
-                    };
-                    agnetOrderPrints.Add(agnetOrderPrint);
-                    agentPrintsDetials.Add(agentPrintDetials);
-                }
-                await _uintOfWork.UpdateRange(orders);
-                await _uintOfWork.AddRange(agnetOrderPrints);
-                await _uintOfWork.AddRange(agentPrintsDetials);
-                await _uintOfWork.Commit();
-                return new GenaricErrorResponse<int, string, string>(agnetPrint.Id);
+                    OrderId = item.Id,
+                    AgentPrintId = agnetPrint.Id
+                };
+                var agentPrintDetials = new AgentPrintDetail()
+                {
+                    Code = item.Code,
+                    ClientName = item.Client.Name,
+                    Note = item.Note,
+                    Total = item.Cost,
+                    Country = item.Country.Name,
+                    AgentPrintId = agnetPrint.Id,
+                    Phone = item.RecipientPhones,
+                    Region = item.Region?.Name,
+                    Date = item.Date,
+                    ClientNote = item.ClientNote,
+                    Address = item.Address
+                };
+                agnetOrderPrints.Add(agnetOrderPrint);
+                agentPrintsDetials.Add(agentPrintDetials);
             }
-            catch (Exception ex)
-            {
-                await _uintOfWork.Rollback();
-                _logging.WriteExption(ex);
-                return new GenaricErrorResponse<int, string, string>("حدث خطأ ما ", false, true);
-            }
+            await _uintOfWork.UpdateRange(orders);
+            await _uintOfWork.AddRange(agnetOrderPrints);
+            await _uintOfWork.AddRange(agentPrintsDetials);
+            await _uintOfWork.Commit();
+            return agnetPrint.Id;
         }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
