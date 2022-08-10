@@ -133,26 +133,26 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ClientBalance")]
         public async Task<IActionResult> ClientBalance()
         {
-            var clients = await this._context.Clients.ToListAsync();
+            var clients = await this._context.Clients.Select(c => new { c.Id, c.Name }).ToListAsync();
+            var totalAccount = await this._context.Receipts.Where(c => c.ClientPaymentId == null).GroupBy(c => c.ClientId).Select(c => new { Id = c.Key, Sum = c.Sum(s => s.Amount) }).ToListAsync();
+
+            var paidOrders = await this._context.Orders.Where(c => (c.IsClientDiliverdMoney && c.MoenyPlacedId != (int)MoneyPalcedEnum.Delivered)).GroupBy(c => c.ClientId).Select(c => new { c.Key, Sum = c.Sum(s => (s.ClientPaied ?? 0) * -1) }).ToListAsync();
+            var nonPaidOrders = await this._context.Orders.Where(c => !c.IsClientDiliverdMoney && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany).GroupBy(c => c.ClientId).Select(c => new { c.Key, Sum = c.Sum(s => s.Cost - s.DeliveryCost) }).ToListAsync();
+
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
-                clientBlanaceDtos.Add(await GetClientBalanceById(item));
+                var recipeTital = totalAccount.FirstOrDefault(c => c.Id == item.Id)?.Sum ?? 0;
+                var paidOrder = paidOrders.FirstOrDefault(c => c.Key == item.Id)?.Sum ?? 0;
+                var nonPaidOrder = nonPaidOrders.FirstOrDefault(c => c.Key == item.Id)?.Sum ?? 0;
+                clientBlanaceDtos.Add(new ClientBlanaceDto()
+                {
+                    ClientName = item.Name,
+                    Amount = recipeTital + paidOrder + nonPaidOrder
+                });
             }
             return Ok(clientBlanaceDtos);
 
-        }
-        private async Task<ClientBlanaceDto> GetClientBalanceById(Client item)
-        {
-            var totalAccountTask = await this._context.Receipts.Where(c => c.ClientId == item.Id && c.ClientPaymentId == null).SumAsync(c => c.Amount);
-            var clientOrder = await this._context.Orders.Where(c => c.ClientId == item.Id).ToListAsync();
-            var totalOrder = clientOrder.Sum(c => c.CalcClientBalanc());
-            var totalAccount = totalAccountTask;
-            return new ClientBlanaceDto()
-            {
-                ClientName = item.Name,
-                Amount = totalAccount + totalOrder
-            };
         }
 
     }
