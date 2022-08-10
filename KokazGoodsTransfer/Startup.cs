@@ -39,8 +39,8 @@ namespace KokazGoodsTransfer
         {
 
             services.AddControllers();
-            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SmartAsp")));
+            //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
             //services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("goldenWingsDB")));
 
             services.AddCors(options =>
@@ -225,9 +225,9 @@ namespace KokazGoodsTransfer
             services.AddScoped<ITreasuryService, TreasuryService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IIncomeService,IncomeService>();
+            services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IOutcomeService, OutcomeService>();
             services.AddScoped<IUintOfWork, UnitOfWork>();
         }
