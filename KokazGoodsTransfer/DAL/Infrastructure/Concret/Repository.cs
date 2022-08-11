@@ -52,7 +52,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             var data = entityes.ToList();
 
-            if (IsIHaveBranch())
+            if (IsIHaveBranch() || IsIMaybeHaveBranch())
             {
                 data.ForEach(entity => ((IHaveBranch)entity).BranchId = branchId);
             }
