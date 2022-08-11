@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarketController : AbstractEmployeePolicyController
+    public class MarketController : OldAbstractEmployeePolicyController
     {
         IWebHostEnvironment env;
         public MarketController(KokazContext context, IMapper mapper, IWebHostEnvironment env) : base(context, mapper)

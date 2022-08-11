@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<CodeStatus>> GetCodeStatuses(int clientId, string[] codes);
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
-        Task<GenaricErrorResponse<int, string, string>> MakeOrderInWay(int[] ids);
+        Task<int> MakeOrderInWay(int[] ids);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
@@ -53,5 +53,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code);
         Task<PagingResualt<IEnumerable<OrderDto>>> DisAccpted(PagingDto pagingDto, OrderFilter orderFilter);
         Task<int> Count(Expression<Func<Order, bool>> filter = null);
+        Task<IEnumerable<ApproveAgentEditOrderRequestDto>> GetOrderRequestEditState();
+        Task DisAproveOrderRequestEditState(int[] ids);
+        Task AproveOrderRequestEditState(int[] ids);
     }
 }
