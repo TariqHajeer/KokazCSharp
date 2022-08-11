@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class COrderController : OldAbstractClientPolicyController
+    public class COrderController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
         public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper)

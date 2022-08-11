@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class IndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> : CRUDService<TEntity, TDTO, CreateDto, UpdateDto>, IIndexCURDService<TEntity, TDTO, CreateDto, UpdateDto> where TEntity : class, IIndex where TDTO : class where CreateDto : class, INameEntity where UpdateDto : class, IIndex
     {
 
-        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
+        public IndexCURDService(IRepository<TEntity> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
         }
         public override async Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto createDto)

@@ -15,8 +15,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class GroupService : IndexCURDService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
     {
         private readonly IRepository<Privilege> _privilegeRepository;
-        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
-            : base(repository, mapper, logging, httpContextAccessorService)
+        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
             _privilegeRepository = privilegeRepository;
         }

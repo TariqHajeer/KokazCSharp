@@ -13,8 +13,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class OutcomeTypeService : IndexCURDService<OutComeType, OutComeTypeDto, CreateOutComeTypeDto, UpdateOutComeTypeDto>, IOutcomeTypeService
     {
         private readonly IRepository<OutCome> _outcomeRepository;
-        public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService)
-            : base(repository, mapper, logging, httpContextAccessorService)
+        public OutcomeTypeService(IRepository<OutComeType> repository, IRepository<OutCome> outcomeRepository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging,httpContextAccessor)
         {
             _outcomeRepository = outcomeRepository;
         }

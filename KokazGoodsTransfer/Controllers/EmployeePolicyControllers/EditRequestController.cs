@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EditRequestController : OldAbstractEmployeePolicyController
+    public class EditRequestController : AbstractEmployeePolicyController
     {
         public EditRequestController(KokazContext context, IMapper mapper) : base(context, mapper)
         {

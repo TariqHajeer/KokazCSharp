@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
 
         private readonly IIncomeTypeSerive _incomeTypeSerive;
-        public IncomeTypeController(IIncomeTypeSerive incomeTypeSerive)
+        public IncomeTypeController(IIncomeTypeSerive incomeTypeSerive, KokazContext context, IMapper mapper) : base(context, mapper)
         {
             _incomeTypeSerive = incomeTypeSerive;
         }

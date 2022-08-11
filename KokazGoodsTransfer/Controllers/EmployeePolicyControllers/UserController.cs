@@ -21,7 +21,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         private readonly IUserCashedService _userCashedService;
         private readonly ICountryCashedService _countryCashedService;
-        public UserController(IUserCashedService userCashedService, ICountryCashedService countryCashedService)
+        public UserController(KokazContext context, IMapper mapper, IUserCashedService userCashedService, ICountryCashedService countryCashedService) : base(context, mapper)
         {
             _userCashedService = userCashedService;
             _countryCashedService = countryCashedService;

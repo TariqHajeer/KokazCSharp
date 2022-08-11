@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class IncomeTypeSerivce : IndexCURDService<IncomeType, IncomeTypeDto, CreateIncomeTypeDto, UpdateIncomeTypeDto>, IIncomeTypeSerive
     {
         private readonly IRepository<Income> _incomeReposiory;
-        public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper,Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
+        public IncomeTypeSerivce(IRepository<IncomeType> repository, IRepository<Income> incomeReposiory ,IMapper mapper,Logging logging,IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging,httpContextAccessor)
         {
             _incomeReposiory = incomeReposiory;
         }

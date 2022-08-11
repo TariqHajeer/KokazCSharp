@@ -8,7 +8,6 @@ using KokazGoodsTransfer.Dtos.IncomesDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
-using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,29 +19,38 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class IncomeController : AbstractEmployeePolicyController
     {
         private readonly IIncomeService _IncomeService;
-        public IncomeController(IIncomeService incomeService)
+        public IncomeController(KokazContext context, IMapper mapper, IIncomeService incomeService) : base(context, mapper)
         {
             _IncomeService = incomeService;
         }
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Filtering filtering, [FromQuery] PagingDto pagingDto)
+        public IActionResult Get([FromQuery] Filtering filtering, [FromQuery] PagingDto pagingDto)
         {
-            var incomePredicate = PredicateBuilder.New<Income>(true);
-            if (filtering.MaxAmount != null)
-                incomePredicate = incomePredicate.And(c => c.Amount <= filtering.MaxAmount);
-            if (filtering.MinAmount != null)
-                incomePredicate = incomePredicate.And(c => c.Amount >= filtering.MinAmount);
-            if (filtering.Type != null)
-                incomePredicate = incomePredicate.And(c => c.IncomeTypeId == filtering.Type);
-            if (filtering.UserId != null)
-                incomePredicate = incomePredicate.And(c => c.UserId == filtering.UserId);
-            if (filtering.FromDate != null)
-                incomePredicate = incomePredicate.And(c => c.Date >= filtering.FromDate);
-            if (filtering.ToDate != null)
-                incomePredicate = incomePredicate.And(c => c.Date <= filtering.ToDate);
-            var pagingResualt = await _IncomeService.GetAsync(pagingDto, incomePredicate);
-            return Ok(pagingResualt);
-
+            try
+            {
+                var incomeIQ = (IQueryable<Income>)this._context.Incomes
+                       .Include(c => c.User)
+                       .Include(c => c.IncomeType);
+                if (filtering.MaxAmount != null)
+                    incomeIQ = incomeIQ.Where(c => c.Amount <= filtering.MaxAmount);
+                if (filtering.MinAmount != null)
+                    incomeIQ = incomeIQ.Where(c => c.Amount >= filtering.MinAmount);
+                if (filtering.Type != null)
+                    incomeIQ = incomeIQ.Where(c => c.IncomeTypeId == filtering.Type);
+                if (filtering.UserId != null)
+                    incomeIQ = incomeIQ.Where(c => c.UserId == filtering.UserId);
+                if (filtering.FromDate != null)
+                    incomeIQ = incomeIQ.Where(c => c.Date >= filtering.FromDate);
+                if (filtering.ToDate != null)
+                    incomeIQ = incomeIQ.Where(c => c.Date <= filtering.ToDate);
+                var totla = incomeIQ.Count();
+                var incomes = incomeIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToList();
+                return Ok(new { data = _mapper.Map<IncomeDto[]>(incomeIQ.ToList()), totla });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
@@ -67,15 +75,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            await _IncomeService.Delete(id);
+            var income = this._context.Incomes.Find(id);
+            this._context.Remove(income);
+            this._context.SaveChanges();
             return Ok();
         }
         [HttpPatch]
-        public async Task<IActionResult> UpdateIncome([FromBody] UpdateIncomeDto dto)
+        public IActionResult UpdateIncome([FromBody] UpdateIncomeDto dto)
         {
-            var income = (await _IncomeService.Update(dto)).Data;
+            var income = this._context.Incomes.Find(dto.Id);
+            income = _mapper.Map(dto, income);
+            this._context.Update(income);
+            this._context.SaveChanges();
             return Ok(income);
         }
     }
