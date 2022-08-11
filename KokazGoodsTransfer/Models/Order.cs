@@ -12,7 +12,6 @@ namespace KokazGoodsTransfer.Models
         public Order()
         {
             AgentOrderPrints = new HashSet<AgentOrderPrint>();
-            ApproveAgentEditOrderRequests = new HashSet<ApproveAgentEditOrderRequest>();
             OrderClientPaymnets = new HashSet<OrderClientPaymnet>();
             OrderItems = new HashSet<OrderItem>();
             OrderLogs = new HashSet<OrderLog>();
@@ -53,6 +52,8 @@ namespace KokazGoodsTransfer.Models
         public int? CurrentCountry { get; set; }
         public int PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
+        public decimal? NewCost { get; set; }
+        public int? NewOrderPlacedId { get; set; }
         public int BranchId { get; set; }
         public int? SecondBranchId { get; set; }
         public virtual User Agent { get; set; }
@@ -64,7 +65,6 @@ namespace KokazGoodsTransfer.Models
         public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
-        public virtual ICollection<ApproveAgentEditOrderRequest> ApproveAgentEditOrderRequests { get; set; }
         public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
@@ -72,6 +72,8 @@ namespace KokazGoodsTransfer.Models
         public Branch Branch { get; set; }
         [ForeignKey(nameof(SecondBranchId))]
         public virtual Branch SecondBranch { get; set; }
+        [ForeignKey(nameof(NewOrderPlacedId))]
+        public OrderPlaced NewOrderPlaced { get; set; }
 
     }
 }

@@ -22,13 +22,15 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRegionCashedService _regionCashedService;
-        public CSettingsGetController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService) : base(context, mapper)
+        private readonly IOrderTypeCashService _orderTypeCashService;
+        public CSettingsGetController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderTypeCashService orderTypeCashService)
         {
 
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
             _orderPlacedIndexService = orderPlacedIndexService;
             _moneyPlacedIndexService = moneyPlacedIndexService;
+            _orderTypeCashService = orderTypeCashService;
         }
 
         [HttpGet("Countries")]
@@ -42,10 +44,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions() => Ok(await _regionCashedService.GetAll());
 
         [HttpGet("orderType")]
-        public IActionResult GetOrderType()
+        public async Task<IActionResult> GetOrderType()
         {
-            var ordertypes = this._context.OrderTypes.ToList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(ordertypes));
+            var orderTypes = await _orderTypeCashService.GetAll();
+            return Ok(orderTypes);
         }
         [HttpGet("OrderPlaced")]
         public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());

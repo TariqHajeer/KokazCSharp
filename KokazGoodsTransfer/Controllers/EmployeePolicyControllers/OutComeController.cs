@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OutComeController : AbstractEmployeePolicyController
+    public class OutComeController : OldAbstractEmployeePolicyController
     {
         private readonly IOutcomeService _outcomeService;
         public OutComeController(KokazContext context, IMapper mapper, IOutcomeService outcomeService) : base(context, mapper)

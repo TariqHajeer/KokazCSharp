@@ -22,7 +22,8 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging, httpContextAccessor)
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+            : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;

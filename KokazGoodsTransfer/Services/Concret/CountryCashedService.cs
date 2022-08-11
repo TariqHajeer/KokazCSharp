@@ -17,7 +17,8 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class CountryCashedService : CashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>, ICountryCashedService
     {
-        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, cache, logging,httpContextAccessor)
+        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+            : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
         }
 

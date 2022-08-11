@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class BranchService : CRUDService<Branch, BranchDto, CreateBranchDto, UpdateBranchDto>, IBranchService
     {
-        public BranchService(IRepository<Branch> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging,httpContextAccessor)
+        public BranchService(IRepository<Branch> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
         {
         }
         public override async Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)

@@ -13,6 +13,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq.Expressions;
+using KokazGoodsTransfer.Models.Static;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.HubsConfig;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -21,16 +24,20 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<AgentPrint> _repository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IRepository<Order> _orderRepository;
+        private readonly NotificationHub _notificationHub;
         protected int AuthoticateUserId()
         {
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.ToList().Where(c => c.Type == "UserID").Single();
             return Convert.ToInt32(userIdClaim.Value);
         }
-        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IRepository<Order> orderRepository, NotificationHub notificationHub)
         {
             _repository = repository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _orderRepository = orderRepository;
+            _notificationHub = notificationHub;
         }
 
         public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetPrint(PagingDto pagingDto, PrintFilterDto printFilterDto)
@@ -87,6 +94,27 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var printed = await _repository.FirstOrDefualt(c => c.Id == printNumber, c => c.AgentPrintDetails);
             return _mapper.Map<PrintOrdersDto>(printed);
+        }
+
+        public async Task SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos)
+        {
+            var orders = await _orderRepository.GetAsync(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id));
+            agentOrderStateDtos.ForEach(aos =>
+            {
+                var order = orders.First(c => c.Id == aos.Id);
+                order.NewCost = aos.Cost;
+                order.NewOrderPlacedId = aos.OrderplacedId;
+                order.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
+            });
+            await _orderRepository.Update(orders);
+            var count=  await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
+            AdminNotification adminNotification = new AdminNotification()
+            {
+
+                OrderRequestEditStateCount = count,
+
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
         }
     }
 }

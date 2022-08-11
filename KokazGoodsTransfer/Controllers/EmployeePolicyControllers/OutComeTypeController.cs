@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class OutComeTypeController : AbstractEmployeePolicyController
     {
         private readonly IOutcomeTypeService _outcomeTypeService;
-        public OutComeTypeController(IOutcomeTypeService outcomeTypeService, KokazContext context, IMapper mapper) : base(context, mapper)
+        public OutComeTypeController(IOutcomeTypeService outcomeTypeService)
         {
             _outcomeTypeService = outcomeTypeService;
         }

@@ -65,10 +65,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 climes.Add(new Claim("treasury", false.ToString()));
             }
             climes.Add(new Claim(ClaimTypes.Name, user.Name));
-            foreach (var item in user.Branches)
-            {
-                climes.Add(new Claim("branchId", item.BranchId.ToString()));
-            }
+            if (user.BranchId != null)
+                climes.Add(new Claim("branchId", user.BranchId.ToString()));
+            else
+                foreach (var item in user.Branches)
+                {
+                    climes.Add(new Claim("branchId", item.BranchId.ToString()));
+                }
+
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(climes),

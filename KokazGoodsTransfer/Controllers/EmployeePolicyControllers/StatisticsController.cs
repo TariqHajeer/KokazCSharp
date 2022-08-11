@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatisticsController : AbstractEmployeePolicyController
+    public class StatisticsController : OldAbstractEmployeePolicyController
     {
         private readonly NotificationHub _notificationHub;
         public StatisticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
@@ -70,7 +70,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var newOrdersDontSendCount = await this._context.Orders
                 .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
                 .CountAsync();
-            var orderRequestEditStateCount = await this._context.ApproveAgentEditOrderRequests.Where(c => c.IsApprove == null).CountAsync();
+            var orderRequestEditStateCount = await this._context.Orders.Where(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending).CountAsync();
             var newEditRquests = await this._context.EditRequests.Where(c => c.Accept == null).CountAsync();
             var newPaymentRequetsCount = await this._context.PaymentRequests
                 .Where(c => c.Accept == null).CountAsync();
