@@ -155,10 +155,10 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     return context.Mapper.Map<OrderTypeDto>(orderItem.OrderTpye);
                 }));
 
-            CreateMap<Order, ApproveAgentEditOrderRequestDto>()
+            CreateMap<ApproveAgentEditOrderRequest, ApproveAgentEditOrderRequestDto>()
                 .ForMember(c => c.Order, opt => opt.MapFrom((obj, dto, i, conext) =>
                 {
-                    return conext.Mapper.Map<OrderDto>(obj);
+                    return conext.Mapper.Map<OrderDto>(obj.Order);
                 }))
             .ForMember(c => c.Agent, opt => opt.MapFrom((obj, dto, i, conext) =>
             {
@@ -166,7 +166,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             }))
             .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, conext) =>
             {
-                return conext.Mapper.Map<NameAndIdDto>(obj.NewOrderPlaced);
+                return conext.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
             }));
             CreateMap<Order, PayForClientDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

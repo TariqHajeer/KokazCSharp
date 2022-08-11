@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     public class ClientController : AbstractEmployeePolicyController
     {
         private readonly IClientCashedService _clientCashedService;
-        public ClientController(IClientCashedService clientCashedService)
+        public ClientController(KokazContext context, IMapper mapper, IClientCashedService clientCashedService) : base(context, mapper)
         {
             _clientCashedService = clientCashedService;
         }
@@ -71,7 +71,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost("Account")]
         public async Task<IActionResult> Account([FromBody] AccountDto accountDto)
         {
-            return Ok(await _clientCashedService.Account(accountDto));
+            return Ok( await _clientCashedService.Account(accountDto));
         }
         [HttpPost("GiveOrDiscountPoints")]
         public async Task<IActionResult> GivePoint([FromBody] GiveOrDiscountPointsDto giveOrDiscountPointsDto)

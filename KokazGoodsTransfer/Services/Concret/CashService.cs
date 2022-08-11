@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         protected readonly IMemoryCache _cache;
         protected readonly string cashName;
-        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
+        public CashService(IRepository<TEntity> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
         {
             _cache = cache;
             cashName = typeof(TEntity).FullName + _currentBranch;

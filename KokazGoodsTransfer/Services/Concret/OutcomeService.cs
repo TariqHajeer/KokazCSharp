@@ -18,7 +18,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUserService _userService;
         private readonly IUintOfWork _uintOfWork;
         public OutcomeService(IRepository<OutCome> repository, IMapper mapper,
-            IUserService userService, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
+            IUserService userService, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging,httpContextAccessor)
         {
             _userService = userService;
             _uintOfWork = uintOfWork;

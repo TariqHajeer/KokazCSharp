@@ -7,5 +7,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
 {
     public interface IIncomeService : ICRUDService<Income, IncomeDto, CreateIncomeDto, UpdateIncomeDto>
     {
+        
     }
 }

@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CStaticsController : OldAbstractClientPolicyController
+    public class CStaticsController : AbstractClientPolicyController
     {
         NotificationHub notificationHub;
         public CStaticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)

@@ -1,20 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.Clients;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
+using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CClientController : OldAbstractClientPolicyController
+    public class CClientController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
         private readonly IClientCashedService _clientCashedService;

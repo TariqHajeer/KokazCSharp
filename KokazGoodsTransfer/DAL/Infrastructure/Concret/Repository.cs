@@ -8,7 +8,6 @@ using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
-using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,24 +18,24 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         protected readonly KokazContext _kokazContext;
         protected IQueryable<T> Query;
         protected readonly int branchId;
-        public Repository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService)
+        public Repository(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
         {
             this._kokazContext = kokazContext;
             Query = _kokazContext.Set<T>().AsQueryable();
-            if (IsIHaveBranch() || IsIMaybeHaveBranch())
+            string branch = httpContextAccessor.HttpContext.Request.Headers["branchId"];
+            if (!string.IsNullOrEmpty(branch))
+                branchId = int.Parse(branch);
+            else
             {
-                if (httpContextAccessorService.UserBranches().Any())
-                {
-                    branchId = httpContextAccessorService.CurrentBranchId();
-                    if (IsIHaveBranch())
-                    {
-                        Query = Query.Where(c => ((IHaveBranch)c).BranchId == branchId);
-                    }
-                    if (IsIMaybeHaveBranch())
-                    {
-                        Query = Query.Where(c => ((IMaybeHaveBranch)c).BranchId == null || ((IMaybeHaveBranch)c).BranchId == branchId);
-                    }
-                }
+                branchId = 2    ;
+            }
+            if (IsIHaveBranch())
+            {
+                Query = Query.Where(c => ((IHaveBranch)c).BranchId == branchId);
+            }
+            if (IsIMaybeHaveBranch())
+            {
+                Query = Query.Where(c => ((IMaybeHaveBranch)c).BranchId == null || ((IMaybeHaveBranch)c).BranchId == branchId);
             }
 
         }
