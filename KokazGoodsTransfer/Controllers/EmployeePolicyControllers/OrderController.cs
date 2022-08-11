@@ -26,12 +26,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly IOrderService _orderService;
         private readonly IAgentPrintService _agentPrintService;
-        private readonly NotificationHub notificationHub;
-        readonly ErrorMessage err;
-        public OrderController(NotificationHub notificationHub, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService)
+        public OrderController(IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService)
         {
 
-            this.notificationHub = notificationHub;
             _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderPlacedIndexService = orderPlacedIndexService;
             _orderService = orderService;
