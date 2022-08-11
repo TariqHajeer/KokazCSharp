@@ -1,11 +1,10 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
 using System.Collections.Generic;
 
-#nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OrderType
+    public partial class OrderType:IIdEntity
     {
         public OrderType()
         {

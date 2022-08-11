@@ -10,7 +10,7 @@ namespace KokazGoodsTransfer.Services.Concret
 {
     public class EditRequestService : CRUDService<EditRequest, EditRequestDto, CreateEditRequestDto, UpdateEditRequestDto>, IEditRequestService
     {
-        public EditRequestService(IRepository<EditRequest> repository, IMapper mapper, Logging logging, IHttpContextAccessor httpContextAccessor) : base(repository, mapper, logging, httpContextAccessor)
+        public EditRequestService(IRepository<EditRequest> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
         {
         }
     }

@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
 
         private readonly IGroupService _groupService;
-        public GroupController(IGroupService groupService, KokazContext context, IMapper mapper) : base(context, mapper)
+        public GroupController(IGroupService groupService)
         {
             _groupService = groupService;
         }

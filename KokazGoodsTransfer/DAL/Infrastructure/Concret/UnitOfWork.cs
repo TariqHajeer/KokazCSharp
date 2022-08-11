@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
 using Microsoft.AspNetCore.Http;
+using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
@@ -15,15 +16,15 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         private readonly KokazContext _kokazContext;
         private IDbContextTransaction _dbContextTransaction;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessorService _httpContextAccessorService;
         private Dictionary<string, object> _repositories;
 
         public bool IsTransactionOpen => _dbContextTransaction != null;
 
-        public UnitOfWork(KokazContext kokazContext, IHttpContextAccessor httpContextAccessor)
+        public UnitOfWork(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService)
         {
             _kokazContext = kokazContext;
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextAccessorService = httpContextAccessorService;
         }
 
         public async Task Add<TEntity>(TEntity entity) where TEntity : class
@@ -54,7 +55,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var type = typeof(TEntity).Name;
             if (!_repositories.ContainsKey(type))
             {
-                var repositoryInstance = new Repository<TEntity>(_kokazContext, _httpContextAccessor);
+                var repositoryInstance = new Repository<TEntity>(_kokazContext, _httpContextAccessorService);
                 _repositories.Add(type, repositoryInstance);
             }
             return (Repository<TEntity>)_repositories[type];

@@ -1,9 +1,9 @@
 ﻿using KokazGoodsTransfer.DAL.Helper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Helper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -13,6 +13,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
     {
         Task<TDTO> GetById(int id);
         Task<IEnumerable<TDTO>> GetByIds(IEnumerable<int> ids);
+        Task<PagingResualt<IEnumerable<TDTO>>> GetAsync(PagingDto paging, Expression<Func<TEntity, bool>> filter=null);
         Task<ErrorRepsonse<TDTO>> AddAsync(CreateDto entity);
         Task<IEnumerable<TDTO>> GetAsync(Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors);
         Task<ErrorRepsonse<TDTO>> Update(UpdateDto updateDto);
@@ -21,7 +22,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<TDTO>> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors);
         Task<IEnumerable<TDTO>> GetAll(string[] propertySelectors);
         Task<IEnumerable<TDTO>> AddRangeAsync(IEnumerable<CreateDto> entities);
-
+        Task<TDTO> FirstOrDefualt(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] propertySelectors);
 
 
     }

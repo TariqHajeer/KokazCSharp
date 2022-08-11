@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.PointSettingsDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,49 +16,45 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class PointSettingsController : AbstractEmployeePolicyController
     {
-        public PointSettingsController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly IPointSettingService _pointSettingService;
+        public PointSettingsController(IPointSettingService pointSettingService)
         {
+            _pointSettingService = pointSettingService;
         }
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var points= this._context.PointsSettings.ToList();
-            return Ok(_mapper.Map<PointSettingsDto[]>(points));
+            return Ok(await _pointSettingService.GetAll());
         }
         [HttpPost]
-        public IActionResult Create([FromBody]CreatePointSetting createPointSetting)
+        public async Task<IActionResult> Create([FromBody] CreatePointSetting createPointSetting)
         {
-            var isValid = IsPointValid(createPointSetting) as OkObjectResult;
+            var isValid = await IsPointValid(createPointSetting) as OkObjectResult;
             if (!(bool)isValid.Value)
             {
                 return Conflict();
             }
-            var point = _mapper.Map<PointsSetting>(createPointSetting);
-            this._context.Add(point);
-            this._context.SaveChanges();
-            return Ok(_mapper.Map<PointSettingsDto>(point));
+            var result = await _pointSettingService.AddAsync(createPointSetting);
+            return Ok(result.Data);
         }
         [HttpGet("GetSettingLessThanPoint/{points}")]
-        public IActionResult GetByMoneyByPoint(int points)
+        public async Task<IActionResult> GetByMoneyByPoint(int points)
         {
-            var pointsSettings = this._context.PointsSettings.Where(c => c.Points <= points);
-            return Ok(_mapper.Map<PointSettingsDto[]>(pointsSettings));
+            return Ok(await _pointSettingService.GetAsync(c => c.Points <= points));
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var pointSetting= this._context.PointsSettings.Find(id);
-            this._context.Remove(pointSetting);
-            this._context.SaveChanges();
+            await _pointSettingService.Delete(id);
             return Ok();
         }
         [HttpGet("IsPointValid")]
-        public IActionResult IsPointValid([FromQuery]CreatePointSetting createPointSetting)
+        public async Task<IActionResult> IsPointValid([FromQuery] CreatePointSetting createPointSetting)
         {
             if (createPointSetting.Points == 0 || createPointSetting.Money == 0)
                 return Ok(false);
-            return Ok(!this._context.PointsSettings.Where(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points).Any());
+            return Ok(await _pointSettingService.Any(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points));
         }
-        
+
     }
 }

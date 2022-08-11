@@ -145,39 +145,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("AgentPrintDetails");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("AgentId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsApprove")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("NewAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderPlacedId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgentId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("OrderPlacedId");
-
-                    b.ToTable("ApproveAgentEditOrderRequest");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.Property<int>("Id")
@@ -821,6 +788,12 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("MoenyPlacedId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("NewCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("NewOrderPlacedId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -879,6 +852,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("CurrentCountry");
 
                     b.HasIndex("MoenyPlacedId");
+
+                    b.HasIndex("NewOrderPlacedId");
 
                     b.HasIndex("OrderStateId");
 
@@ -1237,6 +1212,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Money")
                         .HasColumnType("money");
 
@@ -1244,6 +1222,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex(new[] { "Points" }, "UQ__PointsSe__DA826786C9B4659A")
                         .IsUnique();
@@ -1656,33 +1636,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentPrint");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.User", "Agent")
-                        .WithMany("ApproveAgentEditOrderRequests")
-                        .HasForeignKey("AgentId")
-                        .HasConstraintName("FK__ApproveAg__Agent__0B91BA14")
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Order", "Order")
-                        .WithMany("ApproveAgentEditOrderRequests")
-                        .HasForeignKey("OrderId")
-                        .HasConstraintName("FK__ApproveAg__Order__0C85DE4D")
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "OrderPlaced")
-                        .WithMany("ApproveAgentEditOrderRequests")
-                        .HasForeignKey("OrderPlacedId")
-                        .HasConstraintName("FK__ApproveAg__Order__0D7A0286")
-                        .IsRequired();
-
-                    b.Navigation("Agent");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("OrderPlaced");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
@@ -1960,6 +1913,10 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Order_MoenyPlaced")
                         .IsRequired();
 
+                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "NewOrderPlaced")
+                        .WithMany()
+                        .HasForeignKey("NewOrderPlacedId");
+
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
                         .HasForeignKey("OrderStateId")
@@ -1992,6 +1949,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("CurrentCountryNavigation");
 
                     b.Navigation("MoenyPlaced");
+
+                    b.Navigation("NewOrderPlaced");
 
                     b.Navigation("Orderplaced");
 
@@ -2146,6 +2105,17 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("PaymentWay");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.PointsSetting", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
@@ -2482,8 +2452,6 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentOrderPrints");
 
-                    b.Navigation("ApproveAgentEditOrderRequests");
-
                     b.Navigation("OrderClientPaymnets");
 
                     b.Navigation("OrderItems");
@@ -2495,8 +2463,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderPlaced", b =>
                 {
-                    b.Navigation("ApproveAgentEditOrderRequests");
-
                     b.Navigation("ClientPaymentDetails");
 
                     b.Navigation("Notfications");
@@ -2571,8 +2537,6 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.User", b =>
                 {
                     b.Navigation("AgentCountries");
-
-                    b.Navigation("ApproveAgentEditOrderRequests");
 
                     b.Navigation("Branches");
 

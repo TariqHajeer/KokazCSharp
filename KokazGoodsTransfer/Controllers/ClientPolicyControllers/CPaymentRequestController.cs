@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CPaymentRequestController : AbstractClientPolicyController
+    public class CPaymentRequestController : OldAbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
         public CPaymentRequestController(KokazContext context, IMapper mapper,  NotificationHub notificationHub) : base(context, mapper)
