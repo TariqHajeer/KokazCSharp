@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             if (await _repository.Any(c => c.Name.Equals(createDto.Name)))
             {
-                throw new ConfilectException("");
+                throw new ConflictException("");
             }
             return await base.AddAsync(createDto);
         }
@@ -28,7 +28,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             if (await _repository.Any(c => c.Id != updateDto.Id && c.Name.Equals(updateDto.Name)))
             {
-                throw new ConfilectException("");
+                throw new ConflictException("");
             }
             return await base.Update(updateDto);
         }

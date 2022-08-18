@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.PointSettingsDtos;
-using KokazGoodsTransfer.Helpers;
-using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers

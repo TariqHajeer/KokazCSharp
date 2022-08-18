@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 namespace KokazGoodsTransfer.CustomException
 {
-    public class ConfilectException:Exception
+    public class ConflictException:Exception
     {
         IEnumerable<string> errors;
         public ConfliectErrorMessage Errors
         {
             get { return new ConfliectErrorMessage( errors); }
         }
-        public ConfilectException( string error)
+        public ConflictException( string error)
         {
             var errors = new List<string>
             {
@@ -17,7 +17,7 @@ namespace KokazGoodsTransfer.CustomException
             };
             this.errors= errors;
         }
-        public ConfilectException(IEnumerable<string> errors)
+        public ConflictException(IEnumerable<string> errors)
         {
             this.errors = errors;
         }

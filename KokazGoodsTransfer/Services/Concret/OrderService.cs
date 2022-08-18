@@ -80,7 +80,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
             if (!orders.Any())
             {
-                throw new ConfilectException("الشحنة غير موجودة");
+                throw new ConflictException("الشحنة غير موجودة");
             }
             var lastOrderAdded = orders.OrderBy(c => c.Id).Last();
             ///التأكد من ان الشحنة ليست عند العميل او في المخزن
@@ -101,11 +101,11 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var lastOrderPlacedAdded = lastOrderAdded.OrderplacedId;
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
-                    throw new ConfilectException("الشحنة في المخزن");
+                    throw new ConflictException("الشحنة في المخزن");
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Client)
-                    throw new ConfilectException("الشحنة عند العميل");
+                    throw new ConflictException("الشحنة عند العميل");
                 if (lastOrderAdded.OrderplacedId == (int)MoneyPalcedEnum.InsideCompany)
-                    throw new ConfilectException("الشحنة داخل الشركة");
+                    throw new ConflictException("الشحنة داخل الشركة");
             }
             return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
         }
@@ -435,7 +435,7 @@ namespace KokazGoodsTransfer.Services.Concret
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
                 var errors = orders.Where(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Select(c => $"الشحنة رقم{c.Code} ليست في المخزن");
-                throw new ConfilectException(errors);
+                throw new ConflictException(errors);
             }
             var agent = orders.FirstOrDefault().Agent;
             var agnetPrint = new AgentPrint()
@@ -537,7 +537,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     exsitinOrders = exsitinOrders.Where(eo => createMultipleOrders.Any(co => co.ClientId == eo.ClientId && eo.Code == co.Code));
                     if (exsitinOrders.Any())
                     {
-                        throw new ConfilectException(exsitinOrders.Select(c => $"الكود{c.Code} مكرر"));
+                        throw new ConflictException(exsitinOrders.Select(c => $"الكود{c.Code} مكرر"));
                     }
                 }
 
@@ -580,7 +580,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
                 {
-                    throw new ConfilectException($"الكود{order.Code} مكرر");
+                    throw new ConflictException($"الكود{order.Code} مكرر");
                 }
                 if (createOrdersFromEmployee.RegionId == null)
                 {
@@ -683,7 +683,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
-                throw new ConfilectException("ليست جميع الشحنات لنفس العميل");
+                throw new ConflictException("ليست جميع الشحنات لنفس العميل");
             }
             semaphore.Wait();
             var clientPayment = new ClientPayment()
@@ -763,7 +763,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
             {
-                throw new ConfilectException("ليست جميع الشحنات لنفس العميل");
+                throw new ConflictException("ليست جميع الشحنات لنفس العميل");
             }
             semaphore.Wait();
             var clientPayment = new ClientPayment()
@@ -957,18 +957,18 @@ namespace KokazGoodsTransfer.Services.Concret
             var includes = new string[] { "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
             var order = await _repository.FirstOrDefualt(c => c.ClientId == clientId && c.Code == code, includes);
             if (order == null)
-                throw new ConfilectException("الشحنة غير موجودة");
+                throw new ConflictException("الشحنة غير موجودة");
             if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
             {
-                throw new ConfilectException("تم تسليم كلفة الشحنة من قبل");
+                throw new ConflictException("تم تسليم كلفة الشحنة من قبل");
             }
             if (order.OrderplacedId == (int)OrderplacedEnum.Client)
             {
-                throw new ConfilectException("الشحنة عند العميل");
+                throw new ConflictException("الشحنة عند العميل");
             }
             if (order.OrderplacedId == (int)OrderplacedEnum.Store)
             {
-                throw new ConfilectException("الشحنة داخل المخزن");
+                throw new ConflictException("الشحنة داخل المخزن");
             }
             await _repository.LoadRefernces(order, c => c.MoenyPlaced);
             await _repository.LoadRefernces(order, c => c.Orderplaced);
@@ -1015,7 +1015,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var order = await _repository.GetById(idsDto.OrderId);
             if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
             {
-                throw new ConfilectException("تضارب المندوب و المدينة");
+                throw new ConflictException("تضارب المندوب و المدينة");
             }
             order.AgentId = idsDto.AgentId;
             order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == idsDto.AgentId))?.Salary ?? 0;
@@ -1032,10 +1032,10 @@ namespace KokazGoodsTransfer.Services.Concret
 
             //validation 
             if (idsDtos.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())
-                throw new ConfilectException("");
+                throw new ConflictException("");
 
             if (idsDtos.Select(c => c.AgentId).Except(agentsContries.Select(c => c.AgentId)).Any())
-                throw new ConfilectException("");
+                throw new ConflictException("");
             var agentsIds = orders.Select(c => c.AgentId);
             var agents = await _userRepository.GetAsync(c => agentsIds.Contains(c.Id));
             foreach (var item in idsDtos)
@@ -1044,7 +1044,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
                 if (!agentsContries.Any(c => c.CountryId != order.CountryId))
                 {
-                    throw new ConfilectException("تضارب المندوب و المدينة");
+                    throw new ConflictException("تضارب المندوب و المدينة");
                 }
                 order.AgentId = item.AgentId;
                 order.AgentCost = agents.First(c => c.Id == item.AgentId)?.Salary ?? 0;
@@ -1087,7 +1087,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
             if (ids.Except(orders.Select(c => c.Id)).Any())
             {
-                throw new ConfilectException("");
+                throw new ConflictException("");
             }
             var dis = orders.Select(order => new DisAcceptOrder()
             {
@@ -1140,7 +1140,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.BegeinTransaction();
             if (order.OrderplacedId != (int)OrderplacedEnum.Store)
             {
-                throw new ConfilectException("الشحنة ليست في المخزن");
+                throw new ConflictException("الشحنة ليست في المخزن");
             }
             order.OrderplacedId = (int)OrderplacedEnum.CompletelyReturned;
             order.MoenyPlacedId = (int)MoneyPalcedEnum.InsideCompany;
@@ -1176,7 +1176,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetAsync(c => c.Code == orderCode, c => c.Orderplaced, c => c.MoenyPlaced, c => c.Region, c => c.Country, c => c.Client, c => c.Agent);
             if (orders.Count() == 0)
             {
-                throw new ConfilectException("الشحنة غير موجودة");
+                throw new ConflictException("الشحنة غير موجودة");
             }
             var lastOrderAdded = orders.Last();
             var orderInStor = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.Store).ToList();
@@ -1190,15 +1190,15 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 if (lastOrderAdded.OrderplacedId == (int)OrderplacedEnum.Store)
                 {
-                    throw new ConfilectException("الشحنة ما زالت في المخزن");
+                    throw new ConflictException("الشحنة ما زالت في المخزن");
                 }
                 if (lastOrderAdded.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
                 {
-                    throw new ConfilectException("الشحنة داخل الشركة");
+                    throw new ConflictException("الشحنة داخل الشركة");
                 }
                 else
                 {
-                    throw new ConfilectException("تم إستلام الشحنة مسبقاً");
+                    throw new ConflictException("تم إستلام الشحنة مسبقاً");
                 }
 
             }
@@ -1224,7 +1224,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 if (await _uintOfWork.Repository<Order>().Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
                 {
-                    throw new ConfilectException("الكود{order.Code} مكرر");
+                    throw new ConflictException("الكود{order.Code} مكرر");
                 }
             }
             order.Code = updateOrder.Code;
@@ -1273,7 +1273,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var includes = new string[] { "Discounts", "Receipts", "ClientPaymentDetails.OrderPlaced" };
             var printed = await _clientPaymentRepository.FirstOrDefualt(c => c.Id == printNumber, includes);
             if (printed == null)
-                throw new ConfilectException("رقم الطباعة غير موجود");
+                throw new ConflictException("رقم الطباعة غير موجود");
             return _mapper.Map<PrintOrdersDto>(printed);
         }
         public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code)

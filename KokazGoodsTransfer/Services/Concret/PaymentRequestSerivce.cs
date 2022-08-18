@@ -66,7 +66,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var paymentWay = await _repository.GetById(id);
             if (paymentWay.Accept != null)
             {
-                throw new ConfilectException("");
+                throw new ConflictException("");
             }
             await _repository.Delete(paymentWay);
         }

@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Middlewares
                 dynamic responseBody;
                 switch (ex)
                 {
-                    case ConfilectException cex:
+                    case ConflictException cex:
                         {
                             response.StatusCode = StatusCodes.Status409Conflict;
                             responseBody = cex.Errors;

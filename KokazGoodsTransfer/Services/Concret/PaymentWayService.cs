@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             if (await _repository.Any(c => c.Name == createDto.Name))
             {
-                throw new ConfilectException("");
+                throw new ConflictException("");
 
             }
             PaymentWay paymentWay = new PaymentWay();
