@@ -233,6 +233,9 @@ namespace KokazGoodsTransfer
             services.AddScoped<IAgentPrintService, AgentPrintService>();
             services.AddScoped<IPointSettingService, PointSettingService>();
             services.AddScoped<IHttpContextAccessorService, HttpContextAccessorService>();
+            services.AddScoped<IPaymentRequestSerivce, PaymentRequestSerivce>();
+            services.AddScoped<IPaymentWayService, PaymentWayService>();
+            services.AddScoped<IEditRequestService, EditRequestService>();
         }
     }
 }

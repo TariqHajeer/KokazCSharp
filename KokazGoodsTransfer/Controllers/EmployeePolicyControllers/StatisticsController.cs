@@ -21,10 +21,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public class StatisticsController : OldAbstractEmployeePolicyController
     {
-        private readonly NotificationHub _notificationHub;
-        public StatisticsController(KokazContext context, IMapper mapper, NotificationHub notificationHub) : base(context, mapper)
+        
+        public StatisticsController(KokazContext context, IMapper mapper) : base(context, mapper)
         {
-            this._notificationHub = notificationHub;
         }
 
         [HttpGet("MainStatics")]
