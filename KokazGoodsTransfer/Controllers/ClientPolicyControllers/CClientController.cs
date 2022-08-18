@@ -14,11 +14,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CClientController : OldAbstractClientPolicyController
+    public class CClientController : AbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
         private readonly IClientCashedService _clientCashedService;
-        public CClientController(KokazContext context, IMapper mapper,  NotificationHub notificationHub, IClientCashedService clientCashedService) : base(context, mapper)
+        public CClientController(NotificationHub notificationHub, IClientCashedService clientCashedService)
         {
             _notificationHub = notificationHub;
             _clientCashedService = clientCashedService;
@@ -36,70 +36,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpPut("updateInformation")]
         public async Task<IActionResult> Update([FromBody] CUpdateClientDto updateClientDto)
         {
-            try
-            {
-                var client = await this._context.Clients.FindAsync(AuthoticateUserId());
-                var clientName = client.Name;
-                var clientUserName = client.UserName;
-                var oldPassword = client.Password;
-                client = _mapper.Map(updateClientDto, client);
-                client.Name = clientName;
-                client.UserName = clientUserName;
-
-                if (client.Password == "")
-                    client.Password = oldPassword;
-                this._context.Update(client);
-                this._context.Entry(client).Collection(c => c.ClientPhones).Load();
-                client.ClientPhones.Clear();
-                if (updateClientDto.Phones != null)
-                {
-                    foreach (var item in updateClientDto.Phones)
-                    {
-                        var clientPhone = new ClientPhone()
-                        {
-                            ClientId = AuthoticateUserId(),
-                            Phone = item,
-                        };
-                        this._context.Add(clientPhone);
-                    }
-                }
-
-                bool isEditRequest = clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName;
-                if (isEditRequest)
-                {
-                    EditRequest editRequest = new EditRequest();
-                    if (clientName != updateClientDto.Name)
-                    {
-                        editRequest.OldName = clientName;
-                        editRequest.NewName = updateClientDto.Name;
-                    }
-                    if (clientUserName != updateClientDto.UserName)
-                    {
-                        editRequest.OldUserName = clientUserName;
-                        editRequest.NewUserName = updateClientDto.UserName;
-                    }
-                    editRequest.Accept = null;
-                    editRequest.ClientId = AuthoticateUserId();
-                    editRequest.UserId = null;
-                    this._context.Add(editRequest);
-                }
-                await this._context.SaveChangesAsync();
-                if (isEditRequest)
-                {
-                    var newEditRquests = await this._context.EditRequests.Where(c => c.Accept == null).CountAsync();
-
-                    var adminNotification = new AdminNotification()
-                    {
-                        NewEditRquests = newEditRquests,
-                    };
-                    await _notificationHub.AdminNotifcation(adminNotification);
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "خطأ بالتعديل ", Ex = ex.Message });
-            }
+            await _clientCashedService.Update(updateClientDto);
+            return Ok();
         }
         [HttpGet("GetByToken")]
         public async Task<IActionResult> GetByToken()
@@ -110,11 +48,8 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
             }
-            var client = await this._context.Clients
-                .Include(c => c.ClientPhones)
-                .Include(c => c.Country)
-                .Where(c => c.Id == AuthoticateUserId()).FirstAsync();
-            var authClient = _mapper.Map<AuthClient>(client);
+
+            var authClient = await _clientCashedService.GetAuthClient();
             authClient.CanAddOrder = appVersion >= 2;
             return Ok(authClient);
         }

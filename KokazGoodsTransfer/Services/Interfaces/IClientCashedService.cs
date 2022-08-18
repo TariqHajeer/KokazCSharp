@@ -15,5 +15,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task DeletePhone(int id);
         Task<ErrorRepsonse<ClientDto>> GivePoints(GiveOrDiscountPointsDto giveOrDiscountPointsDto);
         Task<int>Account(AccountDto accountDto);
+        Task<AuthClient> GetAuthClient();
+        Task Update(CUpdateClientDto cUpdateClientDto);
     }
 }

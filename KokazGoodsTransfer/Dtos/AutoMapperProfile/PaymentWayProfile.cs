@@ -13,7 +13,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         {
             CreateMap<PaymentWay, NameAndIdDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.PaymentRequests.Count() == 0));
-            CreateMap<PaymentRequest, PayemntRquestDto>()
+            CreateMap<PaymentRequest, PaymentRequestDto>()
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return context.Mapper.Map<ClientDto>(obj.Client);

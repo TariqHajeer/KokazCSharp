@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class PaymentRequest
+    public partial class PaymentRequest:IHaveBranch
     {
         public int Id { get; set; }
         public int ClientId { get; set; }
@@ -16,5 +17,7 @@ namespace KokazGoodsTransfer.Models
 
         public virtual Client Client { get; set; }
         public virtual PaymentWay PaymentWay { get; set; }
+        public int BranchId { get; set; }
+        public Branch Branch { get; set; }
     }
 }

@@ -12,6 +12,8 @@ using System.Linq;
 using System;
 using KokazGoodsTransfer.Helpers;
 using Microsoft.AspNetCore.Http;
+using KokazGoodsTransfer.HubsConfig;
+using KokazGoodsTransfer.Dtos.NotifcationDtos;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -20,12 +22,14 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+        private readonly NotificationHub _notificationHub;
+        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService, NotificationHub notificationHub)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
             _uintOfWork = uintOfWork;
+            _notificationHub = notificationHub;
         }
         public override async Task<IEnumerable<ClientDto>> GetCashed()
         {
@@ -179,6 +183,70 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.Commit();
             return receipt.Id;
 
+        }
+
+        public async Task<AuthClient> GetAuthClient()
+        {
+            var client = await _repository.FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId(), c => c.ClientPhones, c => c.Country);
+            return _mapper.Map<AuthClient>(client);
+        }
+
+        public async Task Update(CUpdateClientDto updateClientDto)
+        {
+            await _uintOfWork.BegeinTransaction();
+            var client = await _uintOfWork.Repository<Client>().FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId());
+            var clientName = client.Name;
+            var clientUserName = client.UserName;
+            var oldPassword = client.Password;
+            client = _mapper.Map(updateClientDto, client);
+            client.Name = clientName;
+            client.UserName = clientUserName;
+            if (client.Password == "")
+                client.Password = oldPassword;
+            await _uintOfWork.Update(client);
+            await _uintOfWork.Repository<Client>().LoadCollection(client, c => c.ClientPhones);
+            if (updateClientDto.Phones?.Any() == true)
+            {
+                client.ClientPhones.Clear();
+                foreach (var item in updateClientDto.Phones)
+                {
+                    client.ClientPhones.Add(new ClientPhone()
+                    {
+                        Phone = item,
+                    });
+                }
+            }
+            bool isEditRequest = clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName;
+            if (isEditRequest)
+            {
+                EditRequest editRequest = new EditRequest();
+                if (clientName != updateClientDto.Name)
+                {
+                    editRequest.OldName = clientName;
+                    editRequest.NewName = updateClientDto.Name;
+                }
+                if (clientUserName != updateClientDto.UserName)
+                {
+                    editRequest.OldUserName = clientUserName;
+                    editRequest.NewUserName = updateClientDto.UserName;
+                }
+                editRequest.Accept = null;
+                editRequest.ClientId = _httpContextAccessorService.AuthoticateUserId();
+                editRequest.UserId = null;
+                await _uintOfWork.Add(editRequest);
+
+            }
+            await _uintOfWork.Commit();
+            if (isEditRequest)
+            {
+                var newEditRquests =await _uintOfWork.Repository<EditRequest>().Count(c => c.Accept == null);
+
+                var adminNotification = new AdminNotification()
+                {
+                    NewEditRquests = newEditRquests,
+                };
+                await _notificationHub.AdminNotifcation(adminNotification);
+            }
         }
     }
 }

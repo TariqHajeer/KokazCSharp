@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.PayemntRequestDtos
 {
-    public class PayemntRquestDto
+    public class PaymentRequestDto
     {
         public int Id { get; set; }
-        //public int ClientId { get; set; }
-        //public int PaymentWayId { get; set; }
         public string Note { get; set; }
         public bool? Accept { get; set; }
         public DateTime CreateDate { get; set; }

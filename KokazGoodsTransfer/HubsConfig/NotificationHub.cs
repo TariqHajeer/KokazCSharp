@@ -14,10 +14,7 @@ namespace KokazGoodsTransfer.HubsConfig
     [Authorize]
     public class NotificationHub : Hub
     {
-        //public NotificationHub()
-        //{
 
-        //}
         public async Task AllNotification(string userId, NotificationDto[] notficationDto)
         {
 
@@ -38,12 +35,6 @@ namespace KokazGoodsTransfer.HubsConfig
             {
                 await Clients.All.SendAsync("AdminNotification", adminNotification);
             }
-        }
-
-
-        public override Task OnConnectedAsync()
-        {
-            return base.OnConnectedAsync();
         }
     }
 }

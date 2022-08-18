@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OutComeDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
+using LinqKit;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -83,6 +86,30 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return null;
         }
+
+        public async Task<PagingResualt<IEnumerable<OutComeDto>>> GetAsync(Filtering filtering, PagingDto pagingDto)
+        {
+            var predicate = PredicateBuilder.New<OutCome>(true);
+            if (filtering.MaxAmount != null)
+                predicate = predicate.And(c => c.Amount <= filtering.MaxAmount);
+            if (filtering.MinAmount != null)
+                predicate = predicate.And(c => c.Amount >= filtering.MaxAmount);
+            if (filtering.Type != null)
+                predicate = predicate.And(c => c.OutComeTypeId == filtering.Type);
+            if (filtering.UserId != null)
+                predicate = predicate.And(c => c.UserId == filtering.UserId);
+            if (filtering.FromDate != null)
+                predicate = predicate.And(c => c.Date >= filtering.FromDate);
+            if (filtering.ToDate != null)
+                predicate = predicate.And(c => c.Date <= filtering.ToDate);
+            var pagingReuslt = await _repository.GetAsync(pagingDto, predicate, c => c.User, c => c.OutComeType);
+            return new PagingResualt<IEnumerable<OutComeDto>>()
+            {
+                Total = pagingReuslt.Total,
+                Data = _mapper.Map<IEnumerable<OutComeDto>>(pagingReuslt.Data)
+            };
+        }
+
         public override async Task<OutComeDto> GetById(int id)
         {
             var entity = await _repository.GetById(id);

@@ -6,6 +6,7 @@ using AutoMapper;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,35 +14,27 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentWayController : OldAbstractEmployeePolicyController
+    public class PaymentWayController : AbstractEmployeePolicyController
     {
-        public PaymentWayController(KokazContext context, IMapper mapper) : base(context, mapper)
+        private readonly IPaymentWayService _paymentWayService;
+        public PaymentWayController(IPaymentWayService paymentWayService)
         {
+            _paymentWayService = paymentWayService;
         }
         [HttpPost]
-        public IActionResult Add([FromBody] NameAndIdDto nameAndIdDto)
+        public async Task<IActionResult> Add([FromBody] NameAndIdDto nameAndIdDto)
         {
-            PaymentWay paymentWay = new PaymentWay();
-            if (this._context.PaymentWays.Any(c => c.Name == nameAndIdDto.Name))
-            {
-                return Conflict();
-            }
-            paymentWay.Name = nameAndIdDto.Name;
-            this._context.Add(paymentWay);
-            this._context.SaveChanges();
-            
-            return Ok(_mapper.Map<NameAndIdDto>(paymentWay));
+            return Ok((await _paymentWayService.AddAsync(nameAndIdDto)).Data);
         }
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var paymentWaies= this._context.PaymentWays.ToList();
-            return Ok(_mapper.Map<NameAndIdDto[]>(paymentWaies));
+            return Ok(await _paymentWayService.GetAll());
         }
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var payment= this._context.PaymentWays.Find(id);
+            await _paymentWayService.Delete(id);
             return Ok();
         }
     }

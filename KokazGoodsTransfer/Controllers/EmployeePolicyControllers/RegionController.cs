@@ -14,13 +14,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionController : OldAbstractEmployeePolicyController
+    public class RegionController : AbstractEmployeePolicyController
     {
 
         private readonly IRegionCashedService _regionCashedService;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IUserCashedService _userCashedService;
-        public RegionController(KokazContext context, IMapper mapper, IRegionCashedService regionCashedService, ICountryCashedService countryCashedService, IUserCashedService userCashedService) : base(context, mapper)
+        public RegionController(IRegionCashedService regionCashedService, ICountryCashedService countryCashedService, IUserCashedService userCashedService)
         {
             _regionCashedService = regionCashedService;
             _countryCashedService = countryCashedService;
