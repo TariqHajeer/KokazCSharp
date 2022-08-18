@@ -275,6 +275,29 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             return await Query.Where(filter).SumAsync(selector);
         }
 
+        public async Task<Dictionary<Tkey, int>> CountGroupBy<Tkey>(Expression<Func<T, Tkey>> propertySelectors, Expression<Func<T, bool>> filter = null)
+        {
+            var query = Query;
+            if (filter != null)
+                query = query.Where(filter);
 
+            var data = await query.GroupBy(propertySelectors).Select(c => new { c.Key, Count = c.Count() }).ToListAsync();
+            return data.ToDictionary(c => c.Key, c => c.Count);
+        }
+
+        public async Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors)
+        {
+            return await Query.Select(projection).ToListAsync();
+        }
+
+        public async Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Func<T, decimal> selector, Expression<Func<T, bool>> filter = null)
+        {
+            var query = Query;
+            if (filter != null)
+                query = query.Where(filter);
+            var data = await query.GroupBy(groupBySelector).Select(c => new { c.Key, Sum = c.Sum(selector) }).ToListAsync();
+            return data.ToDictionary(c => c.Key, c => c.Sum);
+
+        }
     }
 }

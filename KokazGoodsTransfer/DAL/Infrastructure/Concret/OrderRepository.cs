@@ -227,7 +227,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             List<Order> orders = new List<Order>();
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
-                var list =await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.MoenyPlaced)
