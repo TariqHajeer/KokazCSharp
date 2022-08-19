@@ -11,23 +11,25 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using LinqKit;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.Clients;
+using KokazGoodsTransfer.ClientDtos;
+using System.Linq.Expressions;
+using System;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
     public class StatisticsService : IStatisticsService
     {
-        IRepository<User> _userRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly IRepository<Client> _clientRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IRepository<Income> _incomeRepository;
         private readonly IRepository<OutCome> _outComeRepository;
         private readonly IRepository<Receipt> _receiptRepository;
-        private readonly IRepository<EditRequest> _editRequestRepository;
-        private readonly IRepository<PaymentRequest> _paymentRequestRepository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessorService _httpContextAccessorService;
 
 
-        public StatisticsService(IRepository<User> userRepository, IRepository<Client> clientRepository, IOrderRepository orderRepository, IRepository<Income> incomeRepository, IRepository<OutCome> outComeRepository, IRepository<Receipt> receiptRepository, IMapper mapper, IRepository<EditRequest> editRequestRepository, IRepository<PaymentRequest> paymentRequestRepository)
+        public StatisticsService(IRepository<User> userRepository, IRepository<Client> clientRepository, IOrderRepository orderRepository, IRepository<Income> incomeRepository, IRepository<OutCome> outComeRepository, IRepository<Receipt> receiptRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _clientRepository = clientRepository;
@@ -36,8 +38,6 @@ namespace KokazGoodsTransfer.Services.Concret
             _outComeRepository = outComeRepository;
             _receiptRepository = receiptRepository;
             _mapper = mapper;
-            _editRequestRepository = editRequestRepository;
-            _paymentRequestRepository = paymentRequestRepository;
         }
         public async Task<MainStaticsDto> GetMainStatics()
         {
@@ -130,24 +130,6 @@ namespace KokazGoodsTransfer.Services.Concret
             return aggregateDto;
         }
 
-        public async Task<AdminNotification> GetAdminNotification()
-        {
-            var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client);
-            var newOrdersDontSendCount = await _orderRepository.Count(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client);
-            var orderRequestEditStateCount = await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
-            var newEditRquests = await _editRequestRepository.Count(c => c.Accept == null);
-            var newPaymentRequetsCount = await _paymentRequestRepository.Count(c => c.Accept == null);
-            var adminNotification = new AdminNotification()
-            {
-                NewOrdersCount = newOrdersCount,
-                NewOrdersDontSendCount = newOrdersDontSendCount,
-                OrderRequestEditStateCount = orderRequestEditStateCount,
-                NewEditRquests = newEditRquests,
-                NewPaymentRequetsCount = newPaymentRequetsCount
-            };
-            return adminNotification;
-        }
-
         public async Task<IEnumerable<ClientBlanaceDto>> GetClientBalance()
         {
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
@@ -169,6 +151,33 @@ namespace KokazGoodsTransfer.Services.Concret
                 });
             }
             return clientBlanaceDtos;
+        }
+        public async Task<StaticsDto> GetClientStatistic()
+        {
+            var pr = PredicateBuilder.New<Order>(c => c.ClientId == _httpContextAccessorService.AuthoticateUserId());
+            async Task<int> Opr(Expression<Func<Order, bool>> filter = null)
+            {
+                if (filter != null)
+                    return await _orderRepository.Count(pr.And(filter));
+                return await _orderRepository.Count(pr);
+            }
+            var pric = PredicateBuilder.New<Order>(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
+            var staticsDto = new StaticsDto()
+            {
+                TotalOrder = await Opr(),
+                OrderDeliverdToClient = await Opr(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent && (c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Delivered)),
+                OrderMoneyDelived = await Opr(c => c.IsClientDiliverdMoney == true && (c.OrderplacedId == (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delivered)),
+                OrderInWat = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.IsClientDiliverdMoney != true),
+                OrderInStore = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Store),
+                OrderWithClient = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Client),
+                OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered),
+                OrderPartialReturned = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.PartialReturned),
+                DelayedOrder = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed),
+                OrderMoneyInCompany =await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
+                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
+
+            };
+            return staticsDto;
         }
     }
 }

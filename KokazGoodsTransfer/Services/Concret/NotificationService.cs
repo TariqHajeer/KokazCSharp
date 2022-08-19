@@ -16,11 +16,39 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IUintOfWork _uintOfWork;
         private readonly IMapper _mapper;
         private readonly NotificationHub _notificationHub;
-        public NotificationService(IUintOfWork uintOfWork, IMapper mapper, NotificationHub notificationHub)
+        private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<EditRequest> _editRequestRepository;
+        private readonly IRepository<PaymentRequest> _paymentRequestRepository;
+        private readonly IRepository<Notfication> _repository;
+        private readonly IHttpContextAccessorService _contextAccessorService;
+        public NotificationService(IUintOfWork uintOfWork, IMapper mapper, NotificationHub notificationHub, IOrderRepository orderRepository, IRepository<EditRequest> editRequestRepository, IRepository<PaymentRequest> paymentRequestRepository, IRepository<Notfication> repository, IHttpContextAccessorService contextAccessorService)
         {
             _uintOfWork = uintOfWork;
             _mapper = mapper;
             _notificationHub = notificationHub;
+            _orderRepository = orderRepository;
+            _editRequestRepository = editRequestRepository;
+            _paymentRequestRepository = paymentRequestRepository;
+            _repository = repository;
+            _contextAccessorService = contextAccessorService;
+        }
+
+        public async Task<AdminNotification> GetAdminNotification()
+        {
+            var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client);
+            var newOrdersDontSendCount = await _orderRepository.Count(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client);
+            var orderRequestEditStateCount = await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
+            var newEditRquests = await _editRequestRepository.Count(c => c.Accept == null);
+            var newPaymentRequetsCount = await _paymentRequestRepository.Count(c => c.Accept == null);
+            var adminNotification = new AdminNotification()
+            {
+                NewOrdersCount = newOrdersCount,
+                NewOrdersDontSendCount = newOrdersDontSendCount,
+                OrderRequestEditStateCount = orderRequestEditStateCount,
+                NewEditRquests = newEditRquests,
+                NewPaymentRequetsCount = newPaymentRequetsCount
+            };
+            return adminNotification;
         }
 
         public async Task SendOrderReciveNotifcation(IEnumerable<Order> orders)
@@ -76,5 +104,12 @@ namespace KokazGoodsTransfer.Services.Concret
             }
 
         }
+        public async Task SendClientNotification()
+        {
+            var notification = await _repository.GetAsync(c => c.ClientId == _contextAccessorService.AuthoticateUserId() && c.IsSeen == false, c => c.MoneyPlaced, c => c.OrderPlaced);
+            var dto = _mapper.Map< NotificationDto[]>(notification);
+            await _notificationHub.AllNotification(_contextAccessorService.AuthoticateUserId().ToString(), dto);
+        }
+
     }
 }

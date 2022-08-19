@@ -8,12 +8,14 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatisticsController : OldAbstractEmployeePolicyController
+    public class StatisticsController : AbstractEmployeePolicyController
     {
         private readonly IStatisticsService _statisticsService;
-        public StatisticsController(KokazContext context, IMapper mapper, IStatisticsService statisticsService) : base(context, mapper)
+        private readonly INotificationService _notificationService;
+        public StatisticsController(IStatisticsService statisticsService, INotificationService notificationService)
         {
             _statisticsService = statisticsService;
+            _notificationService = notificationService;
         }
 
         [HttpGet("MainStatics")]
@@ -24,7 +26,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("Notification")]
         public async Task<IActionResult> GetAdminNotification()
         {
-            return Ok(await _statisticsService.GetAdminNotification());
+            return Ok(await _notificationService.GetAdminNotification());
         }
         [HttpGet("GetAggregate")]
         public async Task<IActionResult> GetAggregate([FromQuery] DateFiter dateFiter)
