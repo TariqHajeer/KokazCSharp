@@ -10,5 +10,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task SendOrderReciveNotifcation(IEnumerable<Order> orders);
         Task<AdminNotification> GetAdminNotification();
         Task SendClientNotification();
+        Task SeeNotifactions(int[] ids);
+        Task<IEnumerable<NotificationDto>> GetClientNotifcations();
+        Task<int> NewNotfiactionCount();
     }
 }

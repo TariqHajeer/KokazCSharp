@@ -107,9 +107,29 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task SendClientNotification()
         {
             var notification = await _repository.GetAsync(c => c.ClientId == _contextAccessorService.AuthoticateUserId() && c.IsSeen == false, c => c.MoneyPlaced, c => c.OrderPlaced);
-            var dto = _mapper.Map< NotificationDto[]>(notification);
+            var dto = _mapper.Map<NotificationDto[]>(notification);
             await _notificationHub.AllNotification(_contextAccessorService.AuthoticateUserId().ToString(), dto);
         }
 
+        public async Task SeeNotifactions(int[] ids)
+        {
+            var notifications = await _repository.GetAsync(c => ids.Contains(c.Id));
+            foreach (var item in notifications)
+            {
+                item.IsSeen = true;
+            }
+            await _repository.Update(notifications);
+        }
+        public async Task<IEnumerable<NotificationDto>> GetClientNotifcations()
+        {
+            var notifications = await _repository.GetAsync(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.MoneyPlaced, c => c.OrderPlaced);
+            var dtos= _mapper.Map<IEnumerable<NotificationDto>>(notifications.OrderByDescending(c => c.Id));
+            return dtos.OrderBy(c => c.Note).ThenBy(c => c.Id);
+        }
+
+        public async Task<int> NewNotfiactionCount()
+        {
+            return await _repository.Count(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId());
+        }
     }
 }

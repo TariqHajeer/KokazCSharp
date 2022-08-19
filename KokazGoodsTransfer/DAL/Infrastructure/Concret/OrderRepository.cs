@@ -109,31 +109,32 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Data = data,
             };
         }
-        public override async Task<Order> GetById(int Id)
+        
+        public async Task<Order> GetByIdIncludeAllForEmployee(int id)
         {
             return await Query.Include(c => c.Client)
-                       .ThenInclude(c => c.ClientPhones)
-                       .Include(c => c.Client)
-                       .ThenInclude(c => c.Country)
-                   .Include(c => c.Agent)
-                       .ThenInclude(c => c.UserPhones)
-                   .Include(c => c.Region)
-                   .Include(c => c.Country)
-                   .Include(c => c.Orderplaced)
-                   .Include(c => c.MoenyPlaced)
-                   .Include(c => c.OrderItems)
-                       .ThenInclude(c => c.OrderTpye)
-                   .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.OrderLogs)
-                   .Include(c => c.AgentOrderPrints)
-                        .ThenInclude(c => c.AgentPrint)
-                   .Include(c => c.ReceiptOfTheOrderStatusDetalis)
-                        .ThenInclude(c => c.ReceiptOfTheOrderStatus)
-                        .ThenInclude(c => c.Recvier)
-               .FirstOrDefaultAsync(c => c.Id == Id);
-
+           .ThenInclude(c => c.ClientPhones)
+           .Include(c => c.Client)
+           .ThenInclude(c => c.Country)
+       .Include(c => c.Agent)
+           .ThenInclude(c => c.UserPhones)
+       .Include(c => c.Region)
+       .Include(c => c.Country)
+       .Include(c => c.Orderplaced)
+       .Include(c => c.MoenyPlaced)
+       .Include(c => c.OrderItems)
+           .ThenInclude(c => c.OrderTpye)
+       .Include(c => c.OrderClientPaymnets)
+       .ThenInclude(c => c.ClientPayment)
+       .Include(c => c.OrderLogs)
+       .Include(c => c.AgentOrderPrints)
+            .ThenInclude(c => c.AgentPrint)
+       .Include(c => c.ReceiptOfTheOrderStatusDetalis)
+            .ThenInclude(c => c.ReceiptOfTheOrderStatus)
+            .ThenInclude(c => c.Recvier)
+   .FirstOrDefaultAsync(c => c.Id == Id);
         }
+
         public async Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter)
         {
             var orderIQ = Query

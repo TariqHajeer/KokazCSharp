@@ -929,7 +929,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<OrderDto> GetById(int id)
         {
-            var order = await _repository.GetById(id);
+            var order = await _repository.GetByIdIncludeAllForEmployee(id);
             return _mapper.Map<OrderDto>(order);
         }
 

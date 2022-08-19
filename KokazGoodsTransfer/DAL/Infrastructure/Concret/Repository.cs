@@ -11,6 +11,7 @@ using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {

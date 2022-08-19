@@ -14,6 +14,7 @@ using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
+using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,20 +27,20 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class COrderController : OldAbstractClientPolicyController
     {
         private readonly NotificationHub _notificationHub;
-        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub) : base(context, mapper)
+        private readonly IOrderClientSerivce _orderClientSerivce;
+        private readonly INotificationService _notificationService;
+        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IOrderClientSerivce orderClientSerivce, INotificationService notificationService) : base(context, mapper)
         {
             _notificationHub = notificationHub;
+            _orderClientSerivce = orderClientSerivce;
+            _notificationService = notificationService;
         }
         private async Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient)
         {
             List<string> erros = new List<string>();
-            if (await CodeExist(createOrderFromClient.Code))
+            if (await _orderClientSerivce.CodeExist(createOrderFromClient.Code))
             {
                 erros.Add("الكود موجود مسبقاً");
-            }
-            if (this._context.Countries.Find(createOrderFromClient.CountryId) == null)
-            {
-                erros.Add("المدينة غير موجودة");
             }
             if (createOrderFromClient.RecipientPhones.Length == 0)
             {
@@ -47,17 +48,10 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             }
             if (createOrderFromClient.OrderItem != null && createOrderFromClient.OrderItem.Count > 0)
             {
-                foreach (var item in createOrderFromClient.OrderItem)
+                var orderTypesIds = createOrderFromClient.OrderItem.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
+                if(await _orderClientSerivce.CheckOrderTypesIdsExists(orderTypesIds))
                 {
-                    if (item.OrderTypeId != null)
-                    {
-                        var orderType = this._context.OrderTypes.Find(item.OrderTypeId);
-                        if (orderType == null)
-                        {
-                            erros.Add("النوع غير موجود");
-                            break;
-                        }
-                    }
+                    erros.Add("النوع غير موجود");
                 }
             }
             return erros;
@@ -319,7 +313,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("codeExist")]
         public async Task<IActionResult> CheckCodeExist([FromQuery] string code)
         {
-            return Ok(await CodeExist(code));
+            return Ok(await _orderClientSerivce.CodeExist(code));
         }
         /// <summary>
         /// 
@@ -337,9 +331,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 .Include(c => c.MoenyPlaced)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Include(c=>c.OrderClientPaymnets)
-                .ThenInclude(c=>c.ClientPayment)
-                .ThenInclude(c=>c.ClientPaymentDetails)
+                .Include(c => c.OrderClientPaymnets)
+                .ThenInclude(c => c.ClientPayment)
+                .ThenInclude(c => c.ClientPaymentDetails)
             .FirstOrDefaultAsync(c => c.Id == id);
 
             return Ok(_mapper.Map<OrderDto>(order));
@@ -414,93 +408,21 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
                 throw ex;
             }
         }
-        async Task<bool> CodeExist(string code)
-        {
-            return await this._context.Orders.Where(c => c.Code == code && c.ClientId == AuthoticateUserId()).AnyAsync();
-        }
         [HttpGet]
-        public IActionResult Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)
+        public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)
         {
-            var orderIQ = this._context.Orders
-                .Where(c => c.ClientId == AuthoticateUserId());
-            if (orderFilter.CountryId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.CountryId == orderFilter.CountryId);
-            }
-            if (orderFilter.Code != string.Empty && orderFilter.Code != null)
-            {
-                orderIQ = orderIQ.Where(c => c.Code.StartsWith(orderFilter.Code));
-            }
-
-            if (orderFilter.RegionId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RegionId == orderFilter.RegionId);
-            }
-            if (orderFilter.RecipientName != string.Empty && orderFilter.RecipientName != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RecipientName.StartsWith(orderFilter.RecipientName));
-            }
-            if (orderFilter.MonePlacedId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.MoenyPlacedId == orderFilter.MonePlacedId);
-            }
-            if (orderFilter.OrderplacedId != null)
-            {
-                orderIQ = orderIQ.Where(c => c.OrderplacedId == orderFilter.OrderplacedId);
-            }
-            if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
-            {
-                orderIQ = orderIQ.Where(c => c.RecipientPhones.Contains(orderFilter.Phone));
-            }
-            if (orderFilter.IsClientDiliverdMoney != null)
-            {
-                orderIQ = orderIQ.Where(c => c.IsClientDiliverdMoney == orderFilter.IsClientDiliverdMoney);
-            }
-            if (orderFilter.ClientPrintNumber != null)
-            {
-                orderIQ = orderIQ.Where(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
-            }
-            var total = orderIQ.Count();
-            var orders = orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
-                .Include(c => c.Country)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.OrderItems)
-                    .ThenInclude(c => c.OrderTpye)
-                .Include(c => c.OrderClientPaymnets)
-                .ThenInclude(c => c.ClientPayment)
-                //.ThenInclude(c=>c.ClientPaymentDetails)
-                .ToList();
-            return Ok(new { data = _mapper.Map<OrderDto[]>(orders), total });
+            var paginResult = await _orderClientSerivce.Get(pagingDto, orderFilter);
+            return Ok(new { data = paginResult.Data, total = paginResult.Total });
         }
         [HttpGet("NonSendOrder")]
-        public IActionResult NonSendOrder()
+        public async Task<IActionResult> NonSendOrder()
         {
-            var orders = this._context.Orders
-                .Include(c => c.Country)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.Orderplaced)
-                .Where(c => c.IsSend == false && c.ClientId == AuthoticateUserId()).ToList();
-            return Ok(_mapper.Map<OrderDto[]>(orders));
+            return Ok(await _orderClientSerivce.NonSendOrder());
         }
         [HttpPost("Sned")]
         public async Task<IActionResult> Send([FromBody] int[] ids)
         {
-            var sendOrder = await this._context.Orders.Where(c => ids.Contains(c.Id)).ToListAsync();
-            sendOrder.ForEach(c => c.IsSend = true);
-            await this._context.SaveChangesAsync();
-            var newOrdersCount = await this._context.Orders
-                .Where(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .CountAsync();
-            var newOrdersDontSendCount = await this._context.Orders
-                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .CountAsync();
-            AdminNotification adminNotification = new AdminNotification()
-            {
-                NewOrdersCount = newOrdersCount,
-                NewOrdersDontSendCount = newOrdersDontSendCount
-            };
-            await _notificationHub.AdminNotifcation(adminNotification);
+            await _orderClientSerivce.Send(ids);
             return Ok();
         }
         [HttpGet("OrdersDontFinished")]
@@ -564,42 +486,26 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         }
 
         [HttpGet("NewNotfiaction")]
-        public IActionResult NewNotfiaction()
+        public async Task<IActionResult> NewNotfiaction()
         {
-            return Ok(this._context.Notfications.Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true).Count());
+            return Ok(await _notificationService.NewNotfiactionCount());
         }
         [HttpGet("Notifcation")]
-        public IActionResult Notifcation()
+        public async Task<IActionResult> Notifcation()
         {
-            var notifactions = this._context.Notfications.Include(c => c.MoneyPlaced)
-                .Include(c => c.OrderPlaced)
-                .Where(c => c.ClientId == AuthoticateUserId() && c.IsSeen != true)
-                .OrderByDescending(c => c.Id);
-            var response = _mapper.Map<NotificationDto[]>(notifactions);
-            response = response.OrderBy(c => c.Note).ThenBy(c => c.Id).ToArray();
-            return Ok(response);
+            return Ok(await _notificationService.GetClientNotifcations());
 
         }
         [HttpPut("SeeNotifactions")]
         public async Task<IActionResult> SeeNotifactions([FromBody] int[] ids)
         {
-            var notfications = await this._context.Notfications.Where(c => ids.Contains(c.Id)).ToListAsync();
-            notfications.ForEach(c =>
-            {
-                c.IsSeen = true;
-                this._context.Update(c);
-            });
-            await this._context.SaveChangesAsync();
+            await _notificationService.SeeNotifactions(ids);
             return Ok();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await this._context.Orders.FindAsync(id);
-            if (order.IsSend == true)
-                return Conflict();
-            this._context.Remove(order);
-            await this._context.SaveChangesAsync();
+            await _orderClientSerivce.Delete(id);
             return Ok();
         }
         [HttpGet("OrdersNeedToRevision")]
