@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExcelDataReader;
 using KokazGoodsTransfer.CustomException;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
@@ -11,7 +12,10 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
 using LinqKit;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -312,6 +316,165 @@ namespace KokazGoodsTransfer.Services.Concret
                 NewOrdersDontSendCount = newOrdersDontSendCount
             };
             await _notificationHub.AdminNotifcation(adminNotification);
+        }
+
+        private async Task<(List<OrderFromExcelDto> orderFromExcelDtos, HashSet<string> errors)> GetOrderFromExcelFile(IFormFile file)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            HashSet<string> errors = new HashSet<string>();
+            var excelOrder = new List<OrderFromExcelDto>();
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+            using var reader = ExcelReaderFactory.CreateReader(stream);
+            while (reader.Read())
+            {
+                var order = new OrderFromExcelDto();
+                if (!reader.IsDBNull(0))
+                {
+                    order.Code = reader.GetValue(0).ToString();
+                    if (excelOrder.Any(c => c.Code == order.Code))
+                    {
+                        errors.Add($"الكود {order.Code} مكرر");
+                    }
+                }
+                else
+                {
+                    errors.Add("يجب ملئ الكود ");
+                }
+                if (!reader.IsDBNull(1))
+                {
+                    order.RecipientName = reader.GetValue(1).ToString();
+                }
+                if (!reader.IsDBNull(2))
+                {
+                    order.Country = reader.GetValue(2).ToString();
+                }
+                else
+                {
+                    errors.Add("يجب ملئ المحافظة");
+                }
+                if (!reader.IsDBNull(3))
+                {
+                    if (Decimal.TryParse(reader.GetValue(3).ToString(), out var d))
+                    {
+                        order.Cost = d;
+                    }
+                    else
+                    {
+                        errors.Add("كلفة الطلب ليست رقم");
+                    }
+                }
+                else
+                {
+                    errors.Add("كلفة الطلب إجبارية");
+                }
+                if (!reader.IsDBNull(4))
+                {
+                    order.Address = reader.GetValue(4).ToString();
+                }
+                if (!reader.IsDBNull(5))
+                {
+                    order.Phone = reader.GetValue(5).ToString();
+                    if (order.Phone.Length > 15)
+                    {
+                        errors.Add("رقم الهاتف لا يجب ان يكون اكبر من 15 رقم");
+                    }
+                }
+                else
+                {
+                    errors.Add("رقم الهاتف إجباري");
+                }
+                if (!reader.IsDBNull(6))
+                {
+                    order.Note = reader.GetValue(6).ToString();
+                }
+                excelOrder.Add(order);
+            }
+            return (excelOrder, errors);
+        }
+
+        public async Task<bool> CreateFromExcel(IFormFile file, DateTime dateTime)
+        {
+            var (excelOrder, errors) = await GetOrderFromExcelFile(file);
+
+            var codes = excelOrder.Select(c => c.Code);
+            var similarOrders = await _UintOfWork.Repository<Order>().Select(c => c.Code, c => codes.Contains(c.Code) && c.ClientId == _contextAccessorService.AuthoticateUserId());
+            var simialrCodeInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(c => c.Code, c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code));
+            if (similarOrders.Any())
+            {
+                errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
+            }
+            if (simialrCodeInExcelTable.Any())
+            {
+                errors.Add($"الأكواد {string.Join(",", simialrCodeInExcelTable)} مكررة يجب مراجعة واجهة التصحيح");
+            }
+            if (errors.Any())
+            {
+                throw new ConflictException(errors);
+            }
+            bool correct = false;
+
+
+            var countriesName = excelOrder.Select(c => c.Country).Distinct().ToList();
+            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => countriesName.Contains(c.Name));
+            var orderFromExcels = new List<OrderFromExcel>();
+            var orders = new List<Order>();
+            foreach (var item in excelOrder)
+            {
+                var country = countries.FirstOrDefault(c => c.Name == item.Country);
+                if (country == null)
+                {
+                    var orderFromExcel = new OrderFromExcel()
+                    {
+                        Address = item.Address,
+                        Code = item.Code,
+                        Cost = item.Cost,
+                        Country = item.Country,
+                        Note = item.Note,
+                        Phone = item.Phone,
+                        RecipientName = item.RecipientName,
+                        ClientId = _contextAccessorService.AuthoticateUserId(),
+                        CreateDate = dateTime
+                    };
+                    orderFromExcels.Add(orderFromExcel);
+                    correct = true;
+                }
+                else
+                {
+                    var order = new Order()
+                    {
+                        Code = item.Code,
+                        CountryId = country.Id,
+                        Address = item.Address,
+                        RecipientName = item.RecipientName,
+                        RecipientPhones = item.Phone,
+                        ClientNote = item.Note,
+                        Cost = item.Cost,
+                        Date = dateTime,
+                        MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany,
+                        OrderplacedId = (int)OrderplacedEnum.Client,
+                        OrderStateId = (int)OrderStateEnum.Processing,
+                        ClientId = _contextAccessorService.AuthoticateUserId(),
+                        CreatedBy = _contextAccessorService.AuthoticateUserName(),
+                        DeliveryCost = country.DeliveryCost,
+                        IsSend = false,
+                    };
+                    orders.Add(order);
+                }
+            }
+            await _UintOfWork.BegeinTransaction();
+            await _UintOfWork.AddRange(orderFromExcels);
+            await _UintOfWork.AddRange(orders);
+            await _UintOfWork.Commit();
+
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client);
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
+            return correct;
         }
     }
 }

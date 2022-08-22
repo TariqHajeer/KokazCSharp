@@ -5,6 +5,8 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -22,6 +24,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision();
         Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient);
         Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient);
-
+        Task<bool> CreateFromExcel(IFormFile file,DateTime dateTime);
     }
 }
