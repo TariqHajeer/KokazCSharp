@@ -20,6 +20,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<OrderDto> GetById(int id);
         Task CorrectOrderCountry(List<KeyValuePair<int, int>> pairs);
         Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision();
+        Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient);
+        Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient);
 
     }
 }

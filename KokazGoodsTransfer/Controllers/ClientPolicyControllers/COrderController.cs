@@ -9,7 +9,6 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Dtos.ReceiptDtos;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
@@ -36,27 +35,6 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             _notificationService = notificationService;
             _receiptService = receiptService;
         }
-        private async Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient)
-        {
-            List<string> erros = new List<string>();
-            if (await _orderClientSerivce.CodeExist(createOrderFromClient.Code))
-            {
-                erros.Add("الكود موجود مسبقاً");
-            }
-            if (createOrderFromClient.RecipientPhones.Length == 0)
-            {
-                erros.Add("رقم الهاتف مطلوب");
-            }
-            if (createOrderFromClient.OrderItem != null && createOrderFromClient.OrderItem.Count > 0)
-            {
-                var orderTypesIds = createOrderFromClient.OrderItem.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
-                if (await _orderClientSerivce.CheckOrderTypesIdsExists(orderTypesIds))
-                {
-                    erros.Add("النوع غير موجود");
-                }
-            }
-            return erros;
-        }
         /// <summary>
         /// إضافة طلب
         /// </summary>
@@ -65,87 +43,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderFromClient createOrderFromClient)
         {
-            var dbTransacrion = this._context.Database.BeginTransaction();
-            try
+            var validate = await _orderClientSerivce.Validate(createOrderFromClient);
+            if (validate.Count != 0)
             {
-                var validate = await this.Validate(createOrderFromClient);
-                if (validate.Count != 0)
-                {
-                    return Conflict(new { messages = validate });
-                }
-
-                var country = this._context.Countries.Find(createOrderFromClient.CountryId);
-                var order = _mapper.Map<Order>(createOrderFromClient);
-                order.ClientId = AuthoticateUserId();
-                order.CreatedBy = AuthoticateUserName();
-                order.DeliveryCost = country.DeliveryCost;
-                order.CreatedBy = AuthoticateUserName();
-                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.OrderplacedId = (int)OrderplacedEnum.Client;
-                order.OrderStateId = (int)OrderStateEnum.Processing;
-                order.RecipientPhones = String.Join(',', createOrderFromClient.RecipientPhones);
-                order.IsSend = false;
-                order.CurrentCountry = this._context.Countries.Where(c => c.IsMain == true).FirstOrDefault().Id;
-                this._context.Add(order);
-                this._context.SaveChanges();
-                var orderItem = createOrderFromClient.OrderItem;
-
-                if (orderItem != null)
-                {
-                    foreach (var item in orderItem)
-                    {
-                        int orderTypeId;
-                        if (item.OrderTypeId == null)
-                        {
-                            if (item.OrderTypeName == "")
-                                return Conflict();
-                            var similerOrderType = this._context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
-                            if (similerOrderType == null)
-                            {
-                                var orderType = new OrderType()
-                                {
-                                    Name = item.OrderTypeName,
-                                };
-                                this._context.Add(orderType);
-                                this._context.SaveChanges();
-                                orderTypeId = orderType.Id;
-
-                            }
-                            else
-                            {
-                                orderTypeId = similerOrderType.Id;
-                            }
-                        }
-                        else
-                        {
-                            orderTypeId = (int)item.OrderTypeId;
-                        }
-                        this._context.Add(new OrderItem()
-                        {
-                            OrderTpyeId = orderTypeId,
-                            Count = item.Count,
-                            OrderId = order.Id
-                        });
-                        this._context.SaveChanges();
-                    }
-                }
-                await dbTransacrion.CommitAsync();
-                var newOrdersDontSendCount = await this._context.Orders
-                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .CountAsync();
-                AdminNotification adminNotification = new AdminNotification()
-                {
-                    NewOrdersDontSendCount = newOrdersDontSendCount
-                };
-                await _notificationHub.AdminNotifcation(adminNotification);
-                return Ok(_mapper.Map<OrderResponseClientDto>(order));
+                return Conflict(new { messages = validate });
             }
-
-            catch (Exception ex)
-            {
-                dbTransacrion.Rollback();
-                throw ex;
-            }
+            return Ok(await _orderClientSerivce.Create(createOrderFromClient));
         }
         [HttpPost("UploadExcel")]
         public async Task<IActionResult> UploadExcel(IFormFile file, [FromForm] DateTime dateTime)
@@ -157,69 +60,66 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             {
                 file.CopyTo(stream);
                 stream.Position = 0;
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                using var reader = ExcelReaderFactory.CreateReader(stream);
+                while (reader.Read())
                 {
-                    while (reader.Read())
+                    var order = new OrderFromExcelDto();
+                    if (!reader.IsDBNull(0))
                     {
-                        var order = new OrderFromExcelDto();
-                        if (!reader.IsDBNull(0))
-                        {
-                            order.Code = reader.GetValue(0).ToString();
-                        }
-                        else
-                        {
-                            errors.Add("يجب ملئ الكود ");
-                        }
-                        if (!reader.IsDBNull(1))
-                        {
-                            order.RecipientName = reader.GetValue(1).ToString();
-                        }
-                        if (!reader.IsDBNull(2))
-                        {
-                            order.Country = reader.GetValue(2).ToString();
-                        }
-                        else
-                        {
-                            errors.Add("يجب ملئ المحافظة");
-                        }
-                        if (!reader.IsDBNull(3))
-                        {
-                            if (Decimal.TryParse(reader.GetValue(3).ToString(), out var d))
-                            {
-                                order.Cost = d;
-                            }
-                            else
-                            {
-                                errors.Add("كلفة الطلب ليست رقم");
-                            }
-                        }
-                        else
-                        {
-                            errors.Add("كلفة الطلب إجبارية");
-                        }
-                        if (!reader.IsDBNull(4))
-                        {
-                            order.Address = reader.GetValue(4).ToString();
-                        }
-                        if (!reader.IsDBNull(5))
-                        {
-                            order.Phone = reader.GetValue(5).ToString();
-                            if (order.Phone.Length > 15)
-                            {
-                                errors.Add("رقم الهاتف لا يجب ان يكون اكبر من 15 رقم");
-                            }
-                        }
-                        else
-                        {
-                            errors.Add("رقم الهاتف إجباري");
-                        }
-                        if (!reader.IsDBNull(6))
-                        {
-                            order.Note = reader.GetValue(6).ToString();
-                        }
-                        excelOrder.Add(order);
+                        order.Code = reader.GetValue(0).ToString();
                     }
-
+                    else
+                    {
+                        errors.Add("يجب ملئ الكود ");
+                    }
+                    if (!reader.IsDBNull(1))
+                    {
+                        order.RecipientName = reader.GetValue(1).ToString();
+                    }
+                    if (!reader.IsDBNull(2))
+                    {
+                        order.Country = reader.GetValue(2).ToString();
+                    }
+                    else
+                    {
+                        errors.Add("يجب ملئ المحافظة");
+                    }
+                    if (!reader.IsDBNull(3))
+                    {
+                        if (Decimal.TryParse(reader.GetValue(3).ToString(), out var d))
+                        {
+                            order.Cost = d;
+                        }
+                        else
+                        {
+                            errors.Add("كلفة الطلب ليست رقم");
+                        }
+                    }
+                    else
+                    {
+                        errors.Add("كلفة الطلب إجبارية");
+                    }
+                    if (!reader.IsDBNull(4))
+                    {
+                        order.Address = reader.GetValue(4).ToString();
+                    }
+                    if (!reader.IsDBNull(5))
+                    {
+                        order.Phone = reader.GetValue(5).ToString();
+                        if (order.Phone.Length > 15)
+                        {
+                            errors.Add("رقم الهاتف لا يجب ان يكون اكبر من 15 رقم");
+                        }
+                    }
+                    else
+                    {
+                        errors.Add("رقم الهاتف إجباري");
+                    }
+                    if (!reader.IsDBNull(6))
+                    {
+                        order.Note = reader.GetValue(6).ToString();
+                    }
+                    excelOrder.Add(order);
                 }
             }
             var codes = excelOrder.Select(c => c.Code);

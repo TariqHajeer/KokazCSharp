@@ -99,6 +99,93 @@ namespace KokazGoodsTransfer.Services.Concret
             await _notificationHub.AdminNotifcation(adminNotification);
         }
 
+        public async Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient)
+        {
+            List<string> erros = new List<string>();
+            if (await CodeExist(createOrderFromClient.Code))
+            {
+                erros.Add("الكود موجود مسبقاً");
+            }
+            if (createOrderFromClient.RecipientPhones.Length == 0)
+            {
+                erros.Add("رقم الهاتف مطلوب");
+            }
+
+            if (createOrderFromClient.OrderItem?.Any() == true)
+            {
+                if (createOrderFromClient.OrderItem.Any(c => c.OrderTypeId == null && string.IsNullOrEmpty(c.OrderTypeName.Trim())))
+                {
+                    erros.Add("يجب وضع اسم نوع الشحنة");
+                }
+                var orderTypesIds = createOrderFromClient.OrderItem.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
+                if (await CheckOrderTypesIdsExists(orderTypesIds))
+                {
+                    erros.Add("النوع غير موجود");
+                }
+            }
+            return erros;
+        }
+        public async Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient)
+        {
+            var validation = await Validate(createOrderFromClient);
+            if (validation.Count > 0)
+            {
+                throw new ConflictException(validation);
+            }
+            var order = _mapper.Map<Order>(createOrderFromClient);
+            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId);
+            order.DeliveryCost = country.DeliveryCost;
+            order.ClientId = _contextAccessorService.AuthoticateUserId();
+            order.CreatedBy = _contextAccessorService.AuthoticateUserName();
+            order.CurrentCountry = (await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.IsMain == true)).Id;
+            await _UintOfWork.BegeinTransaction();
+            await _UintOfWork.Add(order);
+            var orderItems = createOrderFromClient.OrderItem;
+            if (orderItems?.Any() == true)
+            {
+                var orderTypesNames = orderItems.Where(c => c.OrderTypeId == null).Select(c => c.OrderTypeName).Distinct();
+                var orderTypes = await _UintOfWork.Repository<OrderType>().GetAsync(c => orderTypesNames.Any(ot => ot == c.Name));
+
+                foreach (var item in orderItems)
+                {
+                    int orderTypeId;
+                    if (item.OrderTypeId.HasValue)
+                        orderTypeId = item.OrderTypeId.Value;
+                    else
+                    {
+                        var simi = orderTypes.FirstOrDefault(c => c.Name == item.OrderTypeName);
+                        if (simi != null)
+                            orderTypeId = simi.Id;
+                        else
+                        {
+                            ///TODO : make it faster 
+                            var orderType = new OrderType()
+                            {
+                                Name = item.OrderTypeName
+                            };
+                            await _UintOfWork.Add(orderType);
+                            orderTypeId = orderType.Id;
+                        }
+                    }
+                    await _UintOfWork.Add(new OrderItem()
+                    {
+                        Count = item.Count,
+                        OrderId = order.Id,
+                        OrderTpyeId = orderTypeId
+                    });
+
+                }
+            }
+            await _UintOfWork.Commit();
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client);
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
+            return _mapper.Map<OrderResponseClientDto>(order);
+        }
+
         public async Task Delete(int id)
         {
             var order = await _repository.GetById(id);
