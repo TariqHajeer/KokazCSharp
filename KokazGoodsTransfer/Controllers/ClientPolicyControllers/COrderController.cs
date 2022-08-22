@@ -15,7 +15,6 @@ using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,11 +28,13 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         private readonly NotificationHub _notificationHub;
         private readonly IOrderClientSerivce _orderClientSerivce;
         private readonly INotificationService _notificationService;
-        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IOrderClientSerivce orderClientSerivce, INotificationService notificationService) : base(context, mapper)
+        private readonly IReceiptService _receiptService;
+        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService) : base(context, mapper)
         {
             _notificationHub = notificationHub;
             _orderClientSerivce = orderClientSerivce;
             _notificationService = notificationService;
+            _receiptService = receiptService;
         }
         private async Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient)
         {
@@ -49,7 +50,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             if (createOrderFromClient.OrderItem != null && createOrderFromClient.OrderItem.Count > 0)
             {
                 var orderTypesIds = createOrderFromClient.OrderItem.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
-                if(await _orderClientSerivce.CheckOrderTypesIdsExists(orderTypesIds))
+                if (await _orderClientSerivce.CheckOrderTypesIdsExists(orderTypesIds))
                 {
                     erros.Add("النوع غير موجود");
                 }
@@ -323,21 +324,7 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-
-            var order = await this._context.Orders
-                .Include(c => c.Agent)
-                .Include(c => c.Country)
-                .Include(c => c.Orderplaced)
-                .Include(c => c.MoenyPlaced)
-                .Include(c => c.OrderItems)
-                    .ThenInclude(c => c.OrderTpye)
-                .Include(c => c.OrderClientPaymnets)
-                .ThenInclude(c => c.ClientPayment)
-                .ThenInclude(c => c.ClientPaymentDetails)
-            .FirstOrDefaultAsync(c => c.Id == id);
-
-            return Ok(_mapper.Map<OrderDto>(order));
-
+            return Ok(await _orderClientSerivce.GetById(id));
         }
         [HttpPut]
         public IActionResult Edit([FromBody] EditOrder editOrder)
@@ -428,61 +415,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("OrdersDontFinished")]
         public async Task<IActionResult> OrdersDontFinished([FromQuery] OrderDontFinishFilter orderDontFinishFilter)
         {
-            List<Order> orders = new List<Order>();
-
-            if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
-            {
-                var list = await this._context.Orders.Where(c => c.IsClientDiliverdMoney == false && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
-                   .Include(c => c.Region)
-                   .Include(c => c.Country)
-                   .Include(c => c.MoenyPlaced)
-                   .Include(c => c.Orderplaced)
-                   .Include(c => c.Agent)
-                   .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.AgentOrderPrints)
-                   .ThenInclude(c => c.AgentPrint)
-                   .ToListAsync();
-                if (list != null && list.Count() > 0)
-                {
-                    orders.AddRange(list);
-                }
-            }
-            if (orderDontFinishFilter.IsClientDeleviredMoney)
-            {
-
-                var list = await this._context.Orders.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.ClientId == AuthoticateUserId())
-               .Include(c => c.Region)
-               .Include(c => c.Country)
-               .Include(c => c.Orderplaced)
-               .Include(c => c.MoenyPlaced)
-               .Include(c => c.Agent)
-               .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.AgentOrderPrints)
-                   .ThenInclude(c => c.AgentPrint)
-               .ToListAsync();
-                if (list != null && list.Count() > 0)
-                {
-                    orders.AddRange(list);
-                }
-            }
-            orders.ForEach(o =>
-            {
-                if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
-                {
-                    o.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                    o.MoenyPlaced = _context.MoenyPlaceds.Find(o.MoenyPlacedId);
-                }
-            });
-            var o = _mapper.Map<PayForClientDto[]>(orders);
-            return Ok(o);
+            return Ok(await _orderClientSerivce.OrdersDontFinished(orderDontFinishFilter));
         }
         [HttpGet("UnPaidRecipt")]
-        public IActionResult UnPaidRecipt()
+        public async Task<IActionResult> UnPaidRecipt()
         {
-            var repiq = this._context.Receipts.Where(c => c.ClientId == AuthoticateUserId() && c.ClientPayment == null).ToList();
-            return Ok(_mapper.Map<ReceiptDto[]>(repiq));
+            return Ok(await _receiptService.UnPaidRecipt(AuthoticateUserId()));
         }
 
         [HttpGet("NewNotfiaction")]
@@ -511,53 +449,12 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
         [HttpGet("OrdersNeedToRevision")]
         public async Task<IActionResult> OrdersNeedToRevision()
         {
-            var orders = await _context.OrderFromExcels.Where(c => c.ClientId == AuthoticateUserId()).ToListAsync();
-            return Ok(orders);
+            return Ok(await _orderClientSerivce.OrdersNeedToRevision());
         }
         [HttpPut("CorrectOrderCountry")]
         public async Task<IActionResult> CorrectOrderCountry(List<KeyValuePair<int, int>> pairs)
         {
-            var ids = pairs.Select(c => c.Key).ToList();
-            var cids = pairs.Select(c => c.Value).ToList();
-
-            var orders = await _context.OrderFromExcels.Where(c => ids.Contains(c.Id)).ToListAsync();
-            var countries = await _context.Countries.Where(c => cids.Contains(c.Id)).ToListAsync();
-            foreach (var item in pairs)
-            {
-                var ofe = orders.FirstOrDefault(c => c.Id == item.Key);
-                if (ofe == null)
-                    continue;
-                var country = countries.FirstOrDefault(c => c.Id == item.Value);
-                var order = new Order()
-                {
-                    Code = ofe.Code,
-                    CountryId = item.Value,
-                    Address = ofe.Address,
-                    RecipientName = ofe.RecipientName,
-                    RecipientPhones = ofe.Phone,
-                    ClientNote = ofe.Note,
-                    Cost = ofe.Cost,
-                    Date = ofe.CreateDate,
-                    MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany,
-                    OrderplacedId = (int)OrderplacedEnum.Client,
-                    OrderStateId = (int)OrderStateEnum.Processing,
-                    ClientId = AuthoticateUserId(),
-                    CreatedBy = AuthoticateUserName(),
-                    DeliveryCost = country.DeliveryCost,
-                    IsSend = false,
-                };
-                _context.Add(order);
-            }
-            _context.OrderFromExcels.RemoveRange(orders);
-            _context.SaveChanges();
-            var newOrdersDontSendCount = await this._context.Orders
-                .Where(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client)
-                .CountAsync();
-            AdminNotification adminNotification = new AdminNotification()
-            {
-                NewOrdersDontSendCount = newOrdersDontSendCount
-            };
-            await _notificationHub.AdminNotifcation(adminNotification);
+            await _orderClientSerivce.CorrectOrderCountry(pairs);
             return Ok();
         }
     }

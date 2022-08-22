@@ -62,7 +62,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<IEnumerable<ReceiptDto>> UnPaidRecipt(int clientId)
         {
-            var reipts = await _repository.GetAsync(c => c.ClientId == clientId && c.ClientPaymentId == null, c => c.ClientPayment);
+            var reipts = await _repository.GetAsync(c => c.ClientId == clientId && c.ClientPaymentId == null);
             return _mapper.Map<IEnumerable<ReceiptDto>>(reipts);
         }
     }

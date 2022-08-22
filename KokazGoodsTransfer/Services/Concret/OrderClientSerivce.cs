@@ -2,6 +2,7 @@
 using KokazGoodsTransfer.CustomException;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
@@ -20,16 +21,20 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         private readonly IRepository<Order> _repository;
         private readonly IRepository<OrderType> _orderTypeRepository;
+        private readonly IRepository<MoenyPlaced> _moneyPlacedRepository;
         private readonly NotificationHub _notificationHub;
         private readonly IHttpContextAccessorService _contextAccessorService;
+        private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository)
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IRepository<MoenyPlaced> moneyPlacedRepository, IUintOfWork uintOfWork)
         {
             _repository = repository;
             _notificationHub = notificationHub;
             _contextAccessorService = contextAccessorService;
             _mapper = mapper;
             _orderTypeRepository = orderTypeRepository;
+            _moneyPlacedRepository = moneyPlacedRepository;
+            _UintOfWork = uintOfWork;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -46,6 +51,54 @@ namespace KokazGoodsTransfer.Services.Concret
             return _repository.Any(c => c.Code == code && c.ClientId == _contextAccessorService.AuthoticateUserId());
         }
 
+        public async Task CorrectOrderCountry(List<KeyValuePair<int, int>> pairs)
+        {
+            var ids = pairs.Select(c => c.Key).ToList();
+            var cids = pairs.Select(c => c.Value).ToList();
+
+
+            var ordersFromExcel = await _UintOfWork.Repository<OrderFromExcel>().GetAsync(c => ids.Contains(c.Id));
+            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id));
+            await _UintOfWork.BegeinTransaction();
+            List<Order> orders = new List<Order>();
+            foreach (var item in pairs)
+            {
+                var ofe = ordersFromExcel.FirstOrDefault(c => c.Id == item.Key);
+                if (ofe == null)
+                    continue;
+                var country = countries.FirstOrDefault(c => c.Id == item.Value);
+                var order = new Order()
+                {
+                    Code = ofe.Code,
+                    CountryId = item.Value,
+                    Address = ofe.Address,
+                    RecipientName = ofe.RecipientName,
+                    RecipientPhones = ofe.Phone,
+                    ClientNote = ofe.Note,
+                    Cost = ofe.Cost,
+                    Date = ofe.CreateDate,
+                    MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany,
+                    OrderplacedId = (int)OrderplacedEnum.Client,
+                    OrderStateId = (int)OrderStateEnum.Processing,
+                    ClientId = _contextAccessorService.AuthoticateUserId(),
+                    CreatedBy = _contextAccessorService.AuthoticateUserName(),
+                    DeliveryCost = country.DeliveryCost,
+                    IsSend = false,
+                };
+                orders.Add(order);
+            }
+            await _UintOfWork.RemoveRange(ordersFromExcel);
+            await _UintOfWork.AddRange(orders);
+            await _UintOfWork.Commit();
+
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client);
+            AdminNotification adminNotification = new AdminNotification()
+            {
+                NewOrdersDontSendCount = newOrdersDontSendCount
+            };
+            await _notificationHub.AdminNotifcation(adminNotification);
+        }
+
         public async Task Delete(int id)
         {
             var order = await _repository.GetById(id);
@@ -57,7 +110,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<PagingResualt<IEnumerable<OrderDto>>> Get(PagingDto pagingDto, COrderFilter orderFilter)
         {
-            var predicate = PredicateBuilder.New<Order>(c=>c.ClientId==_contextAccessorService.AuthoticateUserId());
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
             if (orderFilter.CountryId != null)
             {
                 predicate = predicate.And(c => c.CountryId == orderFilter.CountryId);
@@ -105,10 +158,55 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
+        public async Task<OrderDto> GetById(int id)
+        {
+            var inculdes = new string[] { "Agent", "Country", "Orderplaced", "MoenyPlaced", "OrderItems.OrderTpye", "OrderClientPaymnets.ClientPayment", "OrderClientPaymnets.ClientPaymentDetails" };
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, inculdes);
+            return _mapper.Map<OrderDto>(order);
+        }
+
         public async Task<IEnumerable<OrderDto>> NonSendOrder()
         {
             var orders = await _repository.GetAsync(c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country, c => c.MoenyPlaced, c => c.Orderplaced);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter)
+        {
+            var outSideCompany = await _moneyPlacedRepository.GetById((int)MoneyPalcedEnum.OutSideCompany);
+            var predicate = PredicateBuilder.New<Order>(false);
+            if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
+            {
+                var pr1 = PredicateBuilder.New<Order>(true);
+                pr1.And(c => c.IsClientDiliverdMoney == false);
+                pr1.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId));
+                pr1.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
+                predicate.Or(pr1);
+            }
+            if (orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                var pr2 = PredicateBuilder.New<Order>(true);
+                pr2.And(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash);
+                pr2.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.OrderplacedId));
+                pr2.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
+                predicate.Or(pr2);
+            }
+            var includes = new string[] { "Region", "Country", "Orderplaced", "MoenyPlaced", "Agent", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var orders = await _repository.GetByFilterInclue(predicate, includes);
+            orders.ForEach(o =>
+            {
+                if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
+                {
+                    o.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                    o.MoenyPlaced = outSideCompany;
+                }
+            });
+            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision()
+        {
+            return await _UintOfWork.Repository<OrderFromExcel>().GetAsync(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
         }
 
         public async Task Send(int[] ids)

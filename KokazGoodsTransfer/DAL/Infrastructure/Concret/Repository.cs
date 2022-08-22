@@ -9,9 +9,7 @@ using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 {
@@ -299,6 +297,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var data = await query.GroupBy(groupBySelector).Select(c => new { c.Key, Sum = c.Sum(selector) }).ToListAsync();
             return data.ToDictionary(c => c.Key, c => c.Sum);
 
+        }
+
+        public Task<bool> AllIdsExists(int[] ids)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -109,7 +109,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Data = data,
             };
         }
-        
+
         public async Task<Order> GetByIdIncludeAllForEmployee(int id)
         {
             return await Query.Include(c => c.Client)
@@ -132,7 +132,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
        .Include(c => c.ReceiptOfTheOrderStatusDetalis)
             .ThenInclude(c => c.ReceiptOfTheOrderStatus)
             .ThenInclude(c => c.Recvier)
-   .FirstOrDefaultAsync(c => c.Id == Id);
+   .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter)
