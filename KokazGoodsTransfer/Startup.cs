@@ -236,6 +236,7 @@ namespace KokazGoodsTransfer
             services.AddScoped<IPaymentRequestSerivce, PaymentRequestSerivce>();
             services.AddScoped<IPaymentWayService, PaymentWayService>();
             services.AddScoped<IEditRequestService, EditRequestService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
         }
     }
 }
