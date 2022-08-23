@@ -114,20 +114,26 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 erros.Add("رقم الهاتف مطلوب");
             }
-
-            if (createOrderFromClient.OrderItem?.Any() == true)
-            {
-                if (createOrderFromClient.OrderItem.Any(c => c.OrderTypeId == null && string.IsNullOrEmpty(c.OrderTypeName.Trim())))
-                {
-                    erros.Add("يجب وضع اسم نوع الشحنة");
-                }
-                var orderTypesIds = createOrderFromClient.OrderItem.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
-                if (await CheckOrderTypesIdsExists(orderTypesIds))
-                {
-                    erros.Add("النوع غير موجود");
-                }
-            }
+            erros.AddRange(await OrderItemValidation(createOrderFromClient.OrderItem));
             return erros;
+        }
+        private async Task<HashSet<string>> OrderItemValidation(List<OrderItemDto> orderItemDtos)
+        {
+            var errors = new HashSet<string>();
+            if (orderItemDtos?.Any() == false)
+            {
+                return errors;
+            }
+            if (orderItemDtos.Any(c => c.OrderTypeId == null && string.IsNullOrEmpty(c.OrderTypeName.Trim())))
+            {
+                errors.Add("يجب وضع اسم نوع الشحنة");
+            }
+            var orderTypesIds = orderItemDtos.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
+            if (await CheckOrderTypesIdsExists(orderTypesIds))
+            {
+                errors.Add("النوع غير موجود");
+            }
+            return errors;
         }
         public async Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient)
         {
@@ -475,6 +481,60 @@ namespace KokazGoodsTransfer.Services.Concret
             };
             await _notificationHub.AdminNotifcation(adminNotification);
             return correct;
+        }
+
+        public async Task Edit(EditOrder editOrder)
+        {
+            var order = await _UintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == editOrder.Id, c => c.OrderItems);
+            order.Code = editOrder.Code;
+            order.CountryId = editOrder.CountryId;
+            order.Address = editOrder.Address;
+            order.RecipientName = editOrder.RecipientName;
+            order.ClientNote = editOrder.ClientNote;
+            order.Cost = editOrder.Cost;
+            order.Date = editOrder.Date;
+            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == editOrder.CountryId);
+            order.DeliveryCost = country.DeliveryCost;
+            order.RecipientPhones = String.Join(',', editOrder.RecipientPhones);
+            var erros = await OrderItemValidation(editOrder.OrderItem);
+            if (erros.Any())
+                throw new ConflictException(erros);
+
+
+            order.OrderItems.Clear();
+            var orderTypesNames = editOrder.OrderItem.Where(c => c.OrderTypeId == null).Select(c => c.OrderTypeName).Distinct();
+            var orderTypes = await _UintOfWork.Repository<OrderType>().GetAsync(c => orderTypesNames.Any(ot => ot == c.Name));
+            await _UintOfWork.BegeinTransaction();
+            foreach (var item in editOrder.OrderItem)
+            {
+
+                int orderTypeId;
+                if (item.OrderTypeId.HasValue)
+                    orderTypeId = item.OrderTypeId.Value;
+                else
+                {
+                    var simi = orderTypes.FirstOrDefault(c => c.Name == item.OrderTypeName);
+                    if (simi != null)
+                        orderTypeId = simi.Id;
+                    else
+                    {
+                        ///TODO : make it faster 
+                        var orderType = new OrderType()
+                        {
+                            Name = item.OrderTypeName
+                        };
+                        await _UintOfWork.Add(orderType);
+                        orderTypeId = orderType.Id;
+                    }
+                }
+                order.OrderItems.Add(new OrderItem()
+                {
+                    Count = item.Count,
+                    OrderTpyeId = orderTypeId
+                });
+            }
+            await _UintOfWork.Update(order);
+            await _UintOfWork.Commit();
         }
     }
 }

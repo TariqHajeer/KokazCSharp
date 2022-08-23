@@ -1,36 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using ExcelDataReader;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Helpers;
-using KokazGoodsTransfer.HubsConfig;
-using KokazGoodsTransfer.Models;
-using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class COrderController : OldAbstractClientPolicyController
+    public class COrderController : AbstractClientPolicyController
     {
-        private readonly NotificationHub _notificationHub;
         private readonly IOrderClientSerivce _orderClientSerivce;
         private readonly INotificationService _notificationService;
         private readonly IReceiptService _receiptService;
-        public COrderController(KokazContext context, IMapper mapper, Logging logging, NotificationHub notificationHub, IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService) : base(context, mapper)
+        public COrderController(IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService)
         {
-            _notificationHub = notificationHub;
             _orderClientSerivce = orderClientSerivce;
             _notificationService = notificationService;
             _receiptService = receiptService;
@@ -76,73 +64,11 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(await _orderClientSerivce.GetById(id));
         }
         [HttpPut]
-        public IActionResult Edit([FromBody] EditOrder editOrder)
+        public async Task<IActionResult> Edit([FromBody] EditOrder editOrder)
         {
-            var order = this._context.Orders.Find(editOrder.Id);
+            await _orderClientSerivce.Edit(editOrder);
+            return Ok();
 
-            this._context.Entry(order).Collection(c => c.OrderItems).Load();
-            order.Code = editOrder.Code;
-            order.CountryId = editOrder.CountryId;
-            order.Address = editOrder.Address;
-            order.RecipientName = editOrder.RecipientName;
-            order.ClientNote = editOrder.ClientNote;
-            order.Cost = editOrder.Cost;
-            order.Date = editOrder.Date;
-            var country = this._context.Countries.Find(editOrder.CountryId);
-            order.DeliveryCost = country.DeliveryCost;
-            order.RecipientPhones = String.Join(',', editOrder.RecipientPhones);
-            var transaction = this._context.Database.BeginTransaction();
-            try
-            {
-                this._context.Update(order);
-                this._context.SaveChanges();
-                order.OrderItems.Clear();
-                this._context.SaveChanges();
-
-                foreach (var item in editOrder.OrderItem)
-                {
-                    int orderTypeId;
-                    if (item.OrderTypeId == null)
-                    {
-                        if (item.OrderTypeName == "")
-                            return Conflict();
-                        var similerOrderType = this._context.OrderTypes.Where(c => c.Name == item.OrderTypeName).FirstOrDefault();
-                        if (similerOrderType == null)
-                        {
-                            var orderType = new OrderType()
-                            {
-                                Name = item.OrderTypeName,
-                            };
-                            this._context.Add(orderType);
-                            this._context.SaveChanges();
-                            orderTypeId = orderType.Id;
-
-                        }
-                        else
-                        {
-                            orderTypeId = similerOrderType.Id;
-                        }
-                    }
-                    else
-                    {
-                        orderTypeId = (int)item.OrderTypeId;
-                    }
-                    this._context.Add(new OrderItem()
-                    {
-                        OrderTpyeId = orderTypeId,
-                        Count = item.Count,
-                        OrderId = order.Id
-                    });
-                    this._context.SaveChanges();
-                }
-                transaction.Commit();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw ex;
-            }
         }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)

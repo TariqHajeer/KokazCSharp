@@ -25,5 +25,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient);
         Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient);
         Task<bool> CreateFromExcel(IFormFile file,DateTime dateTime);
+        Task Edit(EditOrder editOrder);
     }
 }
