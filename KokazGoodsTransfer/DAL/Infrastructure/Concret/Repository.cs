@@ -271,7 +271,9 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
 
         public async Task<decimal> Sum(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null)
         {
-            return await Query.Where(filter).SumAsync(selector);
+            if (filter != null)
+                return await Query.Where(filter).SumAsync(selector);
+            return await Query.SumAsync(selector);
         }
 
         public async Task<Dictionary<Tkey, int>> CountGroupBy<Tkey>(Expression<Func<T, Tkey>> propertySelectors, Expression<Func<T, bool>> filter = null)
