@@ -6,12 +6,13 @@ namespace KokazGoodsTransfer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            int branchId = 2;
             migrationBuilder.AddColumn<int>(
                 name: "BranchId",
                 table: "Receipt",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: branchId);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Receipt_BranchId",
