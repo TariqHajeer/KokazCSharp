@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using KokazGoodsTransfer.DAL.Helper;
 using System.Linq;
+using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
@@ -18,7 +19,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
         Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<decimal> Sum(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
-        Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Func<T, decimal> selector, Expression<Func<T, bool>> filter = null);
+        Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
         Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors);
         Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors);
         Task<IEnumerable<T>> GetAll(string[] propertySelectors);

@@ -6,7 +6,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "Employee")]
-    public class AbstractEmployeePolicyController: AbstractController
+    public class AbstractEmployeePolicyController : AbstractController
     {
 
     }

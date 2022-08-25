@@ -43,9 +43,9 @@ namespace KokazGoodsTransfer.Middlewares
                             _logging = context.RequestServices.GetService(typeof(Logging)) as Logging;
                             _logging.WriteExption(ex);
                             var uintOfWork = context.RequestServices.GetService(typeof(IUintOfWork)) as IUintOfWork;
-                            if(uintOfWork!=null && uintOfWork.IsTransactionOpen)
+                            if (uintOfWork != null && uintOfWork.IsTransactionOpen)
                             {
-                               await uintOfWork.Rollback();
+                                await uintOfWork.Rollback();
                             }
                             response.StatusCode = StatusCodes.Status400BadRequest;
                             responseBody = ex.Message;

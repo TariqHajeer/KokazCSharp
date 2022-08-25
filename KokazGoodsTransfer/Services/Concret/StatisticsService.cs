@@ -14,6 +14,8 @@ using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.ClientDtos;
 using System.Linq.Expressions;
 using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -132,8 +134,9 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<IEnumerable<ClientBlanaceDto>> GetClientBalance()
         {
+
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
-            var totalAccount = await _receiptRepository.Sum(c => c.ClientId, c => c.Amount, c => c.ClientPaymentId != null);
+            var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
 
             var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => (s.ClientPaied ?? 0) * -1, c => c.IsClientDiliverdMoney && c.MoenyPlacedId != (int)MoneyPalcedEnum.Delivered);
             var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
@@ -173,7 +176,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered),
                 OrderPartialReturned = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.PartialReturned),
                 DelayedOrder = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed),
-                OrderMoneyInCompany =await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
+                OrderMoneyInCompany = await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
                 OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
 
             };
