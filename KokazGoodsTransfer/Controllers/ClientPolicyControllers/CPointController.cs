@@ -26,9 +26,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(client.Points);
         }
         [HttpGet]
-        public IActionResult Get()
+        public async Task< IActionResult> Get()
         {
-            return Ok(_pointSettingService.GetAll());
+            return Ok(await _pointSettingService.GetAll());
         }
     }
 }
