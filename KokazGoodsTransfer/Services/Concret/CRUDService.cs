@@ -126,5 +126,15 @@ namespace KokazGoodsTransfer.Services.Concret
                 Total = data.Total
             };
         }
+
+        public async Task<PagingResualt<IEnumerable<TDTO>>> GetAsync(PagingDto paging, Expression<Func<TEntity, bool>> filter = null, params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            var data = await _repository.GetAsync(paging,filter,propertySelectors);
+            return new PagingResualt<IEnumerable<TDTO>>()
+            {
+                Data = _mapper.Map<IEnumerable<TDTO>>(data.Data),
+                Total = data.Total
+            };
+        }
     }
 }

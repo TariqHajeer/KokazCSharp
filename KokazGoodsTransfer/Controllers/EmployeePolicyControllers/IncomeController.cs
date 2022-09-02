@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 incomePredicate = incomePredicate.And(c => c.Date >= filtering.FromDate);
             if (filtering.ToDate != null)
                 incomePredicate = incomePredicate.And(c => c.Date <= filtering.ToDate);
-            var pagingResualt = await _IncomeService.GetAsync(pagingDto, incomePredicate);
+            var pagingResualt = await _IncomeService.GetAsync(pagingDto, incomePredicate, c => c.IncomeType);
             return Ok(pagingResualt);
 
         }

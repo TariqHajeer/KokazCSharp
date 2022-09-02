@@ -48,6 +48,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
             var orders = await _orderService.GetAsync(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             orders = orders.OrderBy(c => c.Date);
+            if (!orders.Any())
+                return NotFound();
             return Ok(orders);
         }
 
