@@ -22,8 +22,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePointSetting createPointSetting)
         {
-            var isValid = await IsPointValid(createPointSetting) as OkObjectResult;
-            if (!(bool)isValid.Value)
+            var isValid = await GetIsPointValid(createPointSetting);
+            if (!isValid)
             {
                 return Conflict();
             }
@@ -44,9 +44,13 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("IsPointValid")]
         public async Task<IActionResult> IsPointValid([FromQuery] CreatePointSetting createPointSetting)
         {
+            return Ok(await GetIsPointValid(createPointSetting));
+        }
+        private async Task<bool> GetIsPointValid(CreatePointSetting createPointSetting)
+        {
             if (createPointSetting.Points == 0 || createPointSetting.Money == 0)
-                return Ok(false);
-            return Ok(await _pointSettingService.Any(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points));
+                return false;
+            return !(await _pointSettingService.Any(c => c.Money == createPointSetting.Money || c.Points == createPointSetting.Points));
         }
 
     }
