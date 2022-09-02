@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IHttpContextAccessorService _httpContextAccessorService;
 
 
-        public StatisticsService(IRepository<User> userRepository, IRepository<Client> clientRepository, IOrderRepository orderRepository, IRepository<Income> incomeRepository, IRepository<OutCome> outComeRepository, IRepository<Receipt> receiptRepository, IMapper mapper)
+        public StatisticsService(IRepository<User> userRepository, IRepository<Client> clientRepository, IOrderRepository orderRepository, IRepository<Income> incomeRepository, IRepository<OutCome> outComeRepository, IRepository<Receipt> receiptRepository, IMapper mapper, IHttpContextAccessorService httpContextAccessorService)
         {
             _userRepository = userRepository;
             _clientRepository = clientRepository;
@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _outComeRepository = outComeRepository;
             _receiptRepository = receiptRepository;
             _mapper = mapper;
+            _httpContextAccessorService = httpContextAccessorService;
         }
         public async Task<MainStaticsDto> GetMainStatics()
         {
