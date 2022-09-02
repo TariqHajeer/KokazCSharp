@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using KokazGoodsTransfer.Dtos.TreasuryDtos;
-using KokazGoodsTransfer.Helpers;
-using KokazGoodsTransfer.Models;
+﻿using KokazGoodsTransfer.Dtos.TreasuryDtos;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

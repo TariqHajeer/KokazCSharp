@@ -17,6 +17,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
     {
         public OrderProfile()
         {
+            CreateMap<CreateOrderType, OrderType>();
             CreateMap<CreateOrderFromClient, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(',', src.RecipientPhones)))
                .ForMember(s => s.OrderplacedId, opt => opt.MapFrom(src => (int)OrderplacedEnum.Client))

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Linq;
-using KokazGoodsTransfer.Models;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KokazGoodsTransfer.Dtos.Users;
-using KokazGoodsTransfer.Helpers;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Models.Static;
 using System.Threading.Tasks;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
@@ -36,12 +29,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
 
             var reuslt = await _userCashedService.AddAsync(createUserDto);
-            _countryCashedService.RemoveCash();
+            _userCashedService.RemoveCash();
             if (reuslt.Errors.Any())
                 return Conflict();
             return Ok(reuslt.Data);
 
-        }
+            }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

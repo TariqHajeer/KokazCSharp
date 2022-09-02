@@ -38,13 +38,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (userBranches.Count > 1)
                 {
                     string branch = _httpContextAccessor.HttpContext.Request.Headers["branchId"];
-                    if (string.IsNullOrEmpty(branch))
+                    if (!string.IsNullOrEmpty(branch))
                         branchId = int.Parse(branch);
                     return branchId;
                 }
                 return branchId;
             }
-             throw new System.Exception("Branch Not Exist");
+            throw new System.Exception("Branch Not Exist");
         }
 
         public int AuthoticateUserId()
