@@ -18,9 +18,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             _paymentWayService = paymentWayService;
         }
         [HttpGet("CanRequest")]
-        public async Task<IActionResult> CanRequest()
+        public async Task<ActionResult<bool>> CanRequest()
         {
-            return Ok(await _paymentRequestSerivce.CanClientRequest(AuthoticateUserId()));
+            return Ok(!await _paymentRequestSerivce.CanClientRequest(AuthoticateUserId()));
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePaymentRequestDto createPaymentRequestDto)
