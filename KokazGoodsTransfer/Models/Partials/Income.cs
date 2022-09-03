@@ -2,7 +2,7 @@
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Income: IIdEntity
+    public partial class Income
     {
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Income
+    public partial class Income :IHaveBranch ,IIdEntity
     {
         public Income()
         {
@@ -23,5 +24,7 @@ namespace KokazGoodsTransfer.Models
         public virtual IncomeType IncomeType { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
+        public int BranchId { get; set; }
+        public Branch Branch { get; set; }
     }
 }
