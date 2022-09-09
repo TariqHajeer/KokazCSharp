@@ -129,6 +129,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
+                }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .ToListAsync();
@@ -432,6 +441,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///TODO :
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
                 }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ
@@ -960,7 +978,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
             }
-            var total =await ordersPrint.CountAsync();
+            var total = await ordersPrint.CountAsync();
             var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
