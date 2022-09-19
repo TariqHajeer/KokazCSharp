@@ -129,6 +129,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
+                if (!string.IsNullOrEmpty(orderFilter.CreatedBy?.Trim()))
+                {
+                    orderIQ = orderIQ.Where(c => c.CreatedBy == orderFilter.CreatedBy);
+                }
                 if (orderFilter.CreatedDateRangeFilter != null)
                 {
                     if (orderFilter.CreatedDateRangeFilter.Start != null)
@@ -138,6 +142,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
                     }
                 }
+
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .ToListAsync();
