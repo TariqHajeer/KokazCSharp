@@ -1736,5 +1736,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
         }
+        [HttpGet("GetCreatedByNames")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCreatedByNames()
+        {
+            return Ok(await _context.Orders.Select(c => c.CreatedBy).Distinct().ToListAsync());
+        }
     }
 }
