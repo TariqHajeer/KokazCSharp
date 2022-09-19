@@ -318,5 +318,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.AproveOrderRequestEditState(ids);
             return Ok();
         }
+        [HttpGet("GetCreatedByNames")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCreatedByNames()
+        {
+            return Ok(await _orderService.GetCreatedByNames());
+        }
     }
 }

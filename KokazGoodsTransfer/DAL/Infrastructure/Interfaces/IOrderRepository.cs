@@ -15,6 +15,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter);
         Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter);
         Task<Order> GetByIdIncludeAllForEmployee(int id);
+        Task<IEnumerable<string>> GetCreatedByNames();
 
 
     }

@@ -100,6 +100,18 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 ///chould check this query 
                 query = query.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= filter.AgentPrintEndDate);
             }
+            if (!string.IsNullOrEmpty(filter.CreatedBy?.Trim()))
+            {
+                query = query.Where(c => c.CreatedBy == filter.CreatedBy);
+            }
+            if (filter.CreatedDateRangeFilter != null)
+            {
+                if (filter.CreatedDateRangeFilter.Start != null)
+                    query = query.Where(c => c.Date >= filter.CreatedDateRangeFilter.Start);
+                if (filter.CreatedDateRangeFilter.End != null)
+                    query = query.Where(c => c.Date <= filter.CreatedDateRangeFilter.End);
+
+            }
 
             var total = await query.CountAsync();
             var data = paging == null ? await query.ToListAsync() : await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync();
@@ -133,6 +145,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             .ThenInclude(c => c.ReceiptOfTheOrderStatus)
             .ThenInclude(c => c.Recvier)
    .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<IEnumerable<string>> GetCreatedByNames()
+        {
+            return await Query.Select(c => c.CreatedBy).Distinct().ToListAsync();
         }
 
         public async Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter)

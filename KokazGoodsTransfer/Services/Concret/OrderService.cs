@@ -1528,6 +1528,11 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.Commit();
 
         }
+
+        public async Task<IEnumerable<string>> GetCreatedByNames()
+        {
+            return await _repository.GetCreatedByNames();
+        }
     }
 
 
