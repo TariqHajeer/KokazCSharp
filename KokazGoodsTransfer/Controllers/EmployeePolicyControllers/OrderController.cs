@@ -1746,5 +1746,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _context.Orders.Select(c => c.CreatedBy).Distinct().ToListAsync());
         }
+        [HttpGet("ReSendMultiple")]
+        public async Task<IActionResult> ReSendMultiple(string code)
+        {
+            var orders = await _context.Orders.Where(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client)
+                .Include(c => c.Client)
+                .ToListAsync();
+            return Ok(_mapper.Map<OrderDto[]>(orders));
+
+        }
+        [HttpPut("ReSendMultiple")]
+        public async Task<IActionResult> ReSendMultiple(List<OrderReSend> orderReSends)
+        {
+            var orders = await _context.Orders.Where(c => orderReSends.Select(c => c.Id).Contains(c.Id)).ToListAsync();
+            return Ok(orders);
+        }
     }
 }
