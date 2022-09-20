@@ -1747,7 +1747,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _context.Orders.Select(c => c.CreatedBy).Distinct().ToListAsync());
         }
         [HttpGet("ReSendMultiple")]
-        public async Task<IActionResult> ReSendMultiple(string code)
+        public async Task<IActionResult> ReSendMultiple([FromQuery] string code)
         {
             var orders = await _context.Orders.Where(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client)
                 .Include(c => c.Client)
@@ -1759,6 +1759,30 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> ReSendMultiple(List<OrderReSend> orderReSends)
         {
             var orders = await _context.Orders.Where(c => orderReSends.Select(c => c.Id).Contains(c.Id)).ToListAsync();
+            var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
+            var agennts = await _context.Users.Where(c => agentIds.Contains(c.Id)).Select(c => new { c.Id, c.Salary }).ToListAsync();
+            foreach (var orderReSend in orderReSends)
+            {
+                var order = orders.Single(c => c.Id == orderReSend.Id);
+                order.CountryId = orderReSend.CountryId;
+                order.RegionId = orderReSend.RegionId;
+                order.AgentId = orderReSend.AgnetId;
+                if (order.OldCost != null)
+                {
+                    order.Cost = (decimal)order.OldCost;
+                    order.OldCost = null;
+                }
+                order.IsClientDiliverdMoney = false;
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.DeliveryCost = orderReSend.DeliveryCost;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.AgentCost = (await this._context.Users.FindAsync(order.AgentId)).Salary ?? 0;
+            }
+            
+
+            
+            
             return Ok(orders);
         }
     }
