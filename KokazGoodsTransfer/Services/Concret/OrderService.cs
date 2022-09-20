@@ -1533,6 +1533,43 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return await _repository.GetCreatedByNames();
         }
+
+        public async Task<IEnumerable<OrderDto>> GetForReSendMultiple(string code)
+        {
+
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Country), nameof(Order.Region) };
+            var orders = await _repository.GetAsync(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client,c=>c.Client,c=>c.Agent,c=>c.Region,c=>c.Country);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task ReSendMultiple(List<OrderReSend> orderReSends)
+        {
+            var ordersIds = orderReSends.Select(c => c.Id);
+
+            var orders = await _repository.GetAsync(c => ordersIds.Contains(c.Id));
+            var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
+            var agents = await _userRepository.Select(c => new { c.Id, c.Salary }, c => agentIds.Contains(c.Id));
+            foreach (var orderReSend in orderReSends)
+            {
+                var order = orders.Single(c => c.Id == orderReSend.Id);
+                order.CountryId = orderReSend.CountryId;
+                order.RegionId = orderReSend.RegionId;
+                order.AgentId = orderReSend.AgnetId;
+                if (order.OldCost != null)
+                {
+                    order.Cost = (decimal)order.OldCost;
+                    order.OldCost = null;
+                }
+                order.IsClientDiliverdMoney = false;
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.DeliveryCost = orderReSend.DeliveryCost;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.AgentCost = agents.Single(c => c.Id == order.AgentId).Salary ?? 0;
+            }
+            await _repository.Update(orders);
+
+        }
     }
 
 

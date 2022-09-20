@@ -57,5 +57,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task DisAproveOrderRequestEditState(int[] ids);
         Task AproveOrderRequestEditState(int[] ids);
         Task<IEnumerable<string>> GetCreatedByNames();
+        Task<IEnumerable<OrderDto>> GetForReSendMultiple(string code);
+        Task ReSendMultiple(List<OrderReSend> orderReSends);
     }
 }
