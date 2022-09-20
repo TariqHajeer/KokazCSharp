@@ -129,6 +129,20 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
+                if (!string.IsNullOrEmpty(orderFilter.CreatedBy?.Trim()))
+                {
+                    orderIQ = orderIQ.Where(c => c.CreatedBy == orderFilter.CreatedBy);
+                }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
+                }
+
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .ToListAsync();
@@ -432,6 +446,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///TODO :
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
                 }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ
@@ -960,7 +983,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
             }
-            var total =await ordersPrint.CountAsync();
+            var total = await ordersPrint.CountAsync();
             var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
@@ -1717,6 +1740,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
         {
             return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
+        }
+        [HttpGet("GetCreatedByNames")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCreatedByNames()
+        {
+            return Ok(await _context.Orders.Select(c => c.CreatedBy).Distinct().ToListAsync());
         }
     }
 }
