@@ -1780,8 +1780,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.OrderplacedId = (int)OrderplacedEnum.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.AgentCost = (await this._context.Users.FindAsync(order.AgentId)).Salary ?? 0;
+                order.AgentCost = agennts.Single(c => c.Id == order.AgentId).Salary ?? 0;
             }
+            await _context.SaveChangesAsync();
             return Ok(orders);
         }
     }
