@@ -1751,6 +1751,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             var orders = await _context.Orders.Where(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client)
                 .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .Include(c => c.Country)
+                .ThenInclude(c => c.Regions)
                 .ToListAsync();
             return Ok(_mapper.Map<OrderDto[]>(orders));
 
@@ -1779,10 +1782,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
                 order.AgentCost = (await this._context.Users.FindAsync(order.AgentId)).Salary ?? 0;
             }
-            
-
-            
-            
             return Ok(orders);
         }
     }
