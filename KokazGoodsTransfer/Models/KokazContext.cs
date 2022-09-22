@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using KokazGoodsTransfer.Models.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -1029,6 +1031,20 @@ namespace KokazGoodsTransfer.Models
             });
             modelBuilder.ApplyAllConfigurations();
             OnModelCreatingPartial(modelBuilder);
+            var implementedConfigTypes = Assembly.GetExecutingAssembly()
+        .GetTypes()
+        .Where(t => !t.IsAbstract
+            && !t.IsGenericTypeDefinition
+            && t.GetTypeInfo().ImplementedInterfaces.Any(i =>
+                i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>)));
+
+            foreach (var configType in implementedConfigTypes)
+            {
+                dynamic config = Activator.CreateInstance(configType);
+                modelBuilder.ApplyConfiguration(config);
+            }
+
+
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

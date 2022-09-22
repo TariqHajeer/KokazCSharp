@@ -72,8 +72,16 @@ namespace KokazGoodsTransfer.Models
         public Branch Branch { get; set; }
         [ForeignKey(nameof(SecondBranchId))]
         public virtual Branch SecondBranch { get; set; }
+        /// <summary>
+        /// for agent
+        /// </summary>
         [ForeignKey(nameof(NewOrderPlacedId))]
         public OrderPlaced NewOrderPlaced { get; set; }
+        public int CurrentBranchId { get; set; }
+        [ForeignKey(nameof(CurrentBranchId))]
+        public virtual Branch CurrentBranch { get; set; }
+
+
 
     }
 }

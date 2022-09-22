@@ -39,7 +39,9 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<ClientPayment> _clientPaymentRepository;
         private readonly IRepository<DisAcceptOrder> _DisAcceptOrderRepository;
         private readonly NotificationHub _notificationHub;
+        private readonly IRepository<Branch> _branchRepository;
         private readonly Logging _logging;
+        private readonly IHttpContextAccessorService _httpContextAccessorService;
 
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
@@ -52,7 +54,7 @@ namespace KokazGoodsTransfer.Services.Concret
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
             ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
-            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub)
+            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -72,6 +74,8 @@ namespace KokazGoodsTransfer.Services.Concret
             _clientPaymentRepository = clientPaymentRepository;
             _DisAcceptOrderRepository = disAcceptOrderRepository;
             _notificationHub = notificationHub;
+            _branchRepository = branchRepository;
+            _httpContextAccessorService = httpContextAccessorService;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -548,6 +552,9 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.BegeinTransaction();
             try
             {
+                var currentBranchId = _httpContextAccessorService.CurrentBranchId();
+                var countryIds = createMultipleOrders.Select(c => c.CountryId);
+                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.CountryId));
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
@@ -555,6 +562,10 @@ namespace KokazGoodsTransfer.Services.Concret
                      order.Date = item.Date;
                      order.CurrentCountry = mainCountryId;
                      order.CreatedBy = currentUser;
+                     order.CurrentBranchId = currentBranchId;
+                     var secoundBranch = branches.FirstOrDefault(c => c.CountryId == item.CountryId);
+                     if(secoundBranch!=null)
+                         order.SecondBranchId = secoundBranch.Id;
                      return order;
                  });
                 await _uintOfWork.AddRange(orders);
@@ -577,6 +588,10 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 order.CurrentCountry = country.Id;
+                order.CurrentBranchId = _httpContextAccessorService.CurrentBranchId();
+                var nextBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == country.Id);
+                if (nextBranch != null)
+                    order.SecondBranchId = nextBranch.Id;
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
                 {
@@ -1538,7 +1553,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
 
             var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Country), nameof(Order.Region) };
-            var orders = await _repository.GetAsync(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client,c=>c.Client,c=>c.Agent,c=>c.Region,c=>c.Country);
+            var orders = await _repository.GetAsync(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client, c => c.Client, c => c.Agent, c => c.Region, c => c.Country);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
