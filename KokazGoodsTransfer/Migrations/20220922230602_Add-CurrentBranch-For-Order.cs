@@ -24,8 +24,8 @@ namespace KokazGoodsTransfer.Migrations
                 column: "CurrentBranchId",
                 principalTable: "Branches",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade,
-                onUpdate: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict,
+                onUpdate: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
