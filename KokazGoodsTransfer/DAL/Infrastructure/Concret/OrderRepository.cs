@@ -20,7 +20,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }
-
         public async Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, string[] propertySelectors = null)
         {
             var query = Query;

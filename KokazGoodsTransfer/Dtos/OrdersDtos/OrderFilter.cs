@@ -26,7 +26,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Note { get; set; }
         public DateTime? AgentPrintStartDate { get; set; }
         public DateTime? AgentPrintEndDate { get; set; }
-        
+        public bool? HaveScoundBranch { get; set; }
+
 
     }
 }

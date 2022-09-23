@@ -113,7 +113,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return new PagingResualt<IEnumerable<T>>()
             {
-                Data = await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync(),
+                Data = paging == null ? await query.ToListAsync() : await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync(),
                 Total = total,
             };
         }
