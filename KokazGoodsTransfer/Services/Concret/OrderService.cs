@@ -489,6 +489,19 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.Commit();
             return agnetPrint.Id;
         }
+        public async Task TransferToSecondBranch(int[] ids)
+        {
+            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.SecondBranchId == null))
+            {
+                throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
+            }
+            orders.ForEach(c =>
+            {
+                c.OrderplacedId = (int)OrderplacedEnum.Way;
+            });
+            await _repository.Update(orders);
+        }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
             PagingResualt<IEnumerable<ReceiptOfTheOrderStatus>> response;
@@ -656,7 +669,11 @@ namespace KokazGoodsTransfer.Services.Concret
                      order.CurrentBranchId = _currentBranchId;
                      var secoundBranch = branches.FirstOrDefault(c => c.CountryId == item.CountryId);
                      if (secoundBranch != null)
+                     {
                          order.SecondBranchId = secoundBranch.Id;
+                         if (order.AgentId != null)
+                             throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                     }
                      return order;
                  });
                 await _uintOfWork.AddRange(orders);
@@ -682,7 +699,18 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.CurrentBranchId = _currentBranchId;
                 var nextBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == country.Id);
                 if (nextBranch != null)
+                {
                     order.SecondBranchId = nextBranch.Id;
+                    if(order.AgentId!=null)
+                    {
+                        throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                    }
+                }
+                else if (order.AgentId == null)
+                {
+                    throw new ConflictException("يجب اختيار المندوب");
+                }
+                
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
                 {

@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? RegionId { get; set; }
         public string RegionName { get; set; }
         public string Address { get; set; }
-        public int AgentId { get; set; }
+        public int? AgentId { get; set; }
         public decimal Cost { get; set; }
         public decimal DeliveryCost { get; set; }
         public string RecipientName { get; set; }

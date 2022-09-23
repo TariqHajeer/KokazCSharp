@@ -96,7 +96,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var response = await _orderService.MakeOrderInWay(ids);
             return Ok(response);
         }
-        
+        [HttpPut("TransferToSecondBranch")]
+        public async Task<IActionResult> TransferToSecondBranch([FromBody] int[] ids)
+        {
+            await _orderService.TransferToSecondBranch(ids);
+            return Ok();
+        }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {

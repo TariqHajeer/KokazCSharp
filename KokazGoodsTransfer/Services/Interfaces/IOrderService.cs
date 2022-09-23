@@ -21,6 +21,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
         Task<int> MakeOrderInWay(int[] ids);
+        Task TransferToSecondBranch(int[] ids);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);

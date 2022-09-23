@@ -32,7 +32,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                         return null;
                     obj.AgentCountries.ToList().ForEach(c => c.Agent.AgentCountries = null);
                     return context.Mapper.Map<UserDto[]>(obj.AgentCountries.Select(c => c.Agent));
-                })).MaxDepth(2);
+                })).MaxDepth(2)
+                .ForMember(c => c.BranchesIds, opt => opt.MapFrom(src => src.Branches.Select(c => c.Id)));
             CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()
                 .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
