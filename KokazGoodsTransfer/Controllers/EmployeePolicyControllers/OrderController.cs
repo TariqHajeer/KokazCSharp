@@ -55,7 +55,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("GetInStockToTransferToSecondBranch")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter orderFilter)
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
             return Ok(await _orderService.GetInStockToTransferToSecondBranch(pagingDto, orderFilter));
         }
@@ -96,6 +96,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var response = await _orderService.MakeOrderInWay(ids);
             return Ok(response);
         }
+        
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
