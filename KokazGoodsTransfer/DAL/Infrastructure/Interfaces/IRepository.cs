@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using KokazGoodsTransfer.DAL.Helper;
 using System.Linq;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Dtos.Common;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
 {
@@ -16,8 +17,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<T> FirstOrDefualt(Expression<Func<T, bool>> filter, string[] propertySelectors);
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
-        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
-        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
+        Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+        Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors);
         Task<decimal> Sum(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
         Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
         Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors);
@@ -33,7 +34,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task LoadRefernces<TProperty>(T entity, Expression<Func<T, TProperty>> propertyExpression) where TProperty : class;
         Task<int> Count(Expression<Func<T, bool>> filter = null);
         Task<Dictionary<Tkey, int>> CountGroupBy<Tkey>(Expression<Func<T, Tkey>> propertySelectors, Expression<Func<T, bool>> filter = null);
-        Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+        Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
         Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter, Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
         Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
         Task<bool> AllIdsExists(int[] ids);

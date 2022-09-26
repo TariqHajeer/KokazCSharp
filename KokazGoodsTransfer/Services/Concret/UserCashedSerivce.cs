@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.CustomException;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Users;
@@ -7,7 +8,6 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -22,12 +22,14 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+        private readonly ICountryCashedService _countryCashedService;
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessorService httpContextAccessorService, ICountryCashedService countryCashedService)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;
             _userGroupRepositroy = userGroupRepositroy;
+            _countryCashedService = countryCashedService;
         }
         public override async Task<ErrorRepsonse<UserDto>> Delete(int id)
         {
@@ -57,6 +59,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
             return await base.Delete(id);
         }
+
         public override async Task<IEnumerable<UserDto>> GetAll(params Expression<Func<User, object>>[] propertySelectors)
         {
             var list = await _repository.GetAsync(c => (c.CanWorkAsAgent == true && c.BranchId == _currentBranch) || (c.CanWorkAsAgent == false && c.Branches.Any(c => c.BranchId == _currentBranch)));
@@ -70,29 +73,25 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return dtos;
         }
-        public override async Task<ErrorRepsonse<UserDto>> AddAsync(CreateUserDto createDto)
+        public async Task<UserDto> AddAsync2(CreateUserDto createDto)
         {
-            var response = new ErrorRepsonse<UserDto>();
-            if (await _repository.Any(c => c.UserName.ToLower() == createDto.UserName.ToLower()))
-            {
-                response.Errors.Add("UserName.Exisit");
-                return response;
-            }
-            if (await _repository.Any(c => c.Name == createDto.Name))
-            {
-                response.Errors.Add("Name.Exisit");
-                return response;
-            }
+            if (!string.IsNullOrEmpty(createDto.UserName) && await _repository.Any(c => c.UserName.ToLower() == createDto.UserName.ToLower()))
+                throw new ConflictException("اسم المستخدم مكرر");
+            if (await _repository.Any(c => c.Name.ToLower() == createDto.Name.ToLower()))
+                throw new ConflictException("الأسم مكرر");
             var user = _mapper.Map<User>(createDto);
-            if (user.CanWorkAsAgent)
-                user.BranchId = _currentBranch;
-            await _repository.AddAsync(user);
-            response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(user));
-            if (user.CanWorkAsAgent)
+            if (createDto.CanWorkAsAgent)
             {
-                RemoveCash();
+                var countries = await _countryCashedService.GetAsync(c => createDto.Countries.Contains(c.Id) && c.Branches.Any(), c => c.Branches);
+                var branchesids = countries.SelectMany(c => c.BranchesIds).ToArray();
+                if (branchesids.Except(_httpContextAccessorService.Branches()).Any())
+                    throw new ConflictException("لا يمكنك  إضافة مدينة لمدنوب لديها فرع");
+                user.BranchId = _currentBranch;
             }
-            return response;
+            await _repository.AddAsync(user);
+            if (user.CanWorkAsAgent)
+                RemoveCash();
+            return _mapper.Map<UserDto>(user);
         }
         public override async Task<IEnumerable<UserDto>> GetCashed()
         {

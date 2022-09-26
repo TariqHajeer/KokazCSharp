@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Infrastrcuter;
@@ -96,7 +97,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             return query;
         }
-        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
             var query = Query;
             if (filter != null)
@@ -117,7 +118,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 Total = total,
             };
         }
-        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, string[] propertySelectors, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
             var query = Query;
             if (propertySelectors?.Any() == true)
@@ -146,7 +147,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 }
             return await query.ToListAsync();
         }
-        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(Paging paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] propertySelectors)
         {
 
             var query = this.Query;

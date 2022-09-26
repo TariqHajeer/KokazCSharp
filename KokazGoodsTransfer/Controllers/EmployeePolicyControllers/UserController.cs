@@ -25,16 +25,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> GetAll() => Ok(await _userCashedService.GetAll());
         [HttpPost]
 
-        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
+        public async Task<ActionResult<UserDto>> Create([FromBody] CreateUserDto createUserDto)
         {
-
-            var reuslt = await _userCashedService.AddAsync(createUserDto);
-            _userCashedService.RemoveCash();
-            if (reuslt.Errors.Any())
-                return Conflict();
-            return Ok(reuslt.Data);
-
-            }
+            return Ok(await _userCashedService.AddAsync2(createUserDto));
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

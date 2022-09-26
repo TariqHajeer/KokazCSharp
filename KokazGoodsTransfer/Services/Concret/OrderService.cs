@@ -489,6 +489,17 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.Commit();
             return agnetPrint.Id;
         }
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderComeToBranch(PagingDto pagingDto, OrderFilter orderFilter)
+        {
+            var predicate = GetFilterAsLinq(orderFilter);
+            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId &&c.OrderplacedId==(int)OrderplacedEnum.Way);
+            var pagingResult = await _repository.GetAsync(pagingDto, predicate);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = pagingResult.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
+            };
+        }
         public async Task TransferToSecondBranch(int[] ids)
         {
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
@@ -701,7 +712,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (nextBranch != null)
                 {
                     order.SecondBranchId = nextBranch.Id;
-                    if(order.AgentId!=null)
+                    if (order.AgentId != null)
                     {
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
                     }
@@ -710,7 +721,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     throw new ConflictException("يجب اختيار المندوب");
                 }
-                
+
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
                 {

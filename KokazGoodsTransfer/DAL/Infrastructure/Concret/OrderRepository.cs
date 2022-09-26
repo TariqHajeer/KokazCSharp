@@ -1,5 +1,6 @@
 ﻿using KokazGoodsTransfer.DAL.Helper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -20,7 +21,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         {
             Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }
-        public async Task<PagingResualt<IEnumerable<Order>>> Get(Paging paging, OrderFilter filter, string[] propertySelectors = null)
+        public async Task<PagingResualt<IEnumerable<Order>>> Get(PagingDto paging, OrderFilter filter, string[] propertySelectors = null)
         {
             var query = Query;
             if (propertySelectors.Any() == true)

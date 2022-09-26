@@ -14,5 +14,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task DeleteGroup(int userId, int groupId);
         Task<PhoneDto> AddPhone(AddPhoneDto addPhoneDto);
         Task AddToGroup(int userId, int groupId);
+        Task<UserDto> AddAsync2(CreateUserDto createDto);
     }
 }
