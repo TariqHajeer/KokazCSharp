@@ -101,11 +101,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.TransferToSecondBranch(ids);
             return Ok();
         }
-        //[HttpGet("GetOrderComeToBranch")]
-        //public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrderComeToBranch(PagingDto pagingDto, OrderFilter orderFilter)
-        //{
-        //    return Ok(await _orderService.GetOrderComeToBranch(pagingDto, orderFilter));
-        //}
+        [HttpGet("GetOrderComeToBranch")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrderComeToBranch([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
+        {
+            return Ok(await _orderService.GetOrderComeToBranch(pagingDto, orderFilter));
+        }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
