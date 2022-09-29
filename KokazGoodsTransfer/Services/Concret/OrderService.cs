@@ -492,7 +492,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderComeToBranch(PagingDto pagingDto, OrderFilter orderFilter)
         {
             var predicate = GetFilterAsLinq(orderFilter);
-            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId &&c.OrderplacedId==(int)OrderplacedEnum.Way);
+            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -708,7 +708,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 order.CurrentCountry = country.Id;
                 order.CurrentBranchId = _currentBranchId;
-                var nextBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == country.Id);
+                var nextBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == country.Id && c.Id != _currentBranchId);
                 if (nextBranch != null)
                 {
                     order.SecondBranchId = nextBranch.Id;
