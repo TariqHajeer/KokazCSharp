@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public string Note { get; set; }
         public DateTime? AgentPrintStartDate { get; set; }
         public DateTime? AgentPrintEndDate { get; set; }
-        
-
+        public OrderStateEnum? OrderState { get; set; }
     }
 }

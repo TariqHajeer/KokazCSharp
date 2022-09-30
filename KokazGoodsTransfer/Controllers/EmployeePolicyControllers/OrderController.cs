@@ -142,6 +142,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                         orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
                     }
                 }
+                if (orderFilter.OrderState != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.OrderStateId == (int)orderFilter.OrderState);
+                }
 
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
