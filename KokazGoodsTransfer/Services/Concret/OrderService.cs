@@ -632,6 +632,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 else
                     preidcate = preidcate.And(c => c.SecondBranchId == null);
             }
+            if (filter.OrderState != null)
+            {
+                preidcate = preidcate.And(c => c.OrderStateId == (int)filter.OrderState);
+            }
             return preidcate;
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
