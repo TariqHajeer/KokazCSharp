@@ -673,7 +673,7 @@ namespace KokazGoodsTransfer.Services.Concret
             try
             {
                 var countryIds = createMultipleOrders.Select(c => c.CountryId);
-                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.CountryId));
+                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.CountryId) && c.Id != _currentBranchId);
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
