@@ -489,7 +489,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.Commit();
             return agnetPrint.Id;
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderComeToBranch(PagingDto pagingDto, OrderFilter orderFilter)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter)
         {
             var predicate = GetFilterAsLinq(orderFilter);
             predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
@@ -1730,6 +1730,17 @@ namespace KokazGoodsTransfer.Services.Concret
                 Total = pagingResult.Total,
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
+        }
+
+        public async Task ReceiveOrdersToMyBranch(int[] ids)
+        {
+            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            orders.ForEach(c =>
+            {
+                c.CurrentBranchId = _currentBranchId;
+                c.OrderplacedId = (int)OrderplacedEnum.Store;
+            });
+            await _repository.Update(orders);
         }
     }
 

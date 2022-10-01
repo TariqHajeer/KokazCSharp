@@ -101,10 +101,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.TransferToSecondBranch(ids);
             return Ok();
         }
-        [HttpGet("GetOrderComeToBranch")]
+        [HttpGet("GetOrdersComeToMyBranch")]
         public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrderComeToBranch([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
-            return Ok(await _orderService.GetOrderComeToBranch(pagingDto, orderFilter));
+            return Ok(await _orderService.GetOrdersComeToMyBranch(pagingDto, orderFilter));
+        }
+        [HttpPut("ReceiveOrdersToMyBranch")]
+        public async Task<IActionResult> ReceiveOrdersToMyBranch(int[] ids)
+        {
+            await _orderService.ReceiveOrdersToMyBranch(ids);
+            return Ok();
         }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)

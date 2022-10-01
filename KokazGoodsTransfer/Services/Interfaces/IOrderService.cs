@@ -61,6 +61,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<OrderDto>> GetForReSendMultiple(string code);
         Task ReSendMultiple(List<OrderReSend> orderReSends);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto,OrderFilter filter);
-        Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderComeToBranch(PagingDto pagingDto, OrderFilter orderFilter);
+        Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter);
+        Task ReceiveOrdersToMyBranch(int[] ids);
     }
 }
