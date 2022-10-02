@@ -5,12 +5,10 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
@@ -19,6 +17,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
     {
         public OrderRepository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService) : base(kokazContext, httpContextAccessorService)
         {
+            Query = kokazContext.Set<Order>().AsQueryable();
             Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }
         public async Task<PagingResualt<IEnumerable<Order>>> Get(PagingDto paging, OrderFilter filter, string[] propertySelectors = null)
@@ -132,8 +131,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
            .ThenInclude(c => c.UserPhones)
        .Include(c => c.Region)
        .Include(c => c.Country)
-       .Include(c => c.Orderplaced)
-       .Include(c => c.MoenyPlaced)
        .Include(c => c.OrderItems)
            .ThenInclude(c => c.OrderTpye)
        .Include(c => c.OrderClientPaymnets)
@@ -248,8 +245,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                 var list = await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                    .Include(c => c.Region)
                    .Include(c => c.Country)
-                   .Include(c => c.MoenyPlaced)
-                   .Include(c => c.Orderplaced)
                    .Include(c => c.Agent)
                    .Include(c => c.OrderClientPaymnets)
                    .ThenInclude(c => c.ClientPayment)
@@ -261,14 +256,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                     orders.AddRange(list);
                 }
             }
+
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
                 var list = await Query.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
                .Include(c => c.Region)
                .Include(c => c.Country)
-               .Include(c => c.Orderplaced)
-               .Include(c => c.MoenyPlaced)
                .Include(c => c.Agent)
                .Include(c => c.OrderClientPaymnets)
                    .ThenInclude(c => c.ClientPayment)

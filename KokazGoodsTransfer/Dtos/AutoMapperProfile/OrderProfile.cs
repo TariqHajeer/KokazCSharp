@@ -66,11 +66,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                    return context.Mapper.Map<NameAndIdDto>(order.GetMoneyPlaced());
                 }))
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                    return context.Mapper.Map<NameAndIdDto>(order.GetOrderPlaced());
                 }))
                 .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
                 {

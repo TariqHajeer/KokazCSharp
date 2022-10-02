@@ -1,4 +1,6 @@
-﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Models.Infrastrcuter;
+using KokazGoodsTransfer.Models.Static;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -80,8 +82,13 @@ namespace KokazGoodsTransfer.Models
         public int CurrentBranchId { get; set; }
         [ForeignKey(nameof(CurrentBranchId))]
         public virtual Branch CurrentBranch { get; set; }
-
-
-
+        public NameAndIdDto GetOrderPlaced()
+        {
+            return new NameAndIdDto((OrderplacedEnum)this.OrderplacedId);
+        }
+        public NameAndIdDto GetMoneyPlaced()
+        {
+            return new NameAndIdDto((MoneyPalcedEnum)this.MoenyPlacedId);
+        }
     }
 }

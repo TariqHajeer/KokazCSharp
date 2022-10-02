@@ -492,8 +492,9 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter)
         {
             var predicate = GetFilterAsLinq(orderFilter);
-            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate);
+            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
+            pagingResult = await _repository.GetAsync(pagingDto, predicate);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResult.Total,
@@ -640,9 +641,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { "Client", "Agent", "Region", "Country", "Orderplaced", "MoenyPlaced", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
-            //var pagingResult = await _repository.Get(pagingDto, orderFilter, new string[] { "Client", "Agent", "Region", "Country", "Orderplaced", "MoenyPlaced", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" });
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Data = _mapper.Map<OrderDto[]>(pagingResult.Data),
@@ -827,7 +827,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<int> DeleiverMoneyForClientWithStatus(int[] ids)
         {
-            var includes = new string[] { "Client.ClientPhones", "Country", "Orderplaced", "MoenyPlaced" };
+            var includes = new string[] { "Client.ClientPhones", "Country" };
             var orders = await _repository.GetByFilterInclue(c => ids.Contains(c.Id), includes);
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -907,7 +907,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
-            var includes = new string[] { "Client.ClientPhones", "Country", "Orderplaced", "MoenyPlaced" };
+            var includes = new string[] { "Client.ClientPhones", "Country" };
             var orders = await _repository.GetByFilterInclue(c => deleiverMoneyForClientDto.Ids.Contains(c.Id), includes);
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -1067,11 +1067,11 @@ namespace KokazGoodsTransfer.Services.Concret
             IEnumerable<Order> orders;
             if (frozenOrder.AgentId != null)
             {
-                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.Orderplaced, c => c.MoenyPlaced);
+                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             }
             else
             {
-                orders = await _repository.GetAsync(c => c.Date <= date && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.Orderplaced, c => c.MoenyPlaced);
+                orders = await _repository.GetAsync(c => c.Date <= date && c.OrderplacedId == (int)OrderplacedEnum.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             }
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
@@ -1119,8 +1119,6 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 throw new ConflictException("الشحنة داخل المخزن");
             }
-            await _repository.LoadRefernces(order, c => c.MoenyPlaced);
-            await _repository.LoadRefernces(order, c => c.Orderplaced);
             await _repository.LoadRefernces(order, c => c.Country);
             await _repository.LoadRefernces(order, c => c.Region);
             await _repository.LoadRefernces(order, c => c.Agent);
@@ -1142,7 +1140,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate != null)
                 predicate = predicate.And(c => c.Date <= dateFiter.ToDate);
-            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Orderplaced, c => c.MoenyPlaced);
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.MoenyPlaced);
             var sum = await _repository.Sum(c => c.DeliveryCost - c.AgentCost, predicate);
             return new EarningsDto()
             {
@@ -1322,7 +1320,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<IEnumerable<OrderDto>> GetOrderByAgent(string orderCode)
         {
-            var orders = await _repository.GetAsync(c => c.Code == orderCode, c => c.Orderplaced, c => c.MoenyPlaced, c => c.Region, c => c.Country, c => c.Client, c => c.Agent);
+            var orders = await _repository.GetAsync(c => c.Code == orderCode, c => c.Region, c => c.Country, c => c.Client, c => c.Agent);
             if (orders.Count() == 0)
             {
                 throw new ConflictException("الشحنة غير موجودة");
@@ -1732,8 +1730,9 @@ namespace KokazGoodsTransfer.Services.Concret
             };
         }
 
-        public async Task ReceiveOrdersToMyBranch(int[] ids)
+        public async Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
         {
+            var ids = receiveOrdersToMyBranchDtos.Select(c => c.OrderId);
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
             orders.ForEach(c =>
             {
