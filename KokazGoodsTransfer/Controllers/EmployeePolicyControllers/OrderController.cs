@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
 using KokazGoodsTransfer.Services.Interfaces;
@@ -14,15 +13,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     [ApiController]
     public partial class OrderController : AbstractEmployeePolicyController
     {
-        private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
-        private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly IOrderService _orderService;
         private readonly IAgentPrintService _agentPrintService;
-        public OrderController(IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderService orderService, IAgentPrintService agentPrintService)
+        public OrderController(IOrderService orderService, IAgentPrintService agentPrintService)
         {
-
-            _moneyPlacedIndexService = moneyPlacedIndexService;
-            _orderPlacedIndexService = orderPlacedIndexService;
             _orderService = orderService;
             _agentPrintService = agentPrintService;
         }
@@ -86,9 +80,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetById(id));
         }
         [HttpGet("orderPlace")]
-        public async Task<IActionResult> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
+        public ActionResult<IEnumerable<NameAndIdDto>> GetOrderPalce() => Ok(Consts.OrderPlaceds);
         [HttpGet("MoenyPlaced")]
-        public async Task<IActionResult> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
+        public ActionResult<IEnumerable<NameAndIdDto>> GetMoenyPlaced() => Ok(Consts.MoneyPlaceds);
         [HttpPut("MakeOrderInWay")]
         public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
         {

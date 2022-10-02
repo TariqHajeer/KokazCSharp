@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Helpers;
+using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
@@ -117,8 +118,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
-            var moneyPlacedes = await _uintOfWork.Repository<MoenyPlaced>().GetAll();
-            var orderPlacedes = await _uintOfWork.Repository<OrderPlaced>().GetAll();
+            var moneyPlacedes = Consts.MoneyPlaceds;
+            var orderPlacedes = Consts.OrderPlaceds;
             var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
             if (!receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.All(c => c.OrderplacedId == OrderplacedEnum.Way || c.OrderplacedId == OrderplacedEnum.Delivered || c.OrderplacedId == OrderplacedEnum.PartialReturned))
@@ -130,7 +131,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
                 {
                     string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
-                    errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");
+                    errors.Add($"لا يمكن وضع حالة الشحنة {item.OrderplacedId.GetDescription()} للشحنة ذات الرقم : {code}");
                 }
                 response.Errors = errors;
                 return response;
@@ -218,8 +219,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
-                order.MoenyPlaced = moneyPlacedes.First(c => c.Id == order.MoenyPlacedId);
-                order.Orderplaced = orderPlacedes.First(c => c.Id == order.OrderplacedId);
             }
 
             await _uintOfWork.BegeinTransaction();
@@ -267,8 +266,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {
-            var moneyPlacedes = await _uintOfWork.Repository<MoenyPlaced>().GetAll();
-            var orderPlacedes = await _uintOfWork.Repository<OrderPlaced>().GetAll();
+            var moneyPlacedes = Consts.MoneyPlaceds;
+            var orderPlacedes = Consts.OrderPlaceds;
             var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
@@ -290,7 +289,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentDtos)
                 {
                     string code = worngOrders.Where(c => c.Id == item.Id).FirstOrDefault()?.Code;
-                    errors.Add($"لا يمكن وضع حالة الشحنة {OrderPlacedEnumToString(item.OrderplacedId)} للشحنة ذات الرقم : {code}");
+                    errors.Add($"لا يمكن وضع حالة الشحنة {item.OrderplacedId.GetDescription()} للشحنة ذات الرقم : {code}");
                 }
                 response.Errors = errors;
                 return response;
@@ -372,8 +371,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
-                order.MoenyPlaced = moneyPlacedes.First(c => c.Id == order.MoenyPlacedId);
-                order.Orderplaced = orderPlacedes.First(c => c.Id == order.OrderplacedId);
             }
             await _uintOfWork.BegeinTransaction();
             try
@@ -419,21 +416,6 @@ namespace KokazGoodsTransfer.Services.Concret
             var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced", "ReceiptOfTheOrderStatusDetalis.Client" })).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
-        }
-        string OrderPlacedEnumToString(OrderplacedEnum orderplacedEnum)
-        {
-            return orderplacedEnum switch
-            {
-                OrderplacedEnum.Client => "عميل",
-                OrderplacedEnum.Store => "مخزن",
-                OrderplacedEnum.Way => "طريق",
-                OrderplacedEnum.Delivered => "تم التسليم",
-                OrderplacedEnum.CompletelyReturned => "مرتجع كلي",
-                OrderplacedEnum.PartialReturned => "مرتجع جزئي",
-                OrderplacedEnum.Unacceptable => "مرفوض",
-                OrderplacedEnum.Delayed => "مؤجل",
-                _ => "غير معلوم",
-            };
         }
         public async Task<int> MakeOrderInWay(int[] ids)
         {

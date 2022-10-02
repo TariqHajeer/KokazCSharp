@@ -53,8 +53,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task SendOrderReciveNotifcation(IEnumerable<Order> orders)
         {
-            var moneyPlacedes = await _uintOfWork.Repository<MoenyPlaced>().GetAll();
-            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
+            var outSideCompny = Consts.MoneyPlaceds.Single(c => c.Id == (int)MoneyPalcedEnum.OutSideCompany).Name;
             List<Notfication> totalNotfications = new List<Notfication>();
             List<Notfication> detailNotifications = new List<Notfication>();
             foreach (Order order in orders)
@@ -82,12 +81,12 @@ namespace KokazGoodsTransfer.Services.Concret
                         clientNotigaction.OrderCount++;
                     }
                 }
-                var moneyPlacedName = order.MoenyPlaced.Name;
+                var moneyPlacedName = order.GetMoneyPlaced().Name;
                 if (order.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                     moneyPlacedName = outSideCompny;
                 detailNotifications.Add(new Notfication()
                 {
-                    Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {order.MoenyPlaced.Name}",
+                    Note = $"الطلب {order.Code} اصبح {order.GetOrderPlaced().Name} و موقع المبلغ  {order.GetMoneyPlaced().Name}",
                     ClientId = order.ClientId
                 });
             }
@@ -123,7 +122,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<IEnumerable<NotificationDto>> GetClientNotifcations()
         {
             var notifications = await _repository.GetAsync(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.MoneyPlaced, c => c.OrderPlaced);
-            var dtos= _mapper.Map<IEnumerable<NotificationDto>>(notifications.OrderByDescending(c => c.Id));
+            var dtos = _mapper.Map<IEnumerable<NotificationDto>>(notifications.OrderByDescending(c => c.Id));
             return dtos.OrderBy(c => c.Note).ThenBy(c => c.Id);
         }
 
