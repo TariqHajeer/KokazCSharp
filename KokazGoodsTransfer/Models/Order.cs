@@ -84,11 +84,11 @@ namespace KokazGoodsTransfer.Models
         public virtual Branch CurrentBranch { get; set; }
         public NameAndIdDto GetOrderPlaced()
         {
-            return new NameAndIdDto((OrderplacedEnum)this.OrderplacedId);
+            return (OrderplacedEnum)this.OrderplacedId;
         }
         public NameAndIdDto GetMoneyPlaced()
         {
-            return new NameAndIdDto((MoneyPalcedEnum)this.MoenyPlacedId);
+            return (MoneyPalcedEnum)this.MoenyPlacedId;
         }
     }
 }
