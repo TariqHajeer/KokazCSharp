@@ -1753,7 +1753,12 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
         {
-            return null;
+            var pagingResualt = await _repository.GetAsync(pagingDto, c => c.InWayToBranch && c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = pagingResualt.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResualt.Data)
+            };
         }
     }
 
