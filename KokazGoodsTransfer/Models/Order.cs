@@ -36,6 +36,7 @@ namespace KokazGoodsTransfer.Models
         public string CreatedBy { get; set; }
         public int MoenyPlacedId { get; set; }
         public int OrderplacedId { get; set; }
+        public bool InWayToBranch { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
         public string Note { get; set; }
@@ -89,6 +90,14 @@ namespace KokazGoodsTransfer.Models
         public NameAndIdDto GetMoneyPlaced()
         {
             return (MoneyPalcedEnum)this.MoenyPlacedId;
+        }
+        public bool IsOrderReturn()
+        {
+            return OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || OrderplacedId == (int)OrderplacedEnum.PartialReturned || OrderplacedId == (int)OrderplacedEnum.Unacceptable;
+        }
+        public bool IsOrderInMyStore()
+        {
+            return OrderplacedId == (int)OrderplacedEnum.Store || (MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || OrderplacedId == (int)OrderplacedEnum.PartialReturned || OrderplacedId == (int)OrderplacedEnum.Unacceptable));
         }
     }
 }

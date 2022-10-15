@@ -493,6 +493,7 @@ namespace KokazGoodsTransfer.Services.Concret
             orders.ForEach(c =>
             {
                 c.OrderplacedId = (int)OrderplacedEnum.Way;
+                c.InWayToBranch = true;
             });
             await _repository.Update(orders);
         }
@@ -1724,8 +1725,35 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.DeliveryCost = rmb.DeliveryCost;
                 order.RegionId = rmb.RegionId;
                 order.AgentId = rmb.AgentId;
+                order.InWayToBranch = false;
             });
             await _repository.Update(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code)
+        {
+            var order = await _repository.GetAsync(c => c.Code == code && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
+            return _mapper.Map<IEnumerable<OrderDto>>(order);
+        }
+
+        public async Task SendOrdersReturnedToSecondBranch(int[] ids)
+        {
+            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
+                throw new ConflictException("الشحنة ليست في فرعك");
+            if (orders.Any(c => !c.IsOrderReturn()))
+                throw new ConflictException("الشحنة ليست مرتجعة");
+            if (orders.Any(c => !c.IsOrderInMyStore()))
+                throw new ConflictException("الشحنة ليست في المخزن");
+            orders.ForEach(c =>
+            {
+                c.InWayToBranch = true;
+            });
+            await _repository.Update(orders);
+        }
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
+        {
+            return null;
         }
     }
 
