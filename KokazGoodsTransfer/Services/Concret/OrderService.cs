@@ -83,7 +83,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code, c => c.Client, c => c.Agent, c => c.MoenyPlaced, c => c.Orderplaced, c => c.Country);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.CurrentBranchId == _currentBranchId && c.Code == code, c => c.Client, c => c.Agent, c => c.MoenyPlaced, c => c.Orderplaced, c => c.Country);
 
             if (!orders.Any())
             {
@@ -476,7 +476,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var predicate = GetFilterAsLinq(orderFilter);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate);
             predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
-            pagingResult = await _repository.GetAsync(pagingDto, predicate);
+            pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResult.Total,
@@ -1716,10 +1716,14 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var ids = receiveOrdersToMyBranchDtos.Select(c => c.OrderId);
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
-            orders.ForEach(c =>
+            receiveOrdersToMyBranchDtos.ForEach(rmb =>
             {
-                c.CurrentBranchId = _currentBranchId;
-                c.OrderplacedId = (int)OrderplacedEnum.Store;
+                var order = orders.First(c => c.Id == rmb.OrderId);
+                order.CurrentBranchId = _currentBranchId;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.DeliveryCost = rmb.DeliveryCost;
+                order.RegionId = rmb.RegionId;
+                order.AgentId = rmb.AgentId;
             });
             await _repository.Update(orders);
         }

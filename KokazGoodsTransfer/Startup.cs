@@ -141,7 +141,6 @@ namespace KokazGoodsTransfer
                     BearerFormat = "JWT",
                     Scheme = "Bearer"
                 });
-
                 s.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -161,7 +160,7 @@ namespace KokazGoodsTransfer
                     Array.Empty<string>()
                 }
             });
-
+                s.OperationFilter<AddRequiredHeaderParameter>();
             });
             services.AddMemoryCache();
             services.AddScoped(typeof(IIndexRepository<>), typeof(IndexRepository<>));

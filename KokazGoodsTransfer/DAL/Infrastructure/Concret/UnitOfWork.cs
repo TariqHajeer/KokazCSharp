@@ -55,8 +55,17 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var type = typeof(TEntity).Name;
             if (!_repositories.ContainsKey(type))
             {
-                var repositoryInstance = new Repository<TEntity>(_kokazContext, _httpContextAccessorService);
-                _repositories.Add(type, repositoryInstance);
+
+                if (typeof(TEntity) == typeof(Order))
+                {
+                    var repositoryInstance = new OrderRepository(_kokazContext, _httpContextAccessorService);
+                    _repositories.Add(type, repositoryInstance);
+                }
+                else
+                {
+                    var repositoryInstance = new Repository<TEntity>(_kokazContext, _httpContextAccessorService);
+                    _repositories.Add(type, repositoryInstance);
+                }
             }
             return (Repository<TEntity>)_repositories[type];
         }
