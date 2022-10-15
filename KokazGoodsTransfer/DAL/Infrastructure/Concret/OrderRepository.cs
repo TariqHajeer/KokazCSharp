@@ -243,6 +243,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
                 var list = await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                    .Include(c => c.Orderplaced)
+                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.Agent)
@@ -250,6 +252,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                    .ThenInclude(c => c.ClientPayment)
                    .Include(c => c.AgentOrderPrints)
                    .ThenInclude(c => c.AgentPrint)
+
                    .ToListAsync();
                 if (list != null && list.Count() > 0)
                 {
@@ -261,6 +264,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             {
 
                 var list = await Query.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                    .Include(c => c.Orderplaced)
+                    .Include(c => c.MoenyPlaced)
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Agent)

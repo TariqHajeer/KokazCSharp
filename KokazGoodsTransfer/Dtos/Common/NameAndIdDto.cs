@@ -5,6 +5,10 @@ namespace KokazGoodsTransfer.Dtos.Common
 {
     public class NameAndIdDto
     {
+        public NameAndIdDto()
+        {
+
+        }
         private NameAndIdDto(OrderplacedEnum orderplacedEnum)
         {
             this.Id = (int)orderplacedEnum;
