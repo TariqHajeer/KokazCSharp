@@ -66,5 +66,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code);
         Task SendOrdersReturnedToSecondBranch(int[] ids);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);
+        Task ReceiveReturnedToMyBranch(int[] ids);
     }
 }

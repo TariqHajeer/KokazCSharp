@@ -110,11 +110,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetOrdersReturnedToMyBranch(pagingDto));
         }
-        //[HttpPut("ReceiveReturnedToMyBranch")]
-        //public async Task<ActionResult> ReceiveReturnedToMyBranch(int[] ids)
-        //{
-
-        //}
+        [HttpPut("ReceiveReturnedToMyBranch")]
+        public async Task<ActionResult> ReceiveReturnedToMyBranch(int[] ids)
+        {
+            await _orderService.ReceiveReturnedToMyBranch(ids);
+            return Ok();
+        }
         [HttpPut("ReceiveOrdersToMyBranch")]
         public async Task<IActionResult> ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
         {
