@@ -1732,7 +1732,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code)
         {
-            var order = await _repository.GetAsync(c => c.Code == code && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
+            var order = await _repository.GetAsync(c => c.Code == code && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
             return _mapper.Map<IEnumerable<OrderDto>>(order);
         }
 
@@ -1759,6 +1759,16 @@ namespace KokazGoodsTransfer.Services.Concret
                 Total = pagingResualt.Total,
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResualt.Data)
             };
+        }
+        public async Task ReceiveReturnedToMyBranch(int[] ids)
+        {
+            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            orders.ForEach(c =>
+            {
+                c.CurrentBranchId = _currentBranchId;
+                c.InWayToBranch = false;
+            });
+            await _repository.Update(orders);
         }
     }
 
