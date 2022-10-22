@@ -91,6 +91,26 @@ namespace KokazGoodsTransfer.Controllers
             countries.Add(country);
             return countries;
         }
+        [HttpGet("Test")]
+        public IActionResult Test([FromServices] KokazContext kokazContext)
+        {
 
+
+            var prev = kokazContext.Privileges.ToList();
+            string command = "var list =new List<Privilege>(){objects};";
+            string objects = "";
+            foreach (var item in prev)
+            {
+                var z = new Privilege()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    SysName = item.SysName
+                };
+                objects += "new Privilege(){Id=" + item.Id + ",Name=\"" + item.Name + "\",SysName =\"" + item.SysName + "\"},";
+            }
+            command = command.Replace("objects", objects);
+            return Ok(command);
+        }
     }
 }
