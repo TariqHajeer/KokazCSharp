@@ -1704,7 +1704,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter filter)
         {
             var predicate = GetFilterAsLinq(filter);
-            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId);
+            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
