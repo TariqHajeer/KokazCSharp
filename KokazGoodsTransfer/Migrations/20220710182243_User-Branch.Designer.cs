@@ -428,6 +428,23 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DeliveryCost = 10000m,
+                            IsMain = true,
+                            Name = "مدينة1",
+                            Points = 15
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DeliveryCost = 20000m,
+                            IsMain = false,
+                            Name = "مدينة2",
+                            Points = 20
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
