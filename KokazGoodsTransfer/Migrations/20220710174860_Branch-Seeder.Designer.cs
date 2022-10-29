@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20220705232338_Branch-Seeder")]
+    [Migration("20220710174860_Branch-Seeder")]
     partial class BranchSeeder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

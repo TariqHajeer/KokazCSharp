@@ -23,8 +23,8 @@ namespace KokazGoodsTransfer.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Adress", "BranchId", "CanWorkAsAgent", "Experince", "HireDate", "IsActive", "Name", "Note", "Password", "Salary", "UserName" },
-                values: new object[] { 1, null, null, false, null, new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "admin", null, "21232f297a57a5a743894a0e4a801fc3", null, "admin" });
+                columns: new[] { "Id", "Adress", "CanWorkAsAgent", "Experince", "HireDate", "IsActive", "Name", "Note", "Password", "Salary", "UserName" },
+                values: new object[] { 1, null, false, null, new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "admin", null, "21232f297a57a5a743894a0e4a801fc3", null, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UserGroup",
