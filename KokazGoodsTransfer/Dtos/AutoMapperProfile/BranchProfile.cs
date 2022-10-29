@@ -9,7 +9,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         public BranchProfile()
         {
             CreateMap<Branch, BranchDto>()
-                .ForMember(c => c.CountryName, opt => opt.MapFrom(src => src.Name));
+                .ForMember(c => c.CountryName, opt => opt.MapFrom(src => src.Country.Name));
         }
     }
 }
