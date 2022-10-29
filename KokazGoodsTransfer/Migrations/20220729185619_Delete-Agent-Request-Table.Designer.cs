@@ -579,6 +579,12 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Group");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "مجموعة المدراء"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.GroupPrivilege", b =>
