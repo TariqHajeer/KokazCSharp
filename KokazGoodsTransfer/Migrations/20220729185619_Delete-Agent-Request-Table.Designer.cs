@@ -1919,6 +1919,17 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("BranchId");
 
                     b.ToTable("Users");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CanWorkAsAgent = false,
+                            HireDate = new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "admin",
+                            Password = "21232f297a57a5a743894a0e4a801fc3",
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
