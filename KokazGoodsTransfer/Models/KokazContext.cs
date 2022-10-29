@@ -66,11 +66,7 @@ namespace KokazGoodsTransfer.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.;Database=Kokaz;Trusted_Connection=True;");
-            }
+            optionsBuilder.EnableSensitiveDataLogging(true);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1031,20 +1027,6 @@ namespace KokazGoodsTransfer.Models
             });
             modelBuilder.ApplyAllConfigurations();
             OnModelCreatingPartial(modelBuilder);
-            var implementedConfigTypes = Assembly.GetExecutingAssembly()
-        .GetTypes()
-        .Where(t => !t.IsAbstract
-            && !t.IsGenericTypeDefinition
-            && t.GetTypeInfo().ImplementedInterfaces.Any(i =>
-                i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>)));
-
-            foreach (var configType in implementedConfigTypes)
-            {
-                dynamic config = Activator.CreateInstance(configType);
-                modelBuilder.ApplyConfiguration(config);
-            }
-
-
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

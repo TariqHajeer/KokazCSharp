@@ -40,7 +40,7 @@ namespace KokazGoodsTransfer
         {
 
             services.AddControllers();
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local2")));
             services.AddHttpContextAccessor();
             services.AddCors(options =>
             {

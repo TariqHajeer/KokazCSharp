@@ -3,15 +3,15 @@ using System;
 using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20220705232335_country-group-UserGroup-User-Seeder")]
+    partial class countrygroupUserGroupUserSeeder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -711,28 +711,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MoenyPlaced");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "خارج الشركة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "مندوب"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "داخل الشركة"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "تم تسليمها"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Notfication", b =>
@@ -1138,48 +1116,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderPlaced");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "عند العميل"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "في المخزن"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "في الطريق"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "تم التسليم"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "مرتجع كلي"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "مرتجع جزئي"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "مرفوض"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "مؤجل"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderState", b =>
@@ -1194,23 +1130,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderState");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            State = "قيد المعالجة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            State = "يحب اخذ النقود من العميل"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            State = "منتهية"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
@@ -1945,15 +1864,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreateOnUtc = new DateTime(2019, 12, 31, 22, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            Total = 0m
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.TreasuryHistory", b =>
