@@ -4,11 +4,12 @@ using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 {
-    public class BranchProfile:Profile
+    public class BranchProfile : Profile
     {
         public BranchProfile()
         {
-            CreateMap<Branch, BranchDto>();
+            CreateMap<Branch, BranchDto>()
+                .ForMember(c => c.CountryName, opt => opt.MapFrom(src => src.Name));
         }
     }
 }
