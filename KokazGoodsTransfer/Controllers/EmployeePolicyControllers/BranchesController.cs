@@ -10,17 +10,17 @@ using System.Linq;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
-    public class Branches : OldAbstractEmployeePolicyController
+    public class BranchesController : AbstractEmployeePolicyController
     {
         private readonly IBranchService _branchService;
-        public Branches(KokazContext context, IMapper mapper,IBranchService branchService) : base(context, mapper)
+        public BranchesController(IBranchService branchService)
         {
             _branchService = branchService;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BranchDto>>> GetAll()
         {
-            return Ok(await _branchService.GetAll());
+            return Ok(await _branchService.GetAll(c => c.Country));
         }
         [HttpPost]
         public async Task<ActionResult<BranchDto>> Create(CreateBranchDto branchDto)
