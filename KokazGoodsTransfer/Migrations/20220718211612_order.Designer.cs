@@ -1835,6 +1835,14 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreateOnUtc = new DateTime(2019, 12, 31, 22, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Total = 0m
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.TreasuryHistory", b =>
