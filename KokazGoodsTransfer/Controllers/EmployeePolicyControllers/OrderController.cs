@@ -79,10 +79,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetById(id));
         }
-        [HttpGet("orderPlace")]
-        public ActionResult<IEnumerable<NameAndIdDto>> GetOrderPalce() => Ok(Consts.OrderPlaceds);
-        [HttpGet("MoenyPlaced")]
-        public ActionResult<IEnumerable<NameAndIdDto>> GetMoenyPlaced() => Ok(Consts.MoneyPlaceds);
         [HttpPut("MakeOrderInWay")]
         public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
         {
