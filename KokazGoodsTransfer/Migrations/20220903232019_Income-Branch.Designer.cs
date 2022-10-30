@@ -2000,6 +2000,12 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("UserGroup");
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 1
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserPhone", b =>
