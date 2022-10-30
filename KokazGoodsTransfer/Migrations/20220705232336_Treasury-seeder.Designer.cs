@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20220729210419_Porints-Branch")]
-    partial class PorintsBranch
+    [Migration("20220705232336_Treasury-seeder")]
+    partial class Treasuryseeder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -165,19 +165,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Branches");
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "الفرع الرئيسي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryId = 2,
-                            Name = "الفرع الثاني"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -423,6 +410,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
+
                     b.HasData(
                         new
                         {
@@ -547,6 +535,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -571,6 +562,8 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BranchId");
+
                     b.HasIndex("ClientId");
 
                     b.HasIndex("UserId");
@@ -592,6 +585,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Group");
+
                     b.HasData(
                         new
                         {
@@ -613,322 +607,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("PrivilegId");
 
                     b.ToTable("GroupPrivilege");
-                    b.HasData(
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 1
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 2
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 3
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 4
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 5
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 6
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 7
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 8
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 9
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 10
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 11
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 12
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 13
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 14
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 15
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 16
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 17
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 18
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 19
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 20
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 21
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 22
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 23
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 24
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 25
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 26
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 27
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 28
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 29
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 30
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 31
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 32
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 33
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 34
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 35
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 36
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 37
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 38
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 39
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 40
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 41
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 42
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 43
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 44
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 45
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 46
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 47
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 48
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 49
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 50
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 51
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 52
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 53
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 54
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 55
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 56
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 57
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 58
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 59
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 60
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 61
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 62
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 63
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
@@ -940,6 +618,9 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -958,6 +639,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("IncomeTypeId");
 
@@ -1115,6 +798,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CurrentBranchId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CurrentCountry")
                         .HasColumnType("int");
 
@@ -1126,6 +812,9 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<DateTime?>("DiliveryDate")
                         .HasColumnType("date");
+
+                    b.Property<bool>("InWayToBranch")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsClientDiliverdMoney")
                         .HasColumnType("bit");
@@ -1202,6 +891,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CurrentBranchId");
 
                     b.HasIndex("CurrentCountry");
 
@@ -1450,12 +1141,17 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.ToTable("OrderType");
                 });
@@ -1469,6 +1165,9 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -1487,6 +1186,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("OutComeTypeId");
 
@@ -1522,6 +1223,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1535,6 +1239,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -1550,11 +1256,16 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.ToTable("PaymentWay");
                 });
@@ -1605,6 +1316,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Privilege");
+
                     b.HasData(
                         new
                         {
@@ -1999,6 +1711,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -2024,6 +1739,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -2149,6 +1866,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
+
                     b.HasData(
                         new
                         {
@@ -2261,6 +1979,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("BranchId");
 
                     b.ToTable("Users");
+
                     b.HasData(
                         new
                         {
@@ -2287,18 +2006,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("BranchId");
 
                     b.ToTable("UserBranch");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 2
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
@@ -2314,6 +2021,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("UserGroup");
+
                     b.HasData(
                         new
                         {
@@ -2557,6 +2265,12 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.EditRequest", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("EditRequests")
                         .HasForeignKey("ClientId")
@@ -2567,6 +2281,8 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("EditRequests")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__EditReque__UserI__19DFD96B");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -2595,6 +2311,12 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.IncomeType", "IncomeType")
                         .WithMany("Incomes")
                         .HasForeignKey("IncomeTypeId")
@@ -2606,6 +2328,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK_Income_Users")
                         .IsRequired();
+
+                    b.Navigation("Branch");
 
                     b.Navigation("IncomeType");
 
@@ -2672,6 +2396,12 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Order_Country")
                         .IsRequired();
 
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
+                        .WithMany()
+                        .HasForeignKey("CurrentBranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Country", "CurrentCountryNavigation")
                         .WithMany("OrderCurrentCountryNavigations")
                         .HasForeignKey("CurrentCountry")
@@ -2715,6 +2445,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Country");
+
+                    b.Navigation("CurrentBranch");
 
                     b.Navigation("CurrentCountryNavigation");
 
@@ -2839,8 +2571,25 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+                });
+
             modelBuilder.Entity("KokazGoodsTransfer.Models.OutCome", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.OutComeType", "OutComeType")
                         .WithMany("OutComes")
                         .HasForeignKey("OutComeTypeId")
@@ -2853,6 +2602,8 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_OutCome_Users")
                         .IsRequired();
 
+                    b.Navigation("Branch");
+
                     b.Navigation("OutComeType");
 
                     b.Navigation("User");
@@ -2860,6 +2611,12 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentRequest", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("PaymentRequests")
                         .HasForeignKey("ClientId")
@@ -2872,9 +2629,22 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK__PaymentRe__Payme__5BAD9CC8")
                         .IsRequired();
 
+                    b.Navigation("Branch");
+
                     b.Navigation("Client");
 
                     b.Navigation("PaymentWay");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentWay", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.PointsSetting", b =>
@@ -2890,6 +2660,12 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
                 {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("Receipts")
                         .HasForeignKey("ClientId")
@@ -2900,6 +2676,8 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("Receipts")
                         .HasForeignKey("ClientPaymentId")
                         .HasConstraintName("FK__Receipt__ClientP__57DD0BE4");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 

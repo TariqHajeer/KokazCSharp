@@ -428,6 +428,23 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DeliveryCost = 10000m,
+                            IsMain = true,
+                            Name = "مدينة1",
+                            Points = 15
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DeliveryCost = 20000m,
+                            IsMain = false,
+                            Name = "مدينة2",
+                            Points = 20
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
@@ -575,6 +592,12 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Group");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "مجموعة المدراء"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.GroupPrivilege", b =>
@@ -590,6 +613,322 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("PrivilegId");
 
                     b.ToTable("GroupPrivilege");
+                    b.HasData(
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 1
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 2
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 3
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 4
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 5
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 6
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 7
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 8
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 9
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 10
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 11
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 12
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 13
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 14
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 15
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 16
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 17
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 18
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 19
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 20
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 21
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 22
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 23
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 24
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 25
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 26
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 27
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 28
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 29
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 30
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 31
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 32
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 33
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 34
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 35
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 36
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 37
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 38
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 39
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 40
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 41
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 42
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 43
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 44
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 45
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 46
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 47
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 48
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 49
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 50
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 51
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 52
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 53
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 54
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 55
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 56
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 57
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 58
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 59
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 60
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 61
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 62
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 63
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
@@ -1243,6 +1582,385 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Privilege");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "عرض المجموعات",
+                            SysName = "ShowGroup"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "إضافة مجموعات",
+                            SysName = "AddGroup"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "التعديل على المجموعات",
+                            SysName = "EditGroup"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "حذف مجموعات",
+                            SysName = "DeleteGroup"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "عرض الموظفين",
+                            SysName = "ShowUser"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "إضافة موظفين",
+                            SysName = "AddUser"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "تعديل الموظفين",
+                            SysName = "EditUser"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "حذف موظفين",
+                            SysName = "DeleteUser"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "عرض انواع الطلبات",
+                            SysName = "ShowOrderType"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "إضافة انواع الطلبات",
+                            SysName = "AddOrderType"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "تعديل انواع الطلبات",
+                            SysName = "EditOrderType"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "حذف انواع الطلبات",
+                            SysName = "DeleteOrderType"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "عرض المدن",
+                            SysName = "ShowCountry"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "إضافة المدن",
+                            SysName = "AddCountry"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "تعديل المدن",
+                            SysName = "EditCountry"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "حذف المدن",
+                            SysName = "DeleteCountry"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "إضافة منطقة",
+                            SysName = "AddRegion"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "تعديل منطقة",
+                            SysName = "EditRegion"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "عرض المناطق",
+                            SysName = "ShowRegion"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "حذف منقطة",
+                            SysName = "DeleteRegion"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "إضافة عملاء",
+                            SysName = "AddClient"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "عرض العملاء",
+                            SysName = "ShowClient"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Name = "تعديل العملاء",
+                            SysName = "UpdateClient"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Name = "حذف العملاء",
+                            SysName = "DeleteClient"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Name = "عرض العملات",
+                            SysName = "ShowCurrency"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "إضافة عملات",
+                            SysName = "AddCurrency"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "تعديل العملات",
+                            SysName = "UpdateCurrency"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Name = "حذف العملات",
+                            SysName = "DeleteCurrency"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Name = "عرض الأقسام",
+                            SysName = "ShowDepartment"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Name = "إضافة قسم",
+                            SysName = "AddDepartment"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Name = "تعديل قسم",
+                            SysName = "UpdateDepartment"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Name = "عرض انواع الواردات",
+                            SysName = "ShowIncomeType"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Name = "إضافة انواع الواردات",
+                            SysName = "AddIncomeType"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "تعديل انواع الواردات",
+                            SysName = "UpdateIncomeType"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "حذف انواع الواردات",
+                            SysName = "DeleteIncomeType"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "عرض انواع الصادرات",
+                            SysName = "ShowOutComeType"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "إضافة انواع الصادرات",
+                            SysName = "AddOutComeType"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Name = "تعديل انواع الصادرات",
+                            SysName = "UpdateOutComeType"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Name = "حذف انواع الصادرات",
+                            SysName = "DeleteOutComeType"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Name = "إضافة طلبات",
+                            SysName = "AddOrder"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Name = "تعديل الطلبات",
+                            SysName = "UpdateOrder"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Name = "حذف الطلبات",
+                            SysName = "DeleteOrder"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Name = "عرض الطلبات",
+                            SysName = "ShowOrder"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Name = "اضافة صادرات",
+                            SysName = "AddOutCome"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Name = "عرض الصادرات",
+                            SysName = "ShowOutCome"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Name = "تعديل الصادرات",
+                            SysName = "UpdateOutCome"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Name = "حذف الصادرات",
+                            SysName = "DeleteOutCome"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Name = "إضافة واردات",
+                            SysName = "AddIncome"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Name = "عرض الواردات",
+                            SysName = "ShowIncome"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Name = "تعديل الواردات",
+                            SysName = "UpdateIncome"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Name = "حذف الواردات",
+                            SysName = "DeleteIncome"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Name = "عرض التقارير",
+                            SysName = "ShowReports"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Name = "طباعة عميل",
+                            SysName = "PrintClient"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Name = "طباعة مندوب",
+                            SysName = "PrintAgent"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Name = "تسديد",
+                            SysName = "Pay"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Name = "إدارة الصناديق",
+                            SysName = "TreasuryManagment"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Name = "استلام الشحنات المسلمة",
+                            SysName = "ReceiptOfTheStatusOfTheDeliveredShipment"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Name = "استلام الشحنات المرتجعة",
+                            SysName = "ReceiptOfTheStatusOfTheReturnedShipment"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Name = "تسديد في الطريق",
+                            SysName = "PayInWay"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Name = "تسديد مرتجع كلي",
+                            SysName = "PayCompletelyReturned"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Name = "تسديد مرتجع جزئي",
+                            SysName = "PayPartialReturned"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Name = "تسديد تم الستليم",
+                            SysName = "PayDelivered"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Name = "تسديد المرفوض",
+                            SysName = "PayUnacceptable"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
@@ -1408,6 +2126,14 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreateOnUtc = new DateTime(2019, 12, 31, 22, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Total = 0m
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.TreasuryHistory", b =>
@@ -1507,6 +2233,17 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CanWorkAsAgent = false,
+                            HireDate = new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "admin",
+                            Password = "21232f297a57a5a743894a0e4a801fc3",
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
@@ -1522,6 +2259,12 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("UserGroup");
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 1
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserPhone", b =>
