@@ -193,6 +193,19 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Branches");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CountryId = 1,
+                            Name = "الفرع الرئيسي"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CountryId = 2,
+                            Name = "الفرع الثاني"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
