@@ -2287,6 +2287,18 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("BranchId");
 
                     b.ToTable("UserBranch");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 1
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 2
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
