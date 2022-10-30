@@ -621,6 +621,322 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("PrivilegId");
 
                     b.ToTable("GroupPrivilege");
+                    b.HasData(
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 1
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 2
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 3
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 4
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 5
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 6
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 7
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 8
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 9
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 10
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 11
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 12
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 13
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 14
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 15
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 16
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 17
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 18
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 19
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 20
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 21
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 22
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 23
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 24
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 25
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 26
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 27
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 28
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 29
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 30
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 31
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 32
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 33
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 34
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 35
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 36
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 37
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 38
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 39
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 40
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 41
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 42
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 43
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 44
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 45
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 46
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 47
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 48
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 49
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 50
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 51
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 52
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 53
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 54
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 55
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 56
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 57
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 58
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 59
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 60
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 61
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 62
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            PrivilegId = 63
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
