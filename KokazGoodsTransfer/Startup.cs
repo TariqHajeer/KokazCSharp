@@ -182,11 +182,12 @@ namespace KokazGoodsTransfer
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseMiddleware<ErrorMiddlewares>();
             app.UseRouting();
 
             app.UseCors("EnableCORS");
+            app.UseMiddleware<ErrorMiddlewares>();
             app.UseAuthentication();
+            app.UseMiddleware<PrivilegesMiddlewares>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
