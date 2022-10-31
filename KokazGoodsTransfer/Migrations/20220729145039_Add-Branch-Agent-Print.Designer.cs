@@ -1507,6 +1507,22 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderState");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            State = "قيد المعالجة"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            State = "يحب اخذ النقود من العميل"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            State = "منتهية"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
