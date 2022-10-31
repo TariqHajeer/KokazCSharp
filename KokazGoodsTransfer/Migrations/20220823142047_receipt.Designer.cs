@@ -1035,6 +1035,27 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MoenyPlaced");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "خارج الشركة"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "مندوب"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "داخل الشركة"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "تم تسليمها"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Notfication", b =>
