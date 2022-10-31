@@ -22,6 +22,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 Name = "مجموعة المدراء",
                 BranchId = 2,
             };
+            builder.HasData(group);
         }
     }
 }
