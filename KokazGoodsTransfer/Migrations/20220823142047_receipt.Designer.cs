@@ -1432,6 +1432,47 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderPlaced");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "عند العميل"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "في المخزن"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "في الطريق"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "تم التسليم"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "مرتجع كلي"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "مرتجع جزئي"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "مرفوض"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "مؤجل"
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderState", b =>
