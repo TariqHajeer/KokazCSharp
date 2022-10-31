@@ -204,6 +204,8 @@ namespace KokazGoodsTransfer
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
             });
+            using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
+            scope?.ServiceProvider.GetRequiredService<KokazContext>().Database.Migrate();
         }
 
 
