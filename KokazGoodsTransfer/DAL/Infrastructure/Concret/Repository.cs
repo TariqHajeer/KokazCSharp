@@ -190,7 +190,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _kokazContext.RemoveRange(entities);
             await _kokazContext.SaveChangesAsync();
         }
-
         public virtual async Task Update(IEnumerable<T> entites)
         {
             _kokazContext.UpdateRange(entites);
@@ -300,11 +299,6 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             var data = await query.GroupBy(groupBySelector).AsQueryable().Select(c => new { c.Key, Sum = c.AsQueryable().Sum(selector) }).ToListAsync();
             return data.ToDictionary(c => c.Key, c => c.Sum);
 
-        }
-
-        public Task<bool> AllIdsExists(int[] ids)
-        {
-            throw new NotImplementedException();
         }
     }
 }

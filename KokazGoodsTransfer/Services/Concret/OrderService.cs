@@ -10,6 +10,7 @@ using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.HubsConfig;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
+using KokazGoodsTransfer.Models.TransferToBranchModels;
 using KokazGoodsTransfer.Services.Interfaces;
 using LinqKit;
 using Microsoft.AspNetCore.Http;
@@ -486,15 +487,25 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task TransferToSecondBranch(int[] ids)
         {
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            if (!orders.Any())
+            {
+                throw new ConflictException("الشحنات غير موجودة");
+            }
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.SecondBranchId == null))
             {
                 throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
+            }
+            var destinationBranchId = orders.First().SecondBranchId.Value;
+            if (orders.Any(c => c.SecondBranchId != destinationBranchId))
+            {
+                throw new ConflictException("ليست جميع الشحنات لنفس الوجهة");
             }
             orders.ForEach(c =>
             {
                 c.OrderplacedId = (int)OrderplacedEnum.Way;
                 c.InWayToBranch = true;
             });
+            var transferToOtherBranch = new TransferToOtherBranch();
             await _repository.Update(orders);
         }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)

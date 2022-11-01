@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using KokazGoodsTransfer.Models.Configuration;
+using KokazGoodsTransfer.Models.TransferToBranchModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -63,6 +64,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<UserPhone> UserPhones { get; set; }
+        public virtual DbSet<TransferToOtherBranch> TransferToOtherBranches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
