@@ -540,7 +540,24 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = dtos
             };
         }
-
+        ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        {
+            var predicate = PredicateBuilder.New<Order>(true);
+            if (selectedOrdersWithFitlerDto.SelectedIds.Any())
+            {
+                predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
+                return predicate;
+            }
+            predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto.OrderFilter);
+            if (selectedOrdersWithFitlerDto.IsSelectedAll)
+            {
+                if (selectedOrdersWithFitlerDto.ExceptIds?.Any() == true)
+                {
+                    predicate = predicate.And(c => !selectedOrdersWithFitlerDto.ExceptIds.Contains(c.Id));
+                }
+            }
+            return predicate;
+        }
         ExpressionStarter<Order> GetFilterAsLinq(OrderFilter filter)
         {
             var preidcate = PredicateBuilder.New<Order>(true);
@@ -1711,7 +1728,17 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(orders);
 
         }
-
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        {
+            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
+            var pagingResult = await _repository.GetAsync(selectedOrdersWithFitlerDto.Paging, predicate, c => c.Country, c => c.Client);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = pagingResult.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
+            };
+        }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter filter)
         {
             var predicate = GetFilterAsLinq(filter);

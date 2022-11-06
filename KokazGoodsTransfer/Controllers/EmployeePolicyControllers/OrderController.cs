@@ -47,10 +47,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
 
         }
-        [HttpGet("GetInStockToTransferToSecondBranch")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
+        [HttpPost("GetInStockToTransferToSecondBranch")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            return Ok(await _orderService.GetInStockToTransferToSecondBranch(pagingDto, orderFilter));
+            return Ok(await _orderService.GetInStockToTransferToSecondBranch(selectedOrdersWithFitlerDto));
         }
         [HttpGet("WithoutPaging")]
         public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
