@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.BranchDtos;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Services.Concret
@@ -23,6 +25,12 @@ namespace KokazGoodsTransfer.Services.Concret
 
             }
             return await base.AddAsync(createDto);
+        }
+
+        public async Task<IEnumerable<NameAndIdDto>> GetLite()
+        {
+            var braches = await _repository.GetAll();
+            return _mapper.Map<IEnumerable<NameAndIdDto>>(braches);
         }
     }
 }
