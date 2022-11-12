@@ -484,9 +484,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-        public async Task TransferToSecondBranch(int[] ids)
+        public async Task TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            var orders = await _repository.GetAsync(predicate);
+
             if (!orders.Any())
             {
                 throw new ConflictException("الشحنات غير موجودة");
@@ -543,7 +545,7 @@ namespace KokazGoodsTransfer.Services.Concret
         ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            if (selectedOrdersWithFitlerDto.SelectedIds.Any())
+            if (selectedOrdersWithFitlerDto.SelectedIds?.Any()==true)
             {
                 predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
                 return predicate;

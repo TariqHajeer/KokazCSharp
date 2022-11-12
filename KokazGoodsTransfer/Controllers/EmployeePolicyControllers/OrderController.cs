@@ -86,9 +86,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(response);
         }
         [HttpPut("TransferToSecondBranch")]
-        public async Task<IActionResult> TransferToSecondBranch([FromBody] int[] ids)
+        public async Task<IActionResult> TransferToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            await _orderService.TransferToSecondBranch(ids);
+            await _orderService.TransferToSecondBranch(selectedOrdersWithFitlerDto);
             return Ok();
         }
         [HttpGet("GetOrdersComeToMyBranch")]
