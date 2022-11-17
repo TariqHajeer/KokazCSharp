@@ -40,7 +40,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Dtos\OrdersDtos\OrderWithBranchDto\" />
 		<Folder Include="wwwroot\MarketLogo\" />
 	</ItemGroup>
 

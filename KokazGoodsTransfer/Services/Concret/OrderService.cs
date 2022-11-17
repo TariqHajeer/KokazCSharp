@@ -498,6 +498,7 @@ namespace KokazGoodsTransfer.Services.Concret
             try
             {
                 var predicate = GetFilterAsLinq(transferToSecondBranchDto.selectedOrdersWithFitlerDto);
+                predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
                 var orders = await _repository.GetAsync(predicate);
 
                 if (!orders.Any())
@@ -560,26 +561,28 @@ namespace KokazGoodsTransfer.Services.Concret
             readText = readText.Replace("{{fromBranch}}", report.SourceBranch.Name);
             readText = readText.Replace("{{toBranch}}", report.DestinationBranch.Name);
             var c = 1;
+            var rows = new StringBuilder();
             foreach (var item in report.TransferToOtherBranchDetials)
             {
-                var row = new StringBuilder();
-                row.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
-                row.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                row.Append(c.ToString());
-                row.Append("</td>");
-                row.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                row.Append(item.Code);
-                row.Append("</td>");
-                row.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                row.Append(item.Total);
-                row.Append("</td>");
-                row.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
 
-                row.Append("</td>");
-                row.Append("</tr>");
+                rows.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
+                rows.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(c.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Code);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Total);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append("should be date here");
+                rows.Append("</td>");
+                rows.Append("</tr>");
 
                 c++;
             }
+            readText = readText.Replace("{orders}",)
             return readText;
         }
 
