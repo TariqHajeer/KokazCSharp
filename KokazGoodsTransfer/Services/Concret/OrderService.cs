@@ -486,29 +486,57 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-            var orders = await _repository.GetAsync(predicate);
+            var transaction = _uintOfWork.BegeinTransaction();
+            try
+            {
+                var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+                var orders = await _repository.GetAsync(predicate);
 
-            if (!orders.Any())
-            {
-                throw new ConflictException("الشحنات غير موجودة");
+                if (!orders.Any())
+                {
+                    throw new ConflictException("الشحنات غير موجودة");
+                }
+                if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.SecondBranchId == null))
+                {
+                    throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
+                }
+                var destinationBranchId = orders.First().SecondBranchId.Value;
+                if (orders.Any(c => c.SecondBranchId != destinationBranchId))
+                {
+                    throw new ConflictException("ليست جميع الشحنات لنفس الوجهة");
+                }
+                orders.ForEach(c =>
+                {
+                    c.OrderplacedId = (int)OrderplacedEnum.Way;
+                    c.InWayToBranch = true;
+                });
+                var transferToOtherBranch = new TransferToOtherBranch();
+                transferToOtherBranch.SourceBranchId = _currentBranchId;
+                transferToOtherBranch.DestinationBranchId = destinationBranchId;
+                transferToOtherBranch.DriverName = "";
+                transferToOtherBranch.CreatedOnUtc = DateTime.UtcNow;
+                transferToOtherBranch.PrinterName = _httpContextAccessorService.AuthoticateUserName();
+                var transferToOtherBranchDetials = new List<TransferToOtherBranchDetials>();
+                foreach (var item in orders)
+                {
+                    transferToOtherBranchDetials.Add(new TransferToOtherBranchDetials()
+                    {
+                        Code = item.Code,
+                        Total = item.Cost,
+                        CountryId = item.CountryId,
+                        Phone = item.RecipientPhones,
+                        Note = item.Note,
+                    });
+                }
+                transferToOtherBranch.TransferToOtherBranchDetials = transferToOtherBranchDetials;
+                await _uintOfWork.Add(transferToOtherBranch);
+                await _uintOfWork.Update(orders);
+                await _uintOfWork.Commit();
             }
-            if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.SecondBranchId == null))
+            catch (Exception ex)
             {
-                throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
+                throw ex;
             }
-            var destinationBranchId = orders.First().SecondBranchId.Value;
-            if (orders.Any(c => c.SecondBranchId != destinationBranchId))
-            {
-                throw new ConflictException("ليست جميع الشحنات لنفس الوجهة");
-            }
-            orders.ForEach(c =>
-            {
-                c.OrderplacedId = (int)OrderplacedEnum.Way;
-                c.InWayToBranch = true;
-            });
-            var transferToOtherBranch = new TransferToOtherBranch();
-            await _repository.Update(orders);
         }
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
@@ -545,7 +573,7 @@ namespace KokazGoodsTransfer.Services.Concret
         ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            if (selectedOrdersWithFitlerDto.SelectedIds?.Any()==true)
+            if (selectedOrdersWithFitlerDto.SelectedIds?.Any() == true)
             {
                 predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
                 return predicate;
