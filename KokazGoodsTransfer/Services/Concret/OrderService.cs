@@ -582,7 +582,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                 c++;
             }
-            readText = readText.Replace("{orders}",)
+            readText = readText.Replace("{orders}", rows.ToString());
             return readText;
         }
 
