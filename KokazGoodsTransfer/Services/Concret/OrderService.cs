@@ -5,6 +5,7 @@ using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
+using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.HubsConfig;
@@ -21,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -490,12 +492,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-        public async Task<int> TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto)
         {
             var transaction = _uintOfWork.BegeinTransaction();
             try
             {
-                var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+                var predicate = GetFilterAsLinq(transferToSecondBranchDto.selectedOrdersWithFitlerDto);
                 var orders = await _repository.GetAsync(predicate);
 
                 if (!orders.Any())
@@ -519,7 +521,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var transferToOtherBranch = new TransferToOtherBranch();
                 transferToOtherBranch.SourceBranchId = _currentBranchId;
                 transferToOtherBranch.DestinationBranchId = destinationBranchId;
-                transferToOtherBranch.DriverName = "";
+                transferToOtherBranch.DriverName = transferToSecondBranchDto.DriverName;
                 transferToOtherBranch.CreatedOnUtc = DateTime.UtcNow;
                 transferToOtherBranch.PrinterName = _httpContextAccessorService.AuthoticateUserName();
                 var transferToOtherBranchDetials = new List<TransferToOtherBranchDetials>();
@@ -557,11 +559,28 @@ namespace KokazGoodsTransfer.Services.Concret
             readText = readText.Replace("{{timeOfPrint}}", report.CreatedOnUtc.ToString("HH:mm"));
             readText = readText.Replace("{{fromBranch}}", report.SourceBranch.Name);
             readText = readText.Replace("{{toBranch}}", report.DestinationBranch.Name);
+            var c = 1;
             foreach (var item in report.TransferToOtherBranchDetials)
             {
+                var row = new StringBuilder();
+                row.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
+                row.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                row.Append(c.ToString());
+                row.Append("</td>");
+                row.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                row.Append(item.Code);
+                row.Append("</td>");
+                row.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                row.Append(item.Total);
+                row.Append("</td>");
+                row.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
 
+                row.Append("</td>");
+                row.Append("</tr>");
+
+                c++;
             }
-            throw new NotImplementedException();
+            return readText;
         }
 
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)

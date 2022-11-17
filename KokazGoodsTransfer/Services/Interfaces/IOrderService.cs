@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.DAL.Helper;
 using System.Linq.Expressions;
 using System;
+using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -21,7 +22,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
         Task<int> MakeOrderInWay(int[] ids);
-        Task<int> TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto);
         Task<string> GetTransferToSecondBranchReport(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
