@@ -45,7 +45,9 @@ namespace KokazGoodsTransfer.Migrations
                     TransferToOtherBranchId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CountryId = table.Column<int>(type: "int", nullable: false),
+                    CountryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClientName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -53,23 +55,12 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     table.PrimaryKey("PK_TransferToOtherBranchDetials", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TransferToOtherBranchDetials_Country_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Country",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_TransferToOtherBranchDetials_TransferToOtherBranches_TransferToOtherBranchId",
                         column: x => x.TransferToOtherBranchId,
                         principalTable: "TransferToOtherBranches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TransferToOtherBranchDetials_CountryId",
-                table: "TransferToOtherBranchDetials",
-                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransferToOtherBranchDetials_TransferToOtherBranchId",
