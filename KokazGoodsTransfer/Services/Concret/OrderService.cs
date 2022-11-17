@@ -13,9 +13,11 @@ using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Models.TransferToBranchModels;
 using KokazGoodsTransfer.Services.Interfaces;
 using LinqKit;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -45,6 +47,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<Branch> _branchRepository;
         private readonly Logging _logging;
         private readonly IHttpContextAccessorService _httpContextAccessorService;
+        private readonly IWebHostEnvironment _environment;
         private readonly int _currentBranchId;
 
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
@@ -58,7 +61,7 @@ namespace KokazGoodsTransfer.Services.Concret
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
             ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
-            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch)
+            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -82,6 +85,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _httpContextAccessorService = httpContextAccessorService;
             _currentBranchId = _httpContextAccessorService.CurrentBranchId();
             _transferToOtherBranch = transferToOtherBranch;
+            _environment = environment;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -545,6 +549,8 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country" };
             var report = await _transferToOtherBranch.FirstOrDefualt(c => c.Id == id, includes);
+            var path = _environment.WebRootPath + "/HtmlTemplate/TransferToOtherBranchTemplate.html";
+            var readText = await File.ReadAllTextAsync(path);
 
             throw new NotImplementedException();
         }
