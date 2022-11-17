@@ -12,3 +12,4 @@ PublishToHerohuBat.bat
 /.vscode
 /Properties/PublishProfiles
 KokazGoodsTransfer/Properties/PublishProfiles/
+/KokazGoodsTransfer/wwwroot/Log.Txt
