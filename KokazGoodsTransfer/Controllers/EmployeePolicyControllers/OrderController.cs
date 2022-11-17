@@ -94,7 +94,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.TransferToSecondBranch(transferToSecondBranchDto));
         }
-        [HttpGet("PrintTransferToSecondBranch/id")]
+        [HttpGet("PrintTransferToSecondBranch/{id}")]
         public async Task<IActionResult> PrintTransferToSecondBranch(int id)
         {
             var txt = await _orderService.GetTransferToSecondBranchReport(id);

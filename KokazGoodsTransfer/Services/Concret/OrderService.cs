@@ -581,8 +581,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append(item.Country.Name);
                 rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append("hele should be client name ");
+                rows.Append("</td>");
                 rows.Append("</tr>");
-
                 c++;
             }
             readText = readText.Replace("{orders}", rows.ToString());
