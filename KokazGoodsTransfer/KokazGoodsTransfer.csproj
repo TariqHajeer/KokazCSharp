@@ -44,4 +44,10 @@
 		<Folder Include="wwwroot\MarketLogo\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="wkhtmltopdf\Windows\wkhtmltopdf.exe">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

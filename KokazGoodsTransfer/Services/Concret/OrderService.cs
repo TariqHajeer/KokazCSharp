@@ -547,11 +547,20 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<string> GetTransferToSecondBranchReport(int id)
         {
-            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country" };
+            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country", "DestinationBranch", "SourceBranch" };
             var report = await _transferToOtherBranch.FirstOrDefualt(c => c.Id == id, includes);
             var path = _environment.WebRootPath + "/HtmlTemplate/TransferToOtherBranchTemplate.html";
             var readText = await File.ReadAllTextAsync(path);
+            readText = readText.Replace("{{printNumber}}", report.Id.ToString());
+            readText = readText.Replace("{{userName}}", report.PrinterName);
+            readText = readText.Replace("{{dateOfPrint}}", report.CreatedOnUtc.ToString("yyyy-MM-dd"));
+            readText = readText.Replace("{{timeOfPrint}}", report.CreatedOnUtc.ToString("HH:mm"));
+            readText = readText.Replace("{{fromBranch}}", report.SourceBranch.Name);
+            readText = readText.Replace("{{toBranch}}", report.DestinationBranch.Name);
+            foreach (var item in report.TransferToOtherBranchDetials)
+            {
 
+            }
             throw new NotImplementedException();
         }
 
@@ -595,7 +604,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
                 return predicate;
             }
-            predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto.OrderFilter);
+            if (selectedOrdersWithFitlerDto.OrderFilter != null)
+                predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto.OrderFilter);
             if (selectedOrdersWithFitlerDto.IsSelectedAll)
             {
                 if (selectedOrdersWithFitlerDto.ExceptIds?.Any() == true)
