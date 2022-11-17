@@ -6,6 +6,8 @@ using KokazGoodsTransfer.Models.Static;
 using Microsoft.AspNetCore.Mvc;
 using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.DAL.Helper;
+using Wkhtmltopdf.NetCore;
+using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -15,10 +17,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
     {
         private readonly IOrderService _orderService;
         private readonly IAgentPrintService _agentPrintService;
-        public OrderController(IOrderService orderService, IAgentPrintService agentPrintService)
+        private readonly IGeneratePdf _generatePdf;
+        public OrderController(IOrderService orderService, IAgentPrintService agentPrintService, IGeneratePdf generatePdf)
         {
             _orderService = orderService;
             _agentPrintService = agentPrintService;
+            _generatePdf = generatePdf;
         }
 
         [HttpGet]
@@ -86,16 +90,25 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(response);
         }
         [HttpPut("TransferToSecondBranch")]
-        public async Task<ActionResult<int>> TransferToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<ActionResult<int>> TransferToSecondBranch([FromBody] TransferToSecondBranchDto transferToSecondBranchDto)
         {
-            return Ok(await _orderService.TransferToSecondBranch(selectedOrdersWithFitlerDto));
+            return Ok(await _orderService.TransferToSecondBranch(transferToSecondBranchDto));
         }
         [HttpGet("PrintTransferToSecondBranch/id")]
         public async Task<IActionResult> PrintTransferToSecondBranch(int id)
         {
+            var txt = await _orderService.GetTransferToSecondBranchReport(id);
+            _generatePdf.SetConvertOptions(new ConvertOptions()
+            {
+                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
 
-            return Ok();
-            
+                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
+
+            });
+            var pdfBytes = _generatePdf.GetPDF(txt);
+            string fileName = "نقل إلى الطريق فرع برقم" + id + ".pdf";
+            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
+
         }
 
         [HttpGet("GetOrdersComeToMyBranch")]
