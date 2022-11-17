@@ -40,6 +40,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<ClientPayment> _clientPaymentRepository;
         private readonly IRepository<DisAcceptOrder> _DisAcceptOrderRepository;
+        private readonly IRepository<TransferToOtherBranch> _transferToOtherBranch;
         private readonly NotificationHub _notificationHub;
         private readonly IRepository<Branch> _branchRepository;
         private readonly Logging _logging;
@@ -57,7 +58,7 @@ namespace KokazGoodsTransfer.Services.Concret
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
             ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
-            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService)
+            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -80,6 +81,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _branchRepository = branchRepository;
             _httpContextAccessorService = httpContextAccessorService;
             _currentBranchId = _httpContextAccessorService.CurrentBranchId();
+            _transferToOtherBranch = transferToOtherBranch;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -484,7 +486,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-        public async Task TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<int> TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var transaction = _uintOfWork.BegeinTransaction();
             try
@@ -532,12 +534,21 @@ namespace KokazGoodsTransfer.Services.Concret
                 await _uintOfWork.Add(transferToOtherBranch);
                 await _uintOfWork.Update(orders);
                 await _uintOfWork.Commit();
+                return transferToOtherBranch.Id;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+        public async Task<string> GetTransferToSecondBranchReport(int id)
+        {
+            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country" };
+            var report = await _transferToOtherBranch.FirstOrDefualt(c => c.Id == id, includes);
+
+            throw new NotImplementedException();
+        }
+
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
             PagingResualt<IEnumerable<ReceiptOfTheOrderStatus>> response;
@@ -1838,6 +1849,8 @@ namespace KokazGoodsTransfer.Services.Concret
             });
             await _repository.Update(orders);
         }
+
+
     }
 
 
