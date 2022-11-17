@@ -578,6 +578,9 @@ namespace KokazGoodsTransfer.Services.Concret
                 rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append("should be date here");
                 rows.Append("</td>");
+                rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Country.Name);
+                rows.Append("</td>");
                 rows.Append("</tr>");
 
                 c++;
