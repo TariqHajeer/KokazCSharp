@@ -532,10 +532,12 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         Code = item.Code,
                         Total = item.Cost,
-                        CountryId = item.CountryId,
+                        CountryName = item.Country.Name,
+                        ClientName = item.Client.Name,
+                        OrderDate = item.Date.Value,
                         Phone = item.RecipientPhones,
                         Note = item.Note,
-                    });
+                    }); ;
                 }
                 transferToOtherBranch.TransferToOtherBranchDetials = transferToOtherBranchDetials;
                 await _uintOfWork.Add(transferToOtherBranch);
@@ -576,13 +578,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 rows.Append(item.Total);
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                rows.Append("should be date here");
+                rows.Append(item.OrderDate.ToString("yyyy-MM-dd"));
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                rows.Append(item.Country.Name);
+                rows.Append(item.CountryName);
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                rows.Append("hele should be client name ");
+                rows.Append(item.ClientName);
                 rows.Append("</td>");
                 rows.Append("</tr>");
                 c++;
