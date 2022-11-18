@@ -94,10 +94,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.TransferToSecondBranch(transferToSecondBranchDto));
         }
-        [HttpGet("GetPrintTransferToSecondBranch")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>>> GetPrintTransferToSecondBranch([FromQuery] PagingDto pagingDto, int destinationBranchId)
+        [HttpGet("GetPrintsTransferToSecondBranch")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>>> GetPrintsTransferToSecondBranch([FromQuery] PagingDto pagingDto, int destinationBranchId)
         {
-            return Ok(await _orderService.GetPrintTransferToSecondBranch(pagingDto, destinationBranchId));
+            return Ok(await _orderService.GetPrintsTransferToSecondBranch(pagingDto, destinationBranchId));
+        }
+        [HttpGet("GetPrintTransferToSecondBranchDetials")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>>> GetPrintTransferToSecondBranchDetials([FromQuery] int id, [FromQuery] PagingDto pagingDto)
+        {
+            return Ok(await _orderService.GetPrintTransferToSecondBranchDetials(pagingDto, id));
         }
         [HttpGet("PrintTransferToSecondBranch/{id}")]
         public async Task<IActionResult> PrintTransferToSecondBranch(int id)

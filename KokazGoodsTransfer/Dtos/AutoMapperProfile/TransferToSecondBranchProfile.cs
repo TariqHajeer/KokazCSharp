@@ -10,6 +10,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         {
             CreateMap<TransferToOtherBranch, TransferToSecondBranchReportDto>()
                 .ForMember(c => c.DestinationBranch, opt => opt.MapFrom(src => src.DestinationBranch.Name));
+            CreateMap<TransferToOtherBranchDetials, TransferToSecondBranchDetialsReportDto>();
+
         }
     }
 }

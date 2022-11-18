@@ -44,14 +44,14 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<ClientPayment> _clientPaymentRepository;
         private readonly IRepository<DisAcceptOrder> _DisAcceptOrderRepository;
-        private readonly IRepository<TransferToOtherBranch> _transferToOtherBranch;
+        private readonly IRepository<TransferToOtherBranch> _transferToOtherBranchRepository;
+        private readonly IRepository<TransferToOtherBranchDetials> _transferToOtherBranchDetialsRepository;
         private readonly NotificationHub _notificationHub;
         private readonly IRepository<Branch> _branchRepository;
         private readonly Logging _logging;
         private readonly IHttpContextAccessorService _httpContextAccessorService;
         private readonly IWebHostEnvironment _environment;
         private readonly int _currentBranchId;
-
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable
 || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered));
@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Services.Concret
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
             ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
-            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment)
+            IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment, IRepository<TransferToOtherBranchDetials> transferToOtherBranchDetialsRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -86,8 +86,9 @@ namespace KokazGoodsTransfer.Services.Concret
             _branchRepository = branchRepository;
             _httpContextAccessorService = httpContextAccessorService;
             _currentBranchId = _httpContextAccessorService.CurrentBranchId();
-            _transferToOtherBranch = transferToOtherBranch;
+            _transferToOtherBranchRepository = transferToOtherBranch;
             _environment = environment;
+            _transferToOtherBranchDetialsRepository = transferToOtherBranchDetialsRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -553,7 +554,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<string> GetTransferToSecondBranchReportAsString(int id)
         {
             var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country", "DestinationBranch", "SourceBranch" };
-            var report = await _transferToOtherBranch.FirstOrDefualt(c => c.Id == id, includes);
+            var report = await _transferToOtherBranchRepository.FirstOrDefualt(c => c.Id == id, includes);
             var path = _environment.WebRootPath + "/HtmlTemplate/TransferToOtherBranchTemplate.html";
             var readText = await File.ReadAllTextAsync(path);
             readText = readText.Replace("{{printNumber}}", report.Id.ToString());
@@ -592,13 +593,13 @@ namespace KokazGoodsTransfer.Services.Concret
             readText = readText.Replace("{orders}", rows.ToString());
             return readText;
         }
-        public async Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId)
+        public async Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintsTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId)
         {
             var predicate = PredicateBuilder.New<TransferToOtherBranch>(true);
             predicate = predicate.And(c => c.DestinationBranchId == destinationBranchId);
             predicate = predicate.And(c => c.SourceBranchId == _currentBranchId);
             var includes = new string[] { "DestinationBranch" };
-            var data = await _transferToOtherBranch.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(t => t.Id));
+            var data = await _transferToOtherBranchRepository.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(t => t.Id));
             return new PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>()
             {
                 Total = data.Total,
@@ -1909,7 +1910,15 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(orders);
         }
 
-
+        public async Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto paging, int id)
+        {
+            var data =await _transferToOtherBranchDetialsRepository.GetAsync(paging, c => c.Id == id);
+            return new PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>()
+            {
+                Total = data.Total,
+                Data = _mapper.Map<IEnumerable<TransferToSecondBranchDetialsReportDto>>(data.Data)
+            };
+        }
     }
 
 

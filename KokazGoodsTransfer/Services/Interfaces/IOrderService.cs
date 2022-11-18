@@ -7,6 +7,7 @@ using KokazGoodsTransfer.DAL.Helper;
 using System.Linq.Expressions;
 using System;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Models.TransferToBranchModels;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -69,6 +70,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task SendOrdersReturnedToSecondBranch(int[] ids);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);
         Task ReceiveReturnedToMyBranch(int[] ids);
-        Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintsTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto pagingDto, int id);
     }
 }
