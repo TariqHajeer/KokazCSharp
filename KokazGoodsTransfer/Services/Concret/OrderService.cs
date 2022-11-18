@@ -550,7 +550,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw ex;
             }
         }
-        public async Task<string> GetTransferToSecondBranchReport(int id)
+        public async Task<string> GetTransferToSecondBranchReportAsString(int id)
         {
             var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country", "DestinationBranch", "SourceBranch" };
             var report = await _transferToOtherBranch.FirstOrDefualt(c => c.Id == id, includes);
@@ -591,6 +591,20 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             readText = readText.Replace("{orders}", rows.ToString());
             return readText;
+        }
+        public async Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId)
+        {
+            var predicate = PredicateBuilder.New<TransferToOtherBranch>(true);
+            predicate = predicate.And(c => c.DestinationBranchId == destinationBranchId);
+            predicate = predicate.And(c => c.SourceBranchId == _currentBranchId);
+            var includes = new string[] { "DestinationBranch" };
+            var data = await _transferToOtherBranch.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(t => t.Id));
+            return new PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>()
+            {
+                Total = data.Total,
+                Data = _mapper.Map<IEnumerable<TransferToSecondBranchReportDto>>(data.Data)
+            };
+
         }
 
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)

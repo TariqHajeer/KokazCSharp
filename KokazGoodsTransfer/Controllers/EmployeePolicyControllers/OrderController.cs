@@ -94,10 +94,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.TransferToSecondBranch(transferToSecondBranchDto));
         }
+        [HttpGet("GetPrintTransferToSecondBranch")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>>> GetPrintTransferToSecondBranch([FromQuery] PagingDto pagingDto, int destinationBranchId)
+        {
+            return Ok(await _orderService.GetPrintTransferToSecondBranch(pagingDto, destinationBranchId));
+        }
         [HttpGet("PrintTransferToSecondBranch/{id}")]
         public async Task<IActionResult> PrintTransferToSecondBranch(int id)
         {
-            var txt = await _orderService.GetTransferToSecondBranchReport(id);
+            var txt = await _orderService.GetTransferToSecondBranchReportAsString(id);
             _generatePdf.SetConvertOptions(new ConvertOptions()
             {
                 PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
@@ -108,7 +113,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var pdfBytes = _generatePdf.GetPDF(txt);
             string fileName = "نقل إلى الطريق فرع برقم" + id + ".pdf";
             return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
-
         }
 
         [HttpGet("GetOrdersComeToMyBranch")]
