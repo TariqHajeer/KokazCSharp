@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Group
+    public partial class Group:IHaveBranch
     {
         public Group()
         {
@@ -18,6 +19,7 @@ namespace KokazGoodsTransfer.Models
         public string Name { get; set; }
         public virtual ICollection<GroupPrivilege> GroupPrivileges { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
-
+        public int BranchId { get; set; }
+        public Branch Branch { get; set; }
     }
 }

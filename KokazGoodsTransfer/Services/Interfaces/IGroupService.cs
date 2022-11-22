@@ -8,5 +8,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
     public interface IGroupService:IIndexCURDService<Group,GroupDto,CreateGroupDto,UpdateGroupDto>
     {
         Task<IEnumerable<PrivilegeDto>> GetPrivileges();
+        Task<IEnumerable<Privilege>> GetGroupsPrviligesByGroupsIds(IEnumerable<int> groupsIds, int branchId);
     }
 }
