@@ -500,7 +500,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var predicate = GetFilterAsLinq(transferToSecondBranchDto.selectedOrdersWithFitlerDto);
                 predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
-                var orders = await _repository.GetAsync(predicate,c=>c.Country,c=>c.Client);
+                var orders = await _repository.GetAsync(predicate, c => c.Country, c => c.Client);
 
                 if (!orders.Any())
                 {
@@ -1869,6 +1869,16 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(orders);
         }
 
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId)
+        {
+            var predicate = PredicateBuilder.New<Order>(c => c.SecondBranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
+            var data = await _repository.GetAsync(paging, predicate);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = data.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data)
+            };
+        }
         public async Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code)
         {
             var order = await _repository.GetAsync(c => c.Code == code && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
@@ -1912,7 +1922,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto paging, int id)
         {
-            var data =await _transferToOtherBranchDetialsRepository.GetAsync(paging, c => c.Id == id);
+            var data = await _transferToOtherBranchDetialsRepository.GetAsync(paging, c => c.Id == id);
             return new PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>()
             {
                 Total = data.Total,
