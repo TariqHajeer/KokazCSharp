@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KokazGoodsTransfer.Dtos.BranchDtos;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
@@ -10,6 +11,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         {
             CreateMap<Branch, BranchDto>()
                 .ForMember(c => c.CountryName, opt => opt.MapFrom(src => src.Country.Name));
+            CreateMap<Branch, NameAndIdDto>();
         }
     }
 }

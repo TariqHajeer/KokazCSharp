@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using KokazGoodsTransfer.Dtos.BranchDtos;
 using KokazGoodsTransfer.Services.Interfaces;
 using System.Linq;
+using KokazGoodsTransfer.Dtos.Common;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -22,6 +23,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _branchService.GetAll(c => c.Country));
         }
+        [HttpGet("Lite")]
+        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetLite()
+        {
+            return Ok(await _branchService.GetLite());
+        }
+
         [HttpPost]
         public async Task<ActionResult<BranchDto>> Create(CreateBranchDto branchDto)
         {
