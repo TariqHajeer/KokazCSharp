@@ -6,6 +6,8 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.DAL.Helper;
 using System.Linq.Expressions;
 using System;
+using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Models.TransferToBranchModels;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -21,7 +23,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
         Task<int> MakeOrderInWay(int[] ids);
-        Task TransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto);
+        Task<string> GetTransferToSecondBranchReportAsString(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
@@ -67,5 +70,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task SendOrdersReturnedToSecondBranch(int[] ids);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);
         Task ReceiveReturnedToMyBranch(int[] ids);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintsTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto pagingDto, int id);
     }
 }

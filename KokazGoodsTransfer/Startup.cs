@@ -20,6 +20,7 @@ using KokazGoodsTransfer.DAL.Infrastructure.Concret;
 using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.Services.Concret;
 using KokazGoodsTransfer.Middlewares;
+using Wkhtmltopdf.NetCore;
 
 namespace KokazGoodsTransfer
 {
@@ -166,6 +167,7 @@ namespace KokazGoodsTransfer
             services.AddScoped(typeof(IIndexRepository<>), typeof(IndexRepository<>));
             services.AddAutoMapper(typeof(Startup));
             RegiserServices(services);
+            services.AddWkhtmltopdf("wkhtmltopdf");     
             services.AddScoped<Logging, Logging>();
 
         }

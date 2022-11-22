@@ -76,7 +76,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             _dbContextTransaction.Dispose();
             _dbContextTransaction = null;
         }
-
+        public async Task Update<TEntity>(IEnumerable<TEntity> entity) where TEntity : class
+        {
+            await Repository<TEntity>().Update(entity);
+        }
         public async Task Update<TEntity>(TEntity entity) where TEntity : class
         {
             await Repository<TEntity>().Update(entity);
