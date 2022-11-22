@@ -12,7 +12,15 @@ namespace KokazGoodsTransfer.TypeConfiguration
             {
                 Id = 1,
                 Name = "مجموعة المدراء",
+                BranchId = 1,
 
+            };
+            builder.HasData(group);
+            group = new Group()
+            {
+                Id = 2,
+                Name = "مجموعة المدراء",
+                BranchId = 2,
             };
             builder.HasData(group);
         }

@@ -13,6 +13,11 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 UserId = 1,
                 GroupId = 1
             });
+            builder.HasData(new UserGroup()
+            {
+                UserId = 1,
+                GroupId = 2
+            });
         }
     }
 }

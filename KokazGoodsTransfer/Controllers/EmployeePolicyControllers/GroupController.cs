@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Groups;
 using KokazGoodsTransfer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
@@ -17,6 +18,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             _groupService = groupService;
         }
+        [Authorize(Roles = "ShowGroup")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetAll()
         {

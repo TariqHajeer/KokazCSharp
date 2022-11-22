@@ -17,6 +17,12 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     GroupId = 1,
                     PrivilegId = i
                 });
+                gpl.Add(new GroupPrivilege()
+                {
+                    GroupId = 2,
+                    PrivilegId = i
+                });
+
             }
             builder.HasData(gpl);
         }

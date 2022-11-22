@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace KokazGoodsTransfer.Services.Concret
     public class GroupService : IndexCURDService<Group, GroupDto, CreateGroupDto, UpdateGroupDto>, IGroupService
     {
         private readonly IRepository<Privilege> _privilegeRepository;
-        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) 
+        public GroupService(IRepository<Group> repository, IRepository<Privilege> privilegeRepository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService)
             : base(repository, mapper, logging, httpContextAccessorService)
         {
             _privilegeRepository = privilegeRepository;
@@ -107,7 +108,14 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return response;
         }
+        public async Task<IEnumerable<Privilege>> GetGroupsPrviligesByGroupsIds(IEnumerable<int> groupsIds, int branchId)
+        {
+            var groups = await _repository.GetByFilterInclue(c => c.BranchId == branchId && groupsIds.Contains(c.Id), new string[] { "GroupPrivileges.Privileg" });
+            var privileges = groups.SelectMany(c => c.GroupPrivileges.Select(c => c.Privileg));
+            privileges = privileges.GroupBy(c => c.Id).Select(c => c.First());
+            return privileges;
 
+        }
         public async Task<IEnumerable<PrivilegeDto>> GetPrivileges()
         {
             var priv = await _privilegeRepository.GetAll();

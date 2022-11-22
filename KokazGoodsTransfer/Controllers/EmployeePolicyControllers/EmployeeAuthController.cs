@@ -43,10 +43,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return Conflict();
 
             var climes = new List<Claim>();
-            var privlileges = user.UserGroups.SelectMany(c => c.Group.GroupPrivileges.Select(c => c.Privileg)).Distinct();
-            foreach (var item in privlileges)
+            foreach (var group in user.UserGroups)
             {
-                climes.Add(new Claim(ClaimTypes.Role, item.SysName));
+                climes.Add(new Claim(ClaimTypes.Role,group.GroupId.ToString()));
             }
 
             climes.Add(new Claim("UserID", user.Id.ToString()));

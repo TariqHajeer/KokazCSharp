@@ -40,7 +40,7 @@ namespace KokazGoodsTransfer
         {
 
             services.AddControllers();
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Local2")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BranchDB")));
             services.AddHttpContextAccessor();
             services.AddCors(options =>
             {
@@ -182,11 +182,12 @@ namespace KokazGoodsTransfer
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseMiddleware<ErrorMiddlewares>();
             app.UseRouting();
 
             app.UseCors("EnableCORS");
+            app.UseMiddleware<ErrorMiddlewares>();
             app.UseAuthentication();
+            app.UseMiddleware<PrivilegesMiddlewares>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -203,6 +204,8 @@ namespace KokazGoodsTransfer
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Test");
             });
+            using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
+            scope?.ServiceProvider.GetRequiredService<KokazContext>().Database.Migrate();
         }
 
 
