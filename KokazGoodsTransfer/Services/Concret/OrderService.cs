@@ -553,7 +553,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<string> GetTransferToSecondBranchReportAsString(int id)
         {
-            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials.Country", "DestinationBranch", "SourceBranch" };
+            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials", "DestinationBranch", "SourceBranch" };
             var report = await _transferToOtherBranchRepository.FirstOrDefualt(c => c.Id == id, includes);
             var path = _environment.WebRootPath + "/HtmlTemplate/TransferToOtherBranchTemplate.html";
             var readText = await File.ReadAllTextAsync(path);
