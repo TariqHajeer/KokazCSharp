@@ -500,7 +500,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var predicate = GetFilterAsLinq(transferToSecondBranchDto.selectedOrdersWithFitlerDto);
                 predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
-                var orders = await _repository.GetAsync(predicate);
+                var orders = await _repository.GetAsync(predicate,c=>c.Country,c=>c.Client);
 
                 if (!orders.Any())
                 {
