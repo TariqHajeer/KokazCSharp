@@ -5,8 +5,6 @@ using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
@@ -50,6 +48,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? CurrentCountry { get; set; }
         public int? PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
-        public List<ReceiptOfTheOrderStatusDetaliOrderDto>  ReceiptOfTheOrderStatusDetalis { get; set; }
+        public string BranchName { get; set; }
+        public List<ReceiptOfTheOrderStatusDetaliOrderDto> ReceiptOfTheOrderStatusDetalis { get; set; }
     }
 }

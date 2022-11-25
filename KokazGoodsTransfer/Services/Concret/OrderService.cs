@@ -765,7 +765,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint","Branch" };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1884,7 +1884,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.BranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
-            var data = await _repository.GetAsync(paging, predicate);
+            var data = await _repository.GetAsync(paging, predicate, c => c.Client, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = data.Total,
