@@ -498,7 +498,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var transaction = _uintOfWork.BegeinTransaction();
             try
             {
-                var predicate = GetFilterAsLinq(transferToSecondBranchDto.selectedOrdersWithFitlerDto);
+                var predicate = GetFilterAsLinq(transferToSecondBranchDto.SelectedOrdersWithFitlerDto);
                 predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.SecondBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
                 var orders = await _repository.GetAsync(predicate, c => c.Country, c => c.Client);
 
@@ -748,6 +748,10 @@ namespace KokazGoodsTransfer.Services.Concret
             if (filter.OrderState != null)
             {
                 preidcate = preidcate.And(c => c.OrderStateId == (int)filter.OrderState);
+            }
+            if (filter.SecoundBranchId != null)
+            {
+                preidcate = preidcate.And(c => c.SecondBranchId == filter.SecoundBranchId);
             }
             return preidcate;
         }
@@ -1885,9 +1889,11 @@ namespace KokazGoodsTransfer.Services.Concret
             return _mapper.Map<IEnumerable<OrderDto>>(order);
         }
 
-        public async Task SendOrdersReturnedToSecondBranch(int[] ids)
+        public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+
+            var orders = await _repository.GetAsync(predicate);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
                 throw new ConflictException("الشحنة ليست في فرعك");
             if (orders.Any(c => !c.IsOrderReturn()))

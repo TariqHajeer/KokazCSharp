@@ -2,7 +2,7 @@
 {
     public class TransferToSecondBranchDto
     {
-        public SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto { get; set; }
+        public SelectedOrdersWithFitlerDto SelectedOrdersWithFitlerDto { get; set; }
         public string DriverName { get; set; }
     }
 }

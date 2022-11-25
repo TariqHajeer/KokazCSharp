@@ -153,9 +153,9 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("SendOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> SendOrdersReturnedToSecondBranch(int[] ids)
+        public async Task<IActionResult> SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            await _orderService.SendOrdersReturnedToSecondBranch(ids);
+            await _orderService.SendOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto);
             return Ok();
         }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
