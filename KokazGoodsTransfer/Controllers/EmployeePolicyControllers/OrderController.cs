@@ -126,7 +126,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetOrdersComeToMyBranch(pagingDto, orderFilter));
         }
         [HttpGet("GetOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> GetOrdersReturnedToSecondBranch(PagingDto pagingDto,int destinationBranchId)
+        public async Task<IActionResult> GetOrdersReturnedToSecondBranch([FromForm] PagingDto pagingDto, [FromForm] int destinationBranchId)
         {
             return Ok(await _orderService.GetOrdersReturnedToSecondBranch(pagingDto, destinationBranchId));
         }
