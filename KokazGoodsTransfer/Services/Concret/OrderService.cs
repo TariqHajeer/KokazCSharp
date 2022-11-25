@@ -749,9 +749,17 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 preidcate = preidcate.And(c => c.OrderStateId == (int)filter.OrderState);
             }
+            if (filter.OriginalBranchId != null)
+            {
+                preidcate = preidcate.And(c => c.BranchId == filter.OriginalBranchId);
+            }
             if (filter.SecoundBranchId != null)
             {
                 preidcate = preidcate.And(c => c.SecondBranchId == filter.SecoundBranchId);
+            }
+            if (filter.CurrentBranchId != null)
+            {
+                preidcate = preidcate.And(c => c.CurrentBranchId == filter.CurrentBranchId);
             }
             return preidcate;
         }
@@ -1908,7 +1916,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
         {
-            var pagingResualt = await _repository.GetAsync(pagingDto, c => c.InWayToBranch && c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId);
+            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && (c.InWayToBranch || (c.OrderplacedId > (int)OrderplacedEnum.Way)));
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Country, c => c.Region, c => c.Agent);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResualt.Total,
