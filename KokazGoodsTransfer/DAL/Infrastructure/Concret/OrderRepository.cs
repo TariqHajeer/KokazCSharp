@@ -5,6 +5,7 @@ using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Models.Static;
 using KokazGoodsTransfer.Services.Interfaces;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -240,9 +241,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && c.CurrentBranchId == branchId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId));
+
+
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
-                var list = await Query.Where(c => c.IsClientDiliverdMoney == false && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = await Query.Where(predicate.And(c => c.IsClientDiliverdMoney == false))
                     .Include(c => c.Orderplaced)
                     .Include(c => c.MoenyPlaced)
                    .Include(c => c.Region)
@@ -263,7 +267,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
-                var list = await Query.Where(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash && c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId))
+                var list = await Query.Where(predicate.And(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash))
                     .Include(c => c.Orderplaced)
                     .Include(c => c.MoenyPlaced)
                .Include(c => c.Region)
