@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("ReceiveReturnedToMyBranch")]
         public async Task<ActionResult> ReceiveReturnedToMyBranch(int[] ids)
         {
-            await _orderService.ReceiveReturnedToMyBranch(ids);
+            await _orderService.ReceiveReturnedToMyBranch(ids); 
             return Ok();
         }
         [HttpPut("ReceiveOrdersToMyBranch")]

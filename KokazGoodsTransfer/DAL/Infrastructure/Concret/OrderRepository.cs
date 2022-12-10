@@ -21,6 +21,13 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             Query = kokazContext.Set<Order>().AsQueryable();
             Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
         }
+        public override Task Update(IEnumerable<Order> entites)
+        {
+            var updateDate = DateTime.UtcNow;
+            entites.ForEach(c => { c.UpdatedBy = _httpContextAccessorService.AuthoticateUserName(); c.UpdatedDate = updateDate });
+
+            return base.Update(entites);
+        }
         public async Task<PagingResualt<IEnumerable<Order>>> Get(PagingDto paging, OrderFilter filter, string[] propertySelectors = null)
         {
             var query = Query;

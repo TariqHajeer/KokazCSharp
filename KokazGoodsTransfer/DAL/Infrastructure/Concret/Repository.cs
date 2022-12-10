@@ -19,10 +19,12 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         protected readonly KokazContext _kokazContext;
         protected IQueryable<T> Query;
         protected readonly int branchId;
+        protected readonly IHttpContextAccessorService _httpContextAccessorService;
         public Repository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService)
         {
             this._kokazContext = kokazContext;
             Query = _kokazContext.Set<T>().AsQueryable();
+            _httpContextAccessorService = httpContextAccessorService;
             if (IsIHaveBranch() || IsIMaybeHaveBranch())
             {
                 if (httpContextAccessorService.UserBranches().Any())

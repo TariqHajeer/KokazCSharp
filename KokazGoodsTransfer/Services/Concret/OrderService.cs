@@ -447,9 +447,12 @@ namespace KokazGoodsTransfer.Services.Concret
             var agnetOrderPrints = new List<AgentOrderPrint>();
             var agentPrintsDetials = new List<AgentPrintDetail>();
             await _uintOfWork.Repository<AgentPrint>().AddAsync(agnetPrint);
+            List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in orders)
             {
-
+                OrderLog log = item;
+                logs.Add(item);
+                item.SystemNote = "قبل النقل إلى الطريق";
 
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
 
@@ -478,6 +481,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.AddRange(agnetOrderPrints);
             await _uintOfWork.AddRange(agentPrintsDetials);
+            await _uintOfWork.AddRange(logs);
             await _uintOfWork.Commit();
             return agnetPrint.Id;
         }
@@ -765,7 +769,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint","Branch" };
+            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint", "Branch" };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1421,7 +1425,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.OldDeliveryCost = order.DeliveryCost;
             order.DeliveryCost = 0;
             order.AgentCost = 0;
-            order.UpdatedDate = DateTime.Now;
+            order.UpdatedDate = DateTime.UtcNow;
             order.UpdatedBy = currentUser;
             order.SystemNote = "MakeStoreOrderCompletelyReturned";
             await _uintOfWork.Update(order);
