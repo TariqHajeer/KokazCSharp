@@ -24,7 +24,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public override Task Update(IEnumerable<Order> entites)
         {
             var updateDate = DateTime.UtcNow;
-            entites.ForEach(c => { c.UpdatedBy = _httpContextAccessorService.AuthoticateUserName(); c.UpdatedDate = updateDate });
+            entites.ForEach(c => { c.UpdatedBy = _httpContextAccessorService.AuthoticateUserName(); c.UpdatedDate = updateDate; });
 
             return base.Update(entites);
         }

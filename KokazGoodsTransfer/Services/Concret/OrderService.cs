@@ -452,7 +452,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 OrderLog log = item;
                 logs.Add(item);
-                item.SystemNote = "قبل النقل إلى الطريق";
+                item.SystemNote = "نقل إلى الطريق";
 
                 item.OrderplacedId = (int)OrderplacedEnum.Way;
 
