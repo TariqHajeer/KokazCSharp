@@ -2586,6 +2586,75 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("Region");
                 });
 
+            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DestinationBranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DriverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PrinterName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SourceBranchId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DestinationBranchId");
+
+                    b.HasIndex("SourceBranchId");
+
+                    b.ToTable("TransferToOtherBranches");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranchDetials", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("ClientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TransferToOtherBranchId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransferToOtherBranchId");
+
+                    b.ToTable("TransferToOtherBranchDetials");
+                });
+
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>
                 {
                     b.Property<int>("Id")
@@ -3530,6 +3599,36 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "DestinationBranch")
+                        .WithMany()
+                        .HasForeignKey("DestinationBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "SourceBranch")
+                        .WithMany()
+                        .HasForeignKey("SourceBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DestinationBranch");
+
+                    b.Navigation("SourceBranch");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranchDetials", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", "TransferToOtherBranch")
+                        .WithMany("TransferToOtherBranchDetials")
+                        .HasForeignKey("TransferToOtherBranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TransferToOtherBranch");
+                });
+
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.User", "IdNavigation")
@@ -3838,6 +3937,11 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("OrderLogs");
 
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
+                {
+                    b.Navigation("TransferToOtherBranchDetials");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>

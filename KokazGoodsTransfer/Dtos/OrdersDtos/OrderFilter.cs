@@ -29,6 +29,10 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public DateTime? AgentPrintEndDate { get; set; }
         public OrderStateEnum? OrderState { get; set; }
         public bool? HaveScoundBranch { get; set; }
+        public int? OriginalBranchId { get; set; }
+        public int? SecoundBranchId { get; set; }
+        public int? CurrentBranchId { get; set; }
+
 
 
     }

@@ -6,6 +6,8 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.DAL.Helper;
 using System.Linq.Expressions;
 using System;
+using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Models.TransferToBranchModels;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -21,7 +23,8 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
         Task<int> MakeOrderInWay(int[] ids);
-        Task TransferToSecondBranch(int[] ids);
+        Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto);
+        Task<string> GetTransferToSecondBranchReportAsString(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
@@ -60,12 +63,15 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<IEnumerable<string>> GetCreatedByNames();
         Task<IEnumerable<OrderDto>> GetForReSendMultiple(string code);
         Task ReSendMultiple(List<OrderReSend> orderReSends);
-        Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter filter);
+        Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter);
         Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos);
         Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code);
-        Task SendOrdersReturnedToSecondBranch(int[] ids);
+        Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);
         Task ReceiveReturnedToMyBranch(int[] ids);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintsTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId);
+        Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto pagingDto, int id);
+        Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId);
     }
 }

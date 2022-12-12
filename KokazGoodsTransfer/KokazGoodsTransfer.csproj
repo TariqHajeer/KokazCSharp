@@ -36,10 +36,17 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+		<PackageReference Include="Wkhtmltopdf.NetCore" Version="3.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="wwwroot\MarketLogo\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="wkhtmltopdf\Windows\wkhtmltopdf.exe">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

@@ -37,6 +37,5 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Interfaces
         Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
         Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter, Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
         Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
-        Task<bool> AllIdsExists(int[] ids);
     }
 }

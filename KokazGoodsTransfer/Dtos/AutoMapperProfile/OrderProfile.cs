@@ -103,7 +103,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             .ForMember(c => c.ReceiptOfTheOrderStatusDetalis, opt => opt.MapFrom((src, dest, i, context) =>
             {
                 return context.Mapper.Map<ReceiptOfTheOrderStatusDetaliOrderDto[]>(src.ReceiptOfTheOrderStatusDetalis);
-            }));
+            }))
+            .ForMember(c => c.BranchName, opt => opt.MapFrom(src => src.Branch.Name));
             CreateMap<ReceiptOfTheOrderStatusDetali, ReceiptOfTheOrderStatusDetaliOrderDto>()
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
