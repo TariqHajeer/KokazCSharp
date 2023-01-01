@@ -1966,13 +1966,14 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId);
-
-            var order = await _repository.GetAsync(predicate);
-            order.ForEach(c =>
+            var orders = await _repository.GetAsync(predicate);
+            orders.ForEach(c =>
             {
                 c.IsReturnedByBranch = false;
-
+                c.InWayToBranch = false;
+                c.OrderplacedId = (int)OrderplacedEnum.Store;
             });
+            await _repository.Update(orders);
         }
     }
 
