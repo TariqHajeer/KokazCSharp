@@ -1935,6 +1935,10 @@ namespace KokazGoodsTransfer.Services.Concret
             });
             await _repository.Update(orders);
         }
+        public async Task DisApproveReturnedToMyBranch(int id)
+        {
+
+        }
 
         public async Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto paging, int id)
         {
