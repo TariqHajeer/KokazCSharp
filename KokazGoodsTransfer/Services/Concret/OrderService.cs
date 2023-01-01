@@ -1953,13 +1953,26 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(order);
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto)
-        {
+        { 
             var orders = await _repository.GetAsync(pagingDto, c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId,c=>c.Country,c=>c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = orders.Total,
                 Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
             };
+        }
+
+        public async Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        {
+            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            predicate = predicate.And(c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId);
+
+            var order = await _repository.GetAsync(predicate);
+            order.ForEach(c =>
+            {
+                c.IsReturnedByBranch = false;
+
+            });
         }
     }
 

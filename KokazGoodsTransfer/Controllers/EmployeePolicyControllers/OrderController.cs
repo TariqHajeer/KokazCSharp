@@ -158,6 +158,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetDisApprovedOrdersReturnedByBranch(pagingDto));
         }
+        [HttpPost("SetDisApproveOrdersReturnByBranchInStore")]
+        public async Task<IActionResult> SetDisApproveOrdersReturnByBranchInStore([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        {
+            await _orderService.SetDisApproveOrdersReturnByBranchInStore(selectedOrdersWithFitlerDto);
+            return Ok();
+        }
         [HttpPut("SendOrdersReturnedToSecondBranch")]
         public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
