@@ -138,7 +138,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPut("ReceiveReturnedToMyBranch")]
         public async Task<ActionResult> ReceiveReturnedToMyBranch(int[] ids)
         {
-            await _orderService.ReceiveReturnedToMyBranch(ids); 
+            await _orderService.ReceiveReturnedToMyBranch(ids);
             return Ok();
         }
         [HttpPut("ReceiveOrdersToMyBranch")]
@@ -147,8 +147,19 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.ReceiveOrdersToMyBranch(receiveOrdersToMyBranchDtos);
             return Ok();
         }
+        [HttpPut("DisApproveOrderComeToMyBranch")]
+        public async Task<IActionResult> DisApproveOrderComeToMyBranch([FromBody] int id)
+        {
+            await _orderService.DisApproveOrderComeToMyBranch(id);
+            return Ok(id);
+        }
+        [HttpGet("GetDisApproveOrdersReturnByBranch")]
+        public async Task<IActionResult> GetDisApproveOrdersReturnByBranch([FromQuery] PagingDto pagingDto)
+        {
+            return Ok(await _orderService.GetDisApprovedOrdersReturnedByBranch(pagingDto));
+        }
         [HttpPut("SendOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             await _orderService.SendOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto);
             return Ok();
@@ -168,9 +179,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.OrdersDontFinished(orderDontFinishedFilter));
         }
-
-
-
         [HttpGet("chekcCode")]
         public async Task<ActionResult<bool>> CheckCode([FromQuery] string code, int clientid)
         {
@@ -196,7 +204,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("OrderAtClient")]
-        public async Task<IActionResult> OrderAtClient([FromQuery] OrderFilter orderFilter)
+        public async Task<IActionResult> OrderAtClient([FromQuery] OrderFilter orderFilter) 
         {
             return Ok(await _orderService.OrderAtClient(orderFilter));
         }
@@ -205,7 +213,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetOrderToReciveFromAgent(code));
         }
-        [HttpGet("GetOrderForPayBy/{clientId}/{code}")]
+        [HttpGet("GetOrderForPayBy/{clientId}/{code}")] 
         public async Task<ActionResult<PayForClientDto>> GetByCodeAndClient(int clientId, string code)
         {
             return Ok(await _orderService.GetByCodeAndClient(clientId, code));

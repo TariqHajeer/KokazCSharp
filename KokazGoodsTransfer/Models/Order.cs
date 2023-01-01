@@ -59,6 +59,7 @@ namespace KokazGoodsTransfer.Models
         public int? NewOrderPlacedId { get; set; }
         public int BranchId { get; set; }
         public int? SecondBranchId { get; set; }
+        public bool IsReturnedByBranch { get; set; }
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
@@ -93,11 +94,29 @@ namespace KokazGoodsTransfer.Models
         }
         public bool IsOrderReturn()
         {
-            return OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || OrderplacedId == (int)OrderplacedEnum.PartialReturned || OrderplacedId == (int)OrderplacedEnum.Unacceptable;
+            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                return true;
+            if(OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+                return true;
+            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                return true;
+            return false;
         }
         public bool IsOrderInMyStore()
         {
-            return OrderplacedId == (int)OrderplacedEnum.Store || (MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || OrderplacedId == (int)OrderplacedEnum.PartialReturned || OrderplacedId == (int)OrderplacedEnum.Unacceptable));
+            if (OrderplacedId == (int)OrderplacedEnum.Store)
+                return true;
+            if (MoenyPlacedId != (int)MoneyPalcedEnum.InsideCompany)
+                return false;
+            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                return true;
+            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+                return true;
+            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+                return true;
+            if (OrderplacedId == (int)OrderplacedEnum.Delayed)
+                return true;
+            return false;
         }
     }
 }

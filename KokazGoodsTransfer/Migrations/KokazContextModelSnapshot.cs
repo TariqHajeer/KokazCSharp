@@ -1500,6 +1500,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool>("IsDollar")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsReturnedByBranch")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsSend")
                         .HasColumnType("bit");
 

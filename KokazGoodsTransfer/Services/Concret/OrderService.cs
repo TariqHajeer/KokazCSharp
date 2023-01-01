@@ -489,7 +489,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var predicate = GetFilterAsLinq(orderFilter);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate);
-            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way);
+            predicate = predicate.And(c => c.SecondBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderplacedId == (int)OrderplacedEnum.Way && !c.IsReturnedByBranch);
             pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -524,12 +524,14 @@ namespace KokazGoodsTransfer.Services.Concret
                     c.OrderplacedId = (int)OrderplacedEnum.Way;
                     c.InWayToBranch = true;
                 });
-                var transferToOtherBranch = new TransferToOtherBranch();
-                transferToOtherBranch.SourceBranchId = _currentBranchId;
-                transferToOtherBranch.DestinationBranchId = destinationBranchId;
-                transferToOtherBranch.DriverName = transferToSecondBranchDto.DriverName;
-                transferToOtherBranch.CreatedOnUtc = DateTime.UtcNow;
-                transferToOtherBranch.PrinterName = _httpContextAccessorService.AuthoticateUserName();
+                var transferToOtherBranch = new TransferToOtherBranch
+                {
+                    SourceBranchId = _currentBranchId,
+                    DestinationBranchId = destinationBranchId,
+                    DriverName = transferToSecondBranchDto.DriverName,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    PrinterName = _httpContextAccessorService.AuthoticateUserName()
+                };
                 var transferToOtherBranchDetials = new List<TransferToOtherBranchDetials>();
                 foreach (var item in orders)
                 {
@@ -542,7 +544,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         OrderDate = item.Date.Value,
                         Phone = item.RecipientPhones,
                         Note = item.Note,
-                    }); ;
+                    });
                 }
                 transferToOtherBranch.TransferToOtherBranchDetials = transferToOtherBranchDetials;
                 await _uintOfWork.Add(transferToOtherBranch);
@@ -1895,16 +1897,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data)
             };
         }
-        public async Task<IEnumerable<OrderDto>> GetOrderReturnedToSecondBranch(string code)
-        {
-            var order = await _repository.GetAsync(c => c.Code == code && c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
-            return _mapper.Map<IEnumerable<OrderDto>>(order);
-        }
 
         public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-
+            predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany && c.InWayToBranch == false);
             var orders = await _repository.GetAsync(predicate);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
                 throw new ConflictException("الشحنة ليست في فرعك");
@@ -1946,6 +1943,22 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 Total = data.Total,
                 Data = _mapper.Map<IEnumerable<TransferToSecondBranchDetialsReportDto>>(data.Data)
+            };
+        }
+
+        public async Task DisApproveOrderComeToMyBranch(int id)
+        {
+            var order = await _repository.GetById(id);
+            order.IsReturnedByBranch = true;
+            await _repository.Update(order);
+        }
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto)
+        {
+            var orders = await _repository.GetAsync(pagingDto, c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
             };
         }
     }
