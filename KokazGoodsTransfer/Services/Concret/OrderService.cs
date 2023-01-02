@@ -318,10 +318,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                 if (order.DeliveryCost != item.DeliveryCost)
                 {
-                    if (order.OldDeliveryCost == null)
-                    {
-                        order.OldDeliveryCost = order.DeliveryCost;
-                    }
+                    order.OldDeliveryCost ??= order.DeliveryCost;
                 }
                 order.DeliveryCost = item.DeliveryCost;
                 order.AgentCost = item.AgentCost;
@@ -332,8 +329,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
+                                order.OldCost ??= order.Cost;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
@@ -341,10 +337,7 @@ namespace KokazGoodsTransfer.Services.Concret
                             break;
                         case (int)OrderplacedEnum.Unacceptable:
                             {
-                                if (order.OldCost == null)
-                                {
-                                    order.OldCost = order.Cost;
-                                }
+                                order.OldCost ??= order.Cost;
                                 order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
                             }
                             break;
@@ -357,21 +350,16 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         case (int)OrderplacedEnum.CompletelyReturned:
                             {
-                                if (order.OldCost == null)
-                                {
-                                    order.OldCost = order.Cost;
-                                }
+                                order.OldCost ??= order.Cost;
                                 order.Cost = 0;
-                                if (order.OldDeliveryCost == null)
-                                    order.OldDeliveryCost = order.DeliveryCost;
+                                order.OldDeliveryCost ??= order.DeliveryCost;
                                 order.DeliveryCost = 0;
                                 order.AgentCost = 0;
                             }
                             break;
                         case (int)OrderplacedEnum.Unacceptable:
                             {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
+                                order.OldCost ??= order.Cost;
                                 order.Cost = 0;
                             }
                             break;
@@ -382,6 +370,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
             }
+            var orderNotForMyBranch = orders.Where(c => c.BranchId != _currentBranchId).ToList();
             await _uintOfWork.BegeinTransaction();
             try
             {
@@ -1925,9 +1914,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResualt.Data)
             };
         }
-        public async Task ReceiveReturnedToMyBranch(int[] ids)
+        public async Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            predicate= predicate.And((c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && (c.InWayToBranch || (c.OrderplacedId > (int)OrderplacedEnum.Way))));
+            var orders = await _repository.GetAsync(predicate);
             orders.ForEach(c =>
             {
                 c.CurrentBranchId = _currentBranchId;
@@ -1937,7 +1928,9 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task DisApproveReturnedToMyBranch(int id)
         {
-
+            var order = await _repository.GetById(id);
+            order.InWayToBranch = false;
+            await _repository.Update(order);
         }
 
         public async Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto paging, int id)
