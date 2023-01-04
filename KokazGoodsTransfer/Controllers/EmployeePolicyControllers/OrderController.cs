@@ -141,7 +141,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.ReceiveReturnedToMyBranch(selectedOrdersWithFitlerDto);
             return Ok();
         }
-        [HttpPatch("DisApproveReturnedToMyBranch")]
+        [HttpPut("DisApproveReturnedToMyBranch")]
         public async Task<ActionResult> DisApproveReturnedToMyBranch([FromForm] int id)
         {
             await _orderService.DisApproveReturnedToMyBranch(id);
