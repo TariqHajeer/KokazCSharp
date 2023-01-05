@@ -142,7 +142,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("DisApproveReturnedToMyBranch")]
-        public async Task<ActionResult> DisApproveReturnedToMyBranch([FromForm] int id)
+        public async Task<ActionResult> DisApproveReturnedToMyBranch([FromBody] int id)
         {
             await _orderService.DisApproveReturnedToMyBranch(id);
             return Ok();
