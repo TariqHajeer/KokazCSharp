@@ -9,13 +9,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using LinqKit;
-using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.Clients;
 using KokazGoodsTransfer.ClientDtos;
 using System.Linq.Expressions;
 using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Services.Concret
 {
@@ -76,19 +73,6 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<IEnumerable<UserDto>> AgnetStatics()
         {
-            //var agent = await this._context.Users.Where(c => c.CanWorkAsAgent == true).ToListAsync();
-            //List<UserDto> userDtos = new List<UserDto>();
-            //foreach (var item in agent)
-            //{
-            //    var user = _mapper.Map<UserDto>(item);
-            //    user.UserStatics = new UserStatics
-            //    {
-            //        OrderInStore = await this._context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Store).CountAsync(),
-            //        OrderInWay = await this._context.Orders.Where(c => c.AgentId == item.Id && c.OrderplacedId == (int)OrderplacedEnum.Way).CountAsync()
-            //    };
-            //    userDtos.Add(user);
-            //}
-            //return Ok(userDtos);
             var agent = await _userRepository.Select(c => c.CanWorkAsAgent == true, c => new User() { Id = c.Id, Name = c.Name });
             var ordersInStore = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderplacedId == (int)OrderplacedEnum.Store);
             var ordersInWay = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderplacedId == (int)OrderplacedEnum.Way);
@@ -139,7 +123,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
             var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
 
-            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => (s.ClientPaied ?? 0) * -1, c => c.IsClientDiliverdMoney && c.MoenyPlacedId != (int)MoneyPalcedEnum.Delivered);
+            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoenyPlacedId != (int)MoneyPalcedEnum.Delivered);
             var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
 
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
