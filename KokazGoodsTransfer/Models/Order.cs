@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Models
         public decimal? NewCost { get; set; }
         public int? NewOrderPlacedId { get; set; }
         public int BranchId { get; set; }
-        public int? SecondBranchId { get; set; }
+        public int? TargetBranchId { get; set; }
         public bool IsReturnedByBranch { get; set; }
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
@@ -74,8 +74,8 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
         public Branch Branch { get; set; }
-        [ForeignKey(nameof(SecondBranchId))]
-        public virtual Branch SecondBranch { get; set; }
+        [ForeignKey(nameof(TargetBranchId))]
+        public virtual Branch TargetBranch { get; set; }
         /// <summary>
         /// for agent
         /// </summary>

@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public OrderRepository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService) : base(kokazContext, httpContextAccessorService)
         {
             Query = kokazContext.Set<Order>().AsQueryable();
-            Query = Query.Where(c => c.BranchId == branchId || c.SecondBranchId == branchId);
+            Query = Query.Where(c => c.BranchId == branchId || c.TargetBranchId == branchId);
         }
         public override Task Update(IEnumerable<Order> entites)
         {
