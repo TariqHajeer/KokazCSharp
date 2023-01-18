@@ -26,8 +26,22 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 CountryId = 2,
 
             },
+                    new Branch()
+                    {
+                        Id = 3,
+                        Name="الفرع الثالث (وسيط)",
+                        CountryId = 3,
+                    },
+                    new Branch() {
+                        Id= 4,
+                        Name="الفرع الرابع",
+                        CountryId =4
+                    }
             };
             builder.HasData(bl);
+            builder.HasMany(c => c.FromBranches).WithOne(c => c.FromBranch).HasForeignKey(c => c.FromBranchId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(c => c.ToBranches).WithOne(c => c.ToBranch).HasForeignKey(c => c.ToBranchId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(c => c.MediatorBranches).WithOne(c => c.MidBranch).HasForeignKey(c => c.MediatorBranchId).OnDelete(DeleteBehavior.Cascade);
 
         }
     }

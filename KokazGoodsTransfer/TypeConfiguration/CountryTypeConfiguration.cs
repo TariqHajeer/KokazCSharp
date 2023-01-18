@@ -25,7 +25,23 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 DeliveryCost =20000,
                 IsMain =false,
                 Points=20
-            }
+            },
+            new Country()
+            {
+                Id= 3,
+                Name="مدينة 3",
+                DeliveryCost =20000,
+                IsMain =false,
+                Points=20
+            },
+            new Country()
+            {
+                Id= 4,
+                Name="مدينة 4",
+                DeliveryCost =20000,
+                IsMain =false,
+                Points=20
+            },
             };
             builder.HasData(countreis);
         }

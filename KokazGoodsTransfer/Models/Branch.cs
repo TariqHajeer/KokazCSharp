@@ -12,6 +12,9 @@ namespace KokazGoodsTransfer.Models
         public int CountryId { get; set; }
         [ForeignKey(nameof(CountryId))]
         public virtual Country Country { get; set; }
+        public virtual List<MediatorBranch> FromBranches { get; set; }
+        public virtual List<MediatorBranch> MediatorBranches { get; set; }
+        public virtual List<MediatorBranch> ToBranches { get; set; }
         public virtual ICollection<UserBranch> Users { get; set; }
     }
 }
