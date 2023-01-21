@@ -129,6 +129,24 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
                 }
+                if (!string.IsNullOrEmpty(orderFilter.CreatedBy?.Trim()))
+                {
+                    orderIQ = orderIQ.Where(c => c.CreatedBy == orderFilter.CreatedBy);
+                }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
+                }
+                if (orderFilter.OrderState != null)
+                {
+                    orderIQ = orderIQ.Where(c => c.OrderStateId == (int)orderFilter.OrderState);
+                }
+
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount)
                     .ToListAsync();
@@ -432,6 +450,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                     ///TODO :
                     ///chould check this query 
                     orderIQ = orderIQ.Where(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= orderFilter.AgentPrintEndDate);
+                }
+                if (orderFilter.CreatedDateRangeFilter != null)
+                {
+                    if (orderFilter.CreatedDateRangeFilter.Start != null)
+                        orderIQ = orderIQ.Where(c => c.Date >= orderFilter.CreatedDateRangeFilter.Start);
+                    if (orderFilter.CreatedDateRangeFilter.End != null)
+                    {
+                        orderIQ = orderIQ.Where(c => c.Date <= orderFilter.CreatedDateRangeFilter.End);
+                    }
                 }
                 var total = await orderIQ.CountAsync();
                 var orders = await orderIQ
@@ -960,7 +987,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             {
                 ordersPrint = ordersPrint.Where(c => c.DestinationName == agnetName);
             }
-            var total =await ordersPrint.CountAsync();
+            var total = await ordersPrint.CountAsync();
             var orders = await ordersPrint.OrderByDescending(c => c.Id).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return Ok(new { data = _mapper.Map<PrintOrdersDto[]>(orders), total });
         }
@@ -1717,6 +1744,50 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>>> GetReceiptOfTheOrderStatus([FromQuery] PagingDto PagingDto, string code)
         {
             return Ok(await _orderService.GetReceiptOfTheOrderStatus(PagingDto, code));
+        }
+        [HttpGet("GetCreatedByNames")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCreatedByNames()
+        {
+            return Ok(await _context.Orders.Select(c => c.CreatedBy).Distinct().ToListAsync());
+        }
+        [HttpGet("ReSendMultiple")]
+        public async Task<IActionResult> ReSendMultiple([FromQuery] string code)
+        {
+            var orders = await _context.Orders.Where(c => c.Code == code && c.OrderplacedId != (int)OrderplacedEnum.Delivered && c.OrderplacedId != (int)OrderplacedEnum.PartialReturned && c.OrderplacedId != (int)OrderplacedEnum.Client)
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .Include(c => c.Country)
+                .ThenInclude(c => c.Regions)
+                .ToListAsync();
+            return Ok(_mapper.Map<OrderDto[]>(orders));
+
+        }
+        [HttpPut("ReSendMultiple")]
+        public async Task<IActionResult> ReSendMultiple(List<OrderReSend> orderReSends)
+        {
+            var orders = await _context.Orders.Where(c => orderReSends.Select(c => c.Id).Contains(c.Id)).ToListAsync();
+            var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
+            var agennts = await _context.Users.Where(c => agentIds.Contains(c.Id)).Select(c => new { c.Id, c.Salary }).ToListAsync();
+            foreach (var orderReSend in orderReSends)
+            {
+                var order = orders.Single(c => c.Id == orderReSend.Id);
+                order.CountryId = orderReSend.CountryId;
+                order.RegionId = orderReSend.RegionId;
+                order.AgentId = orderReSend.AgnetId;
+                if (order.OldCost != null)
+                {
+                    order.Cost = (decimal)order.OldCost;
+                    order.OldCost = null;
+                }
+                order.IsClientDiliverdMoney = false;
+                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderplacedId = (int)OrderplacedEnum.Store;
+                order.DeliveryCost = orderReSend.DeliveryCost;
+                order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
+                order.AgentCost = agennts.Single(c => c.Id == order.AgentId).Salary ?? 0;
+            }
+            await _context.SaveChangesAsync();
+            return Ok(orders);
         }
     }
 }

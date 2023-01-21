@@ -1,4 +1,6 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Dtos.Common;
+using KokazGoodsTransfer.Models.Static;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,10 +21,12 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public bool? IsClientDiliverdMoney { get; set; }
         public int? AgentPrintNumber { get; set; }
         public int? ClientPrintNumber { get; set; }
+        public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public DateRangeFilter CreatedDateRangeFilter { get; set; }
         public string Note { get; set; }
         public DateTime? AgentPrintStartDate { get; set; }
         public DateTime? AgentPrintEndDate { get; set; }
-
+        public OrderStateEnum? OrderState { get; set; }
     }
 }
