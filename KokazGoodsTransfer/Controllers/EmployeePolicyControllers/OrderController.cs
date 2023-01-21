@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.DAL.Helper;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -1260,6 +1262,39 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<GenaricErrorResponse<IEnumerable<OrderDto>, string, string>>> GetOrderToReciveFromAgent(string code)
         {
             return Ok(await _orderService.GetOrderToReciveFromAgent(code));
+        }
+        [HttpGet("GetOrdersByAgentRegionAndCode")]
+        public async Task<IActionResult> GetOrdersByAgentRegionAndCode([FromQuery] GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
+        {
+            var orders = await _context.Orders
+                .Include(c => c.Orderplaced)
+                .Include(c => c.MoenyPlaced)
+                .Include(c => c.Region)
+                .Include(c => c.Country)
+                .Include(c => c.Client)
+                .Include(c => c.Agent)
+                .Where(c => c.Code == getOrderByAgentRegionAndCode.Code && c.CountryId == getOrderByAgentRegionAndCode.CountryId && c.AgentId == getOrderByAgentRegionAndCode.AgentId).ToListAsync();
+            if (!orders.Any())
+                return Conflict(new { message = "الشحنة غير موجودة" });
+            //get last order to check last return erorr message for the last order 
+            var lastOrder = orders.Last();
+            //execpt finished order 
+            var finishedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)));
+            orders.Except(finishedOrder);
+            if (!orders.Any())
+            {
+                if (lastOrder.OrderplacedId == (int)OrderplacedEnum.Store)
+                {
+                    return Conflict(new { message = "الشحنة ما زالت في المخزن" });
+                }
+                if (lastOrder.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                {
+                    return Conflict(new { message = "الشحنة داخل الشركة" });
+                }
+                return Conflict(new { message = "تم إستلام الشحنة مسبقاً" });
+            }
+            return Ok(_mapper.Map<OrderDto[]>(orders));
+
         }
         [HttpGet("GetOrderByAgent/{orderCode}")]
         public IActionResult GetOrderByAgent(string orderCode)
