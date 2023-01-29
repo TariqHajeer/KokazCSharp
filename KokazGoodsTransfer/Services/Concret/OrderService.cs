@@ -841,7 +841,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (targetBranch != null)
                 {
                     order.TargetBranchId = targetBranch.Id;
-
+                    order.NextBranchId = targetBranch.Id;
                     if (order.AgentId != null)
                     {
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
