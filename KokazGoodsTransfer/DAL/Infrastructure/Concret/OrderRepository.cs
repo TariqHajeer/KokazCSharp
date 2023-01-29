@@ -248,7 +248,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
-            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && c.CurrentBranchId == branchId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId));
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && c.BranchId == branchId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId));
 
 
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
