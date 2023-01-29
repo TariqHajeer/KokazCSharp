@@ -1580,6 +1580,9 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int?>("NewOrderPlacedId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("NextBranchId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -1642,6 +1645,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MoenyPlacedId");
 
                     b.HasIndex("NewOrderPlacedId");
+
+                    b.HasIndex("NextBranchId");
 
                     b.HasIndex("OrderStateId");
 
@@ -2888,6 +2893,16 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             BranchId = 2
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 3
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 4
                         });
                 });
 
@@ -3343,6 +3358,10 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany()
                         .HasForeignKey("NewOrderPlacedId");
 
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "NextBranch")
+                        .WithMany()
+                        .HasForeignKey("NextBranchId");
+
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
                         .HasForeignKey("OrderStateId")
@@ -3379,6 +3398,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("MoenyPlaced");
 
                     b.Navigation("NewOrderPlaced");
+
+                    b.Navigation("NextBranch");
 
                     b.Navigation("Orderplaced");
 

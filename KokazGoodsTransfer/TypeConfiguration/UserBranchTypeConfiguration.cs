@@ -20,6 +20,16 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 {
                     UserId=1,
                     BranchId=2
+                },
+                new UserBranch()
+                {
+                    UserId=1,
+                    BranchId=3
+                },
+                new UserBranch()
+                {
+                    UserId=1,
+                    BranchId=4
                 }
             };
             builder.HasData(ubl);

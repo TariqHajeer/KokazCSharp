@@ -84,6 +84,9 @@ namespace KokazGoodsTransfer.Models
         public int CurrentBranchId { get; set; }
         [ForeignKey(nameof(CurrentBranchId))]
         public virtual Branch CurrentBranch { get; set; }
+        public int? NextBranchId { get; set; }
+        [ForeignKey(nameof(NextBranchId))]
+        public Branch NextBranch { get; set; }
         public NameAndIdDto GetOrderPlaced()
         {
             return (OrderplacedEnum)this.OrderplacedId;
@@ -96,7 +99,7 @@ namespace KokazGoodsTransfer.Models
         {
             if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
                 return true;
-            if(OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
                 return true;
             if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
                 return true;

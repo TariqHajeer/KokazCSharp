@@ -6,6 +6,12 @@ namespace KokazGoodsTransfer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "NextBranchId",
+                table: "Order",
+                type: "int",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "MediatorBranch",
                 columns: table => new
@@ -60,12 +66,25 @@ namespace KokazGoodsTransfer.Migrations
             migrationBuilder.InsertData(
                 table: "MediatorBranch",
                 columns: new[] { "FromBranchId", "ToBranchId", "MediatorBranchId" },
-                values: new object[] { 1, 4, 3 });
+                values: new object[,]
+                {
+                    { 1, 4, 3 },
+                    { 2, 4, 3 }
+                });
 
             migrationBuilder.InsertData(
-                table: "MediatorBranch",
-                columns: new[] { "FromBranchId", "ToBranchId", "MediatorBranchId" },
-                values: new object[] { 2, 4, 3 });
+                table: "UserBranch",
+                columns: new[] { "BranchId", "UserId" },
+                values: new object[,]
+                {
+                    { 3, 1 },
+                    { 4, 1 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_NextBranchId",
+                table: "Order",
+                column: "NextBranchId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MediatorBranch_MediatorBranchId",
@@ -76,13 +95,39 @@ namespace KokazGoodsTransfer.Migrations
                 name: "IX_MediatorBranch_ToBranchId",
                 table: "MediatorBranch",
                 column: "ToBranchId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Order_Branches_NextBranchId",
+                table: "Order",
+                column: "NextBranchId",
+                principalTable: "Branches",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Order_Branches_NextBranchId",
+                table: "Order");
+
             migrationBuilder.DropTable(
                 name: "MediatorBranch");
 
+            migrationBuilder.DropIndex(
+                name: "IX_Order_NextBranchId",
+                table: "Order");
+
+            migrationBuilder.DeleteData(
+                table: "UserBranch",
+                keyColumns: new[] { "BranchId", "UserId" },
+                keyValues: new object[] { 3, 1 });
+
+            migrationBuilder.DeleteData(
+                table: "UserBranch",
+                keyColumns: new[] { "BranchId", "UserId" },
+                keyValues: new object[] { 4, 1 });
+
             migrationBuilder.DeleteData(
                 table: "Branches",
                 keyColumn: "Id",
@@ -102,6 +147,10 @@ namespace KokazGoodsTransfer.Migrations
                 table: "Country",
                 keyColumn: "Id",
                 keyValue: 4);
+
+            migrationBuilder.DropColumn(
+                name: "NextBranchId",
+                table: "Order");
         }
     }
 }
