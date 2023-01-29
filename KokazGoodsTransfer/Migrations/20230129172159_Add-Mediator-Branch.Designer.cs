@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20230129135507_Add-Mediator-Branch")]
+    [Migration("20230129172159_Add-Mediator-Branch")]
     partial class AddMediatorBranch
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3586,6 +3586,16 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             GroupId = 2
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 3
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 4
                         });
                 });
 

@@ -3584,6 +3584,16 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             GroupId = 2
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 3
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 4
                         });
                 });
 
