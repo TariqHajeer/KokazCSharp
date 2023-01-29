@@ -760,7 +760,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             if (filter.NextBranchId != null)
             {
-                preidcate = preidcate.And(c => c.CurrentBranchId == filter.NextBranchId);
+                preidcate = preidcate.And(c => c.NextBranchId == filter.NextBranchId);
             }
             return preidcate;
         }
