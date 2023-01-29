@@ -22,7 +22,17 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     GroupId = 2,
                     PrivilegId = i
                 });
+                gpl.Add(new GroupPrivilege()
+                {
+                    GroupId = 3,
+                    PrivilegId = i
+                });
 
+                gpl.Add(new GroupPrivilege()
+                {
+                    GroupId = 4,
+                    PrivilegId = i
+                });
             }
             builder.HasData(gpl);
         }

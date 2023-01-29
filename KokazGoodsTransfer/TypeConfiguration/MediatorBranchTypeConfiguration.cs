@@ -23,6 +23,18 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     FromBranchId = 2,
                     ToBranchId= 4,
                     MediatorBranchId= 3,
+                },
+                new MediatorBranch()
+                {
+                    FromBranchId = 4,
+                    ToBranchId= 1,
+                    MediatorBranchId= 3,
+                },
+                new MediatorBranch()
+                {
+                    FromBranchId = 4,
+                    ToBranchId= 2,
+                    MediatorBranchId= 3,
                 }
             };
             builder.HasData(list);
