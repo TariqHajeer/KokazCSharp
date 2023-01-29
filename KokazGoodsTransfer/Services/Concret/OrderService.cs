@@ -505,8 +505,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
                 }
-                var destinationBranchId = orders.First().TargetBranchId.Value;
-                if (orders.Any(c => c.TargetBranchId != destinationBranchId))
+                var destinationBranchId = orders.First().NextBranchId.Value;
+                if (orders.Any(c => c.NextBranchId != destinationBranchId))
                 {
                     throw new ConflictException("ليست جميع الشحنات لنفس الوجهة");
                 }
@@ -1876,12 +1876,21 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
             receiveOrdersToMyBranchDtos.ForEach(rmb =>
             {
+                
                 var order = orders.First(c => c.Id == rmb.OrderId);
                 order.CurrentBranchId = _currentBranchId;
                 order.OrderplacedId = (int)OrderplacedEnum.Store;
-                order.DeliveryCost = rmb.DeliveryCost;
-                order.RegionId = rmb.RegionId;
-                order.AgentId = rmb.AgentId;
+                if (order.NextBranchId == order.TargetBranchId)
+                {
+                    order.DeliveryCost = rmb.DeliveryCost;
+                    order.RegionId = rmb.RegionId;
+                    order.AgentId = rmb.AgentId;
+                    order.NextBranchId = null;
+                }
+                else
+                {
+                    order.NextBranchId = order.TargetBranchId;
+                }
                 order.InWayToBranch = false;
             });
             await _repository.Update(orders);
