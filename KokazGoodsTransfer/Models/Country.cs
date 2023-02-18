@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 
 #nullable disable
@@ -36,5 +36,8 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Region> Regions { get; set; }
         public virtual ICollection<Branch> Branches { get; set; }
+        public virtual ICollection<MediatorCountry> FromCountries { get; set; }
+        public virtual ICollection<MediatorCountry> MediatorCountries { get; set; }
+        public virtual ICollection<MediatorCountry> ToCountries { get; set; }
     }
 }
