@@ -10,13 +10,13 @@ namespace KokazGoodsTransfer.TypeConfiguration
         public void Configure(EntityTypeBuilder<MediatorCountry> builder)
         {
             builder.HasOne(c => c.FromCountry)
-                .WithMany(c => c.FromCountries).HasForeignKey(c => c.FromCountryId).OnDelete(DeleteBehavior.Cascade);
+                .WithMany(c => c.FromCountries).HasForeignKey(c => c.FromCountryId).OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(c => c.MidCountry)
-                .WithMany(c => c.MediatorCountries).HasForeignKey(c => c.MediatorCountryId).OnDelete(DeleteBehavior.Cascade);
+                .WithMany(c => c.MediatorCountries).HasForeignKey(c => c.MediatorCountryId).OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(c => c.ToCountry)
-                .WithMany(c => c.ToCountries).HasForeignKey(c => c.ToCountryId).OnDelete(DeleteBehavior.Cascade);
+                .WithMany(c => c.ToCountries).HasForeignKey(c => c.ToCountryId).OnDelete(DeleteBehavior.Restrict);
             builder.HasKey(c => new { c.FromCountryId, c.ToCountryId });
             int mid = 3;
             var data = new List<MediatorCountry>()

@@ -10,9 +10,9 @@ namespace KokazGoodsTransfer.TypeConfiguration
         public void Configure(EntityTypeBuilder<Country> builder)
         {
             int id = 1;
-            builder.HasMany(c => c.FromCountries).WithOne(c => c.FromCountry).HasForeignKey(c => c.FromCountryId);
-            builder.HasMany(c => c.ToCountries).WithOne(c => c.ToCountry).HasForeignKey(c => c.ToCountryId);
-            builder.HasMany(c => c.MediatorCountries).WithOne(c => c.MidCountry).HasForeignKey(c => c.MediatorCountryId);
+            builder.HasMany(c => c.FromCountries).WithOne(c => c.FromCountry).HasForeignKey(c => c.FromCountryId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(c => c.ToCountries).WithOne(c => c.ToCountry).HasForeignKey(c => c.ToCountryId).OnDelete(DeleteBehavior.Restrict); 
+            builder.HasMany(c => c.MediatorCountries).WithOne(c => c.MidCountry).HasForeignKey(c => c.MediatorCountryId).OnDelete(DeleteBehavior.Restrict);
             var countreis = new List<Country> {
                 new Country()
                 {
