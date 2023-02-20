@@ -99,7 +99,6 @@ namespace KokazGoodsTransfer.Migrations
                 values: new object[,]
                 {
                     { 3, 1 },
-                    { 4, 29 },
                     { 4, 28 },
                     { 4, 27 },
                     { 4, 26 },
@@ -126,11 +125,11 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 5 },
                     { 4, 4 },
                     { 4, 3 },
+                    { 4, 2 },
+                    { 4, 29 },
                     { 4, 30 },
                     { 4, 31 },
                     { 4, 32 },
-                    { 4, 33 },
-                    { 4, 61 },
                     { 4, 60 },
                     { 4, 59 },
                     { 4, 58 },
@@ -139,7 +138,8 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 55 },
                     { 4, 54 },
                     { 4, 53 },
-                    { 4, 52 }
+                    { 4, 52 },
+                    { 4, 51 }
                 });
 
             migrationBuilder.InsertData(
@@ -147,12 +147,11 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "GroupId", "PrivilegId" },
                 values: new object[,]
                 {
-                    { 4, 51 },
                     { 4, 50 },
                     { 4, 49 },
-                    { 4, 2 },
                     { 4, 48 },
-                    { 4, 46 },
+                    { 4, 1 },
+                    { 4, 47 },
                     { 4, 45 },
                     { 4, 44 },
                     { 4, 43 },
@@ -165,8 +164,9 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 36 },
                     { 4, 35 },
                     { 4, 34 },
-                    { 4, 47 },
-                    { 4, 1 },
+                    { 4, 33 },
+                    { 4, 46 },
+                    { 4, 63 },
                     { 3, 63 },
                     { 3, 62 },
                     { 3, 29 },
@@ -205,7 +205,7 @@ namespace KokazGoodsTransfer.Migrations
                     { 3, 3 },
                     { 3, 2 },
                     { 3, 15 },
-                    { 4, 62 },
+                    { 4, 61 },
                     { 3, 31 },
                     { 3, 33 },
                     { 3, 61 },
@@ -237,8 +237,18 @@ namespace KokazGoodsTransfer.Migrations
                     { 3, 35 },
                     { 3, 34 },
                     { 3, 47 },
-                    { 4, 63 }
+                    { 4, 62 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "UserGroup",
+                columns: new[] { "GroupId", "UserId" },
+                values: new object[] { 3, 1 });
+
+            migrationBuilder.InsertData(
+                table: "UserGroup",
+                columns: new[] { "GroupId", "UserId" },
+                values: new object[] { 4, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_NextBranchId",
@@ -920,6 +930,16 @@ namespace KokazGoodsTransfer.Migrations
             migrationBuilder.DeleteData(
                 table: "UserBranch",
                 keyColumns: new[] { "BranchId", "UserId" },
+                keyValues: new object[] { 4, 1 });
+
+            migrationBuilder.DeleteData(
+                table: "UserGroup",
+                keyColumns: new[] { "GroupId", "UserId" },
+                keyValues: new object[] { 3, 1 });
+
+            migrationBuilder.DeleteData(
+                table: "UserGroup",
+                keyColumns: new[] { "GroupId", "UserId" },
                 keyValues: new object[] { 4, 1 });
 
             migrationBuilder.DeleteData(
