@@ -837,6 +837,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _uintOfWork.BegeinTransaction();
             try
             {
+                var currentBrach = await _branchRepository.GetById(_currentBranchId);
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 order.CurrentCountry = country.Id;
                 order.CurrentBranchId = _currentBranchId;
@@ -848,7 +849,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
                     }
-                    var currentBrach = await _branchRepository.GetById(_currentBranchId);
+                    
                     
                     var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.CountryId && c.ToCountryId == targetBranch.CountryId);
                     
@@ -857,11 +858,24 @@ namespace KokazGoodsTransfer.Services.Concret
                         var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
                     }
+                    order.AgentId = null;
                 }
-                else if (order.AgentId == null)
+                else
                 {
-                    throw new ConflictException("يجب اختيار المندوب");
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.CountryId && c.ToCountryId == order.CountryId);
+                    if (midCountry != null)
+                    {
+                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
+                        order.NextBranchId = midBranch.Id;
+                        order.AgentId = null;
+                    }
+                    else if (order.AgentId == null)
+                    {
+                        throw new ConflictException("يجب اختيار المندوب");
+                    }
                 }
+
+                
 
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
