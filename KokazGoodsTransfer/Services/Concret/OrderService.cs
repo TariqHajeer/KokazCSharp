@@ -857,6 +857,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
+                        order.TargetBranchId = midBranch.Id;
                     }
                     order.AgentId = null;
                 }
@@ -1871,7 +1872,6 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-            //predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.TargetBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
             predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.TargetBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
             var pagingResult = await _repository.GetAsync(selectedOrdersWithFitlerDto.Paging, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
