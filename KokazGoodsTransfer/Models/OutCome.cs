@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OutCome : IHaveBranch
+    public partial class OutCome : IHaveBranch, IIdEntity
     {
         public OutCome()
         {

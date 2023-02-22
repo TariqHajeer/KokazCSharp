@@ -1,11 +1,11 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
-
+using KokazGoodsTransfer.Models.Infrastrcuter;
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Country
+    public partial class Country : IIndex
     {
         public Country()
         {

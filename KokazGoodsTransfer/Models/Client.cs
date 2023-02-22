@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class Client: IHaveBranch
+    public partial class Client: IHaveBranch, IIndex
     {
         public Client()
         {
