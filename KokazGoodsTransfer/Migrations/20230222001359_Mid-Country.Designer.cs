@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20230220193133_Mid-Country")]
+    [Migration("20230222001359_Mid-Country")]
     partial class MidCountry
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2091,6 +2091,12 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             FromCountryId = 1,
+                            ToCountryId = 5,
+                            MediatorCountryId = 3
+                        },
+                        new
+                        {
+                            FromCountryId = 2,
                             ToCountryId = 5,
                             MediatorCountryId = 3
                         });

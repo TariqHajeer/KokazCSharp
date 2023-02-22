@@ -28,7 +28,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     MediatorCountryId= mid,
                 },
                 new MediatorCountry()
-                {   
+                {
                     FromCountryId =2,
                     ToCountryId =1,
                     MediatorCountryId= mid,
@@ -52,6 +52,12 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     ToCountryId=5,
                     MediatorCountryId= mid,
                 },
+                new MediatorCountry()
+                {
+                    FromCountryId=2,
+                    ToCountryId=5,
+                    MediatorCountryId= mid,
+                }
             };
             builder.HasData(data);
 

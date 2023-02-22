@@ -2091,6 +2091,12 @@ namespace KokazGoodsTransfer.Migrations
                             FromCountryId = 1,
                             ToCountryId = 5,
                             MediatorCountryId = 3
+                        },
+                        new
+                        {
+                            FromCountryId = 2,
+                            ToCountryId = 5,
+                            MediatorCountryId = 3
                         });
                 });
 

@@ -72,7 +72,8 @@ namespace KokazGoodsTransfer.Migrations
                     { 2, 1, 3 },
                     { 1, 4, 3 },
                     { 4, 1, 3 },
-                    { 1, 5, 3 }
+                    { 1, 5, 3 },
+                    { 2, 5, 3 }
                 });
 
             migrationBuilder.InsertData(
