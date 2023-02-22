@@ -63,7 +63,7 @@ namespace KokazGoodsTransfer.Services.Concret
             ITreasuryService treasuryService, IMapper mapper, IUserService userService,
             IRepository<ReceiptOfTheOrderStatus> receiptOfTheOrderStatusRepository, Logging logging,
             IRepository<ReceiptOfTheOrderStatusDetali> receiptOfTheOrderStatusDetalisRepository,
-            ICountryCashedService countryCashedService, IHttpContextAccessor httpContextAccessor,
+            ICountryCashedService countryCashedService,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
             IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment, IRepository<TransferToOtherBranchDetials> transferToOtherBranchDetialsRepository
 , IRepository<MediatorCountry> mediatorCountry)
@@ -78,11 +78,11 @@ namespace KokazGoodsTransfer.Services.Concret
             _logging = logging;
             _receiptOfTheOrderStatusDetalisRepository = receiptOfTheOrderStatusDetalisRepository;
             _countryCashedService = countryCashedService;
-            currentUser = httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
+            currentUser = _httpContextAccessorService.AuthoticateUserName();
             _countryRepository = countryRepository;
             _agentCountryRepository = agentCountryRepository;
             _userRepository = userRepository;
-            currentUserId = Convert.ToInt32(httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "UserID").Single().Value);
+            currentUserId = _httpContextAccessorService.AuthoticateUserId();
             _clientPaymentRepository = clientPaymentRepository;
             _DisAcceptOrderRepository = disAcceptOrderRepository;
             _notificationHub = notificationHub;
