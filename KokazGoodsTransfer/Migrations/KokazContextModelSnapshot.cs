@@ -176,18 +176,6 @@ namespace KokazGoodsTransfer.Migrations
                             Id = 2,
                             CountryId = 2,
                             Name = "الفرع الثاني"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CountryId = 3,
-                            Name = "الفرع الثالث الوسيط"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CountryId = 4,
-                            Name = "فرع 4"
                         });
                 });
 
@@ -451,38 +439,6 @@ namespace KokazGoodsTransfer.Migrations
                             IsMain = false,
                             Name = "مدينة2",
                             Points = 20
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة3 (وسيطة) ",
-                            Points = 20
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة 4",
-                            Points = 20
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة 5",
-                            Points = 20
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة 6",
-                            Points = 20
                         });
                 });
 
@@ -634,16 +590,11 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("Group");
 
@@ -651,25 +602,6 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            BranchId = 1,
-                            Name = "مجموعة المدراء"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BranchId = 2,
-                            Name = "مجموعة المدراء"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BranchId = 3,
-                            Name = "مجموعة المدراء"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BranchId = 4,
                             Name = "مجموعة المدراء"
                         });
                 });
@@ -696,37 +628,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 1
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 1
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 1
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 2
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 2
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 2
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 2
                         },
                         new
@@ -736,37 +638,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 3
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 3
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 3
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 4
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 4
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 4
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 4
                         },
                         new
@@ -776,37 +648,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 5
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 5
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 5
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 6
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 6
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 6
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 6
                         },
                         new
@@ -816,37 +658,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 7
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 7
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 7
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 8
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 8
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 8
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 8
                         },
                         new
@@ -856,37 +668,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 9
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 9
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 9
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 10
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 10
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 10
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 10
                         },
                         new
@@ -896,37 +678,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 11
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 11
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 11
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 12
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 12
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 12
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 12
                         },
                         new
@@ -936,37 +688,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 13
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 13
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 13
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 14
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 14
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 14
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 14
                         },
                         new
@@ -976,37 +698,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 15
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 15
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 15
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 16
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 16
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 16
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 16
                         },
                         new
@@ -1016,37 +708,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 17
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 17
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 17
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 18
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 18
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 18
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 18
                         },
                         new
@@ -1056,37 +718,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 19
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 19
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 19
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 20
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 20
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 20
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 20
                         },
                         new
@@ -1096,37 +728,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 21
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 21
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 21
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 22
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 22
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 22
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 22
                         },
                         new
@@ -1136,37 +738,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 23
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 23
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 23
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 24
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 24
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 24
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 24
                         },
                         new
@@ -1176,37 +748,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 25
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 25
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 25
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 26
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 26
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 26
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 26
                         },
                         new
@@ -1216,37 +758,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 27
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 27
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 27
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 28
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 28
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 28
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 28
                         },
                         new
@@ -1256,37 +768,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 29
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 29
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 29
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 30
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 30
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 30
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 30
                         },
                         new
@@ -1296,37 +778,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 31
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 31
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 31
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 32
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 32
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 32
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 32
                         },
                         new
@@ -1336,37 +788,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 33
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 33
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 33
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 34
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 34
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 34
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 34
                         },
                         new
@@ -1376,37 +798,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 35
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 35
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 35
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 36
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 36
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 36
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 36
                         },
                         new
@@ -1416,37 +808,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 37
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 37
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 37
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 38
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 38
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 38
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 38
                         },
                         new
@@ -1456,37 +818,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 39
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 39
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 39
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 40
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 40
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 40
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 40
                         },
                         new
@@ -1496,37 +828,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 41
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 41
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 41
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 42
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 42
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 42
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 42
                         },
                         new
@@ -1536,37 +838,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 43
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 43
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 43
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 44
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 44
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 44
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 44
                         },
                         new
@@ -1576,37 +848,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 45
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 45
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 45
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 46
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 46
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 46
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 46
                         },
                         new
@@ -1616,37 +858,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 47
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 47
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 47
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 48
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 48
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 48
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 48
                         },
                         new
@@ -1656,37 +868,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 49
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 49
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 49
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 50
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 50
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 50
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 50
                         },
                         new
@@ -1696,37 +878,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 51
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 51
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 51
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 52
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 52
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 52
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 52
                         },
                         new
@@ -1736,37 +888,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 53
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 53
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 53
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 54
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 54
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 54
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 54
                         },
                         new
@@ -1776,37 +898,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 55
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 55
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 55
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 56
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 56
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 56
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 56
                         },
                         new
@@ -1816,37 +908,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 57
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 57
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 57
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 58
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 58
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 58
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 58
                         },
                         new
@@ -1856,37 +918,7 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 59
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 59
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 59
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 60
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 60
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 60
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 60
                         },
                         new
@@ -1896,57 +928,12 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 61
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 61
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 61
-                        },
-                        new
-                        {
                             GroupId = 1,
                             PrivilegId = 62
                         },
                         new
                         {
-                            GroupId = 2,
-                            PrivilegId = 62
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 62
-                        },
-                        new
-                        {
-                            GroupId = 4,
-                            PrivilegId = 62
-                        },
-                        new
-                        {
                             GroupId = 1,
-                            PrivilegId = 63
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            PrivilegId = 63
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            PrivilegId = 63
-                        },
-                        new
-                        {
-                            GroupId = 4,
                             PrivilegId = 63
                         });
                 });
@@ -2040,64 +1027,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("ClientId");
 
                     b.ToTable("Market");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.MediatorCountry", b =>
-                {
-                    b.Property<int>("FromCountryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ToCountryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MediatorCountryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FromCountryId", "ToCountryId");
-
-                    b.HasIndex("MediatorCountryId");
-
-                    b.HasIndex("ToCountryId");
-
-                    b.ToTable("MediatorCountry");
-
-                    b.HasData(
-                        new
-                        {
-                            FromCountryId = 1,
-                            ToCountryId = 2,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 2,
-                            ToCountryId = 1,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 1,
-                            ToCountryId = 4,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 4,
-                            ToCountryId = 1,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 1,
-                            ToCountryId = 5,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 2,
-                            ToCountryId = 5,
-                            MediatorCountryId = 3
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.MoenyPlaced", b =>
@@ -2244,9 +1173,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool>("IsDollar")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsReturnedByBranch")
-                        .HasColumnType("bit");
-
                     b.Property<bool?>("IsSend")
                         .HasColumnType("bit");
 
@@ -2260,9 +1186,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("NewOrderPlacedId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NextBranchId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -2294,15 +1217,15 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SecondBranchId")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("Seen")
                         .HasColumnType("bit")
                         .HasColumnName("seen");
 
                     b.Property<string>("SystemNote")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TargetBranchId")
-                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -2328,15 +1251,13 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("NewOrderPlacedId");
 
-                    b.HasIndex("NextBranchId");
-
                     b.HasIndex("OrderStateId");
 
                     b.HasIndex("OrderplacedId");
 
                     b.HasIndex("RegionId");
 
-                    b.HasIndex("TargetBranchId");
+                    b.HasIndex("SecondBranchId");
 
                     b.ToTable("Order");
                 });
@@ -3338,75 +2259,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("Region");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DestinationBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DriverName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PrinterName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SourceBranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DestinationBranchId");
-
-                    b.HasIndex("SourceBranchId");
-
-                    b.ToTable("TransferToOtherBranches");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranchDetials", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("ClientName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CountryName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TransferToOtherBranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TransferToOtherBranchId");
-
-                    b.ToTable("TransferToOtherBranchDetials");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>
                 {
                     b.Property<int>("Id")
@@ -3575,16 +2427,6 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             BranchId = 2
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 3
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 4
                         });
                 });
 
@@ -3607,21 +2449,6 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             GroupId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            GroupId = 2
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            GroupId = 3
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            GroupId = 4
                         });
                 });
 
@@ -3884,17 +2711,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Group", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.GroupPrivilege", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Group", "Group")
@@ -3950,33 +2766,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK__Market__ClientId__1EA48E88");
 
                     b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.MediatorCountry", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "FromCountry")
-                        .WithMany("FromCountries")
-                        .HasForeignKey("FromCountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "MidCountry")
-                        .WithMany("MediatorCountries")
-                        .HasForeignKey("MediatorCountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "ToCountry")
-                        .WithMany("ToCountries")
-                        .HasForeignKey("ToCountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FromCountry");
-
-                    b.Navigation("MidCountry");
-
-                    b.Navigation("ToCountry");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Notfication", b =>
@@ -4050,10 +2839,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany()
                         .HasForeignKey("NewOrderPlacedId");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "NextBranch")
-                        .WithMany()
-                        .HasForeignKey("NextBranchId");
-
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
                         .HasForeignKey("OrderStateId")
@@ -4071,9 +2856,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK_Order_Region");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "TargetBranch")
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "SecondBranch")
                         .WithMany()
-                        .HasForeignKey("TargetBranchId");
+                        .HasForeignKey("SecondBranchId");
 
                     b.Navigation("Agent");
 
@@ -4091,15 +2876,13 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("NewOrderPlaced");
 
-                    b.Navigation("NextBranch");
-
                     b.Navigation("Orderplaced");
 
                     b.Navigation("OrderState");
 
                     b.Navigation("Region");
 
-                    b.Navigation("TargetBranch");
+                    b.Navigation("SecondBranch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderClientPaymnet", b =>
@@ -4404,36 +3187,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "DestinationBranch")
-                        .WithMany()
-                        .HasForeignKey("DestinationBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "SourceBranch")
-                        .WithMany()
-                        .HasForeignKey("SourceBranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("DestinationBranch");
-
-                    b.Navigation("SourceBranch");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranchDetials", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", "TransferToOtherBranch")
-                        .WithMany("TransferToOtherBranchDetials")
-                        .HasForeignKey("TransferToOtherBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TransferToOtherBranch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.User", "IdNavigation")
@@ -4624,11 +3377,7 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("DisAcceptOrders");
 
-                    b.Navigation("FromCountries");
-
                     b.Navigation("InverseMediator");
-
-                    b.Navigation("MediatorCountries");
 
                     b.Navigation("OrderCountries");
 
@@ -4637,8 +3386,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("OrderLogs");
 
                     b.Navigation("Regions");
-
-                    b.Navigation("ToCountries");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Group", b =>
@@ -4748,11 +3495,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("OrderLogs");
 
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.TransferToBranchModels.TransferToOtherBranch", b =>
-                {
-                    b.Navigation("TransferToOtherBranchDetials");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Treasury", b =>

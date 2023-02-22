@@ -82,8 +82,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var user = _mapper.Map<User>(createDto);
             if (createDto.CanWorkAsAgent)
             {
-                var countries = await _countryCashedService.GetAsync(c => createDto.Countries.Contains(c.Id) && c.Branches.Any(), c => c.Branches);
-                var branchesids = countries.SelectMany(c => c.BranchesIds).ToArray();
+                var countries = await _countryCashedService.GetAsync(c => createDto.Countries.Contains(c.Id) && c.Branch!=null, c => c.Branch);
+                var branchesids = countries.Select(c => c.Id).ToArray();
                 if (branchesids.Except(_httpContextAccessorService.Branches()).Any())
                     throw new ConflictException("لا يمكنك  إضافة مدينة لمدنوب لديها فرع");
                 user.BranchId = _currentBranch;

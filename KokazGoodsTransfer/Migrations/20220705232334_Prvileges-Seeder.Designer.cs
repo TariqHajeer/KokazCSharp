@@ -55,40 +55,35 @@ namespace KokazGoodsTransfer.Migrations
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrint", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int")
+                    .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
+                b.Property<DateTime>("Date")
+                    .HasColumnType("datetime");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime");
+                b.Property<string>("DestinationName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("DestinationName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("DestinationPhone")
+                    .IsRequired()
+                    .HasMaxLength(11)
+                    .IsUnicode(false)
+                    .HasColumnType("varchar(11)");
 
-                    b.Property<string>("DestinationPhone")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(11)");
+                b.Property<string>("PrinterName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("PrinterName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.HasKey("Id");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("AgentPrint");
-                });
+                b.ToTable("AgentPrint");
+            });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrintDetail", b =>
                 {

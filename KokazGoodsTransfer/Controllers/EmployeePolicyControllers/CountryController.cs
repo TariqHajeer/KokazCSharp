@@ -47,7 +47,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<bool>> RequiredAgent([FromQuery] int countryId)
         {
             var currentBranch = await _branchRepository.GetById(_currentBranchId); 
-            return Ok(!(await _mediatorCountry.Any(c => c.FromCountryId == currentBranch.CountryId && c.ToCountryId == countryId)));
+            return Ok(!(await _mediatorCountry.Any(c => c.FromCountryId == currentBranch.Id && c.ToCountryId == countryId)));
 
         }
         [HttpGet]

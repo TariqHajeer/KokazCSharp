@@ -25,6 +25,7 @@ namespace KokazGoodsTransfer.Models
         public int? MediatorId { get; set; }
         public bool IsMain { get; set; }
         public int Points { get; set; }
+        public Branch Branch { get; set; }
 
         public virtual Country Mediator { get; set; }
         public virtual ICollection<AgentCountry> AgentCountries { get; set; }
@@ -35,7 +36,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<Order> OrderCurrentCountryNavigations { get; set; }
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
         public virtual ICollection<Region> Regions { get; set; }
-        public virtual ICollection<Branch> Branches { get; set; }
         public virtual ICollection<MediatorCountry> FromCountries { get; set; }
         public virtual ICollection<MediatorCountry> MediatorCountries { get; set; }
         public virtual ICollection<MediatorCountry> ToCountries { get; set; }

@@ -801,7 +801,7 @@ namespace KokazGoodsTransfer.Services.Concret
             try
             {
                 var countryIds = createMultipleOrders.Select(c => c.CountryId);
-                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.CountryId) && c.Id != _currentBranchId);
+                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.Id) && c.Id != _currentBranchId);
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
@@ -810,7 +810,7 @@ namespace KokazGoodsTransfer.Services.Concret
                      order.CurrentCountry = mainCountryId;
                      order.CreatedBy = currentUser;
                      order.CurrentBranchId = _currentBranchId;
-                     var secoundBranch = branches.FirstOrDefault(c => c.CountryId == item.CountryId);
+                     var secoundBranch = branches.FirstOrDefault(c => c.Id == item.CountryId);
                      if (secoundBranch != null)
                      {
                          order.TargetBranchId = secoundBranch.Id;
@@ -841,7 +841,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 order.CurrentCountry = country.Id;
                 order.CurrentBranchId = _currentBranchId;
-                var targetBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == country.Id && c.Id != _currentBranchId);
+                var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
                 if (targetBranch != null)
                 {
                     order.TargetBranchId = targetBranch.Id;
@@ -851,11 +851,11 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
 
 
-                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.CountryId && c.ToCountryId == targetBranch.CountryId);
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id&& c.ToCountryId == targetBranch.Id);
 
                     if (midCountry != null)
                     {
-                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
+                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.Id == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
                         //order.TargetBranchId = midBranch.Id;
                     }
@@ -863,10 +863,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 else
                 {
-                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.CountryId && c.ToCountryId == order.CountryId);
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
                     if (midCountry != null)
                     {
-                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
+                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.Id == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
                         order.TargetBranchId = midBranch.Id;
                         order.AgentId = null;

@@ -10,34 +10,33 @@ namespace KokazGoodsTransfer.TypeConfiguration
         public void Configure(EntityTypeBuilder<Branch> builder)
         {
 
+            builder.HasKey(x => x.Id);
+            builder.Property(c => c.Name).IsUnicode(true);
+            builder.Property(c=>c.Name).IsRequired().IsUnicode(true).HasMaxLength(50);
             var bl = new List<Branch>()
             {
                 new Branch()
             {
                 Id = 1,
                 Name = "الفرع الرئيسي",
-                CountryId = 1,
 
             },
                     new Branch()
             {
                 Id = 2,
                 Name = "الفرع الثاني",
-                CountryId = 2,
 
             },
                     new Branch()
             {
                 Id = 3,
                 Name = "الفرع الثالث الوسيط",
-                CountryId = 3,
 
             },
                new Branch()
                {
                    Id=4,
                    Name="فرع 4",
-                   CountryId= 4,
                }
             };
             builder.HasData(bl);
