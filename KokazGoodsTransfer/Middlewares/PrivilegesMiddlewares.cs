@@ -19,12 +19,12 @@ namespace KokazGoodsTransfer.Middlewares
         public async Task Invoke(HttpContext context)
         {
             var user = context.User;
-            if (user?.Identity.IsAuthenticated==true)
+            if (user?.Identity.IsAuthenticated == true)
             {
-                var groups = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => int.Parse(c.Value));
-                var httpContextAccessSerivce = context.RequestServices.GetService<IHttpContextAccessorService>();
+                var userId = int.Parse(user.Claims.First(c => c.Type == "UserID").Value);
                 var groupSerivce = context.RequestServices.GetService<IGroupService>();
-                var privliegs = await groupSerivce.GetGroupsPrviligesByGroupsIds(groups, httpContextAccessSerivce.CurrentBranchId());
+                var httpContextAccessSerivce = context.RequestServices.GetService<IHttpContextAccessorService>();
+                var privliegs = await groupSerivce.GetPrviligesByUserAndBranchId(userId, httpContextAccessSerivce.CurrentBranchId());
                 var claims = privliegs.Select(c => new Claim(ClaimTypes.Role, c.SysName));
                 var appIdentity = new ClaimsIdentity(claims);
                 user.AddIdentity(appIdentity);

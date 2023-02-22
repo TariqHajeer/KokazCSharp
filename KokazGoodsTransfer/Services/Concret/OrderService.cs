@@ -496,14 +496,14 @@ namespace KokazGoodsTransfer.Services.Concret
             try
             {
                 var predicate = GetFilterAsLinq(transferToSecondBranchDto.SelectedOrdersWithFitlerDto);
-                predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.TargetBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
+                predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.NextBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
                 var orders = await _repository.GetAsync(predicate, c => c.Country, c => c.Client);
 
                 if (!orders.Any())
                 {
                     throw new ConflictException("الشحنات غير موجودة");
                 }
-                if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.TargetBranchId == null))
+                if (orders.Any(c => c.CurrentBranchId != _currentBranchId || c.OrderplacedId != (int)OrderplacedEnum.Store || c.NextBranchId == null))
                 {
                     throw new ConflictException("هناك شحنات لا يمكن إرسالها ");
                 }
@@ -849,15 +849,15 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
                     }
-                    
-                    
+
+
                     var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.CountryId && c.ToCountryId == targetBranch.CountryId);
-                    
+
                     if (midCountry != null)
                     {
                         var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
-                        order.TargetBranchId = midBranch.Id;
+                        //order.TargetBranchId = midBranch.Id;
                     }
                     order.AgentId = null;
                 }
@@ -868,6 +868,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         var midBranch = await _branchRepository.FirstOrDefualt(c => c.CountryId == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
+                        order.TargetBranchId = midBranch.Id;
                         order.AgentId = null;
                     }
                     else if (order.AgentId == null)
@@ -876,7 +877,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                 }
 
-                
+
 
                 order.CreatedBy = currentUser;
                 if (await _uintOfWork.Repository<Order>().Any(c => c.Code == order.Code && c.ClientId == order.ClientId))
@@ -1872,7 +1873,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.TargetBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
+            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.NextBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
             var pagingResult = await _repository.GetAsync(selectedOrdersWithFitlerDto.Paging, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1883,7 +1884,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter filter)
         {
             var predicate = GetFilterAsLinq(filter);
-            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.TargetBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
+            predicate = predicate.And(c => c.OrderplacedId == (int)OrderplacedEnum.Store & c.NextBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
             var pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1991,7 +1992,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _repository.Update(order);
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto)
-        { 
+        {
             var orders = await _repository.GetAsync(pagingDto, c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {

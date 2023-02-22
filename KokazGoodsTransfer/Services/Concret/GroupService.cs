@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,6 +108,11 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
             }
             return response;
+        }
+        public async Task<IEnumerable<Privilege>> GetPrviligesByUserAndBranchId(int userId ,int branchId)
+        {
+            var groups = await _repository.GetByFilterInclue(c => c.UserGroups.Any(c => c.UserId == userId) && c.BranchId == branchId, new string[] { "GroupPrivileges.Privileg" });
+            return groups.SelectMany(c => c.GroupPrivileges.Select(c => c.Privileg));
         }
         public async Task<IEnumerable<Privilege>> GetGroupsPrviligesByGroupsIds(IEnumerable<int> groupsIds, int branchId)
         {
