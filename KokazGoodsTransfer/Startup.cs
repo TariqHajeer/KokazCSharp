@@ -167,7 +167,7 @@ namespace KokazGoodsTransfer
             services.AddScoped(typeof(IIndexRepository<>), typeof(IndexRepository<>));
             services.AddAutoMapper(typeof(Startup));
             RegiserServices(services);
-            services.AddWkhtmltopdf("wkhtmltopdf");     
+            services.AddWkhtmltopdf("wkhtmltopdf");
             services.AddScoped<Logging, Logging>();
 
         }
