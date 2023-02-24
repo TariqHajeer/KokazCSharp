@@ -65,11 +65,12 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
         }
         public bool Resolve(Country source, CountryDto destination, bool destMember, ResolutionContext context)
         {
+            var currentCountyId = _httpContextAccessorService.CurrentBranchId();
             if (source.Id == _httpContextAccessorService.CurrentBranchId())
                 return true;
             if (source.Branch != null)
                 return false;
-            return !source.ToCountries.Select(c => c.FromCountryId).Contains(source.Id);
+            return !source.ToCountries.Select(c => c.FromCountryId).Contains(currentCountyId);
         }
     }
 }
