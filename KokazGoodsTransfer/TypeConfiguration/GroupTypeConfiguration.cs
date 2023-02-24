@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KokazGoodsTransfer.TypeConfiguration
 {
-    public class GroupTypePrivileges : IEntityTypeConfiguration<Group>
+    public class GroupTypeConfiguration : IEntityTypeConfiguration<Group>
     {
         public void Configure(EntityTypeBuilder<Group> builder)
         {
             var id = 1;
             var group = new Group()
             {
-                Id =id++ ,
+                Id = id++,
                 Name = "مجموعة المدراء",
                 BranchId = 1,
 

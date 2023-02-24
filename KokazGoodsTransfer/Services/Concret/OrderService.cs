@@ -851,7 +851,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
 
 
-                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id&& c.ToCountryId == targetBranch.Id);
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
 
                     if (midCountry != null)
                     {
@@ -1865,7 +1865,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.OrderplacedId = (int)OrderplacedEnum.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                order.AgentCost = agents.Single(c => c.Id == order.AgentId).Salary ?? 0;
+                order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
             }
             await _repository.Update(orders);
 

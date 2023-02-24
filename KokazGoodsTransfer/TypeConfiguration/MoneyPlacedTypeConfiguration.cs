@@ -15,7 +15,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 {
                     Id =1,
                     Name ="خارج الشركة",
-                    
+
                 },
                 new MoenyPlaced()
                 {

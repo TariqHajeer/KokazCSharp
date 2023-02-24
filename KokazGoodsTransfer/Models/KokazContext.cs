@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using KokazGoodsTransfer.Models.Configuration;
 using KokazGoodsTransfer.Models.TransferToBranchModels;
+using KokazGoodsTransfer.TypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

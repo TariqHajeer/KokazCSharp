@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.TypeConfiguration
 {
-    public class GroupPrivilegeTypeConfiguration : IEntityTypeConfiguration<GroupPrivilege>
+    public class GroupPrivilegeTypeConfiguration: IEntityTypeConfiguration<GroupPrivilege>
     {
         public void Configure(EntityTypeBuilder<GroupPrivilege> builder)
         {
