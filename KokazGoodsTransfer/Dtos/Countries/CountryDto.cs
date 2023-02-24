@@ -11,7 +11,6 @@ namespace KokazGoodsTransfer.Dtos.Countries
         public decimal DeliveryCost { get; set; }
         public bool CanDelete { get; set; }
         public bool CanDeleteWithRegion { get; set; }
-        public int[] BranchesIds { get; set; }
         public bool IsMain { get; set; }
         public int Points { get; set; } 
         public List<RegionDto> Regions { get; set; }

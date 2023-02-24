@@ -163,23 +163,28 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Name = "الفرع الرئيسي"
+                            Id = 4,
+                            Name = "فرع الموصل"
                         },
                         new
                         {
-                            Id = 2,
-                            Name = "الفرع الثاني"
+                            Id = 8,
+                            Name = "فرع اربيل"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "الفرع الثالث الوسيط"
+                            Name = "فرع سليمانية"
                         },
                         new
                         {
-                            Id = 4,
-                            Name = "فرع 4"
+                            Id = 5,
+                            Name = "فرع بغداد"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "فرع كروك"
                         });
                 });
 
@@ -987,13 +992,13 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            BranchId = 1,
+                            BranchId = 4,
                             Name = "مجموعة المدراء"
                         },
                         new
                         {
                             Id = 2,
-                            BranchId = 2,
+                            BranchId = 8,
                             Name = "مجموعة المدراء"
                         },
                         new
@@ -1005,7 +1010,13 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 4,
-                            BranchId = 4,
+                            BranchId = 5,
+                            Name = "مجموعة المدراء"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BranchId = 7,
                             Name = "مجموعة المدراء"
                         });
                 });
@@ -2400,39 +2411,513 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasData(
                         new
                         {
-                            FromCountryId = 1,
-                            ToCountryId = 2,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 2,
-                            ToCountryId = 1,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 1,
-                            ToCountryId = 4,
-                            MediatorCountryId = 3
+                            FromCountryId = 4,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
                         },
                         new
                         {
                             FromCountryId = 4,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 7,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 7,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
                             ToCountryId = 1,
-                            MediatorCountryId = 3
+                            MediatorCountryId = 8
                         },
                         new
                         {
-                            FromCountryId = 1,
-                            ToCountryId = 5,
-                            MediatorCountryId = 3
+                            FromCountryId = 7,
+                            ToCountryId = 2,
+                            MediatorCountryId = 8
                         },
                         new
                         {
-                            FromCountryId = 2,
+                            FromCountryId = 7,
+                            ToCountryId = 3,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 4,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
                             ToCountryId = 5,
-                            MediatorCountryId = 3
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 6,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 9,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 10,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 11,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 12,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 13,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 14,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 15,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 16,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 17,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 18,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 19,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 20,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 21,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 22,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 23,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 24,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 25,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 26,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 27,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 28,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 29,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 30,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 31,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 32,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 33,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 34,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 35,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 36,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 37,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 38,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 39,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 40,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 41,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 42,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 43,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 44,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 45,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 46,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 47,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 48,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 49,
+                            MediatorCountryId = 8
                         });
                 });
 
@@ -3905,12 +4390,12 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             UserId = 1,
-                            BranchId = 1
+                            BranchId = 4
                         },
                         new
                         {
                             UserId = 1,
-                            BranchId = 2
+                            BranchId = 8
                         },
                         new
                         {
@@ -3920,7 +4405,12 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             UserId = 1,
-                            BranchId = 4
+                            BranchId = 5
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 7
                         });
                 });
 

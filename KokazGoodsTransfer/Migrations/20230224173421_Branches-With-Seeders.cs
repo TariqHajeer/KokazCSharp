@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KokazGoodsTransfer.Migrations
 {
-    public partial class Branches : Migration
+    public partial class BranchesWithSeeders : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -292,10 +292,11 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1, "الفرع الرئيسي" },
-                    { 2, "الفرع الثاني" },
-                    { 3, "الفرع الثالث الوسيط" },
-                    { 4, "فرع 4" }
+                    { 4, "فرع الموصل" },
+                    { 8, "فرع اربيل" },
+                    { 3, "فرع سليمانية" },
+                    { 5, "فرع بغداد" },
+                    { 7, "فرع كروك" }
                 });
 
             migrationBuilder.InsertData(
@@ -303,12 +304,105 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
                 values: new object[,]
                 {
-                    { 1, 2, 3 },
-                    { 2, 1, 3 },
-                    { 1, 4, 3 },
-                    { 4, 1, 3 },
-                    { 1, 5, 3 },
-                    { 2, 5, 3 }
+                    { 7, 25, 8 },
+                    { 7, 24, 8 },
+                    { 7, 23, 8 },
+                    { 7, 22, 8 },
+                    { 7, 21, 8 },
+                    { 7, 20, 8 },
+                    { 7, 19, 8 },
+                    { 7, 18, 8 },
+                    { 7, 15, 8 },
+                    { 7, 16, 8 },
+                    { 7, 26, 8 },
+                    { 7, 14, 8 },
+                    { 7, 13, 8 },
+                    { 7, 12, 8 },
+                    { 7, 11, 8 },
+                    { 7, 10, 8 },
+                    { 7, 9, 8 },
+                    { 7, 17, 8 },
+                    { 7, 27, 8 },
+                    { 7, 30, 8 },
+                    { 7, 29, 8 },
+                    { 7, 47, 8 },
+                    { 7, 46, 8 },
+                    { 7, 45, 8 },
+                    { 7, 44, 8 },
+                    { 7, 43, 8 },
+                    { 7, 42, 8 },
+                    { 7, 41, 8 },
+                    { 7, 40, 8 },
+                    { 7, 28, 8 },
+                    { 7, 39, 8 },
+                    { 7, 37, 8 },
+                    { 7, 36, 8 },
+                    { 7, 35, 8 },
+                    { 7, 34, 8 },
+                    { 7, 33, 8 },
+                    { 7, 32, 8 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MediatorCountry",
+                columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
+                values: new object[,]
+                {
+                    { 7, 31, 8 },
+                    { 7, 6, 8 },
+                    { 7, 38, 8 },
+                    { 7, 5, 8 },
+                    { 7, 2, 8 },
+                    { 7, 3, 8 },
+                    { 8, 18, 5 },
+                    { 8, 14, 5 },
+                    { 8, 13, 5 },
+                    { 8, 12, 5 },
+                    { 8, 10, 5 },
+                    { 4, 7, 8 },
+                    { 4, 49, 5 },
+                    { 4, 15, 5 },
+                    { 8, 20, 5 },
+                    { 4, 22, 5 },
+                    { 4, 16, 5 },
+                    { 4, 23, 5 },
+                    { 4, 20, 5 },
+                    { 4, 18, 5 },
+                    { 4, 14, 5 },
+                    { 4, 13, 5 },
+                    { 4, 12, 5 },
+                    { 4, 10, 5 },
+                    { 4, 26, 5 },
+                    { 7, 4, 8 },
+                    { 8, 23, 5 },
+                    { 8, 26, 5 },
+                    { 7, 48, 8 },
+                    { 7, 1, 8 },
+                    { 3, 7, 8 },
+                    { 3, 49, 5 },
+                    { 3, 15, 5 },
+                    { 3, 22, 5 },
+                    { 3, 26, 5 },
+                    { 3, 16, 5 },
+                    { 8, 16, 5 },
+                    { 3, 23, 5 },
+                    { 3, 18, 5 },
+                    { 3, 14, 5 },
+                    { 3, 13, 5 },
+                    { 3, 12, 5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MediatorCountry",
+                columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
+                values: new object[,]
+                {
+                    { 3, 10, 5 },
+                    { 8, 49, 5 },
+                    { 8, 15, 5 },
+                    { 8, 22, 5 },
+                    { 3, 20, 5 },
+                    { 7, 49, 8 }
                 });
 
             migrationBuilder.UpdateData(
@@ -316,16 +410,17 @@ namespace KokazGoodsTransfer.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "BranchId",
-                value: 1);
+                value: 4);
 
             migrationBuilder.InsertData(
                 table: "Group",
                 columns: new[] { "Id", "BranchId", "Name" },
                 values: new object[,]
                 {
-                    { 2, 2, "مجموعة المدراء" },
+                    { 2, 8, "مجموعة المدراء" },
                     { 3, 3, "مجموعة المدراء" },
-                    { 4, 4, "مجموعة المدراء" }
+                    { 4, 5, "مجموعة المدراء" },
+                    { 5, 7, "مجموعة المدراء" }
                 });
 
             migrationBuilder.InsertData(
@@ -333,10 +428,11 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "BranchId", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1 },
-                    { 2, 1 },
+                    { 4, 1 },
+                    { 8, 1 },
                     { 3, 1 },
-                    { 4, 1 }
+                    { 5, 1 },
+                    { 7, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1019,6 +1115,11 @@ namespace KokazGoodsTransfer.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_AgentPrint_BranchId",
                 table: "AgentPrint");
+
+            migrationBuilder.DeleteData(
+                table: "Group",
+                keyColumn: "Id",
+                keyValue: 5);
 
             migrationBuilder.DeleteData(
                 table: "GroupPrivilege",
