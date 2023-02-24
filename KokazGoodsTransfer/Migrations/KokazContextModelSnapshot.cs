@@ -59,9 +59,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
 
@@ -82,8 +79,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("AgentPrint");
                 });
@@ -145,38 +140,37 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("AgentPrintDetails");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
+            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("CountryId")
+                    b.Property<int>("AgentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("IsApprove")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("NewAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderPlacedId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryId");
+                    b.HasIndex("AgentId");
 
-                    b.ToTable("Branches");
+                    b.HasIndex("OrderId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "الفرع الرئيسي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryId = 2,
-                            Name = "الفرع الثاني"
-                        });
+                    b.HasIndex("OrderPlacedId");
+
+                    b.ToTable("ApproveAgentEditOrderRequest");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -222,9 +216,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
@@ -261,8 +252,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("CountryId");
 
                     b.HasIndex("UserId");
@@ -276,9 +265,6 @@ namespace KokazGoodsTransfer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
@@ -300,8 +286,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("ClientPayment");
                 });
@@ -422,24 +406,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DeliveryCost = 10000m,
-                            IsMain = true,
-                            Name = "مدينة1",
-                            Points = 15
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة2",
-                            Points = 20
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
@@ -451,9 +417,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -503,8 +466,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("CountryId");
@@ -547,9 +508,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -574,8 +532,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("UserId");
@@ -597,13 +553,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Group");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "مجموعة المدراء"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.GroupPrivilege", b =>
@@ -619,323 +568,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("PrivilegId");
 
                     b.ToTable("GroupPrivilege");
-
-                    b.HasData(
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 1
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 2
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 3
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 4
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 5
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 6
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 7
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 8
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 9
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 10
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 11
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 12
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 13
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 14
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 15
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 16
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 17
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 18
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 19
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 20
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 21
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 22
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 23
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 24
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 25
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 26
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 27
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 28
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 29
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 30
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 31
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 32
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 33
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 34
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 35
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 36
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 37
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 38
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 39
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 40
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 41
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 42
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 43
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 44
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 45
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 46
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 47
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 48
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 49
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 50
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 51
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 52
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 53
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 54
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 55
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 56
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 57
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 58
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 59
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 60
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 61
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 62
-                        },
-                        new
-                        {
-                            GroupId = 1,
-                            PrivilegId = 63
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
@@ -947,9 +579,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -968,8 +597,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("IncomeTypeId");
 
@@ -1042,28 +669,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MoenyPlaced");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "خارج الشركة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "مندوب"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "داخل الشركة"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "تم تسليمها"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Notfication", b =>
@@ -1123,9 +728,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("AgentRequestStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1149,9 +751,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CurrentBranchId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CurrentCountry")
                         .HasColumnType("int");
 
@@ -1163,9 +762,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<DateTime?>("DiliveryDate")
                         .HasColumnType("date");
-
-                    b.Property<bool>("InWayToBranch")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsClientDiliverdMoney")
                         .HasColumnType("bit");
@@ -1180,12 +776,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("MoenyPlacedId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("NewCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("NewOrderPlacedId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -1217,9 +807,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SecondBranchId")
-                        .HasColumnType("int");
-
                     b.Property<bool?>("Seen")
                         .HasColumnType("bit")
                         .HasColumnName("seen");
@@ -1237,27 +824,19 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("AgentId");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("CurrentBranchId");
-
                     b.HasIndex("CurrentCountry");
 
                     b.HasIndex("MoenyPlacedId");
-
-                    b.HasIndex("NewOrderPlacedId");
 
                     b.HasIndex("OrderStateId");
 
                     b.HasIndex("OrderplacedId");
 
                     b.HasIndex("RegionId");
-
-                    b.HasIndex("SecondBranchId");
 
                     b.ToTable("Order");
                 });
@@ -1469,48 +1048,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderPlaced");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "عند العميل"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "في المخزن"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "في الطريق"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "تم التسليم"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "مرتجع كلي"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "مرتجع جزئي"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "مرفوض"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "مؤجل"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderState", b =>
@@ -1525,23 +1062,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderState");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            State = "قيد المعالجة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            State = "يحب اخذ النقود من العميل"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            State = "منتهية"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
@@ -1551,17 +1071,12 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("OrderType");
                 });
@@ -1575,9 +1090,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -1596,8 +1108,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("OutComeTypeId");
 
@@ -1633,9 +1143,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1649,8 +1156,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -1666,16 +1171,11 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("PaymentWay");
                 });
@@ -1687,9 +1187,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Money")
                         .HasColumnType("money");
 
@@ -1697,8 +1194,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex(new[] { "Points" }, "UQ__PointsSe__DA826786C9B4659A")
                         .IsUnique();
@@ -1726,386 +1221,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Privilege");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "عرض المجموعات",
-                            SysName = "ShowGroup"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "إضافة مجموعات",
-                            SysName = "AddGroup"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "التعديل على المجموعات",
-                            SysName = "EditGroup"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "حذف مجموعات",
-                            SysName = "DeleteGroup"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "عرض الموظفين",
-                            SysName = "ShowUser"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "إضافة موظفين",
-                            SysName = "AddUser"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "تعديل الموظفين",
-                            SysName = "EditUser"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "حذف موظفين",
-                            SysName = "DeleteUser"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "عرض انواع الطلبات",
-                            SysName = "ShowOrderType"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "إضافة انواع الطلبات",
-                            SysName = "AddOrderType"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "تعديل انواع الطلبات",
-                            SysName = "EditOrderType"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "حذف انواع الطلبات",
-                            SysName = "DeleteOrderType"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "عرض المدن",
-                            SysName = "ShowCountry"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "إضافة المدن",
-                            SysName = "AddCountry"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "تعديل المدن",
-                            SysName = "EditCountry"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "حذف المدن",
-                            SysName = "DeleteCountry"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "إضافة منطقة",
-                            SysName = "AddRegion"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "تعديل منطقة",
-                            SysName = "EditRegion"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "عرض المناطق",
-                            SysName = "ShowRegion"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "حذف منقطة",
-                            SysName = "DeleteRegion"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Name = "إضافة عملاء",
-                            SysName = "AddClient"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "عرض العملاء",
-                            SysName = "ShowClient"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "تعديل العملاء",
-                            SysName = "UpdateClient"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "حذف العملاء",
-                            SysName = "DeleteClient"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Name = "عرض العملات",
-                            SysName = "ShowCurrency"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "إضافة عملات",
-                            SysName = "AddCurrency"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Name = "تعديل العملات",
-                            SysName = "UpdateCurrency"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Name = "حذف العملات",
-                            SysName = "DeleteCurrency"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Name = "عرض الأقسام",
-                            SysName = "ShowDepartment"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Name = "إضافة قسم",
-                            SysName = "AddDepartment"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Name = "تعديل قسم",
-                            SysName = "UpdateDepartment"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Name = "عرض انواع الواردات",
-                            SysName = "ShowIncomeType"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Name = "إضافة انواع الواردات",
-                            SysName = "AddIncomeType"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Name = "تعديل انواع الواردات",
-                            SysName = "UpdateIncomeType"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            Name = "حذف انواع الواردات",
-                            SysName = "DeleteIncomeType"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Name = "عرض انواع الصادرات",
-                            SysName = "ShowOutComeType"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Name = "إضافة انواع الصادرات",
-                            SysName = "AddOutComeType"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Name = "تعديل انواع الصادرات",
-                            SysName = "UpdateOutComeType"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Name = "حذف انواع الصادرات",
-                            SysName = "DeleteOutComeType"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Name = "إضافة طلبات",
-                            SysName = "AddOrder"
-                        },
-                        new
-                        {
-                            Id = 41,
-                            Name = "تعديل الطلبات",
-                            SysName = "UpdateOrder"
-                        },
-                        new
-                        {
-                            Id = 42,
-                            Name = "حذف الطلبات",
-                            SysName = "DeleteOrder"
-                        },
-                        new
-                        {
-                            Id = 43,
-                            Name = "عرض الطلبات",
-                            SysName = "ShowOrder"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            Name = "اضافة صادرات",
-                            SysName = "AddOutCome"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            Name = "عرض الصادرات",
-                            SysName = "ShowOutCome"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            Name = "تعديل الصادرات",
-                            SysName = "UpdateOutCome"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            Name = "حذف الصادرات",
-                            SysName = "DeleteOutCome"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            Name = "إضافة واردات",
-                            SysName = "AddIncome"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            Name = "عرض الواردات",
-                            SysName = "ShowIncome"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            Name = "تعديل الواردات",
-                            SysName = "UpdateIncome"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            Name = "حذف الواردات",
-                            SysName = "DeleteIncome"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            Name = "عرض التقارير",
-                            SysName = "ShowReports"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            Name = "طباعة عميل",
-                            SysName = "PrintClient"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            Name = "طباعة مندوب",
-                            SysName = "PrintAgent"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            Name = "تسديد",
-                            SysName = "Pay"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            Name = "إدارة الصناديق",
-                            SysName = "TreasuryManagment"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            Name = "استلام الشحنات المسلمة",
-                            SysName = "ReceiptOfTheStatusOfTheDeliveredShipment"
-                        },
-                        new
-                        {
-                            Id = 58,
-                            Name = "استلام الشحنات المرتجعة",
-                            SysName = "ReceiptOfTheStatusOfTheReturnedShipment"
-                        },
-                        new
-                        {
-                            Id = 59,
-                            Name = "تسديد في الطريق",
-                            SysName = "PayInWay"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            Name = "تسديد مرتجع كلي",
-                            SysName = "PayCompletelyReturned"
-                        },
-                        new
-                        {
-                            Id = 61,
-                            Name = "تسديد مرتجع جزئي",
-                            SysName = "PayPartialReturned"
-                        },
-                        new
-                        {
-                            Id = 62,
-                            Name = "تسديد تم الستليم",
-                            SysName = "PayDelivered"
-                        },
-                        new
-                        {
-                            Id = 63,
-                            Name = "تسديد المرفوض",
-                            SysName = "PayUnacceptable"
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
@@ -2120,9 +1235,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -2149,8 +1261,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -2276,15 +1386,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreateOnUtc = new DateTime(2019, 12, 31, 22, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            Total = 0m
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.TreasuryHistory", b =>
@@ -2350,9 +1451,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<string>("Adress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("CanWorkAsAgent")
                         .HasColumnType("bit");
 
@@ -2386,48 +1484,7 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CanWorkAsAgent = false,
-                            HireDate = new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            Name = "admin",
-                            Password = "21232f297a57a5a743894a0e4a801fc3",
-                            UserName = "admin"
-                        });
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "BranchId");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("UserBranch");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 2
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
@@ -2443,13 +1500,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("UserGroup");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            GroupId = 1
-                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserPhone", b =>
@@ -2514,17 +1564,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrint", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrintDetail", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.AgentPrint", "AgentPrint")
@@ -2536,15 +1575,31 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentPrint");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
+            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
-                        .WithMany("Branches")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("KokazGoodsTransfer.Models.User", "Agent")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("AgentId")
+                        .HasConstraintName("FK__ApproveAg__Agent__0B91BA14")
                         .IsRequired();
 
-                    b.Navigation("Country");
+                    b.HasOne("KokazGoodsTransfer.Models.Order", "Order")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("FK__ApproveAg__Order__0C85DE4D")
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "OrderPlaced")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("OrderPlacedId")
+                        .HasConstraintName("FK__ApproveAg__Order__0D7A0286")
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("OrderPlaced");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -2560,12 +1615,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Client", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
                         .WithMany("Clients")
                         .HasForeignKey("CountryId")
@@ -2577,22 +1626,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Clients_Users")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("Country");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.ClientPayment", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.ClientPaymentDetail", b =>
@@ -2643,12 +1679,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("ClientId")
@@ -2665,8 +1695,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK__DisAccept__Regio__17036CC0");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -2687,12 +1715,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.EditRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("EditRequests")
                         .HasForeignKey("ClientId")
@@ -2703,8 +1725,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("EditRequests")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__EditReque__UserI__19DFD96B");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -2733,12 +1753,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.IncomeType", "IncomeType")
                         .WithMany("Incomes")
                         .HasForeignKey("IncomeTypeId")
@@ -2750,8 +1764,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK_Income_Users")
                         .IsRequired();
-
-                    b.Navigation("Branch");
 
                     b.Navigation("IncomeType");
 
@@ -2800,12 +1812,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("AgentId")
                         .HasConstraintName("FK_Order_Users");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
@@ -2818,12 +1824,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Order_Country")
                         .IsRequired();
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
-                        .WithMany()
-                        .HasForeignKey("CurrentBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Country", "CurrentCountryNavigation")
                         .WithMany("OrderCurrentCountryNavigations")
                         .HasForeignKey("CurrentCountry")
@@ -2834,10 +1834,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("MoenyPlacedId")
                         .HasConstraintName("FK_Order_MoenyPlaced")
                         .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "NewOrderPlaced")
-                        .WithMany()
-                        .HasForeignKey("NewOrderPlacedId");
 
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
@@ -2856,33 +1852,21 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK_Order_Region");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "SecondBranch")
-                        .WithMany()
-                        .HasForeignKey("SecondBranchId");
-
                     b.Navigation("Agent");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
                     b.Navigation("Country");
 
-                    b.Navigation("CurrentBranch");
-
                     b.Navigation("CurrentCountryNavigation");
 
                     b.Navigation("MoenyPlaced");
-
-                    b.Navigation("NewOrderPlaced");
 
                     b.Navigation("Orderplaced");
 
                     b.Navigation("OrderState");
 
                     b.Navigation("Region");
-
-                    b.Navigation("SecondBranch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderClientPaymnet", b =>
@@ -2993,25 +1977,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.OutCome", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.OutComeType", "OutComeType")
                         .WithMany("OutComes")
                         .HasForeignKey("OutComeTypeId")
@@ -3024,8 +1991,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_OutCome_Users")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("OutComeType");
 
                     b.Navigation("User");
@@ -3033,12 +1998,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("PaymentRequests")
                         .HasForeignKey("ClientId")
@@ -3051,43 +2010,13 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK__PaymentRe__Payme__5BAD9CC8")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("Client");
 
                     b.Navigation("PaymentWay");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentWay", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.PointsSetting", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("Receipts")
                         .HasForeignKey("ClientId")
@@ -3098,8 +2027,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("Receipts")
                         .HasForeignKey("ClientPaymentId")
                         .HasConstraintName("FK__Receipt__ClientP__57DD0BE4");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -3251,34 +2178,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Treasury");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.User", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId");
-
-                    b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("Users")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.User", "User")
-                        .WithMany("Branches")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Group", "Group")
@@ -3317,11 +2216,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentOrderPrints");
 
                     b.Navigation("AgentPrintDetails");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -3370,8 +2264,6 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Country", b =>
                 {
                     b.Navigation("AgentCountries");
-
-                    b.Navigation("Branches");
 
                     b.Navigation("Clients");
 
@@ -3422,6 +2314,8 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentOrderPrints");
 
+                    b.Navigation("ApproveAgentEditOrderRequests");
+
                     b.Navigation("OrderClientPaymnets");
 
                     b.Navigation("OrderItems");
@@ -3433,6 +2327,8 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderPlaced", b =>
                 {
+                    b.Navigation("ApproveAgentEditOrderRequests");
+
                     b.Navigation("ClientPaymentDetails");
 
                     b.Navigation("Notfications");
@@ -3508,7 +2404,7 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentCountries");
 
-                    b.Navigation("Branches");
+                    b.Navigation("ApproveAgentEditOrderRequests");
 
                     b.Navigation("Clients");
 
