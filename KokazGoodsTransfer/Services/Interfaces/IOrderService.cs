@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 using KokazGoodsTransfer.Models.TransferToBranchModels;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -76,5 +77,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto);
         Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
         Task DisApproveReturnedToMyBranch(int id);
+        Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode);
     }
 }

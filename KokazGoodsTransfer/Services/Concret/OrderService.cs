@@ -6,6 +6,7 @@ using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.NotifcationDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
 using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Helpers.Extensions;
 using KokazGoodsTransfer.HubsConfig;
@@ -2013,6 +2014,35 @@ namespace KokazGoodsTransfer.Services.Concret
                 c.OrderplacedId = (int)OrderplacedEnum.Store;
             });
             await _repository.Update(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
+        {
+            var orders = await _repository.GetAsync(c => c.Code == getOrderByAgentRegionAndCode.Code && c.CountryId == getOrderByAgentRegionAndCode.CountryId && c.AgentId == getOrderByAgentRegionAndCode.AgentId,
+                c => c.Orderplaced, c => c.MoenyPlaced, c => c.Region, c => c.Country, c => c.Country, c => c.Client, c => c.Agent);
+            if (!orders.Any())
+            {
+                throw new ConflictException("الشحنة غير موجودة");
+            }
+            //get last order to check last return erorr message for the last order 
+            var lastOrder = orders.Last();
+            ////execpt finished order 
+            var finishedOrder = orders.Where(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable || (c.OrderplacedId == (int)OrderplacedEnum.Delivered && (c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany || c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered)));
+            orders = orders.Except(finishedOrder);
+            if (!orders.Any())
+            {
+                if (lastOrder.OrderplacedId == (int)OrderplacedEnum.Store)
+                {
+                    throw new ConflictException("الشحنة ما زالت في المخزن");
+                }
+                if (lastOrder.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany)
+                {
+                    throw new ConflictException("الشحنة داخل الشركة");
+                }
+                throw new ConflictException("الشحنة غير موجودة");
+            }
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+
         }
     }
 

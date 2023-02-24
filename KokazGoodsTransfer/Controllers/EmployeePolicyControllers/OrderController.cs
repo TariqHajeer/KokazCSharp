@@ -25,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             _agentPrintService = agentPrintService;
             _generatePdf = generatePdf;
         }
-            
+
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
@@ -42,7 +42,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("GetOrdersByAgentRegionAndCode")]
         public async Task<IActionResult> GetOrdersByAgentRegionAndCode([FromQuery] GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
         {
-            return Ok();
+            return Ok(await _orderService.GetOrdersByAgentRegionAndCode(getOrderByAgentRegionAndCode));
         }
         [HttpPost("createMultiple")]
         public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
