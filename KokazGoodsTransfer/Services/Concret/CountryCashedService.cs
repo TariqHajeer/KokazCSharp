@@ -62,7 +62,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             if (!_cache.TryGetValue(cashName, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.Branches, c => c.AgentCountries.Select(a => a.Agent));
+                entites = await GetAsync(null, c => c.Regions, c => c.Clients, c => c.AgentCountries.Select(a => a.Agent));
                 _cache.Set(cashName, entites);
             }
             return entites;

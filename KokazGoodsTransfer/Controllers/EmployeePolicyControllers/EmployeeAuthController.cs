@@ -44,13 +44,10 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
                     return Conflict();
 
-                var climes = new List<Claim>();
-                //foreach (var group in user.UserGroups)
-                //{
-                //    climes.Add(new Claim(ClaimTypes.Role,group.GroupId.ToString()));
-                //}
-
-                climes.Add(new Claim("UserID", user.Id.ToString()));
+                var climes = new List<Claim>
+                {
+                    new Claim("UserID", user.Id.ToString())
+                };
                 if (!user.CanWorkAsAgent)
                     climes.Add(new Claim("Type", "Employee"));
                 else

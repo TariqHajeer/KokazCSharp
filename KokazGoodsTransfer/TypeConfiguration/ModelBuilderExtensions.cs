@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System;
 using System.Linq;
-using System.Reflection;
 
-namespace KokazGoodsTransfer.Models.Configuration
+namespace KokazGoodsTransfer.TypeConfiguration
 {
     public static class ModelBuilderExtensions
     {

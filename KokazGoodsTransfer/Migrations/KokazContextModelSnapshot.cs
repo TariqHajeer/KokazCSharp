@@ -148,46 +148,43 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
 
                     b.ToTable("Branches");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "الفرع الرئيسي"
+                            Id = 4,
+                            Name = "فرع الموصل"
                         },
                         new
                         {
-                            Id = 2,
-                            CountryId = 2,
-                            Name = "الفرع الثاني"
+                            Id = 8,
+                            Name = "فرع اربيل"
                         },
                         new
                         {
                             Id = 3,
-                            CountryId = 3,
-                            Name = "الفرع الثالث الوسيط"
+                            Name = "فرع سليمانية"
                         },
                         new
                         {
-                            Id = 4,
-                            CountryId = 4,
-                            Name = "فرع 4"
+                            Id = 5,
+                            Name = "فرع بغداد"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "فرع كروك"
                         });
                 });
 
@@ -439,50 +436,394 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            DeliveryCost = 10000m,
-                            IsMain = true,
-                            Name = "مدينة1",
-                            Points = 15
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خارجي اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 2,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 5000m,
                             IsMain = false,
-                            Name = "مدينة2",
-                            Points = 20
+                            Name = "دهوك",
+                            Points = 2
                         },
                         new
                         {
                             Id = 3,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 5000m,
                             IsMain = false,
-                            Name = "مدينة3 (وسيطة) ",
-                            Points = 20
+                            Name = "سليمانية",
+                            Points = 2
                         },
                         new
                         {
                             Id = 4,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 5000m,
                             IsMain = false,
-                            Name = "مدينة 4",
-                            Points = 20
+                            Name = "موصل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 5,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 6000m,
                             IsMain = false,
-                            Name = "مدينة 5",
-                            Points = 20
+                            Name = "بغداد",
+                            Points = 3
                         },
                         new
                         {
                             Id = 6,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 8000m,
                             IsMain = false,
-                            Name = "مدينة 6",
-                            Points = 20
+                            Name = "محافظات جنوبية",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كركوك",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "اربيل",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خبات",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "انبار",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "تكريت",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديالى",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "واسط",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "نجف",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كربلاء",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديوانية",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 17,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "مثنى",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 18,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "صلاح الدين",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 19,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سامراء",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 20,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بصره",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 21,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمارة",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 22,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ناصرية",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 23,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بابل",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 24,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كوت",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 25,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ذي قار",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 26,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ميسان",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 27,
+                            DeliveryCost = 7000m,
+                            IsMain = false,
+                            Name = "سيروان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 28,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مخمور",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 29,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مصيف",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 30,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سوران",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 31,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوية",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 32,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "شقلاوة",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 33,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ملا عمر",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 34,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "بارازان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 35,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سلافا ستي",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 36,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوير",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 37,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "برده رش",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 38,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ديانا",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 39,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خليفان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 40,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "راوندوز",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 41,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "رانيا",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 42,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "طق طق",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قلادزي",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 44,
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "كرخ محمد",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 45,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمار بابل",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 46,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "الرصافة",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "كرخ 2",
+                            Points = 5
+                        },
+                        new
+                        {
+                            Id = 48,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قوقز فرع بغداد",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 49,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سماوة",
+                            Points = 0
                         });
                 });
 
@@ -651,13 +992,13 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            BranchId = 1,
+                            BranchId = 4,
                             Name = "مجموعة المدراء"
                         },
                         new
                         {
                             Id = 2,
-                            BranchId = 2,
+                            BranchId = 8,
                             Name = "مجموعة المدراء"
                         },
                         new
@@ -669,7 +1010,13 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 4,
-                            BranchId = 4,
+                            BranchId = 5,
+                            Name = "مجموعة المدراء"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BranchId = 7,
                             Name = "مجموعة المدراء"
                         });
                 });
@@ -2064,39 +2411,489 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasData(
                         new
                         {
-                            FromCountryId = 1,
-                            ToCountryId = 2,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 2,
-                            ToCountryId = 1,
-                            MediatorCountryId = 3
-                        },
-                        new
-                        {
-                            FromCountryId = 1,
-                            ToCountryId = 4,
-                            MediatorCountryId = 3
+                            FromCountryId = 4,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
                         },
                         new
                         {
                             FromCountryId = 4,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
                             ToCountryId = 1,
-                            MediatorCountryId = 3
+                            MediatorCountryId = 8
                         },
                         new
                         {
-                            FromCountryId = 1,
-                            ToCountryId = 5,
-                            MediatorCountryId = 3
+                            FromCountryId = 7,
+                            ToCountryId = 2,
+                            MediatorCountryId = 8
                         },
                         new
                         {
-                            FromCountryId = 2,
+                            FromCountryId = 7,
                             ToCountryId = 5,
-                            MediatorCountryId = 3
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 6,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 9,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 10,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 11,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 12,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 13,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 14,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 15,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 16,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 17,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 18,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 19,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 20,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 21,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 22,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 23,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 24,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 25,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 26,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 27,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 28,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 29,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 30,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 31,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 32,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 33,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 34,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 35,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 36,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 37,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 38,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 39,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 40,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 41,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 42,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 43,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 44,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 45,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 46,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 47,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 48,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 49,
+                            MediatorCountryId = 8
                         });
                 });
 
@@ -3569,12 +4366,12 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             UserId = 1,
-                            BranchId = 1
+                            BranchId = 4
                         },
                         new
                         {
                             UserId = 1,
-                            BranchId = 2
+                            BranchId = 8
                         },
                         new
                         {
@@ -3584,7 +4381,12 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             UserId = 1,
-                            BranchId = 4
+                            BranchId = 5
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 7
                         });
                 });
 
@@ -3712,8 +4514,8 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
-                        .WithMany("Branches")
-                        .HasForeignKey("CountryId")
+                        .WithOne("Branch")
+                        .HasForeignKey("KokazGoodsTransfer.Models.Branch", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -4032,7 +4834,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
                         .WithMany()
                         .HasForeignKey("CurrentBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("KokazGoodsTransfer.Models.Country", "CurrentCountryNavigation")
@@ -4510,7 +5312,7 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4566,11 +5368,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentPrintDetails");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
-                {
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
                 {
                     b.Navigation("TreasuryHistories");
@@ -4618,7 +5415,7 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentCountries");
 
-                    b.Navigation("Branches");
+                    b.Navigation("Branch");
 
                     b.Navigation("Clients");
 

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KokazGoodsTransfer.TypeConfiguration
 {
@@ -18,47 +19,43 @@ namespace KokazGoodsTransfer.TypeConfiguration
             builder.HasOne(c => c.ToCountry)
                 .WithMany(c => c.ToCountries).HasForeignKey(c => c.ToCountryId).OnDelete(DeleteBehavior.Restrict);
             builder.HasKey(c => new { c.FromCountryId, c.ToCountryId });
-            int mid = 3;
-            var data = new List<MediatorCountry>()
+            int bagdadId = 5;
+            int arbile = 8;
+            int dhok = 7;
+            var branchesIDs = new int[] { 4, 8, 3 };
+            var countryNeedMid = new int[] { 10, 12, 13, 14, 18, 20, 23, 16, 26, 22, 15, 49 };
+            var data = new List<MediatorCountry>();
+            foreach (var item in branchesIDs)
             {
-                new MediatorCountry()
+                data.AddRange(countryNeedMid.Select(c => new MediatorCountry()
                 {
-                    FromCountryId = 1,
-                    ToCountryId =2,
-                    MediatorCountryId= mid,
-                },
-                new MediatorCountry()
+                    FromCountryId = item,
+                    MediatorCountryId = bagdadId,
+                    ToCountryId = c
+                }));
+            }
+            for (int i = 1; i <= 49; i++)
+            {
+                if (i == dhok || i == arbile || branchesIDs.Contains(i))
+                    continue;
+                data.Add(new MediatorCountry()
                 {
-                    FromCountryId =2,
-                    ToCountryId =1,
-                    MediatorCountryId= mid,
+                    FromCountryId = dhok,
+                    MediatorCountryId = arbile,
+                    ToCountryId = i
+                });
+            }
 
-                },
-                new MediatorCountry()
-                {
-                    FromCountryId=1,
-                    ToCountryId=4,
-                    MediatorCountryId= mid,
-                },
-                new MediatorCountry()
-                {
-                    FromCountryId=4,
-                    ToCountryId=1,
-                    MediatorCountryId= mid,
-                },
-                new MediatorCountry()
-                {
-                    FromCountryId=1,
-                    ToCountryId=5,
-                    MediatorCountryId= mid,
-                },
-                new MediatorCountry()
-                {
-                    FromCountryId=2,
-                    ToCountryId=5,
-                    MediatorCountryId= mid,
-                }
-            };
+
+            //var data = new List<MediatorCountry>()
+            //{
+            //    new MediatorCountry()
+            //    {
+            //        FromCountryId=bagdadId,
+            //        MediatorCountryId= bagdadId,
+            //        ToCountryId= bagdadId,
+            //    }
+            //};
             builder.HasData(data);
 
         }

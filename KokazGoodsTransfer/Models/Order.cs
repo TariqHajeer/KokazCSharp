@@ -99,11 +99,17 @@ namespace KokazGoodsTransfer.Models
         {
             if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
                 return true;
-            if(OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
                 return true;
             if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
                 return true;
             return false;
+        }
+        public decimal ShouldToPay()
+        {
+            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+                return 0;
+            return Cost - DeliveryCost;
         }
         public bool IsOrderInMyStore()
         {

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20220922230602_Add-CurrentBranch-For-Order")]
-    partial class AddCurrentBranchForOrder
+    [Migration("20230224154020_Settings-Seeder")]
+    partial class SettingsSeeder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,9 +61,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
 
@@ -84,8 +81,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("AgentPrint");
                 });
@@ -147,37 +142,37 @@ namespace KokazGoodsTransfer.Migrations
                     b.ToTable("AgentPrintDetails");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
+            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("CountryId")
+                    b.Property<int>("AgentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("IsApprove")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("NewAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderPlacedId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryId");
+                    b.HasIndex("AgentId");
 
-                    b.ToTable("Branches");
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "الفرع الرئيسي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryId = 2,
-                            Name = "الفرع الثاني"
-                        });
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("OrderPlacedId");
+
+                    b.ToTable("ApproveAgentEditOrderRequest");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -223,9 +218,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
@@ -262,8 +254,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("CountryId");
 
                     b.HasIndex("UserId");
@@ -277,9 +267,6 @@ namespace KokazGoodsTransfer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
@@ -301,8 +288,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("ClientPayment");
                 });
@@ -423,22 +408,399 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
+
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            DeliveryCost = 10000m,
-                            IsMain = true,
-                            Name = "مدينة1",
-                            Points = 15
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خارجي اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 2,
-                            DeliveryCost = 20000m,
+                            DeliveryCost = 5000m,
                             IsMain = false,
-                            Name = "مدينة2",
-                            Points = 20
+                            Name = "دهوك",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سليمانية",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "موصل",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "بغداد",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "محافظات جنوبية",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كركوك",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "اربيل",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خبات",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "انبار",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "تكريت",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديالى",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "واسط",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "نجف",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كربلاء",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديوانية",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 17,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "مثنى",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 18,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "صلاح الدين",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 19,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سامراء",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 20,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بصره",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 21,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمارة",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 22,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ناصرية",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 23,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بابل",
+                            Points = 3
+                        },
+                        new
+                        {
+                            Id = 24,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كوت",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 25,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ذي قار",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 26,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ميسان",
+                            Points = 4
+                        },
+                        new
+                        {
+                            Id = 27,
+                            DeliveryCost = 7000m,
+                            IsMain = false,
+                            Name = "سيروان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 28,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مخمور",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 29,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مصيف",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 30,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سوران",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 31,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوية",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 32,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "شقلاوة",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 33,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ملا عمر",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 34,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "بارازان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 35,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سلافا ستي",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 36,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوير",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 37,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "برده رش",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 38,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ديانا",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 39,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خليفان",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 40,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "راوندوز",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 41,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "رانيا",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 42,
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "طق طق",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قلادزي",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 44,
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "كرخ محمد",
+                            Points = 1
+                        },
+                        new
+                        {
+                            Id = 45,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمار بابل",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 46,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "الرصافة",
+                            Points = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "كرخ 2",
+                            Points = 5
+                        },
+                        new
+                        {
+                            Id = 48,
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قوقز فرع بغداد",
+                            Points = 0
+                        },
+                        new
+                        {
+                            Id = 49,
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سماوة",
+                            Points = 0
                         });
                 });
 
@@ -451,9 +813,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -503,8 +862,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("CountryId");
@@ -547,9 +904,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -574,8 +928,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("UserId");
@@ -597,6 +949,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Group");
+
                     b.HasData(
                         new
                         {
@@ -618,6 +971,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("PrivilegId");
 
                     b.ToTable("GroupPrivilege");
+
                     b.HasData(
                         new
                         {
@@ -946,9 +1300,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
 
@@ -966,8 +1317,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("IncomeTypeId");
 
@@ -1040,6 +1389,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MoenyPlaced");
+
                     b.HasData(
                         new
                         {
@@ -1120,9 +1470,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("AgentRequestStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1145,9 +1492,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CurrentBranchId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("CurrentCountry")
                         .HasColumnType("int");
@@ -1174,12 +1518,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("MoenyPlacedId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("NewCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("NewOrderPlacedId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -1211,9 +1549,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SecondBranchId")
-                        .HasColumnType("int");
-
                     b.Property<bool?>("Seen")
                         .HasColumnType("bit")
                         .HasColumnName("seen");
@@ -1231,27 +1566,19 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("AgentId");
 
-                    b.HasIndex("BranchId");
-
                     b.HasIndex("ClientId");
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("CurrentBranchId");
-
                     b.HasIndex("CurrentCountry");
 
                     b.HasIndex("MoenyPlacedId");
-
-                    b.HasIndex("NewOrderPlacedId");
 
                     b.HasIndex("OrderStateId");
 
                     b.HasIndex("OrderplacedId");
 
                     b.HasIndex("RegionId");
-
-                    b.HasIndex("SecondBranchId");
 
                     b.ToTable("Order");
                 });
@@ -1463,6 +1790,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderPlaced");
+
                     b.HasData(
                         new
                         {
@@ -1518,6 +1846,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderState");
+
                     b.HasData(
                         new
                         {
@@ -1543,17 +1872,12 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("OrderType");
                 });
@@ -1567,9 +1891,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -1588,8 +1909,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnName("userId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("OutComeTypeId");
 
@@ -1625,9 +1944,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool?>("Accept")
                         .HasColumnType("bit");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1641,8 +1957,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -1658,16 +1972,11 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.ToTable("PaymentWay");
                 });
@@ -1679,9 +1988,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Money")
                         .HasColumnType("money");
 
@@ -1689,8 +1995,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex(new[] { "Points" }, "UQ__PointsSe__DA826786C9B4659A")
                         .IsUnique();
@@ -1718,6 +2022,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Privilege");
+
                     b.HasData(
                         new
                         {
@@ -2112,9 +2417,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -2140,8 +2442,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
 
                     b.HasIndex("ClientId");
 
@@ -2267,6 +2567,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Treasury");
+
                     b.HasData(
                         new
                         {
@@ -2340,9 +2641,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<string>("Adress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BranchId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("CanWorkAsAgent")
                         .HasColumnType("bit");
 
@@ -2376,9 +2674,8 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
-
                     b.ToTable("Users");
+
                     b.HasData(
                         new
                         {
@@ -2389,33 +2686,6 @@ namespace KokazGoodsTransfer.Migrations
                             Name = "admin",
                             Password = "21232f297a57a5a743894a0e4a801fc3",
                             UserName = "admin"
-                        });
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "BranchId");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("UserBranch");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            BranchId = 2
                         });
                 });
 
@@ -2432,6 +2702,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("UserGroup");
+
                     b.HasData(
                         new
                         {
@@ -2502,17 +2773,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrint", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.AgentPrintDetail", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.AgentPrint", "AgentPrint")
@@ -2524,15 +2784,31 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentPrint");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
+            modelBuilder.Entity("KokazGoodsTransfer.Models.ApproveAgentEditOrderRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
-                        .WithMany("Branches")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("KokazGoodsTransfer.Models.User", "Agent")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("AgentId")
+                        .HasConstraintName("FK__ApproveAg__Agent__0B91BA14")
                         .IsRequired();
 
-                    b.Navigation("Country");
+                    b.HasOne("KokazGoodsTransfer.Models.Order", "Order")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("FK__ApproveAg__Order__0C85DE4D")
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "OrderPlaced")
+                        .WithMany("ApproveAgentEditOrderRequests")
+                        .HasForeignKey("OrderPlacedId")
+                        .HasConstraintName("FK__ApproveAg__Order__0D7A0286")
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("OrderPlaced");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -2548,12 +2824,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Client", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
                         .WithMany("Clients")
                         .HasForeignKey("CountryId")
@@ -2565,22 +2835,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Clients_Users")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("Country");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.ClientPayment", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.ClientPaymentDetail", b =>
@@ -2631,12 +2888,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("ClientId")
@@ -2653,8 +2904,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("DisAcceptOrders")
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK__DisAccept__Regio__17036CC0");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -2675,12 +2924,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.EditRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("EditRequests")
                         .HasForeignKey("ClientId")
@@ -2691,8 +2934,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("EditRequests")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__EditReque__UserI__19DFD96B");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -2721,12 +2962,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Income", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.IncomeType", "IncomeType")
                         .WithMany("Incomes")
                         .HasForeignKey("IncomeTypeId")
@@ -2738,8 +2973,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK_Income_Users")
                         .IsRequired();
-
-                    b.Navigation("Branch");
 
                     b.Navigation("IncomeType");
 
@@ -2788,12 +3021,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("AgentId")
                         .HasConstraintName("FK_Order_Users");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
@@ -2806,12 +3033,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_Order_Country")
                         .IsRequired();
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
-                        .WithMany()
-                        .HasForeignKey("CurrentBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Country", "CurrentCountryNavigation")
                         .WithMany("OrderCurrentCountryNavigations")
                         .HasForeignKey("CurrentCountry")
@@ -2822,10 +3043,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("MoenyPlacedId")
                         .HasConstraintName("FK_Order_MoenyPlaced")
                         .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "NewOrderPlaced")
-                        .WithMany()
-                        .HasForeignKey("NewOrderPlacedId");
 
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
@@ -2844,33 +3061,21 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("RegionId")
                         .HasConstraintName("FK_Order_Region");
 
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "SecondBranch")
-                        .WithMany()
-                        .HasForeignKey("SecondBranchId");
-
                     b.Navigation("Agent");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
                     b.Navigation("Country");
 
-                    b.Navigation("CurrentBranch");
-
                     b.Navigation("CurrentCountryNavigation");
 
                     b.Navigation("MoenyPlaced");
-
-                    b.Navigation("NewOrderPlaced");
 
                     b.Navigation("Orderplaced");
 
                     b.Navigation("OrderState");
 
                     b.Navigation("Region");
-
-                    b.Navigation("SecondBranch");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderClientPaymnet", b =>
@@ -2981,25 +3186,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.OutCome", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.OutComeType", "OutComeType")
                         .WithMany("OutComes")
                         .HasForeignKey("OutComeTypeId")
@@ -3012,8 +3200,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_OutCome_Users")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("OutComeType");
 
                     b.Navigation("User");
@@ -3021,12 +3207,6 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentRequest", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("PaymentRequests")
                         .HasForeignKey("ClientId")
@@ -3039,43 +3219,13 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK__PaymentRe__Payme__5BAD9CC8")
                         .IsRequired();
 
-                    b.Navigation("Branch");
-
                     b.Navigation("Client");
 
                     b.Navigation("PaymentWay");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.PaymentWay", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.PointsSetting", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.Receipt", b =>
                 {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
                         .WithMany("Receipts")
                         .HasForeignKey("ClientId")
@@ -3086,8 +3236,6 @@ namespace KokazGoodsTransfer.Migrations
                         .WithMany("Receipts")
                         .HasForeignKey("ClientPaymentId")
                         .HasConstraintName("FK__Receipt__ClientP__57DD0BE4");
-
-                    b.Navigation("Branch");
 
                     b.Navigation("Client");
 
@@ -3239,34 +3387,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Treasury");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.User", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId");
-
-                    b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("Users")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.User", "User")
-                        .WithMany("Branches")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserGroup", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Group", "Group")
@@ -3305,11 +3425,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentOrderPrints");
 
                     b.Navigation("AgentPrintDetails");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -3358,8 +3473,6 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Country", b =>
                 {
                     b.Navigation("AgentCountries");
-
-                    b.Navigation("Branches");
 
                     b.Navigation("Clients");
 
@@ -3410,6 +3523,8 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentOrderPrints");
 
+                    b.Navigation("ApproveAgentEditOrderRequests");
+
                     b.Navigation("OrderClientPaymnets");
 
                     b.Navigation("OrderItems");
@@ -3421,6 +3536,8 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderPlaced", b =>
                 {
+                    b.Navigation("ApproveAgentEditOrderRequests");
+
                     b.Navigation("ClientPaymentDetails");
 
                     b.Navigation("Notfications");
@@ -3496,7 +3613,7 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentCountries");
 
-                    b.Navigation("Branches");
+                    b.Navigation("ApproveAgentEditOrderRequests");
 
                     b.Navigation("Clients");
 

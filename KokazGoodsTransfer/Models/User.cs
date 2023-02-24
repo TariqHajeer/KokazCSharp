@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class User: IMaybeHaveBranch
+    public partial class User: IMaybeHaveBranch, IIndex
     {
         public User()
         {

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
 namespace KokazGoodsTransfer.Models
 {
-    public partial class OutComeType
+    public partial class OutComeType: IIndex
     {
         public OutComeType()
         {

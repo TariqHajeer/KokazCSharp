@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.DAL.Helper;
 using Wkhtmltopdf.NetCore;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -24,7 +25,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             _agentPrintService = agentPrintService;
             _generatePdf = generatePdf;
         }
-
+            
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
@@ -36,6 +37,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
         {
             await _orderService.CreateOrder(createOrdersFromEmployee);
+            return Ok();
+        }
+        [HttpGet("GetOrdersByAgentRegionAndCode")]
+        public async Task<IActionResult> GetOrdersByAgentRegionAndCode([FromQuery] GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
+        {
             return Ok();
         }
         [HttpPost("createMultiple")]

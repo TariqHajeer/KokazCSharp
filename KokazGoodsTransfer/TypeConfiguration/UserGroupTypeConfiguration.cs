@@ -8,6 +8,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
     {
         public void Configure(EntityTypeBuilder<UserGroup> builder)
         {
+
             builder.HasData(new UserGroup()
             {
                 UserId = 1,
