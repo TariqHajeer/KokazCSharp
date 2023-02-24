@@ -16,10 +16,6 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             CreateMap<Country, CountryDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.Regions.Count() == 0 && src.AgentCountries.Count() == 0))
                 .ForMember(c => c.CanDeleteWithRegion, opt => opt.MapFrom(src => src.AgentCountries.Count() == 0 && src.Clients.Count() == 0))
-                .ForMember(c => c.Mediator, opt => opt.MapFrom((obj, dto, i, context) =>
-                {
-                    return context.Mapper.Map<CountryDto>(obj.Mediator);
-                }))
                 .ForMember(c => c.Regions, src => src.MapFrom((country, countryDto, i, context) =>
                 {
                     if (country.Regions == null)
@@ -70,6 +66,9 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 return true;
             if (source.Branch != null)
                 return false;
+            if (source.ToCountries == null)
+                return false;
+
             return !source.ToCountries.Select(c => c.FromCountryId).Contains(currentCountyId);
         }
     }
