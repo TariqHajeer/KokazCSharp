@@ -9,6 +9,5 @@ namespace KokazGoodsTransfer.Services.Interfaces
 {
     public interface ICountryCashedService : ICashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>
     {
-        Task SetMainCountry(int id);
     }
 }

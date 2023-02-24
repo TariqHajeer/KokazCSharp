@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -42,13 +38,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             _regionCashedService.RemoveCash();
             _userCashedService.RemoveCash();
             _clientCashedService.RemoveCash();
-        }
-        [HttpGet("RequiredAgent")]
-        public async Task<ActionResult<bool>> RequiredAgent([FromQuery] int countryId)
-        {
-            var currentBranch = await _branchRepository.GetById(_currentBranchId); 
-            return Ok(!(await _mediatorCountry.Any(c => c.FromCountryId == currentBranch.Id && c.ToCountryId == countryId)));
-
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CountryDto>>> GetAll() => Ok(await _countryCashedService.GetCashed());
@@ -83,15 +72,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var result = await _countryCashedService.Delete(id);
             if (result.Errors.Any())
                 return Conflict();
-            RemoveRelatedCash();
-            return Ok();
-
-        }
-        [HttpPut("SetMain/{id}")]
-        public async Task<IActionResult> SetIsMain(int id)
-        {
-
-            await _countryCashedService.SetMainCountry(id);
             RemoveRelatedCash();
             return Ok();
 

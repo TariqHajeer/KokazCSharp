@@ -80,15 +80,5 @@ namespace KokazGoodsTransfer.Services.Concret
             response = await base.Update(updateDto);
             return response;
         }
-
-        public async Task SetMainCountry(int id)
-        {
-            var country = await _repository.GetById(id);
-            var mainCountry = (await _repository.GetAsync(c => c.IsMain == true)).ToList();
-            country.IsMain = true;
-            mainCountry.ForEach(c => c.IsMain = false);
-            mainCountry.Add(country);
-            await _repository.Update(mainCountry);
-        }
     }
 }

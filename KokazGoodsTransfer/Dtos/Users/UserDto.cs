@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Dtos.DepartmentDtos;
 namespace KokazGoodsTransfer.Dtos.Users
 {
     public class UserDto
