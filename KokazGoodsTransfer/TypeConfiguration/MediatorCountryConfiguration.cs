@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
             }
             for (int i = 1; i <= 49; i++)
             {
-                if (i == dhok || i == arbile || branchesIDs.Contains(i))
+                if (i == dhok || i == arbile || branchesIDs.Contains(i) || i == bagdadId)
                     continue;
                 data.Add(new MediatorCountry()
                 {

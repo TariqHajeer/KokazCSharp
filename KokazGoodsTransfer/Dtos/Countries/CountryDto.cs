@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.Countries
         public List<RegionDto> Regions { get; set; }
         public List<UserDto> Agnets { get; set; }
         public CountryDto Mediator { get; set; }
-
+        public IEnumerable<int> CountriesNeedMidBranch { get; set; }
 
     }   
 }

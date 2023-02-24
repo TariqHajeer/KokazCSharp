@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20230224190715_Branches-With-Seeders")]
-    partial class BranchesWithSeeders
+    [Migration("20230224195700_Branches")]
+    partial class Branches
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2637,12 +2637,6 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             FromCountryId = 7,
                             ToCountryId = 2,
-                            MediatorCountryId = 8
-                        },
-                        new
-                        {
-                            FromCountryId = 7,
-                            ToCountryId = 5,
                             MediatorCountryId = 8
                         },
                         new

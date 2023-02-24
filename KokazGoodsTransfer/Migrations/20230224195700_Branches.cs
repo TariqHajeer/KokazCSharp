@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KokazGoodsTransfer.Migrations
 {
-    public partial class BranchesWithSeeders : Migration
+    public partial class Branches : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -351,8 +351,7 @@ namespace KokazGoodsTransfer.Migrations
                     { 7, 29, 8 },
                     { 7, 9, 8 },
                     { 7, 2, 8 },
-                    { 7, 5, 8 },
-                    { 8, 18, 5 },
+                    { 7, 48, 8 },
                     { 8, 14, 5 },
                     { 8, 13, 5 },
                     { 8, 12, 5 },
@@ -360,8 +359,8 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 49, 5 },
                     { 4, 15, 5 },
                     { 4, 22, 5 },
+                    { 8, 18, 5 },
                     { 4, 26, 5 },
-                    { 4, 16, 5 },
                     { 4, 23, 5 },
                     { 4, 20, 5 },
                     { 4, 18, 5 },
@@ -369,11 +368,10 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 13, 5 },
                     { 4, 12, 5 },
                     { 4, 10, 5 },
+                    { 4, 16, 5 },
                     { 8, 20, 5 },
-                    { 7, 6, 8 },
                     { 8, 23, 5 },
-                    { 8, 26, 5 },
-                    { 7, 48, 8 },
+                    { 8, 16, 5 },
                     { 7, 1, 8 },
                     { 3, 49, 5 },
                     { 3, 15, 5 },
@@ -389,13 +387,10 @@ namespace KokazGoodsTransfer.Migrations
                     { 3, 10, 5 },
                     { 8, 49, 5 },
                     { 8, 15, 5 },
-                    { 8, 22, 5 }
+                    { 8, 22, 5 },
+                    { 8, 26, 5 },
+                    { 7, 6, 8 }
                 });
-
-            migrationBuilder.InsertData(
-                table: "MediatorCountry",
-                columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
-                values: new object[] { 8, 16, 5 });
 
             migrationBuilder.InsertData(
                 table: "MediatorCountry",

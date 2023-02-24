@@ -2640,12 +2640,6 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             FromCountryId = 7,
-                            ToCountryId = 5,
-                            MediatorCountryId = 8
-                        },
-                        new
-                        {
-                            FromCountryId = 7,
                             ToCountryId = 6,
                             MediatorCountryId = 8
                         },
