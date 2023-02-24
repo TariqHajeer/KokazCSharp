@@ -2483,12 +2483,6 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
-                            FromCountryId = 4,
-                            ToCountryId = 7,
-                            MediatorCountryId = 8
-                        },
-                        new
-                        {
                             FromCountryId = 8,
                             ToCountryId = 10,
                             MediatorCountryId = 5
@@ -2630,12 +2624,6 @@ namespace KokazGoodsTransfer.Migrations
                             FromCountryId = 3,
                             ToCountryId = 49,
                             MediatorCountryId = 5
-                        },
-                        new
-                        {
-                            FromCountryId = 3,
-                            ToCountryId = 7,
-                            MediatorCountryId = 8
                         },
                         new
                         {
@@ -2647,18 +2635,6 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             FromCountryId = 7,
                             ToCountryId = 2,
-                            MediatorCountryId = 8
-                        },
-                        new
-                        {
-                            FromCountryId = 7,
-                            ToCountryId = 3,
-                            MediatorCountryId = 8
-                        },
-                        new
-                        {
-                            FromCountryId = 7,
-                            ToCountryId = 4,
                             MediatorCountryId = 8
                         },
                         new

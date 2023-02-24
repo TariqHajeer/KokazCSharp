@@ -304,6 +304,7 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
                 values: new object[,]
                 {
+                    { 7, 26, 8 },
                     { 7, 25, 8 },
                     { 7, 24, 8 },
                     { 7, 23, 8 },
@@ -311,20 +312,18 @@ namespace KokazGoodsTransfer.Migrations
                     { 7, 21, 8 },
                     { 7, 20, 8 },
                     { 7, 19, 8 },
-                    { 7, 18, 8 },
-                    { 7, 15, 8 },
+                    { 7, 17, 8 },
+                    { 7, 27, 8 },
                     { 7, 16, 8 },
-                    { 7, 26, 8 },
+                    { 7, 15, 8 },
                     { 7, 14, 8 },
                     { 7, 13, 8 },
                     { 7, 12, 8 },
                     { 7, 11, 8 },
-                    { 7, 10, 8 },
-                    { 7, 9, 8 },
-                    { 7, 17, 8 },
-                    { 7, 27, 8 },
+                    { 7, 18, 8 },
+                    { 7, 28, 8 },
+                    { 7, 31, 8 },
                     { 7, 30, 8 },
-                    { 7, 29, 8 },
                     { 7, 47, 8 },
                     { 7, 46, 8 },
                     { 7, 45, 8 },
@@ -333,14 +332,15 @@ namespace KokazGoodsTransfer.Migrations
                     { 7, 42, 8 },
                     { 7, 41, 8 },
                     { 7, 40, 8 },
-                    { 7, 28, 8 },
                     { 7, 39, 8 },
+                    { 7, 38, 8 },
                     { 7, 37, 8 },
                     { 7, 36, 8 },
                     { 7, 35, 8 },
                     { 7, 34, 8 },
                     { 7, 33, 8 },
-                    { 7, 32, 8 }
+                    { 7, 32, 8 },
+                    { 7, 10, 8 }
                 });
 
             migrationBuilder.InsertData(
@@ -348,22 +348,19 @@ namespace KokazGoodsTransfer.Migrations
                 columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
                 values: new object[,]
                 {
-                    { 7, 31, 8 },
-                    { 7, 6, 8 },
-                    { 7, 38, 8 },
-                    { 7, 5, 8 },
+                    { 7, 29, 8 },
+                    { 7, 9, 8 },
                     { 7, 2, 8 },
-                    { 7, 3, 8 },
+                    { 7, 5, 8 },
                     { 8, 18, 5 },
                     { 8, 14, 5 },
                     { 8, 13, 5 },
                     { 8, 12, 5 },
                     { 8, 10, 5 },
-                    { 4, 7, 8 },
                     { 4, 49, 5 },
                     { 4, 15, 5 },
-                    { 8, 20, 5 },
                     { 4, 22, 5 },
+                    { 4, 26, 5 },
                     { 4, 16, 5 },
                     { 4, 23, 5 },
                     { 4, 20, 5 },
@@ -372,38 +369,38 @@ namespace KokazGoodsTransfer.Migrations
                     { 4, 13, 5 },
                     { 4, 12, 5 },
                     { 4, 10, 5 },
-                    { 4, 26, 5 },
-                    { 7, 4, 8 },
+                    { 8, 20, 5 },
+                    { 7, 6, 8 },
                     { 8, 23, 5 },
                     { 8, 26, 5 },
                     { 7, 48, 8 },
                     { 7, 1, 8 },
-                    { 3, 7, 8 },
                     { 3, 49, 5 },
                     { 3, 15, 5 },
                     { 3, 22, 5 },
                     { 3, 26, 5 },
                     { 3, 16, 5 },
-                    { 8, 16, 5 },
                     { 3, 23, 5 },
+                    { 3, 20, 5 },
                     { 3, 18, 5 },
                     { 3, 14, 5 },
                     { 3, 13, 5 },
-                    { 3, 12, 5 }
+                    { 3, 12, 5 },
+                    { 3, 10, 5 },
+                    { 8, 49, 5 },
+                    { 8, 15, 5 },
+                    { 8, 22, 5 }
                 });
 
             migrationBuilder.InsertData(
                 table: "MediatorCountry",
                 columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
-                values: new object[,]
-                {
-                    { 3, 10, 5 },
-                    { 8, 49, 5 },
-                    { 8, 15, 5 },
-                    { 8, 22, 5 },
-                    { 3, 20, 5 },
-                    { 7, 49, 8 }
-                });
+                values: new object[] { 8, 16, 5 });
+
+            migrationBuilder.InsertData(
+                table: "MediatorCountry",
+                columns: new[] { "FromCountryId", "ToCountryId", "MediatorCountryId" },
+                values: new object[] { 7, 49, 8 });
 
             migrationBuilder.UpdateData(
                 table: "Group",

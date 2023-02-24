@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 
 namespace KokazGoodsTransfer.TypeConfiguration
@@ -34,18 +33,10 @@ namespace KokazGoodsTransfer.TypeConfiguration
                     MediatorCountryId = bagdadId,
                     ToCountryId = c
                 }));
-                if (item == arbile)
-                    continue;
-                data.Add(new MediatorCountry()
-                {
-                    FromCountryId = item,
-                    MediatorCountryId = arbile,
-                    ToCountryId = dhok
-                });
             }
             for (int i = 1; i <= 49; i++)
             {
-                if (i == dhok || i == arbile)
+                if (i == dhok || i == arbile || branchesIDs.Contains(i))
                     continue;
                 data.Add(new MediatorCountry()
                 {
