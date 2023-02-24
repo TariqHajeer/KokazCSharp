@@ -1,4 +1,5 @@
 ﻿using System;
+using KokazGoodsTransfer.TypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -1052,7 +1053,7 @@ namespace KokazGoodsTransfer.Models
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_UserPhone_Users");
             });
-
+            modelBuilder.ApplyAllConfigurations();
             OnModelCreatingPartial(modelBuilder);
         }
 
