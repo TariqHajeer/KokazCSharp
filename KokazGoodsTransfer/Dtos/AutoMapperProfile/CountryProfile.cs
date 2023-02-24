@@ -3,6 +3,7 @@ using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
+using KokazGoodsTransfer.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,8 +34,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     obj.AgentCountries.ToList().ForEach(c => c.Agent.AgentCountries = null);
                     return context.Mapper.Map<UserDto[]>(obj.AgentCountries.Select(c => c.Agent));
                 })).MaxDepth(2)
-                .ForMember(c => c.CountriesNeedMidBranch, opt => opt.MapFrom(src => src.FromCountries.Select(c => c.ToCountryId)))
-                .ForMember(c=>c.HaveBranch,opt=>opt.MapFrom(src=>src.Branch!=null));
+                .ForMember(c => c.RequiredAgent, opt => opt.MapFrom<RequiredAgentValueResolver>());
 
             CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()
@@ -54,6 +54,22 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
 
+        }
+    }
+    public class RequiredAgentValueResolver : IValueResolver<Country, CountryDto, bool>
+    {
+        public IHttpContextAccessorService _httpContextAccessorService { get; set; }
+        public RequiredAgentValueResolver(IHttpContextAccessorService httpContextAccessorService)
+        {
+            _httpContextAccessorService = httpContextAccessorService;
+        }
+        public bool Resolve(Country source, CountryDto destination, bool destMember, ResolutionContext context)
+        {
+            if (source.Id == _httpContextAccessorService.CurrentBranchId())
+                return true;
+            if (source.Branch != null)
+                return false;
+            return !source.ToCountries.Select(c => c.FromCountryId).Contains(source.Id);
         }
     }
 }
