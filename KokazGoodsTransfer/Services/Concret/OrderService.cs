@@ -78,6 +78,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _logging = logging;
             _receiptOfTheOrderStatusDetalisRepository = receiptOfTheOrderStatusDetalisRepository;
+            _httpContextAccessorService = httpContextAccessorService;
             _countryCashedService = countryCashedService;
             currentUser = _httpContextAccessorService.AuthoticateUserName();
             _countryRepository = countryRepository;
