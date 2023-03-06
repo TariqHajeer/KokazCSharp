@@ -18,20 +18,16 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IRegionCashedService _regionCashedService;
         private readonly IUserCashedService _userCashedService;
         private readonly IClientCashedService _clientCashedService;
-        private readonly IRepository<MediatorCountry> _mediatorCountry;
         private readonly IHttpContextAccessorService _httpContextAccessorService;
-        private readonly IRepository<Branch> _branchRepository;
         private readonly int _currentBranchId;
-        public CountryController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService, IRepository<MediatorCountry> mediatorCountry, IHttpContextAccessorService httpContextAccessorService, IRepository<Branch> branchRepository)
+        public CountryController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService, IHttpContextAccessorService httpContextAccessorService)
         {
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
             _userCashedService = userCashedService;
-            _clientCashedService = clientCashedService;
-            _mediatorCountry = mediatorCountry;
+            _clientCashedService = clientCashedService; ;
             _httpContextAccessorService = httpContextAccessorService;
             _currentBranchId = _httpContextAccessorService.CurrentBranchId();
-            _branchRepository = branchRepository;
         }
         private void RemoveRelatedCash()
         {
