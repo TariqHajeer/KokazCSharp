@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20230307110327_Drop-CurrentCountry")]
+    partial class DropCurrentCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4819,7 +4821,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("CountryId")
                         .HasConstraintName("FK_Order_Country")
                         .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
                         .WithMany()
                         .HasForeignKey("CurrentBranchId")

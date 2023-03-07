@@ -809,7 +809,6 @@ namespace KokazGoodsTransfer.Services.Concret
                      var order = _mapper.Map<Order>(item);
                      order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
                      order.Date = item.Date;
-                     order.CurrentCountry = mainCountryId;
                      order.CreatedBy = currentUser;
                      order.CurrentBranchId = _currentBranchId;
                      var secoundBranch = branches.FirstOrDefault(c => c.Id == item.CountryId);
@@ -841,7 +840,6 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var currentBrach = await _branchRepository.GetById(_currentBranchId);
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
-                order.CurrentCountry = country.Id;
                 order.CurrentBranchId = _currentBranchId;
                 var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
                 if (targetBranch != null)

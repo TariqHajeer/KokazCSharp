@@ -147,7 +147,7 @@ namespace KokazGoodsTransfer.Services.Concret
             order.DeliveryCost = country.DeliveryCost;
             order.ClientId = _contextAccessorService.AuthoticateUserId();
             order.CreatedBy = _contextAccessorService.AuthoticateUserName();
-            order.CurrentCountry = (await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.IsMain == true)).Id;
+            //order.CurrentCountry = (await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.IsMain == true)).Id;
             await _UintOfWork.BegeinTransaction();
             await _UintOfWork.Add(order);
             var orderItems = createOrderFromClient.OrderItem;
