@@ -57,5 +57,10 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             return _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
         }
+
+        public int CurrentCountryId()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

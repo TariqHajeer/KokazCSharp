@@ -10,6 +10,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         int[] Branches();
         int AuthoticateUserId();
         string AuthoticateUserName();
+        int CurrentCountryId();
 
     }
 }

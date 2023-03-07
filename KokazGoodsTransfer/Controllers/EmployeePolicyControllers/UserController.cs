@@ -20,7 +20,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             _countryCashedService = countryCashedService;
         }
         [HttpGet("ActiveAgent")]
-        public async Task<IActionResult> GetEnalbedAgent() => Ok(await _userCashedService.GetCashed());
+        public async Task<IActionResult> GetActiveAgents() => Ok(await _userCashedService.GetCashed());
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _userCashedService.GetAll());
         [HttpPost]

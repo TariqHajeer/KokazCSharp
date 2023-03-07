@@ -4,6 +4,7 @@ using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +24,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     country.Regions.ToList().ForEach(c => c.Country = null);
                     return context.Mapper.Map<RegionDto[]>(country.Regions);
                 }))
+                .ForMember(c => c.Points, opt => opt.MapFrom<PointsValueResolver>())
+                .ForMember(c => c.DeliveryCost, opt => opt.MapFrom<DeliveryCostValueResolver>())
                 .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     if (obj.AgentCountries == null)
@@ -47,29 +50,58 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                             });
                         }
                     return regions;
-                }))
-                .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
+                }));
 
         }
-    }
-    public class RequiredAgentValueResolver : IValueResolver<Country, CountryDto, bool>
-    {
-        public IHttpContextAccessorService _httpContextAccessorService { get; set; }
-        public RequiredAgentValueResolver(IHttpContextAccessorService httpContextAccessorService)
+        public class PointsValueResolver : IValueResolver<Country, CountryDto, Int16>
         {
-            _httpContextAccessorService = httpContextAccessorService;
-        }
-        public bool Resolve(Country source, CountryDto destination, bool destMember, ResolutionContext context)
-        {
-            var currentCountyId = _httpContextAccessorService.CurrentBranchId();
-            if (source.Id == _httpContextAccessorService.CurrentBranchId())
-                return true;
-            if (source.Branch != null)
-                return false;
-            if (source.ToCountries == null)
-                return false;
+            public IHttpContextAccessorService _httpContextAccessorService { get; set; }
 
-            return !source.ToCountries.Select(c => c.FromCountryId).Contains(currentCountyId);
+            public PointsValueResolver(IHttpContextAccessorService httpContextAccessorService)
+            {
+                _httpContextAccessorService = httpContextAccessorService;
+            }
+
+            public short Resolve(Country source, CountryDto destination, short destMember, ResolutionContext context)
+            {
+                var currentBranchId = _httpContextAccessorService.CurrentBranchId();
+                return source.BranchToCountryDeliverryCosts.First(c => c.BranchId == currentBranchId).Points;
+            }
+        }
+        public class DeliveryCostValueResolver : IValueResolver<Country, CountryDto, decimal>
+        {
+            public IHttpContextAccessorService _httpContextAccessorService { get; set; }
+            public DeliveryCostValueResolver(IHttpContextAccessorService httpContextAccessorService)
+            {
+                _httpContextAccessorService = httpContextAccessorService;
+            }
+            public decimal Resolve(Country source, CountryDto destination, decimal destMember, ResolutionContext context)
+            {
+                var currentBranchId = _httpContextAccessorService.CurrentBranchId();
+                return source.BranchToCountryDeliverryCosts.First(c => c.BranchId == currentBranchId).DeliveryCost;
+            }
+        }
+        public class RequiredAgentValueResolver : IValueResolver<Country, CountryDto, bool>
+        {
+            public IHttpContextAccessorService _httpContextAccessorService { get; set; }
+            public RequiredAgentValueResolver(IHttpContextAccessorService httpContextAccessorService)
+            {
+                _httpContextAccessorService = httpContextAccessorService;
+            }
+            public bool Resolve(Country source, CountryDto destination, bool destMember, ResolutionContext context)
+            {
+                var currentCountyId = _httpContextAccessorService.CurrentBranchId();
+                if (source.Id == _httpContextAccessorService.CurrentBranchId())
+                    return true;
+                if (source.Branch != null)
+                    return false;
+                if (source.ToCountries == null)
+                    return false;
+
+                return !source.ToCountries.Select(c => c.FromCountryId).Contains(currentCountyId);
+            }
         }
     }
+
+
 }

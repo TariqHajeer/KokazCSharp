@@ -1,4 +1,5 @@
 ﻿using KokazGoodsTransfer.Models.Infrastrcuter;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KokazGoodsTransfer.Models
@@ -9,5 +10,6 @@ namespace KokazGoodsTransfer.Models
         public string Name { get; set; }
         [ForeignKey(nameof(Id))]
         public virtual Country Country { get; set; }
+        public virtual ICollection<BranchToCountryDeliverryCost> BranchToCountryDeliverryCosts { get; set; }
     }
 }

@@ -52,7 +52,6 @@ namespace KokazGoodsTransfer.Models
         public decimal? OldDeliveryCost { get; set; }
         public bool? IsSend { get; set; }
         public decimal? ClientPaied { get; set; }
-        public int? CurrentCountry { get; set; }
         public int PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
         public decimal? NewCost { get; set; }
@@ -63,7 +62,6 @@ namespace KokazGoodsTransfer.Models
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
-        public virtual Country CurrentCountryNavigation { get; set; }
         public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
         public virtual OrderPlaced Orderplaced { get; set; }

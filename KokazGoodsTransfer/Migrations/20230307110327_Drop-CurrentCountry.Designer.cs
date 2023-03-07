@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20230307110327_Drop-CurrentCountry")]
+    partial class DropCurrentCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,1746 +187,6 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             Id = 7,
                             Name = "فرع كروك"
-                        });
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.BranchToCountryDeliverryCost", b =>
-                {
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("DeliveryCost")
-                        .HasColumnType("decimal(6,0)");
-
-                    b.Property<short>("Points")
-                        .HasColumnType("SMALLINT");
-
-                    b.HasKey("BranchId", "CountryId");
-
-                    b.HasIndex("BranchId");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("BranchToCountryDeliverryCosts");
-
-                    b.HasData(
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 1,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 2,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 3,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 4,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 5,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 6,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 7,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 8,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 9,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 10,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 11,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 12,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 13,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 14,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 15,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 16,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 17,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 18,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 19,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 20,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 21,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 22,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 23,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 24,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 25,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 26,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 27,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 28,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 29,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 30,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 31,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 32,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 33,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 34,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 35,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 36,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 37,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 38,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 39,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 40,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 41,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 42,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 43,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 44,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 45,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 46,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 47,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 48,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 3,
-                            CountryId = 49,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 1,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 2,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 3,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 4,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 5,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 6,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 7,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 8,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 9,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 10,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 11,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 12,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 13,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 14,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 15,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 16,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 17,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 18,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 19,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 20,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 21,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 22,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 23,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 24,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 25,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 26,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 27,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 28,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 29,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 30,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 31,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 32,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 33,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 34,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 35,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 36,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 37,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 38,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 39,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 40,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 41,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 42,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 43,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 44,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 45,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 46,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 47,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 48,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 4,
-                            CountryId = 49,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 1,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 2,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 3,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 4,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 5,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 6,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 7,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 8,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 9,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 10,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 11,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 12,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 13,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 14,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 15,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 16,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 17,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 18,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 19,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 20,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 21,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 22,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 23,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 24,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 25,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 26,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 27,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 28,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 29,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 30,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 31,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 32,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 33,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 34,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 35,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 36,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 37,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 38,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 39,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 40,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 41,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 42,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 43,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 44,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 45,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 46,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 47,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 48,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 5,
-                            CountryId = 49,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 1,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 2,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 3,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 4,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 5,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 6,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 7,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 8,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 9,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 10,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 11,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 12,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 13,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 14,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 15,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 16,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 17,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 18,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 19,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 20,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 21,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 22,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 23,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 24,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 25,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 26,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 27,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 28,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 29,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 30,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 31,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 32,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 33,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 34,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 35,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 36,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 37,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 38,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 39,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 40,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 41,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 42,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 43,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 44,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 45,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 46,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 47,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 48,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 7,
-                            CountryId = 49,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 1,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 2,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 3,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 4,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 5,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 6,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 7,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 8,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 9,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 10,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 11,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 12,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 13,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 14,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 15,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 16,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 17,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 18,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 19,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 20,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 21,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 22,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 23,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 24,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 25,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 26,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 27,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 28,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 29,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 30,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 31,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 32,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 33,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 34,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 35,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 36,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 37,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 38,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 39,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 40,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 41,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 42,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 43,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 44,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 45,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 46,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 47,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 48,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
-                        },
-                        new
-                        {
-                            BranchId = 8,
-                            CountryId = 49,
-                            DeliveryCost = 5000m,
-                            Points = (short)20
                         });
                 });
 
@@ -2148,12 +410,27 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<decimal>("DeliveryCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MediatorId")
+                        .HasColumnType("int")
+                        .HasColumnName("mediatorId");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
 
@@ -2161,247 +438,394 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "خارجي اربيل"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خارجي اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 2,
-                            Name = "دهوك"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "دهوك",
+                            Points = 2
                         },
                         new
                         {
                             Id = 3,
-                            Name = "سليمانية"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سليمانية",
+                            Points = 2
                         },
                         new
                         {
                             Id = 4,
-                            Name = "موصل"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "موصل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 5,
-                            Name = "بغداد"
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "بغداد",
+                            Points = 3
                         },
                         new
                         {
                             Id = 6,
-                            Name = "محافظات جنوبية"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "محافظات جنوبية",
+                            Points = 0
                         },
                         new
                         {
                             Id = 7,
-                            Name = "كركوك"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كركوك",
+                            Points = 4
                         },
                         new
                         {
                             Id = 8,
-                            Name = "اربيل"
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 9,
-                            Name = "خبات"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خبات",
+                            Points = 1
                         },
                         new
                         {
                             Id = 10,
-                            Name = "انبار"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "انبار",
+                            Points = 3
                         },
                         new
                         {
                             Id = 11,
-                            Name = "تكريت"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "تكريت",
+                            Points = 4
                         },
                         new
                         {
                             Id = 12,
-                            Name = "ديالى"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديالى",
+                            Points = 3
                         },
                         new
                         {
                             Id = 13,
-                            Name = "واسط"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "واسط",
+                            Points = 4
                         },
                         new
                         {
                             Id = 14,
-                            Name = "نجف"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "نجف",
+                            Points = 3
                         },
                         new
                         {
                             Id = 15,
-                            Name = "كربلاء"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كربلاء",
+                            Points = 3
                         },
                         new
                         {
                             Id = 16,
-                            Name = "ديوانية"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ديوانية",
+                            Points = 4
                         },
                         new
                         {
                             Id = 17,
-                            Name = "مثنى"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "مثنى",
+                            Points = 4
                         },
                         new
                         {
                             Id = 18,
-                            Name = "صلاح الدين"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "صلاح الدين",
+                            Points = 4
                         },
                         new
                         {
                             Id = 19,
-                            Name = "سامراء"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سامراء",
+                            Points = 4
                         },
                         new
                         {
                             Id = 20,
-                            Name = "بصره"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بصره",
+                            Points = 3
                         },
                         new
                         {
                             Id = 21,
-                            Name = "عمارة"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمارة",
+                            Points = 4
                         },
                         new
                         {
                             Id = 22,
-                            Name = "ناصرية"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ناصرية",
+                            Points = 4
                         },
                         new
                         {
                             Id = 23,
-                            Name = "بابل"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "بابل",
+                            Points = 3
                         },
                         new
                         {
                             Id = 24,
-                            Name = "كوت"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "كوت",
+                            Points = 4
                         },
                         new
                         {
                             Id = 25,
-                            Name = "ذي قار"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ذي قار",
+                            Points = 4
                         },
                         new
                         {
                             Id = 26,
-                            Name = "ميسان"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "ميسان",
+                            Points = 4
                         },
                         new
                         {
                             Id = 27,
-                            Name = "سيروان"
+                            DeliveryCost = 7000m,
+                            IsMain = false,
+                            Name = "سيروان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 28,
-                            Name = "مخمور"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مخمور",
+                            Points = 0
                         },
                         new
                         {
                             Id = 29,
-                            Name = "مصيف"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "مصيف",
+                            Points = 0
                         },
                         new
                         {
                             Id = 30,
-                            Name = "سوران"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سوران",
+                            Points = 0
                         },
                         new
                         {
                             Id = 31,
-                            Name = "كوية"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوية",
+                            Points = 0
                         },
                         new
                         {
                             Id = 32,
-                            Name = "شقلاوة"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "شقلاوة",
+                            Points = 0
                         },
                         new
                         {
                             Id = 33,
-                            Name = "ملا عمر"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ملا عمر",
+                            Points = 0
                         },
                         new
                         {
                             Id = 34,
-                            Name = "بارازان"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "بارازان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 35,
-                            Name = "سلافا ستي"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "سلافا ستي",
+                            Points = 0
                         },
                         new
                         {
                             Id = 36,
-                            Name = "كوير"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "كوير",
+                            Points = 0
                         },
                         new
                         {
                             Id = 37,
-                            Name = "برده رش"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "برده رش",
+                            Points = 0
                         },
                         new
                         {
                             Id = 38,
-                            Name = "ديانا"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "ديانا",
+                            Points = 0
                         },
                         new
                         {
                             Id = 39,
-                            Name = "خليفان"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "خليفان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 40,
-                            Name = "راوندوز"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "راوندوز",
+                            Points = 1
                         },
                         new
                         {
                             Id = 41,
-                            Name = "رانيا"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "رانيا",
+                            Points = 2
                         },
                         new
                         {
                             Id = 42,
-                            Name = "طق طق"
+                            DeliveryCost = 5000m,
+                            IsMain = false,
+                            Name = "طق طق",
+                            Points = 2
                         },
                         new
                         {
                             Id = 43,
-                            Name = "قلادزي"
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قلادزي",
+                            Points = 1
                         },
                         new
                         {
                             Id = 44,
-                            Name = "كرخ محمد"
+                            DeliveryCost = 4000m,
+                            IsMain = false,
+                            Name = "كرخ محمد",
+                            Points = 1
                         },
                         new
                         {
                             Id = 45,
-                            Name = "عمار بابل"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "عمار بابل",
+                            Points = 0
                         },
                         new
                         {
                             Id = 46,
-                            Name = "الرصافة"
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "الرصافة",
+                            Points = 2
                         },
                         new
                         {
                             Id = 47,
-                            Name = "كرخ 2"
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "كرخ 2",
+                            Points = 5
                         },
                         new
                         {
                             Id = 48,
-                            Name = "قوقز فرع بغداد"
+                            DeliveryCost = 6000m,
+                            IsMain = false,
+                            Name = "قوقز فرع بغداد",
+                            Points = 0
                         },
                         new
                         {
                             Id = 49,
-                            Name = "سماوة"
+                            DeliveryCost = 8000m,
+                            IsMain = false,
+                            Name = "سماوة",
+                            Points = 0
                         });
                 });
 
@@ -6089,25 +4513,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.BranchToCountryDeliverryCost", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("BranchToCountryDeliverryCosts")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
-                        .WithMany("BranchToCountryDeliverryCosts")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("Country");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Treasury", "Treasury")
@@ -6190,6 +4595,16 @@ namespace KokazGoodsTransfer.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.Country", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Country", "Mediator")
+                        .WithMany("InverseMediator")
+                        .HasForeignKey("MediatorId")
+                        .HasConstraintName("FK__Country__mediato__74794A92");
+
+                    b.Navigation("Mediator");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
@@ -6406,7 +4821,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasForeignKey("CountryId")
                         .HasConstraintName("FK_Order_Country")
                         .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
                         .WithMany()
                         .HasForeignKey("CurrentBranchId")
@@ -6937,11 +5351,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("AgentPrintDetails");
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
-                {
-                    b.Navigation("BranchToCountryDeliverryCosts");
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
                 {
                     b.Navigation("TreasuryHistories");
@@ -6991,13 +5400,13 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("Branch");
 
-                    b.Navigation("BranchToCountryDeliverryCosts");
-
                     b.Navigation("Clients");
 
                     b.Navigation("DisAcceptOrders");
 
                     b.Navigation("FromCountries");
+
+                    b.Navigation("InverseMediator");
 
                     b.Navigation("MediatorCountries");
 

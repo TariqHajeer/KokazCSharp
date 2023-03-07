@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +16,12 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         private readonly IRegionCashedService _regionCashedService;
         private readonly IUserCashedService _userCashedService;
         private readonly IClientCashedService _clientCashedService;
-        private readonly IHttpContextAccessorService _httpContextAccessorService;
-        private readonly int _currentBranchId;
-        public CountryController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService, IHttpContextAccessorService httpContextAccessorService)
+        public CountryController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IUserCashedService userCashedService, IClientCashedService clientCashedService)
         {
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
             _userCashedService = userCashedService;
-            _clientCashedService = clientCashedService; ;
-            _httpContextAccessorService = httpContextAccessorService;
-            _currentBranchId = _httpContextAccessorService.CurrentBranchId();
+            _clientCashedService = clientCashedService;
         }
         private void RemoveRelatedCash()
         {

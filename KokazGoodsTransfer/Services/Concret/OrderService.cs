@@ -796,7 +796,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
 
             }
-            var mainCountryId = (await _countryCashedService.GetAsync(c => c.IsMain == true)).First().Id;
             var agnetsIds = createMultipleOrders.Select(c => c.AgentId);
             var agnets = await _uintOfWork.Repository<User>().Select(c => agnetsIds.Contains(c.Id), c => new { c.Id, c.Salary });
             await _uintOfWork.BegeinTransaction();
@@ -809,7 +808,6 @@ namespace KokazGoodsTransfer.Services.Concret
                      var order = _mapper.Map<Order>(item);
                      order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
                      order.Date = item.Date;
-                     order.CurrentCountry = mainCountryId;
                      order.CreatedBy = currentUser;
                      order.CurrentBranchId = _currentBranchId;
                      var secoundBranch = branches.FirstOrDefault(c => c.Id == item.CountryId);
@@ -841,7 +839,6 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var currentBrach = await _branchRepository.GetById(_currentBranchId);
                 var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
-                order.CurrentCountry = country.Id;
                 order.CurrentBranchId = _currentBranchId;
                 var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
                 if (targetBranch != null)
@@ -1063,7 +1060,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
-            var includes = new string[] { "Client.ClientPhones", "Country" };
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
             var orders = await _repository.GetByFilterInclue(c => deleiverMoneyForClientDto.Ids.Contains(c.Id), includes);
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -1096,19 +1093,20 @@ namespace KokazGoodsTransfer.Services.Concret
             int totalPoints = 0;
             foreach (var item in orders)
             {
-
+                var points = item.Country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _currentBranchId).Points;
                 if (!item.IsClientDiliverdMoney)
                 {
                     if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
                     {
-                        totalPoints += item.Country.Points;
+                        
+                        totalPoints += points;
                     }
                 }
                 else
                 {
                     if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
                     {
-                        totalPoints -= item.Country.Points;
+                        totalPoints -= points;
                     }
                 }
 
