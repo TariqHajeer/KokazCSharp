@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.MarketDtos;
-using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers
 {
@@ -54,63 +48,6 @@ namespace KokazGoodsTransfer.Controllers
 
             }
             return Ok(markets);
-        }
-        [HttpGet("TrackOrder")]
-        public IActionResult TrackingOrder([FromQuery] string code, string phone)
-        {
-            var orders = this._context.Orders
-                .Include(c => c.Orderplaced)
-                .Include(c => c.Country)
-                .Include(c => c.Client)
-                .ThenInclude(c => c.ClientPhones)
-                .Where(c => c.Code == code);
-            if (!String.IsNullOrEmpty(phone))
-            {
-                orders = orders.Where(c => c.RecipientPhones.Contains(phone));
-            }
-            var dto = _mapper.Map<OrderDto[]>(orders).ToList();
-            dto.ForEach(c =>
-            {
-
-                var country = this._context.Countries.Find(c.Country.Id);
-                c.Path = _mapper.Map<CountryDto[]>(GetPath(country, null)).ToList();
-            });
-            return Ok(dto);
-        }
-
-        List<Country> GetPath(Country country, List<Country> countries = null)
-        {
-            if (country.MediatorId != null)
-            {
-                var mid = this._context.Countries.Find(country.MediatorId);
-                countries = GetPath(mid, countries);
-
-            }
-            if (countries == null)
-                countries = new List<Country>();
-            countries.Add(country);
-            return countries;
-        }
-        [HttpGet("Test")]
-        public IActionResult Test([FromServices] KokazContext kokazContext)
-        {
-
-
-            var prev = kokazContext.Privileges.ToList();
-            string command = "var list =new List<Privilege>(){objects};";
-            string objects = "";
-            foreach (var item in prev)
-            {
-                var z = new Privilege()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    SysName = item.SysName
-                };
-                objects += "new Privilege(){Id=" + item.Id + ",Name=\"" + item.Name + "\",SysName =\"" + item.SysName + "\"},";
-            }
-            command = command.Replace("objects", objects);
-            return Ok(command);
         }
     }
 }
