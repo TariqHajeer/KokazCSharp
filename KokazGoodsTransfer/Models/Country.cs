@@ -21,7 +21,6 @@ namespace KokazGoodsTransfer.Models
         public string Name { get; set; }
         public decimal DeliveryCost { get; set; }
         public int? MediatorId { get; set; }
-        public bool IsMain { get; set; }
         public int Points { get; set; }
         public Branch Branch { get; set; }
 

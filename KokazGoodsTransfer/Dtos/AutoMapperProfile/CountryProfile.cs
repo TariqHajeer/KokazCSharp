@@ -47,8 +47,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                             });
                         }
                     return regions;
-                }))
-                .ForMember(c => c.IsMain, opt => opt.MapFrom(src => false));
+                }));
 
         }
     }

@@ -32,10 +32,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 return response;
             }
             var country = _mapper.Map<Country>(createDto);
-            if (!(await _repository.Any()))
-            {
-                country.IsMain = true;
-            }
 
             await _repository.AddAsync(country);
             if (country.MediatorId != null)

@@ -796,7 +796,6 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
 
             }
-            var mainCountryId = (await _countryCashedService.GetAsync(c => c.IsMain == true)).First().Id;
             var agnetsIds = createMultipleOrders.Select(c => c.AgentId);
             var agnets = await _uintOfWork.Repository<User>().Select(c => agnetsIds.Contains(c.Id), c => new { c.Id, c.Salary });
             await _uintOfWork.BegeinTransaction();
