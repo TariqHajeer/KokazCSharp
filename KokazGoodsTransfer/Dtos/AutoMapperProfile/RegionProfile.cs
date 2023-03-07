@@ -15,7 +15,6 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 
                     if (region.Country != null)
                     {
-                        region.Country.Mediator = null;
                         region.Country.Regions = null;
                     }
                     return context.Mapper.Map<CountryDto>(region.Country);

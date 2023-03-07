@@ -31,8 +31,6 @@ namespace KokazGoodsTransfer.Services.Concret
             var country = _mapper.Map<Country>(createDto);
 
             await _repository.AddAsync(country);
-            if (country.MediatorId != null)
-                await _repository.LoadRefernces(country, c => c.Mediator);
             response = new ErrorRepsonse<CountryDto>(_mapper.Map<CountryDto>(country));
             RemoveCash();
             return response;

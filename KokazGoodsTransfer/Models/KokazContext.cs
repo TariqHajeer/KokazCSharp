@@ -296,19 +296,10 @@ namespace KokazGoodsTransfer.Models
             modelBuilder.Entity<Country>(entity =>
             {
                 entity.ToTable("Country");
-
                 entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.MediatorId).HasColumnName("mediatorId");
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.HasOne(d => d.Mediator)
-                    .WithMany(p => p.InverseMediator)
-                    .HasForeignKey(d => d.MediatorId)
-                    .HasConstraintName("FK__Country__mediato__74794A92");
             });
 
             modelBuilder.Entity<DisAcceptOrder>(entity =>
