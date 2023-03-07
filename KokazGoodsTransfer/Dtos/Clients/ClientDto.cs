@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
         public DateTime FirstDate { get; set; }
         public string Note { get; set; }
         public string UserName { get; set; }
-        public CountryDto Country { get; set; }
+        public NameAndIdDto Country { get; set; }
         public bool CanDelete { get; set; } = true;
         public decimal Total { get; set; }
         public List<PhoneDto> Phones { get; set; }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
@@ -34,7 +35,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     return context.Mapper.Map<UserDto[]>(obj.AgentCountries.Select(c => c.Agent));
                 })).MaxDepth(2)
                 .ForMember(c => c.RequiredAgent, opt => opt.MapFrom<RequiredAgentValueResolver>());
-
+            CreateMap<Country, NameAndIdDto>();
             CreateMap<UpdateCountryDto, Country>();
             CreateMap<CreateCountryDto, Country>()
                 .ForMember(c => c.Regions, opt => opt.MapFrom((dto, obj, i, context) =>
@@ -65,6 +66,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             public short Resolve(Country source, CountryDto destination, short destMember, ResolutionContext context)
             {
                 var currentBranchId = _httpContextAccessorService.CurrentBranchId();
+
                 return source.BranchToCountryDeliverryCosts.First(c => c.BranchId == currentBranchId).Points;
             }
         }

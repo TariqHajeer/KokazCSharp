@@ -18,6 +18,11 @@ namespace KokazGoodsTransfer.Services.Concret
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
         }
+        public override async Task<CountryDto> GetById(int id)
+        {
+            var list =await GetCashed();
+            return list.First(c => c.Id == id);
+        }
 
         public override async Task<ErrorRepsonse<CountryDto>> AddAsync(CreateCountryDto createDto)
         {

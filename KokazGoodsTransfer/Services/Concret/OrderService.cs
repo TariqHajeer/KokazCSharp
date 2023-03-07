@@ -857,7 +857,6 @@ namespace KokazGoodsTransfer.Services.Concret
                     {
                         var midBranch = await _branchRepository.FirstOrDefualt(c => c.Id == midCountry.MediatorCountryId);
                         order.NextBranchId = midBranch.Id;
-                        //order.TargetBranchId = midBranch.Id;
                     }
                     order.AgentId = null;
                 }
@@ -886,7 +885,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 if (createOrdersFromEmployee.RegionId == null)
                 {
-                    if (!String.IsNullOrWhiteSpace(createOrdersFromEmployee.RegionName))
+                    if (!string.IsNullOrWhiteSpace(createOrdersFromEmployee.RegionName))
                     {
                         var region = new Region()
                         {
