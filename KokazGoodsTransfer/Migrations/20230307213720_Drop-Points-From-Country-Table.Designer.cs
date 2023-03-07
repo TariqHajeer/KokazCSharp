@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20230307213720_Drop-Points-From-Country-Table")]
+    partial class DropPointsFromCountryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2148,6 +2150,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<decimal>("DeliveryCost")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -2161,246 +2166,295 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
+                            DeliveryCost = 5000m,
                             Name = "خارجي اربيل"
                         },
                         new
                         {
                             Id = 2,
+                            DeliveryCost = 5000m,
                             Name = "دهوك"
                         },
                         new
                         {
                             Id = 3,
+                            DeliveryCost = 5000m,
                             Name = "سليمانية"
                         },
                         new
                         {
                             Id = 4,
+                            DeliveryCost = 5000m,
                             Name = "موصل"
                         },
                         new
                         {
                             Id = 5,
+                            DeliveryCost = 6000m,
                             Name = "بغداد"
                         },
                         new
                         {
                             Id = 6,
+                            DeliveryCost = 8000m,
                             Name = "محافظات جنوبية"
                         },
                         new
                         {
                             Id = 7,
+                            DeliveryCost = 5000m,
                             Name = "كركوك"
                         },
                         new
                         {
                             Id = 8,
+                            DeliveryCost = 4000m,
                             Name = "اربيل"
                         },
                         new
                         {
                             Id = 9,
+                            DeliveryCost = 5000m,
                             Name = "خبات"
                         },
                         new
                         {
                             Id = 10,
+                            DeliveryCost = 8000m,
                             Name = "انبار"
                         },
                         new
                         {
                             Id = 11,
+                            DeliveryCost = 8000m,
                             Name = "تكريت"
                         },
                         new
                         {
                             Id = 12,
+                            DeliveryCost = 8000m,
                             Name = "ديالى"
                         },
                         new
                         {
                             Id = 13,
+                            DeliveryCost = 8000m,
                             Name = "واسط"
                         },
                         new
                         {
                             Id = 14,
+                            DeliveryCost = 8000m,
                             Name = "نجف"
                         },
                         new
                         {
                             Id = 15,
+                            DeliveryCost = 8000m,
                             Name = "كربلاء"
                         },
                         new
                         {
                             Id = 16,
+                            DeliveryCost = 8000m,
                             Name = "ديوانية"
                         },
                         new
                         {
                             Id = 17,
+                            DeliveryCost = 8000m,
                             Name = "مثنى"
                         },
                         new
                         {
                             Id = 18,
+                            DeliveryCost = 8000m,
                             Name = "صلاح الدين"
                         },
                         new
                         {
                             Id = 19,
+                            DeliveryCost = 8000m,
                             Name = "سامراء"
                         },
                         new
                         {
                             Id = 20,
+                            DeliveryCost = 8000m,
                             Name = "بصره"
                         },
                         new
                         {
                             Id = 21,
+                            DeliveryCost = 8000m,
                             Name = "عمارة"
                         },
                         new
                         {
                             Id = 22,
+                            DeliveryCost = 8000m,
                             Name = "ناصرية"
                         },
                         new
                         {
                             Id = 23,
+                            DeliveryCost = 8000m,
                             Name = "بابل"
                         },
                         new
                         {
                             Id = 24,
+                            DeliveryCost = 8000m,
                             Name = "كوت"
                         },
                         new
                         {
                             Id = 25,
+                            DeliveryCost = 8000m,
                             Name = "ذي قار"
                         },
                         new
                         {
                             Id = 26,
+                            DeliveryCost = 8000m,
                             Name = "ميسان"
                         },
                         new
                         {
                             Id = 27,
+                            DeliveryCost = 7000m,
                             Name = "سيروان"
                         },
                         new
                         {
                             Id = 28,
+                            DeliveryCost = 5000m,
                             Name = "مخمور"
                         },
                         new
                         {
                             Id = 29,
+                            DeliveryCost = 5000m,
                             Name = "مصيف"
                         },
                         new
                         {
                             Id = 30,
+                            DeliveryCost = 5000m,
                             Name = "سوران"
                         },
                         new
                         {
                             Id = 31,
+                            DeliveryCost = 5000m,
                             Name = "كوية"
                         },
                         new
                         {
                             Id = 32,
+                            DeliveryCost = 5000m,
                             Name = "شقلاوة"
                         },
                         new
                         {
                             Id = 33,
+                            DeliveryCost = 5000m,
                             Name = "ملا عمر"
                         },
                         new
                         {
                             Id = 34,
+                            DeliveryCost = 5000m,
                             Name = "بارازان"
                         },
                         new
                         {
                             Id = 35,
+                            DeliveryCost = 5000m,
                             Name = "سلافا ستي"
                         },
                         new
                         {
                             Id = 36,
+                            DeliveryCost = 5000m,
                             Name = "كوير"
                         },
                         new
                         {
                             Id = 37,
+                            DeliveryCost = 5000m,
                             Name = "برده رش"
                         },
                         new
                         {
                             Id = 38,
+                            DeliveryCost = 5000m,
                             Name = "ديانا"
                         },
                         new
                         {
                             Id = 39,
+                            DeliveryCost = 5000m,
                             Name = "خليفان"
                         },
                         new
                         {
                             Id = 40,
+                            DeliveryCost = 5000m,
                             Name = "راوندوز"
                         },
                         new
                         {
                             Id = 41,
+                            DeliveryCost = 5000m,
                             Name = "رانيا"
                         },
                         new
                         {
                             Id = 42,
+                            DeliveryCost = 5000m,
                             Name = "طق طق"
                         },
                         new
                         {
                             Id = 43,
+                            DeliveryCost = 6000m,
                             Name = "قلادزي"
                         },
                         new
                         {
                             Id = 44,
+                            DeliveryCost = 4000m,
                             Name = "كرخ محمد"
                         },
                         new
                         {
                             Id = 45,
+                            DeliveryCost = 8000m,
                             Name = "عمار بابل"
                         },
                         new
                         {
                             Id = 46,
+                            DeliveryCost = 6000m,
                             Name = "الرصافة"
                         },
                         new
                         {
                             Id = 47,
+                            DeliveryCost = 6000m,
                             Name = "كرخ 2"
                         },
                         new
                         {
                             Id = 48,
+                            DeliveryCost = 6000m,
                             Name = "قوقز فرع بغداد"
                         },
                         new
                         {
                             Id = 49,
+                            DeliveryCost = 8000m,
                             Name = "سماوة"
                         });
                 });

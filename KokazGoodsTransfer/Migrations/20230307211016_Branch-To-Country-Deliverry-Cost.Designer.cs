@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20230307211016_Branch-To-Country-Deliverry-Cost")]
+    partial class BranchToCountryDeliverryCost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2148,10 +2150,16 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<decimal>("DeliveryCost")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -2161,247 +2169,345 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "خارجي اربيل"
+                            DeliveryCost = 5000m,
+                            Name = "خارجي اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 2,
-                            Name = "دهوك"
+                            DeliveryCost = 5000m,
+                            Name = "دهوك",
+                            Points = 2
                         },
                         new
                         {
                             Id = 3,
-                            Name = "سليمانية"
+                            DeliveryCost = 5000m,
+                            Name = "سليمانية",
+                            Points = 2
                         },
                         new
                         {
                             Id = 4,
-                            Name = "موصل"
+                            DeliveryCost = 5000m,
+                            Name = "موصل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 5,
-                            Name = "بغداد"
+                            DeliveryCost = 6000m,
+                            Name = "بغداد",
+                            Points = 3
                         },
                         new
                         {
                             Id = 6,
-                            Name = "محافظات جنوبية"
+                            DeliveryCost = 8000m,
+                            Name = "محافظات جنوبية",
+                            Points = 0
                         },
                         new
                         {
                             Id = 7,
-                            Name = "كركوك"
+                            DeliveryCost = 5000m,
+                            Name = "كركوك",
+                            Points = 4
                         },
                         new
                         {
                             Id = 8,
-                            Name = "اربيل"
+                            DeliveryCost = 4000m,
+                            Name = "اربيل",
+                            Points = 2
                         },
                         new
                         {
                             Id = 9,
-                            Name = "خبات"
+                            DeliveryCost = 5000m,
+                            Name = "خبات",
+                            Points = 1
                         },
                         new
                         {
                             Id = 10,
-                            Name = "انبار"
+                            DeliveryCost = 8000m,
+                            Name = "انبار",
+                            Points = 3
                         },
                         new
                         {
                             Id = 11,
-                            Name = "تكريت"
+                            DeliveryCost = 8000m,
+                            Name = "تكريت",
+                            Points = 4
                         },
                         new
                         {
                             Id = 12,
-                            Name = "ديالى"
+                            DeliveryCost = 8000m,
+                            Name = "ديالى",
+                            Points = 3
                         },
                         new
                         {
                             Id = 13,
-                            Name = "واسط"
+                            DeliveryCost = 8000m,
+                            Name = "واسط",
+                            Points = 4
                         },
                         new
                         {
                             Id = 14,
-                            Name = "نجف"
+                            DeliveryCost = 8000m,
+                            Name = "نجف",
+                            Points = 3
                         },
                         new
                         {
                             Id = 15,
-                            Name = "كربلاء"
+                            DeliveryCost = 8000m,
+                            Name = "كربلاء",
+                            Points = 3
                         },
                         new
                         {
                             Id = 16,
-                            Name = "ديوانية"
+                            DeliveryCost = 8000m,
+                            Name = "ديوانية",
+                            Points = 4
                         },
                         new
                         {
                             Id = 17,
-                            Name = "مثنى"
+                            DeliveryCost = 8000m,
+                            Name = "مثنى",
+                            Points = 4
                         },
                         new
                         {
                             Id = 18,
-                            Name = "صلاح الدين"
+                            DeliveryCost = 8000m,
+                            Name = "صلاح الدين",
+                            Points = 4
                         },
                         new
                         {
                             Id = 19,
-                            Name = "سامراء"
+                            DeliveryCost = 8000m,
+                            Name = "سامراء",
+                            Points = 4
                         },
                         new
                         {
                             Id = 20,
-                            Name = "بصره"
+                            DeliveryCost = 8000m,
+                            Name = "بصره",
+                            Points = 3
                         },
                         new
                         {
                             Id = 21,
-                            Name = "عمارة"
+                            DeliveryCost = 8000m,
+                            Name = "عمارة",
+                            Points = 4
                         },
                         new
                         {
                             Id = 22,
-                            Name = "ناصرية"
+                            DeliveryCost = 8000m,
+                            Name = "ناصرية",
+                            Points = 4
                         },
                         new
                         {
                             Id = 23,
-                            Name = "بابل"
+                            DeliveryCost = 8000m,
+                            Name = "بابل",
+                            Points = 3
                         },
                         new
                         {
                             Id = 24,
-                            Name = "كوت"
+                            DeliveryCost = 8000m,
+                            Name = "كوت",
+                            Points = 4
                         },
                         new
                         {
                             Id = 25,
-                            Name = "ذي قار"
+                            DeliveryCost = 8000m,
+                            Name = "ذي قار",
+                            Points = 4
                         },
                         new
                         {
                             Id = 26,
-                            Name = "ميسان"
+                            DeliveryCost = 8000m,
+                            Name = "ميسان",
+                            Points = 4
                         },
                         new
                         {
                             Id = 27,
-                            Name = "سيروان"
+                            DeliveryCost = 7000m,
+                            Name = "سيروان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 28,
-                            Name = "مخمور"
+                            DeliveryCost = 5000m,
+                            Name = "مخمور",
+                            Points = 0
                         },
                         new
                         {
                             Id = 29,
-                            Name = "مصيف"
+                            DeliveryCost = 5000m,
+                            Name = "مصيف",
+                            Points = 0
                         },
                         new
                         {
                             Id = 30,
-                            Name = "سوران"
+                            DeliveryCost = 5000m,
+                            Name = "سوران",
+                            Points = 0
                         },
                         new
                         {
                             Id = 31,
-                            Name = "كوية"
+                            DeliveryCost = 5000m,
+                            Name = "كوية",
+                            Points = 0
                         },
                         new
                         {
                             Id = 32,
-                            Name = "شقلاوة"
+                            DeliveryCost = 5000m,
+                            Name = "شقلاوة",
+                            Points = 0
                         },
                         new
                         {
                             Id = 33,
-                            Name = "ملا عمر"
+                            DeliveryCost = 5000m,
+                            Name = "ملا عمر",
+                            Points = 0
                         },
                         new
                         {
                             Id = 34,
-                            Name = "بارازان"
+                            DeliveryCost = 5000m,
+                            Name = "بارازان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 35,
-                            Name = "سلافا ستي"
+                            DeliveryCost = 5000m,
+                            Name = "سلافا ستي",
+                            Points = 0
                         },
                         new
                         {
                             Id = 36,
-                            Name = "كوير"
+                            DeliveryCost = 5000m,
+                            Name = "كوير",
+                            Points = 0
                         },
                         new
                         {
                             Id = 37,
-                            Name = "برده رش"
+                            DeliveryCost = 5000m,
+                            Name = "برده رش",
+                            Points = 0
                         },
                         new
                         {
                             Id = 38,
-                            Name = "ديانا"
+                            DeliveryCost = 5000m,
+                            Name = "ديانا",
+                            Points = 0
                         },
                         new
                         {
                             Id = 39,
-                            Name = "خليفان"
+                            DeliveryCost = 5000m,
+                            Name = "خليفان",
+                            Points = 0
                         },
                         new
                         {
                             Id = 40,
-                            Name = "راوندوز"
+                            DeliveryCost = 5000m,
+                            Name = "راوندوز",
+                            Points = 1
                         },
                         new
                         {
                             Id = 41,
-                            Name = "رانيا"
+                            DeliveryCost = 5000m,
+                            Name = "رانيا",
+                            Points = 2
                         },
                         new
                         {
                             Id = 42,
-                            Name = "طق طق"
+                            DeliveryCost = 5000m,
+                            Name = "طق طق",
+                            Points = 2
                         },
                         new
                         {
                             Id = 43,
-                            Name = "قلادزي"
+                            DeliveryCost = 6000m,
+                            Name = "قلادزي",
+                            Points = 1
                         },
                         new
                         {
                             Id = 44,
-                            Name = "كرخ محمد"
+                            DeliveryCost = 4000m,
+                            Name = "كرخ محمد",
+                            Points = 1
                         },
                         new
                         {
                             Id = 45,
-                            Name = "عمار بابل"
+                            DeliveryCost = 8000m,
+                            Name = "عمار بابل",
+                            Points = 0
                         },
                         new
                         {
                             Id = 46,
-                            Name = "الرصافة"
+                            DeliveryCost = 6000m,
+                            Name = "الرصافة",
+                            Points = 2
                         },
                         new
                         {
                             Id = 47,
-                            Name = "كرخ 2"
+                            DeliveryCost = 6000m,
+                            Name = "كرخ 2",
+                            Points = 5
                         },
                         new
                         {
                             Id = 48,
-                            Name = "قوقز فرع بغداد"
+                            DeliveryCost = 6000m,
+                            Name = "قوقز فرع بغداد",
+                            Points = 0
                         },
                         new
                         {
                             Id = 49,
-                            Name = "سماوة"
+                            DeliveryCost = 8000m,
+                            Name = "سماوة",
+                            Points = 0
                         });
                 });
 

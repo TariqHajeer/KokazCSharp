@@ -18,8 +18,6 @@ namespace KokazGoodsTransfer.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal DeliveryCost { get; set; }
-        public int Points { get; set; }
         public Branch Branch { get; set; }
         public virtual ICollection<AgentCountry> AgentCountries { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
@@ -30,5 +28,6 @@ namespace KokazGoodsTransfer.Models
         public virtual ICollection<MediatorCountry> FromCountries { get; set; }
         public virtual ICollection<MediatorCountry> MediatorCountries { get; set; }
         public virtual ICollection<MediatorCountry> ToCountries { get; set; }
+        public virtual ICollection<BranchToCountryDeliverryCost> BranchToCountryDeliverryCosts { get; set; }
     }
 }

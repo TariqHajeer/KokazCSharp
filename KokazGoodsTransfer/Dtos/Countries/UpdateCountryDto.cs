@@ -10,7 +10,6 @@ namespace KokazGoodsTransfer.Dtos.Countries
         public int Id { get; set; }
         public string Name { get; set; }
         public decimal DeliveryCost { get; set; }
-        public int? MediatorId { get; set; }
-        public int Points { get; set; } = 0;
+        public Int16 Points { get; set; } = 0;
     }
 }

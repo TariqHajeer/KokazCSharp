@@ -1060,7 +1060,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
-            var includes = new string[] { "Client.ClientPhones", "Country" };
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
             var orders = await _repository.GetByFilterInclue(c => deleiverMoneyForClientDto.Ids.Contains(c.Id), includes);
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -1093,19 +1093,20 @@ namespace KokazGoodsTransfer.Services.Concret
             int totalPoints = 0;
             foreach (var item in orders)
             {
-
+                var points = item.Country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _currentBranchId).Points;
                 if (!item.IsClientDiliverdMoney)
                 {
                     if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
                     {
-                        totalPoints += item.Country.Points;
+                        
+                        totalPoints += points;
                     }
                 }
                 else
                 {
                     if ((item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
                     {
-                        totalPoints -= item.Country.Points;
+                        totalPoints -= points;
                     }
                 }
 

@@ -53,7 +53,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             if (!_cache.TryGetValue(cashName, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.Regions, c => c.Branch, c => c.Clients, c => c.ToCountries, c => c.AgentCountries.Select(a => a.Agent));
+                entites = await GetAsync(null, c => c.Regions, c => c.Branch, c => c.Clients, c => c.ToCountries, c => c.BranchToCountryDeliverryCosts, c => c.AgentCountries.Select(a => a.Agent));
                 _cache.Set(cashName, entites);
             }
             return entites;
@@ -67,9 +67,18 @@ namespace KokazGoodsTransfer.Services.Concret
                 response.Errors.Add("There.Is.Similar.Country");
                 return response;
             }
+            var country = await _repository.GetById(updateDto.Id);
+            await _repository.LoadCollection(country, c => c.BranchToCountryDeliverryCosts);
+            var branchToCountryDeliverryCosts = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _currentBranch);
 
-            response = await base.Update(updateDto);
+            branchToCountryDeliverryCosts.DeliveryCost = updateDto.DeliveryCost;
+            branchToCountryDeliverryCosts.Points = updateDto.Points;
+            country.Name = updateDto.Name;
+            await _repository.Update(country);
+            response.Data = _mapper.Map<CountryDto>(country);
+            RemoveCash();
             return response;
+
         }
     }
 }

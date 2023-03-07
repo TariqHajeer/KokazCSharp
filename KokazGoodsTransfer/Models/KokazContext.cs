@@ -65,6 +65,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<UserPhone> UserPhones { get; set; }
         public virtual DbSet<TransferToOtherBranch> TransferToOtherBranches { get; set; }
+        public virtual DbSet<BranchToCountryDeliverryCost> BranchToCountryDeliverryCosts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -296,7 +297,6 @@ namespace KokazGoodsTransfer.Models
             modelBuilder.Entity<Country>(entity =>
             {
                 entity.ToTable("Country");
-                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);

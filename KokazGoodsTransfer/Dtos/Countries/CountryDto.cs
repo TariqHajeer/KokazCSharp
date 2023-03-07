@@ -1,5 +1,6 @@
 ﻿using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
+using System;
 using System.Collections.Generic;
 
 namespace KokazGoodsTransfer.Dtos.Countries
@@ -11,7 +12,7 @@ namespace KokazGoodsTransfer.Dtos.Countries
         public decimal DeliveryCost { get; set; }
         public bool CanDelete { get; set; }
         public bool CanDeleteWithRegion { get; set; }
-        public int Points { get; set; }
+        public Int16 Points { get; set; }
         public List<RegionDto> Regions { get; set; }
         public List<UserDto> Agnets { get; set; }
         public bool RequiredAgent { get; set; }
