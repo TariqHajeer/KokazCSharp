@@ -127,6 +127,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
              {
                  return context.Mapper.Map<IEnumerable<BranchDto>>(src.Branches.Select(c => c.Branch));
              }));
+            CreateMap<User, NameAndIdDto>();
         }
     }
 }

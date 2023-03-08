@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     if (country.Regions == null)
                         return null;
                     country.Regions.ToList().ForEach(c => c.Country = null);
-                    return context.Mapper.Map<RegionDto[]>(country.Regions);
+                    return context.Mapper.Map<NameAndIdDto[]>(country.Regions);
                 }))
                 .ForMember(c => c.Points, opt => opt.MapFrom<PointsValueResolver>())
                 .ForMember(c => c.DeliveryCost, opt => opt.MapFrom<DeliveryCostValueResolver>())
@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                     if (obj.AgentCountries == null)
                         return null;
                     obj.AgentCountries.ToList().ForEach(c => c.Agent.AgentCountries = null);
-                    return context.Mapper.Map<UserDto[]>(obj.AgentCountries.Select(c => c.Agent));
+                    return context.Mapper.Map<NameAndIdDto[]>(obj.AgentCountries.Select(c => c.Agent));
                 })).MaxDepth(2)
                 .ForMember(c => c.RequiredAgent, opt => opt.MapFrom<RequiredAgentValueResolver>());
             CreateMap<Country, NameAndIdDto>();
