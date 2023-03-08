@@ -1,11 +1,7 @@
 ﻿using KokazGoodsTransfer.Dtos.Common;
-using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Dtos.Users;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
@@ -18,7 +14,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public decimal Cost { get; set; }
         public decimal? OldCost { get; set; }
         public decimal PayForClient { get; set; }
-        public CountryDto Country { get; set; }
+        public NameAndIdDto Country { get; set; }
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
         public NameAndIdDto Orderplaced { get; set; }

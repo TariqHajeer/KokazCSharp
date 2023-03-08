@@ -1,9 +1,7 @@
-﻿using KokazGoodsTransfer.Models;
-using KokazGoodsTransfer.Services.Interfaces;
+﻿using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 

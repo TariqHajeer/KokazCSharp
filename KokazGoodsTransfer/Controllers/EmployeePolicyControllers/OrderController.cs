@@ -192,6 +192,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
         }
+        /// <summary>
+        /// تسديد العميل
+        /// </summary>
+        /// <param name="orderDontFinishedFilter"></param>
+        /// <returns></returns>
         [HttpGet("OrdersDontFinished")]
         public async Task<ActionResult<IEnumerable<PayForClientDto>>> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
         {

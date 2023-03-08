@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public bool? IsSend { get; set; }
         public int? TargetBranchId { get; set; }
         public ClientDto Client { get; set; }
-        public CountryDto Country { get; set; }
+        public NameAndIdDto Country { get; set; }
         public CountryDto NextCountryDto { get; set; }
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
@@ -48,7 +48,6 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public List<OrderLogDto> OrderLogs { get; set; }
         public List<PrintOrdersDto> AgentPrint { get; set; }
         public List<PrintOrdersDto> ClientPrint { get; set; }
-        public List<CountryDto> Path { get; set; }
         public int? CurrentCountry { get; set; }
         public int? PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
