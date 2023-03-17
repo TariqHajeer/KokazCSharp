@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
 using KokazGoodsTransfer.Dtos.Regions;
 using KokazGoodsTransfer.Models;
@@ -15,7 +16,6 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
 
                     if (region.Country != null)
                     {
-                        region.Country.Mediator = null;
                         region.Country.Regions = null;
                     }
                     return context.Mapper.Map<CountryDto>(region.Country);
@@ -23,6 +23,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 ).MaxDepth(1);
             CreateMap<CreateRegionDto, Region>();
             CreateMap<UpdateRegionDto, Region>();
+            CreateMap<Region, NameAndIdDto>();
         }
     }
 }

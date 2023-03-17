@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public OrderRepository(KokazContext kokazContext, IHttpContextAccessorService httpContextAccessorService) : base(kokazContext, httpContextAccessorService)
         {
             Query = kokazContext.Set<Order>().AsQueryable();
-            Query = Query.Where(c => c.BranchId == branchId || c.TargetBranchId == branchId);
+            Query = Query.Where(c => c.BranchId == branchId || c.TargetBranchId == branchId || c.NextBranchId == branchId || c.CurrentBranchId == branchId);
         }
         public override Task Update(IEnumerable<Order> entites)
         {
@@ -248,7 +248,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
-            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && c.CurrentBranchId == branchId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId));
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId)&&c.AgentId!=null);
 
 
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)

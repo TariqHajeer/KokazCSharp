@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Helpers;
-using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -67,15 +62,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             var result = await _countryCashedService.Delete(id);
             if (result.Errors.Any())
                 return Conflict();
-            RemoveRelatedCash();
-            return Ok();
-
-        }
-        [HttpPut("SetMain/{id}")]
-        public async Task<IActionResult> SetIsMain(int id)
-        {
-
-            await _countryCashedService.SetMainCountry(id);
             RemoveRelatedCash();
             return Ok();
 

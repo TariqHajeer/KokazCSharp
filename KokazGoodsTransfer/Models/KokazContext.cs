@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using KokazGoodsTransfer.Models.Configuration;
 using KokazGoodsTransfer.Models.TransferToBranchModels;
+using KokazGoodsTransfer.TypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -65,6 +65,7 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<UserPhone> UserPhones { get; set; }
         public virtual DbSet<TransferToOtherBranch> TransferToOtherBranches { get; set; }
+        public virtual DbSet<BranchToCountryDeliverryCost> BranchToCountryDeliverryCosts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -296,19 +297,9 @@ namespace KokazGoodsTransfer.Models
             modelBuilder.Entity<Country>(entity =>
             {
                 entity.ToTable("Country");
-
-                entity.Property(e => e.DeliveryCost).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.MediatorId).HasColumnName("mediatorId");
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.HasOne(d => d.Mediator)
-                    .WithMany(p => p.InverseMediator)
-                    .HasForeignKey(d => d.MediatorId)
-                    .HasConstraintName("FK__Country__mediato__74794A92");
             });
 
             modelBuilder.Entity<DisAcceptOrder>(entity =>
@@ -539,10 +530,6 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Country");
 
-                entity.HasOne(d => d.CurrentCountryNavigation)
-                    .WithMany(p => p.OrderCurrentCountryNavigations)
-                    .HasForeignKey(d => d.CurrentCountry)
-                    .HasConstraintName("FK__Order__CurrentCo__078C1F06");
 
                 entity.HasOne(d => d.MoenyPlaced)
                     .WithMany(p => p.Orders)

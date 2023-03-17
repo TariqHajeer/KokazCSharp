@@ -62,7 +62,8 @@ namespace KokazGoodsTransfer.Services.Concret
 
 
             var ordersFromExcel = await _UintOfWork.Repository<OrderFromExcel>().GetAsync(c => ids.Contains(c.Id));
-            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id));
+            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id),c=>c.BranchToCountryDeliverryCosts);
+
             await _UintOfWork.BegeinTransaction();
             List<Order> orders = new List<Order>();
             foreach (var item in pairs)
@@ -71,6 +72,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (ofe == null)
                     continue;
                 var country = countries.FirstOrDefault(c => c.Id == item.Value);
+
                 var order = new Order()
                 {
                     Code = ofe.Code,
@@ -86,7 +88,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     OrderStateId = (int)OrderStateEnum.Processing,
                     ClientId = _contextAccessorService.AuthoticateUserId(),
                     CreatedBy = _contextAccessorService.AuthoticateUserName(),
-                    DeliveryCost = country.DeliveryCost,
+                    DeliveryCost = country.BranchToCountryDeliverryCosts.First(c=>c.BranchId== _contextAccessorService.CurrentBranchId()).DeliveryCost,
                     IsSend = false,
                 };
                 orders.Add(order);
@@ -143,11 +145,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw new ConflictException(validation);
             }
             var order = _mapper.Map<Order>(createOrderFromClient);
-            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId);
-            order.DeliveryCost = country.DeliveryCost;
+            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId,c=>c.BranchToCountryDeliverryCosts);
+            order.DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost;
             order.ClientId = _contextAccessorService.AuthoticateUserId();
             order.CreatedBy = _contextAccessorService.AuthoticateUserName();
-            order.CurrentCountry = (await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.IsMain == true)).Id;
             await _UintOfWork.BegeinTransaction();
             await _UintOfWork.Add(order);
             var orderItems = createOrderFromClient.OrderItem;
@@ -423,7 +424,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
 
             var countriesName = excelOrder.Select(c => c.Country).Distinct().ToList();
-            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => countriesName.Contains(c.Name));
+            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => countriesName.Contains(c.Name), c => c.BranchToCountryDeliverryCosts);
             var orderFromExcels = new List<OrderFromExcel>();
             var orders = new List<Order>();
             foreach (var item in excelOrder)
@@ -463,7 +464,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         OrderStateId = (int)OrderStateEnum.Processing,
                         ClientId = _contextAccessorService.AuthoticateUserId(),
                         CreatedBy = _contextAccessorService.AuthoticateUserName(),
-                        DeliveryCost = country.DeliveryCost,
+                        DeliveryCost = country.BranchToCountryDeliverryCosts.First(c=>c.BranchId==_contextAccessorService.CurrentBranchId()).DeliveryCost,
                         IsSend = false,
                     };
                     orders.Add(order);
@@ -493,8 +494,8 @@ namespace KokazGoodsTransfer.Services.Concret
             order.ClientNote = editOrder.ClientNote;
             order.Cost = editOrder.Cost;
             order.Date = editOrder.Date;
-            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == editOrder.CountryId);
-            order.DeliveryCost = country.DeliveryCost;
+            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == editOrder.CountryId, c => c.BranchToCountryDeliverryCosts);
+            order.DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost;
             order.RecipientPhones = String.Join(',', editOrder.RecipientPhones);
             var erros = await OrderItemValidation(editOrder.OrderItem);
             if (erros.Any())

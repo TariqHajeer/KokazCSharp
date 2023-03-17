@@ -32,7 +32,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? OriginalBranchId { get; set; }
         public int? SecoundBranchId { get; set; }
         public int? CurrentBranchId { get; set; }
-
+        public int? NextBranchId { get; set; }
 
 
     }

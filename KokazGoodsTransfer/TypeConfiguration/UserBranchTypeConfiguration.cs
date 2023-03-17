@@ -9,19 +9,17 @@ namespace KokazGoodsTransfer.TypeConfiguration
     {
         public void Configure(EntityTypeBuilder<UserBranch> builder)
         {
-            var ubl = new List<UserBranch>()
+            builder.HasKey(c => new { c.UserId, c.BranchId });
+            var branchesIds = new List<int>() { 4, 8, 3, 5, 7 };
+            var ubl = new List<UserBranch>();
+            foreach (var item in branchesIds)
             {
-                new UserBranch()
+                ubl.Add(new UserBranch()
                 {
-                    UserId=1,
-                    BranchId=1
-                },
-                new UserBranch()
-                {
-                    UserId=1,
-                    BranchId=2
-                }
-            };
+                    UserId = 1,
+                    BranchId = item
+                });
+            }
             builder.HasData(ubl);
         }
     }

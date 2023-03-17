@@ -8,6 +8,7 @@ using KokazGoodsTransfer.Services.Interfaces;
 using KokazGoodsTransfer.DAL.Helper;
 using Wkhtmltopdf.NetCore;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -33,10 +34,15 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
+        public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {
             await _orderService.CreateOrder(createOrdersFromEmployee);
             return Ok();
+        }
+        [HttpGet("GetOrdersByAgentRegionAndCode")]
+        public async Task<IActionResult> GetOrdersByAgentRegionAndCode([FromQuery] GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
+        {
+            return Ok(await _orderService.GetOrdersByAgentRegionAndCode(getOrderByAgentRegionAndCode));
         }
         [HttpPost("createMultiple")]
         public async Task<IActionResult> Create([FromBody] List<CreateMultipleOrder> createMultipleOrders)
@@ -186,6 +192,11 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.ReceiptOfTheStatusOfTheReturnedShipment(receiptOfTheStatusOfTheDeliveredShipmentDtos));
         }
+        /// <summary>
+        /// تسديد العميل
+        /// </summary>
+        /// <param name="orderDontFinishedFilter"></param>
+        /// <returns></returns>
         [HttpGet("OrdersDontFinished")]
         public async Task<ActionResult<IEnumerable<PayForClientDto>>> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
         {

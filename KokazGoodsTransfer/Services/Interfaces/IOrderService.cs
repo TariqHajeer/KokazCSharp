@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 using KokazGoodsTransfer.Models.TransferToBranchModels;
+using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
 
 namespace KokazGoodsTransfer.Services.Interfaces
 {
@@ -27,7 +28,7 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<string> GetTransferToSecondBranchReportAsString(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
-        Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee);
+        Task CreateOrder(CreateOrderFromEmployee createOrdersFromEmployee);
         Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders);
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
@@ -76,5 +77,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
         Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto);
         Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
         Task DisApproveReturnedToMyBranch(int id);
+        Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode);
     }
 }

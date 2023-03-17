@@ -29,63 +29,80 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var user = await this._context.Users
-                .Include(c => c.UserGroups)
-                    .ThenInclude(c => c.Group)
-                        .ThenInclude(c => c.GroupPrivileges)
-                            .ThenInclude(c => c.Privileg)
-                .Include(c => c.Branches)
-                    .ThenInclude(c => c.Branch)
-                .Where(c => c.UserName == loginDto.UserName).FirstOrDefaultAsync();
-            if (user == null)
-                return Conflict();
-            if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
-                return Conflict();
+            try
+            {
+                var user = await this._context.Users
+                    .Include(c => c.UserGroups)
+                        .ThenInclude(c => c.Group)
+                            .ThenInclude(c => c.GroupPrivileges)
+                                .ThenInclude(c => c.Privileg)
+                    .Include(c => c.Branches)
+                        .ThenInclude(c => c.Branch)
+                    .Where(c => c.UserName == loginDto.UserName).FirstOrDefaultAsync();
+                if (user == null)
+                    return Conflict();
+                if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
+                    return Conflict();
 
-            var climes = new List<Claim>();
-            foreach (var group in user.UserGroups)
-            {
-                climes.Add(new Claim(ClaimTypes.Role,group.GroupId.ToString()));
-            }
-
-            climes.Add(new Claim("UserID", user.Id.ToString()));
-            if (!user.CanWorkAsAgent)
-                climes.Add(new Claim("Type", "Employee"));
-            else
-                climes.Add(new Claim("Type", "Agent"));
-            var haveTreasury = await _treasuryService.Any(c => c.Id == user.Id && c.IsActive);
-            if (haveTreasury)
-            {
-                climes.Add(new Claim("treasury", true.ToString()));
-            }
-            else
-            {
-                climes.Add(new Claim("treasury", false.ToString()));
-            }
-            climes.Add(new Claim(ClaimTypes.Name, user.Name));
-            if (user.BranchId != null)
-                climes.Add(new Claim("branchId", user.BranchId.ToString()));
-            else
-                foreach (var item in user.Branches)
+                var climes = new List<Claim>
                 {
-                    climes.Add(new Claim("branchId", item.BranchId.ToString()));
+                    new Claim("UserID", user.Id.ToString())
+                };
+                if (!user.CanWorkAsAgent)
+                    climes.Add(new Claim("Type", "Employee"));
+                else
+                    climes.Add(new Claim("Type", "Agent"));
+                var haveTreasury = await _treasuryService.Any(c => c.Id == user.Id && c.IsActive);
+                if (haveTreasury)
+                {
+                    climes.Add(new Claim("treasury", true.ToString()));
                 }
+                else
+                {
+                    climes.Add(new Claim("treasury", false.ToString()));
+                }
+                climes.Add(new Claim(ClaimTypes.Name, user.Name));
+                if (user.BranchId != null)
+                    climes.Add(new Claim("branchId", user.BranchId.ToString()));
+                else
+                    foreach (var item in user.Branches)
+                    {
+                        climes.Add(new Claim("branchId", item.BranchId.ToString()));
+                    }
 
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(climes),
+                    Expires = DateTime.UtcNow.AddHours(14),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication")), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(securityToken);
+                AuthenticatedUserDto authenticatedUserDto = _mapper.Map<AuthenticatedUserDto>(user);
+                authenticatedUserDto.Token = token;
+                authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
+                authenticatedUserDto.HaveTreasury = haveTreasury;
+                return Ok(authenticatedUserDto);
+            }
+            catch (Exception ex)
             {
-                Subject = new ClaimsIdentity(climes),
-                Expires = DateTime.UtcNow.AddHours(14),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication")), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            var token = tokenHandler.WriteToken(securityToken);
-            AuthenticatedUserDto authenticatedUserDto = _mapper.Map<AuthenticatedUserDto>(user);
-            authenticatedUserDto.Token = token;
-            authenticatedUserDto.Policy = user.CanWorkAsAgent ? "Agent" : "Employee";
-            authenticatedUserDto.HaveTreasury = haveTreasury;
-            return Ok(authenticatedUserDto);
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        public IActionResult Test()
+        {
+            var countries = _context.Countries
+                .Include(c => c.MediatorCountries)
+                .Include(c => c.ToCountries)
+                .Include(c => c.FromCountries).ToList();
+            var bagdad = countries.FirstOrDefault(c => c.Name == "بغداد");
+            var x = countries.Select(c => new { c.Id, c.Name, c.FromCountries, c.MediatorCountries, c.ToCountries }).ToList();
+            var branchesIDs = new int[] { 4, 8, 3 };
+            var branchesCountries = x.Where(c => branchesIDs.Contains(c.Id)).ToList();
+            return Ok();
         }
 
     }

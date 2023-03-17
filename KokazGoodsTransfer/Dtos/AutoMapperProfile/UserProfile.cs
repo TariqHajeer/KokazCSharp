@@ -38,7 +38,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                                 c.Country.AgentCountries = null;
                         });
                     }
-                    return context.Mapper.Map<CountryDto[]>(user.AgentCountries.Select(c => c.Country));
+                    return context.Mapper.Map<NameAndIdDto[]>(user.AgentCountries.Select(c => c.Country));
                 }))
                 .ForMember(c => c.BranchesIds, opt => opt.MapFrom(src => src.Branches.Select(c => c.BranchId).ToArray()));
             CreateMap<CreateUserDto, User>()
@@ -127,6 +127,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
              {
                  return context.Mapper.Map<IEnumerable<BranchDto>>(src.Branches.Select(c => c.Branch));
              }));
+            CreateMap<User, NameAndIdDto>();
         }
     }
 }

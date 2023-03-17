@@ -1,13 +1,8 @@
 ﻿using KokazGoodsTransfer.DAL.Infrastructure.Interfaces;
 using KokazGoodsTransfer.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Collections;
-using Microsoft.AspNetCore.Http;
 using KokazGoodsTransfer.Services.Interfaces;
 
 namespace KokazGoodsTransfer.DAL.Infrastructure.Concret

@@ -26,7 +26,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                .ForMember(dest => dest.IsSend, opt => opt.MapFrom(src => false))
                ;
 
-            CreateMap<CreateOrdersFromEmployee, Order>()
+            CreateMap<CreateOrderFromEmployee, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)))
                .ForMember(c => c.MoenyPlacedId, opt => opt.MapFrom(src => (int)MoneyPalcedEnum.OutSideCompany))
                .ForMember(c => c.OrderplacedId, opt => opt.MapFrom(src => (int)OrderplacedEnum.Store));
@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<CountryDto>(order.Country);
+                    return context.Mapper.Map<NameAndIdDto>(order.Country);
                 }))
                 .ForMember(c => c.Client, opt => opt.MapFrom((order, dto, i, context) =>
                 {
@@ -184,7 +184,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.Country, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<CountryDto>(order.Country);
+                    return context.Mapper.Map<NameAndIdDto>(order.Country);
                 }))
                 .ForMember(c => c.AgentPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {

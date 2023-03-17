@@ -148,34 +148,1783 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
 
                     b.ToTable("Branches");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "الفرع الرئيسي"
+                            Id = 4,
+                            Name = "فرع الموصل"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 8,
+                            Name = "فرع اربيل"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "فرع سليمانية"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "فرع بغداد"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "فرع كروك"
+                        });
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.BranchToCountryDeliverryCost", b =>
+                {
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DeliveryCost")
+                        .HasColumnType("decimal(6,0)");
+
+                    b.Property<short>("Points")
+                        .HasColumnType("SMALLINT");
+
+                    b.HasKey("BranchId", "CountryId");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("BranchToCountryDeliverryCosts");
+
+                    b.HasData(
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 1,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
                             CountryId = 2,
-                            Name = "الفرع الثاني"
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 3,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 4,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 5,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 6,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 7,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 8,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 9,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 10,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 11,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 12,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 13,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 14,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 15,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 16,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 17,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 18,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 19,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 20,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 21,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 22,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 23,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 24,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 25,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 26,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 27,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 28,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 29,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 30,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 31,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 32,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 33,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 34,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 35,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 36,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 37,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 38,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 39,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 40,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 41,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 42,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 43,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 44,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 45,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 46,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 47,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 48,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            CountryId = 49,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 1,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 2,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 3,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 4,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 5,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 6,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 7,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 8,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 9,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 10,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 11,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 12,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 13,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 14,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 15,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 16,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 17,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 18,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 19,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 20,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 21,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 22,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 23,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 24,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 25,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 26,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 27,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 28,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 29,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 30,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 31,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 32,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 33,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 34,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 35,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 36,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 37,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 38,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 39,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 40,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 41,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 42,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 43,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 44,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 45,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 46,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 47,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 48,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 4,
+                            CountryId = 49,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 1,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 2,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 3,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 4,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 5,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 6,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 7,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 8,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 9,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 10,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 11,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 12,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 13,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 14,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 15,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 16,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 17,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 18,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 19,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 20,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 21,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 22,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 23,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 24,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 25,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 26,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 27,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 28,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 29,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 30,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 31,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 32,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 33,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 34,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 35,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 36,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 37,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 38,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 39,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 40,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 41,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 42,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 43,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 44,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 45,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 46,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 47,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 48,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 5,
+                            CountryId = 49,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 1,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 2,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 3,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 4,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 5,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 6,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 7,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 8,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 9,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 10,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 11,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 12,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 13,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 14,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 15,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 16,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 17,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 18,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 19,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 20,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 21,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 22,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 23,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 24,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 25,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 26,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 27,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 28,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 29,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 30,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 31,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 32,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 33,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 34,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 35,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 36,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 37,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 38,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 39,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 40,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 41,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 42,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 43,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 44,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 45,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 46,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 47,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 48,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 7,
+                            CountryId = 49,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 1,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 2,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 3,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 4,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 5,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 6,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 7,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 8,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 9,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 10,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 11,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 12,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 13,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 14,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 15,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 16,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 17,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 18,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 19,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 20,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 21,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 22,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 23,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 24,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 25,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 26,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 27,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 28,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 29,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 30,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 31,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 32,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 33,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 34,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 35,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 36,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 37,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 38,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 39,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 40,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 41,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 42,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 43,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 44,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 45,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 46,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 47,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 48,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
+                        },
+                        new
+                        {
+                            BranchId = 8,
+                            CountryId = 49,
+                            DeliveryCost = 5000m,
+                            Points = (short)20
                         });
                 });
 
@@ -399,27 +2148,12 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<decimal>("DeliveryCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MediatorId")
-                        .HasColumnType("int")
-                        .HasColumnName("mediatorId");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MediatorId");
 
                     b.ToTable("Country");
 
@@ -427,18 +2161,247 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            DeliveryCost = 10000m,
-                            IsMain = true,
-                            Name = "مدينة1",
-                            Points = 15
+                            Name = "خارجي اربيل"
                         },
                         new
                         {
                             Id = 2,
-                            DeliveryCost = 20000m,
-                            IsMain = false,
-                            Name = "مدينة2",
-                            Points = 20
+                            Name = "دهوك"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "سليمانية"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "موصل"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "بغداد"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "محافظات جنوبية"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "كركوك"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "اربيل"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "خبات"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "انبار"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "تكريت"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "ديالى"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "واسط"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "نجف"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "كربلاء"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "ديوانية"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "مثنى"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "صلاح الدين"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "سامراء"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "بصره"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "عمارة"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "ناصرية"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Name = "بابل"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Name = "كوت"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Name = "ذي قار"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "ميسان"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "سيروان"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Name = "مخمور"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Name = "مصيف"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Name = "سوران"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Name = "كوية"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Name = "شقلاوة"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Name = "ملا عمر"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "بارازان"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "سلافا ستي"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "كوير"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "برده رش"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Name = "ديانا"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Name = "خليفان"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Name = "راوندوز"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Name = "رانيا"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Name = "طق طق"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Name = "قلادزي"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Name = "كرخ محمد"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Name = "عمار بابل"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Name = "الرصافة"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Name = "كرخ 2"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Name = "قوقز فرع بغداد"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Name = "سماوة"
                         });
                 });
 
@@ -607,13 +2570,31 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             Id = 1,
-                            BranchId = 1,
+                            BranchId = 4,
                             Name = "مجموعة المدراء"
                         },
                         new
                         {
                             Id = 2,
-                            BranchId = 2,
+                            BranchId = 8,
+                            Name = "مجموعة المدراء"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BranchId = 3,
+                            Name = "مجموعة المدراء"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BranchId = 5,
+                            Name = "مجموعة المدراء"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BranchId = 7,
                             Name = "مجموعة المدراء"
                         });
                 });
@@ -645,12 +2626,32 @@ namespace KokazGoodsTransfer.Migrations
                         },
                         new
                         {
+                            GroupId = 3,
+                            PrivilegId = 1
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            PrivilegId = 1
+                        },
+                        new
+                        {
                             GroupId = 1,
                             PrivilegId = 2
                         },
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 2
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 2
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 2
                         },
                         new
@@ -661,6 +2662,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 3
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 3
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 3
                         },
                         new
@@ -671,6 +2682,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 4
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 4
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 4
                         },
                         new
@@ -681,6 +2702,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 5
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 5
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 5
                         },
                         new
@@ -691,6 +2722,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 6
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 6
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 6
                         },
                         new
@@ -701,6 +2742,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 7
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 7
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 7
                         },
                         new
@@ -711,6 +2762,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 8
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 8
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 8
                         },
                         new
@@ -721,6 +2782,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 9
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 9
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 9
                         },
                         new
@@ -731,6 +2802,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 10
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 10
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 10
                         },
                         new
@@ -741,6 +2822,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 11
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 11
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 11
                         },
                         new
@@ -751,6 +2842,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 12
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 12
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 12
                         },
                         new
@@ -761,6 +2862,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 13
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 13
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 13
                         },
                         new
@@ -771,6 +2882,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 14
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 14
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 14
                         },
                         new
@@ -781,6 +2902,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 15
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 15
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 15
                         },
                         new
@@ -791,6 +2922,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 16
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 16
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 16
                         },
                         new
@@ -801,6 +2942,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 17
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 17
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 17
                         },
                         new
@@ -811,6 +2962,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 18
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 18
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 18
                         },
                         new
@@ -821,6 +2982,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 19
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 19
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 19
                         },
                         new
@@ -831,6 +3002,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 20
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 20
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 20
                         },
                         new
@@ -841,6 +3022,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 21
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 21
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 21
                         },
                         new
@@ -851,6 +3042,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 22
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 22
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 22
                         },
                         new
@@ -861,6 +3062,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 23
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 23
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 23
                         },
                         new
@@ -871,6 +3082,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 24
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 24
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 24
                         },
                         new
@@ -881,6 +3102,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 25
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 25
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 25
                         },
                         new
@@ -891,6 +3122,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 26
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 26
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 26
                         },
                         new
@@ -901,6 +3142,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 27
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 27
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 27
                         },
                         new
@@ -911,6 +3162,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 28
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 28
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 28
                         },
                         new
@@ -921,6 +3182,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 29
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 29
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 29
                         },
                         new
@@ -931,6 +3202,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 30
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 30
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 30
                         },
                         new
@@ -941,6 +3222,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 31
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 31
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 31
                         },
                         new
@@ -951,6 +3242,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 32
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 32
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 32
                         },
                         new
@@ -961,6 +3262,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 33
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 33
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 33
                         },
                         new
@@ -971,6 +3282,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 34
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 34
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 34
                         },
                         new
@@ -981,6 +3302,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 35
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 35
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 35
                         },
                         new
@@ -991,6 +3322,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 36
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 36
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 36
                         },
                         new
@@ -1001,6 +3342,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 37
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 37
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 37
                         },
                         new
@@ -1011,6 +3362,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 38
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 38
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 38
                         },
                         new
@@ -1021,6 +3382,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 39
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 39
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 39
                         },
                         new
@@ -1031,6 +3402,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 40
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 40
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 40
                         },
                         new
@@ -1041,6 +3422,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 41
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 41
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 41
                         },
                         new
@@ -1051,6 +3442,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 42
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 42
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 42
                         },
                         new
@@ -1061,6 +3462,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 43
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 43
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 43
                         },
                         new
@@ -1071,6 +3482,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 44
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 44
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 44
                         },
                         new
@@ -1081,6 +3502,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 45
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 45
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 45
                         },
                         new
@@ -1091,6 +3522,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 46
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 46
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 46
                         },
                         new
@@ -1101,6 +3542,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 47
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 47
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 47
                         },
                         new
@@ -1111,6 +3562,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 48
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 48
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 48
                         },
                         new
@@ -1121,6 +3582,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 49
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 49
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 49
                         },
                         new
@@ -1131,6 +3602,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 50
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 50
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 50
                         },
                         new
@@ -1141,6 +3622,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 51
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 51
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 51
                         },
                         new
@@ -1151,6 +3642,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 52
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 52
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 52
                         },
                         new
@@ -1161,6 +3662,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 53
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 53
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 53
                         },
                         new
@@ -1171,6 +3682,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 54
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 54
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 54
                         },
                         new
@@ -1181,6 +3702,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 55
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 55
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 55
                         },
                         new
@@ -1191,6 +3722,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 56
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 56
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 56
                         },
                         new
@@ -1201,6 +3742,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 57
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 57
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 57
                         },
                         new
@@ -1211,6 +3762,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 58
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 58
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 58
                         },
                         new
@@ -1221,6 +3782,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 59
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 59
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 59
                         },
                         new
@@ -1231,6 +3802,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 60
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 60
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 60
                         },
                         new
@@ -1241,6 +3822,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 61
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 61
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 61
                         },
                         new
@@ -1251,6 +3842,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 62
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 62
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 62
                         },
                         new
@@ -1261,6 +3862,16 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             GroupId = 2,
+                            PrivilegId = 63
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            PrivilegId = 63
+                        },
+                        new
+                        {
+                            GroupId = 4,
                             PrivilegId = 63
                         });
                 });
@@ -1354,6 +3965,508 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasIndex("ClientId");
 
                     b.ToTable("Market");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.MediatorCountry", b =>
+                {
+                    b.Property<int>("FromCountryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ToCountryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediatorCountryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FromCountryId", "ToCountryId");
+
+                    b.HasIndex("MediatorCountryId");
+
+                    b.HasIndex("ToCountryId");
+
+                    b.ToTable("MediatorCountry");
+
+                    b.HasData(
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 4,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 8,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 10,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 12,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 13,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 14,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 18,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 20,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 23,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 16,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 26,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 22,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 15,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 3,
+                            ToCountryId = 49,
+                            MediatorCountryId = 5
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 1,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 2,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 6,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 9,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 10,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 11,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 12,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 13,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 14,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 15,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 16,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 17,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 18,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 19,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 20,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 21,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 22,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 23,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 24,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 25,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 26,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 27,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 28,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 29,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 30,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 31,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 32,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 33,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 34,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 35,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 36,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 37,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 38,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 39,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 40,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 41,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 42,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 43,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 44,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 45,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 46,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 47,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 48,
+                            MediatorCountryId = 8
+                        },
+                        new
+                        {
+                            FromCountryId = 7,
+                            ToCountryId = 49,
+                            MediatorCountryId = 8
+                        });
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.MoenyPlaced", b =>
@@ -1479,9 +4592,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("CurrentBranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CurrentCountry")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime");
 
@@ -1516,6 +4626,9 @@ namespace KokazGoodsTransfer.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("NewOrderPlacedId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NextBranchId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -1575,11 +4688,11 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("CurrentBranchId");
 
-                    b.HasIndex("CurrentCountry");
-
                     b.HasIndex("MoenyPlacedId");
 
                     b.HasIndex("NewOrderPlacedId");
+
+                    b.HasIndex("NextBranchId");
 
                     b.HasIndex("OrderStateId");
 
@@ -2820,12 +5933,27 @@ namespace KokazGoodsTransfer.Migrations
                         new
                         {
                             UserId = 1,
-                            BranchId = 1
+                            BranchId = 4
                         },
                         new
                         {
                             UserId = 1,
-                            BranchId = 2
+                            BranchId = 8
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 3
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 5
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            BranchId = 7
                         });
                 });
 
@@ -2853,6 +5981,16 @@ namespace KokazGoodsTransfer.Migrations
                         {
                             UserId = 1,
                             GroupId = 2
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 3
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            GroupId = 4
                         });
                 });
 
@@ -2943,10 +6081,29 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
-                        .WithMany("Branches")
-                        .HasForeignKey("CountryId")
+                        .WithOne("Branch")
+                        .HasForeignKey("KokazGoodsTransfer.Models.Branch", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("KokazGoodsTransfer.Models.BranchToCountryDeliverryCost", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
+                        .WithMany("BranchToCountryDeliverryCosts")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.Country", "Country")
+                        .WithMany("BranchToCountryDeliverryCosts")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Country");
                 });
@@ -3033,16 +6190,6 @@ namespace KokazGoodsTransfer.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.Country", b =>
-                {
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "Mediator")
-                        .WithMany("InverseMediator")
-                        .HasForeignKey("MediatorId")
-                        .HasConstraintName("FK__Country__mediato__74794A92");
-
-                    b.Navigation("Mediator");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.DisAcceptOrder", b =>
@@ -3183,6 +6330,33 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("KokazGoodsTransfer.Models.MediatorCountry", b =>
+                {
+                    b.HasOne("KokazGoodsTransfer.Models.Country", "FromCountry")
+                        .WithMany("FromCountries")
+                        .HasForeignKey("FromCountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.Country", "MidCountry")
+                        .WithMany("MediatorCountries")
+                        .HasForeignKey("MediatorCountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.Country", "ToCountry")
+                        .WithMany("ToCountries")
+                        .HasForeignKey("ToCountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromCountry");
+
+                    b.Navigation("MidCountry");
+
+                    b.Navigation("ToCountry");
+                });
+
             modelBuilder.Entity("KokazGoodsTransfer.Models.Notfication", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Client", "Client")
@@ -3236,13 +6410,8 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "CurrentBranch")
                         .WithMany()
                         .HasForeignKey("CurrentBranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("KokazGoodsTransfer.Models.Country", "CurrentCountryNavigation")
-                        .WithMany("OrderCurrentCountryNavigations")
-                        .HasForeignKey("CurrentCountry")
-                        .HasConstraintName("FK__Order__CurrentCo__078C1F06");
 
                     b.HasOne("KokazGoodsTransfer.Models.MoenyPlaced", "MoenyPlaced")
                         .WithMany("Orders")
@@ -3253,6 +6422,10 @@ namespace KokazGoodsTransfer.Migrations
                     b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "NewOrderPlaced")
                         .WithMany()
                         .HasForeignKey("NewOrderPlacedId");
+
+                    b.HasOne("KokazGoodsTransfer.Models.Branch", "NextBranch")
+                        .WithMany()
+                        .HasForeignKey("NextBranchId");
 
                     b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
                         .WithMany("Orders")
@@ -3285,11 +6458,11 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("CurrentBranch");
 
-                    b.Navigation("CurrentCountryNavigation");
-
                     b.Navigation("MoenyPlaced");
 
                     b.Navigation("NewOrderPlaced");
+
+                    b.Navigation("NextBranch");
 
                     b.Navigation("Orderplaced");
 
@@ -3708,7 +6881,7 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.UserBranch", b =>
                 {
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "Branch")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3766,7 +6939,7 @@ namespace KokazGoodsTransfer.Migrations
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Branch", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("BranchToCountryDeliverryCosts");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.CashMovment", b =>
@@ -3816,21 +6989,25 @@ namespace KokazGoodsTransfer.Migrations
                 {
                     b.Navigation("AgentCountries");
 
-                    b.Navigation("Branches");
+                    b.Navigation("Branch");
+
+                    b.Navigation("BranchToCountryDeliverryCosts");
 
                     b.Navigation("Clients");
 
                     b.Navigation("DisAcceptOrders");
 
-                    b.Navigation("InverseMediator");
+                    b.Navigation("FromCountries");
+
+                    b.Navigation("MediatorCountries");
 
                     b.Navigation("OrderCountries");
-
-                    b.Navigation("OrderCurrentCountryNavigations");
 
                     b.Navigation("OrderLogs");
 
                     b.Navigation("Regions");
+
+                    b.Navigation("ToCountries");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Group", b =>

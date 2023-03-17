@@ -36,7 +36,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.Total, opt => opt.MapFrom(src => src.Receipts.Where(c => c.ClientPaymentId == null).Sum(c => c.Amount)))
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {
-                    return context.Mapper.Map<CountryDto>(client.Country);
+                    return context.Mapper.Map<NameAndIdDto>(client.Country);
                 }))
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, clientDto, i, context) =>
                 {

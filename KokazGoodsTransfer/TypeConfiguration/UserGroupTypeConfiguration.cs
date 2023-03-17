@@ -8,6 +8,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
     {
         public void Configure(EntityTypeBuilder<UserGroup> builder)
         {
+
             builder.HasData(new UserGroup()
             {
                 UserId = 1,
@@ -18,6 +19,17 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 UserId = 1,
                 GroupId = 2
             });
+            builder.HasData(new UserGroup()
+            {
+                UserId = 1,
+                GroupId = 3
+            });
+            builder.HasData(new UserGroup()
+            {
+                UserId = 1,
+                GroupId = 4
+            });
+
         }
     }
 }

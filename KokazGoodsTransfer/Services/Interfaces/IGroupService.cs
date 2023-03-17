@@ -9,5 +9,6 @@ namespace KokazGoodsTransfer.Services.Interfaces
     {
         Task<IEnumerable<PrivilegeDto>> GetPrivileges();
         Task<IEnumerable<Privilege>> GetGroupsPrviligesByGroupsIds(IEnumerable<int> groupsIds, int branchId);
+        Task<IEnumerable<Privilege>> GetPrviligesByUserAndBranchId(int userId, int branchId);
     }
 }

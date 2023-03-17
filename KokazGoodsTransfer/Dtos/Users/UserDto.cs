@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.Countries;
-using KokazGoodsTransfer.Dtos.DepartmentDtos;
 namespace KokazGoodsTransfer.Dtos.Users
 {
     public class UserDto
@@ -20,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.Users
         public DateTime HireDate { get; set; }
         public string Note { get; set; }
         public bool CanWorkAsAgent { get; set; }
-        public CountryDto[] Countries { get; set; }
+        public NameAndIdDto[] Countries { get; set; }
         public decimal Salary { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }

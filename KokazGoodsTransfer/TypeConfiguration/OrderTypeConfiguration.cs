@@ -10,7 +10,7 @@ namespace KokazGoodsTransfer.TypeConfiguration
         {
             builder.HasOne(c => c.CurrentBranch)
                 .WithMany()
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(true);
         }
     }

@@ -19,7 +19,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public override async Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)
         {
-            var any =await _repository.Any(c=>c.CountryId==createDto.CountryId);
+            var any =await _repository.Any(c=>c.Id==createDto.CountryId);
             if (any)
             {
 
