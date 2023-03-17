@@ -660,111 +660,111 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         ExpressionStarter<Order> GetFilterAsLinq(OrderFilter filter)
         {
-            var preidcate = PredicateBuilder.New<Order>(true);
-            if (filter.CountryId != null)
-                preidcate = preidcate.And(c => c.CountryId == filter.CountryId);
+            var predicate = PredicateBuilder.New<Order>(true);
+            if (filter.CountryId.HasValue)
+                predicate = predicate.And(c => c.CountryId == filter.CountryId);
             if (!string.IsNullOrEmpty(filter.Code))
-                preidcate = preidcate.And(c => c.Code == filter.Code);
-            if (filter.ClientId != null)
+                predicate = predicate.And(c => c.Code == filter.Code);
+            if (filter.ClientId.HasValue)
             {
-                preidcate = preidcate.And(c => c.ClientId == filter.ClientId);
+                predicate = predicate.And(c => c.ClientId == filter.ClientId);
             }
-            if (filter.RegionId != null)
+            if (filter.RegionId.HasValue)
             {
-                preidcate = preidcate.And(c => c.RegionId == filter.RegionId);
+                predicate = predicate.And(c => c.RegionId == filter.RegionId);
             }
             if (filter.RecipientName != string.Empty && filter.RecipientName != null)
             {
-                preidcate = preidcate.And(c => c.RecipientName.StartsWith(filter.RecipientName));
+                predicate = predicate.And(c => c.RecipientName.StartsWith(filter.RecipientName));
             }
-            if (filter.MonePlacedId != null)
+            if (filter.MonePlacedId.HasValue)
             {
-                preidcate = preidcate.And(c => c.MoenyPlacedId == filter.MonePlacedId);
+                predicate = predicate.And(c => c.MoenyPlacedId == filter.MonePlacedId);
             }
-            if (filter.OrderplacedId != null)
+            if (filter.OrderplacedId.HasValue)
             {
-                preidcate = preidcate.And(c => c.OrderplacedId == filter.OrderplacedId);
+                predicate = predicate.And(c => c.OrderplacedId == filter.OrderplacedId);
             }
             if (filter.Phone != string.Empty && filter.Phone != null)
             {
-                preidcate = preidcate.And(c => c.RecipientPhones.Contains(filter.Phone));
+                predicate = predicate.And(c => c.RecipientPhones.Contains(filter.Phone));
             }
-            if (filter.AgentId != null)
+            if (filter.AgentId.HasValue)
             {
-                preidcate = preidcate.And(c => c.AgentId == filter.AgentId);
+                predicate = predicate.And(c => c.AgentId == filter.AgentId);
             }
-            if (filter.IsClientDiliverdMoney != null)
+            if (filter.IsClientDiliverdMoney.HasValue)
             {
-                preidcate = preidcate.And(c => c.IsClientDiliverdMoney == filter.IsClientDiliverdMoney);
+                predicate = predicate.And(c => c.IsClientDiliverdMoney == filter.IsClientDiliverdMoney);
             }
-            if (filter.ClientPrintNumber != null)
+            if (filter.ClientPrintNumber.HasValue)
             {
-                preidcate = preidcate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == filter.ClientPrintNumber));
+                predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == filter.ClientPrintNumber));
             }
-            if (filter.AgentPrintNumber != null)
+            if (filter.AgentPrintNumber.HasValue)
             {
-                preidcate = preidcate.And(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == filter.AgentPrintNumber));
+                predicate = predicate.And(c => c.AgentOrderPrints.Any(c => c.AgentPrint.Id == filter.AgentPrintNumber));
             }
-            if (filter.CreatedDate != null)
+            if (filter.CreatedDate.HasValue)
             {
-                preidcate = preidcate.And(c => c.Date == filter.CreatedDate);
+                predicate = predicate.And(c => c.Date == filter.CreatedDate);
             }
             if (filter.Note != "" && filter.Note != null)
             {
-                preidcate = preidcate.And(c => c.Note.Contains(filter.Note));
+                predicate = predicate.And(c => c.Note.Contains(filter.Note));
             }
-            if (filter.AgentPrintStartDate != null)
+            if (filter.AgentPrintStartDate.HasValue)
             {
                 ///TODO :
                 ///chould check this query 
-                preidcate = preidcate.And(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= filter.AgentPrintStartDate);
+                predicate = predicate.And(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date >= filter.AgentPrintStartDate);
 
             }
-            if (filter.AgentPrintEndDate != null)
+            if (filter.AgentPrintEndDate.HasValue)
             {
                 ///TODO :
                 ///chould check this query 
-                preidcate = preidcate.And(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= filter.AgentPrintEndDate);
+                predicate = predicate.And(c => c.AgentOrderPrints.Select(c => c.AgentPrint).OrderBy(c => c.Id).LastOrDefault().Date <= filter.AgentPrintEndDate);
             }
             if (!string.IsNullOrEmpty(filter.CreatedBy?.Trim()))
             {
-                preidcate = preidcate.And(c => c.CreatedBy == filter.CreatedBy);
+                predicate = predicate.And(c => c.CreatedBy == filter.CreatedBy);
             }
             if (filter.CreatedDateRangeFilter != null)
             {
-                if (filter.CreatedDateRangeFilter.Start != null)
-                    preidcate = preidcate.And(c => c.Date >= filter.CreatedDateRangeFilter.Start);
-                if (filter.CreatedDateRangeFilter.End != null)
-                    preidcate = preidcate.And(c => c.Date <= filter.CreatedDateRangeFilter.End);
+                if (filter.CreatedDateRangeFilter.Start.HasValue)
+                    predicate = predicate.And(c => c.Date >= filter.CreatedDateRangeFilter.Start);
+                if (filter.CreatedDateRangeFilter.End.HasValue)
+                    predicate = predicate.And(c => c.Date <= filter.CreatedDateRangeFilter.End);
             }
-            if (filter.HaveScoundBranch != null)
+            if (filter.HaveScoundBranch.HasValue)
             {
                 if (filter.HaveScoundBranch == true)
-                    preidcate = preidcate.And(c => c.TargetBranchId != null);
+                    predicate = predicate.And(c => c.TargetBranchId != null);
                 else
-                    preidcate = preidcate.And(c => c.TargetBranchId == null);
+                    predicate = predicate.And(c => c.TargetBranchId == null);
             }
-            if (filter.OrderState != null)
+            if (filter.OrderState.HasValue)
             {
-                preidcate = preidcate.And(c => c.OrderStateId == (int)filter.OrderState);
+                predicate = predicate.And(c => c.OrderStateId == (int)filter.OrderState);
             }
-            if (filter.OriginalBranchId != null)
+            if (filter.OriginalBranchId.HasValue)
             {
-                preidcate = preidcate.And(c => c.BranchId == filter.OriginalBranchId);
+                predicate = predicate.And(c => c.BranchId == filter.OriginalBranchId);
             }
-            if (filter.SecoundBranchId != null)
+            if (filter.SecoundBranchId.HasValue)
             {
-                preidcate = preidcate.And(c => c.TargetBranchId == filter.SecoundBranchId);
+                predicate = predicate.And(c => c.TargetBranchId == filter.SecoundBranchId);
             }
-            if (filter.CurrentBranchId != null)
+            if (filter.CurrentBranchId.HasValue)
             {
-                preidcate = preidcate.And(c => c.CurrentBranchId == filter.CurrentBranchId);
+                predicate = predicate.And(c => c.CurrentBranchId == filter.CurrentBranchId);
             }
-            if (filter.NextBranchId != null)
+            if (filter.NextBranchId.HasValue)
             {
-                preidcate = preidcate.And(c => c.NextBranchId == filter.NextBranchId);
+                predicate = predicate.And(c => c.NextBranchId == filter.NextBranchId);
             }
-            return preidcate;
+            return predicate;
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
@@ -778,6 +778,12 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders)
         {
+            var countries = await _countryCashedService.GetAsync(c => createMultipleOrders.Select(c => c.CountryId).Contains(c.Id));
+            var branches = await _branchRepository.GetAll();
+
+            var currentBrach = branches.First(c => c.Id == _currentBranchId);
+            var agnets = await _uintOfWork.Repository<User>().Select(c => createMultipleOrders.Select(c => c.AgentId).Contains(c.Id), c => new { c.Id, c.Salary });
+            await _uintOfWork.BegeinTransaction();
             {
                 var clientsIds = createMultipleOrders.Select(c => c.ClientId);
                 var codes = createMultipleOrders.Select(c => c.Code);
@@ -793,26 +799,46 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
 
             }
-            var agnetsIds = createMultipleOrders.Select(c => c.AgentId);
-            var agnets = await _uintOfWork.Repository<User>().Select(c => agnetsIds.Contains(c.Id), c => new { c.Id, c.Salary });
-            await _uintOfWork.BegeinTransaction();
             try
             {
                 var countryIds = createMultipleOrders.Select(c => c.CountryId);
-                var branches = await _branchRepository.GetAsync(c => countryIds.Contains(c.Id) && c.Id != _currentBranchId);
-                var orders = createMultipleOrders.Select(item =>
+                var orders = createMultipleOrders.Select(async item =>
                  {
                      var order = _mapper.Map<Order>(item);
+
                      order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
                      order.Date = item.Date;
                      order.CreatedBy = currentUser;
                      order.CurrentBranchId = _currentBranchId;
-                     var secoundBranch = branches.FirstOrDefault(c => c.Id == item.CountryId);
-                     if (secoundBranch != null)
+                     var targetBranch = branches.FirstOrDefault(c => c.Id == order.CountryId && c.Id != _currentBranchId);
+                     if (targetBranch != null)
                      {
-                         order.TargetBranchId = secoundBranch.Id;
+                         order.TargetBranchId = targetBranch.Id;
+                         order.NextBranchId = targetBranch.Id;
                          if (order.AgentId != null)
                              throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                         var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+                         if (midCountry != null)
+                         {
+                             order.NextBranchId = midCountry.MediatorCountryId;
+                         }
+                     }
+                     else
+                     {
+                         var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                         if (midCountry != null)
+                         {
+                             order.TargetBranchId = midCountry.MediatorCountryId;
+                             order.NextBranchId = midCountry.MediatorCountryId;
+                             if (order.AgentId.HasValue)
+                             {
+                                 throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                             }
+                         }
+                         else if (!order.AgentId.HasValue)
+                         {
+                             throw new ConflictException("يجب اختيار المندوب");
+                         }
                      }
                      return order;
                  });
@@ -827,22 +853,21 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw ex;
             }
         }
-
-        public async Task CreateOrder(CreateOrdersFromEmployee createOrdersFromEmployee)
+        public async Task CreateOrder(CreateOrderFromEmployee createOrdersFromEmployee)
         {
             var country = await _countryCashedService.GetById(createOrdersFromEmployee.CountryId);
+            var currentBrach = await _branchRepository.GetById(_currentBranchId);
+            var order = _mapper.Map<CreateOrderFromEmployee, Order>(createOrdersFromEmployee);
             await _uintOfWork.BegeinTransaction();
             try
             {
-                var currentBrach = await _branchRepository.GetById(_currentBranchId);
-                var order = _mapper.Map<CreateOrdersFromEmployee, Order>(createOrdersFromEmployee);
                 order.CurrentBranchId = _currentBranchId;
                 var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
                 if (targetBranch != null)
                 {
                     order.TargetBranchId = targetBranch.Id;
                     order.NextBranchId = targetBranch.Id;
-                    if (order.AgentId != null)
+                    if (order.AgentId.HasValue)
                     {
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
                     }
@@ -852,8 +877,8 @@ namespace KokazGoodsTransfer.Services.Concret
 
                     if (midCountry != null)
                     {
-                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.Id == midCountry.MediatorCountryId);
-                        order.NextBranchId = midBranch.Id;
+
+                        order.NextBranchId = midCountry.MediatorCountryId;
                     }
                     order.AgentId = null;
                 }
@@ -862,12 +887,14 @@ namespace KokazGoodsTransfer.Services.Concret
                     var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
                     if (midCountry != null)
                     {
-                        var midBranch = await _branchRepository.FirstOrDefualt(c => c.Id == midCountry.MediatorCountryId);
-                        order.NextBranchId = midBranch.Id;
-                        order.TargetBranchId = midBranch.Id;
-                        order.AgentId = null;
+                        order.NextBranchId = midCountry.MediatorCountryId;
+                        order.TargetBranchId = midCountry.MediatorCountryId;
+                        if (order.AgentId.HasValue)
+                        {
+                            throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                        }
                     }
-                    else if (order.AgentId == null)
+                    else if (!order.AgentId.HasValue)
                     {
                         throw new ConflictException("يجب اختيار المندوب");
                     }
@@ -1094,7 +1121,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     if (!(item.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || item.OrderplacedId == (int)OrderplacedEnum.Delayed))
                     {
-                        
+
                         totalPoints += points;
                     }
                 }

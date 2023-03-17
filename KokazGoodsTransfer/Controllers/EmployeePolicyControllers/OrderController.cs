@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateOrdersFromEmployee createOrdersFromEmployee)
+        public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {
             await _orderService.CreateOrder(createOrdersFromEmployee);
             return Ok();
