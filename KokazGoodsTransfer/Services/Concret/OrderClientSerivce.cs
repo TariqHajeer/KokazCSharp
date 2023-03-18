@@ -247,7 +247,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
 
-            var includes = new string[] { nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
+            var includes = new string[] { nameof(Order.Country), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
 
             var pagingResult = await _repository.GetAsync(pagingDto, predicate, includes);
             return new PagingResualt<IEnumerable<OrderDto>>()
@@ -260,20 +260,19 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<OrderDto> GetById(int id)
         {
 
-            var inculdes = new string[] { nameof(Order.Agent), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
+            var inculdes = new string[] { nameof(Order.Agent), nameof(Order.Country), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
             var order = await _repository.FirstOrDefualt(c => c.Id == id, inculdes);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<IEnumerable<OrderDto>> NonSendOrder()
         {
-            var orders = await _repository.GetAsync(c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country, c => c.MoenyPlaced, c => c.Orderplaced);
+            var orders = await _repository.GetAsync(c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter)
         {
-            var outSideCompany = await _moneyPlacedRepository.GetById((int)MoneyPalcedEnum.OutSideCompany);
             var predicate = PredicateBuilder.New<Order>(false);
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
             {
@@ -291,14 +290,13 @@ namespace KokazGoodsTransfer.Services.Concret
                 pr2.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
                 predicate.Or(pr2);
             }
-            var includes = new string[] { nameof(Order.Region), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), nameof(Order.Agent), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
+            var includes = new string[] { nameof(Order.Region), nameof(Order.Country), nameof(Order.Agent), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _repository.GetByFilterInclue(predicate, includes);
             orders.ForEach(o =>
             {
                 if (o.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent)
                 {
                     o.MoenyPlacedId = (int)MoneyPalcedEnum.OutSideCompany;
-                    o.MoenyPlaced = outSideCompany;
                 }
             });
             return _mapper.Map<IEnumerable<PayForClientDto>>(orders);

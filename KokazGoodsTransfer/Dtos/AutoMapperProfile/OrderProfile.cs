@@ -143,8 +143,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }));
 
             CreateMap<Order, OrderResponseClientDto>()
-                .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.MoenyPlaced.Name))
-                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.Orderplaced.Name))
+                .ForMember(c => c.MoenyPlaced, opt => opt.MapFrom(src => src.GetMoneyPlaced().Name))
+                .ForMember(c => c.OrderPlaced, opt => opt.MapFrom(src => src.GetOrderPlaced().Name))
                 .ForMember(c => c.RecipientPhones, opt => opt.MapFrom(src => src.RecipientPhones.Split(",", StringSplitOptions.None)))
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, response, i, context) =>
                 {
@@ -196,11 +196,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                    return context.Mapper.Map<NameAndIdDto>(order.GetMoneyPlaced());
                 }))
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                    return context.Mapper.Map<NameAndIdDto>(order.GetOrderPlaced());
                 }))
                 .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
                 {

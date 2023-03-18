@@ -97,7 +97,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.CurrentBranchId == _currentBranchId && c.Code == code, c => c.Client, c => c.Agent, c => c.MoenyPlaced, c => c.Orderplaced, c => c.Country);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.CurrentBranchId == _currentBranchId && c.Code == code, c => c.Client, c => c.Agent, c => c.Country);
 
             if (!orders.Any())
             {
@@ -1297,11 +1297,11 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var predicate = PredicateBuilder.New<Order>(true);
             predicate = predicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
-            if (dateFiter.FromDate != null)
+            if (dateFiter.FromDate.HasValue)
                 predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
-            if (dateFiter.ToDate != null)
+            if (dateFiter.ToDate.HasValue)
                 predicate = predicate.And(c => c.Date <= dateFiter.ToDate);
-            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.MoenyPlaced);
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate);
             var sum = await _repository.Sum(c => c.DeliveryCost - c.AgentCost, predicate);
             return new EarningsDto()
             {
@@ -1810,7 +1810,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 Notfication notfication = new Notfication()
                 {
-                    Note = $"الطلب {order.Code} اصبح {order.Orderplaced.Name} و موقع المبلغ  {order.MoenyPlaced.Name}",
+                    Note = $"الطلب {order.Code} اصبح {order.GetOrderPlaced().Name} و موقع المبلغ  {order.GetMoneyPlaced().Name}",
                     ClientId = order.ClientId
                 };
                 notfications.Add(notfication);
@@ -2026,7 +2026,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode)
         {
             var orders = await _repository.GetAsync(c => c.Code == getOrderByAgentRegionAndCode.Code && c.CountryId == getOrderByAgentRegionAndCode.CountryId && c.AgentId == getOrderByAgentRegionAndCode.AgentId,
-                c => c.Orderplaced, c => c.MoenyPlaced, c => c.Region, c => c.Country, c => c.Country, c => c.Client, c => c.Agent);
+                c => c.Region, c => c.Country, c => c.Country, c => c.Client, c => c.Agent);
             if (!orders.Any())
             {
                 throw new ConflictException("الشحنة غير موجودة");

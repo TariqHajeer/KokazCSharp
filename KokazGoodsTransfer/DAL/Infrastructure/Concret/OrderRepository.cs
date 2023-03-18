@@ -248,14 +248,10 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
-            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId)&&c.AgentId!=null);
-
-
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderplacedId) && c.AgentId != null);
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
                 var list = await Query.Where(predicate.And(c => c.IsClientDiliverdMoney == false))
-                    .Include(c => c.Orderplaced)
-                    .Include(c => c.MoenyPlaced)
                    .Include(c => c.Region)
                    .Include(c => c.Country)
                    .Include(c => c.Agent)
@@ -263,20 +259,14 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                    .ThenInclude(c => c.ClientPayment)
                    .Include(c => c.AgentOrderPrints)
                    .ThenInclude(c => c.AgentPrint)
-
                    .ToListAsync();
-                if (list != null && list.Count() > 0)
-                {
-                    orders.AddRange(list);
-                }
+                orders.AddRange(list);
             }
 
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
                 var list = await Query.Where(predicate.And(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash))
-                    .Include(c => c.Orderplaced)
-                    .Include(c => c.MoenyPlaced)
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Agent)
@@ -285,10 +275,8 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                    .Include(c => c.AgentOrderPrints)
                    .ThenInclude(c => c.AgentPrint)
                .ToListAsync();
-                if (list != null && list.Count() > 0)
-                {
-                    orders.AddRange(list);
-                }
+                orders.AddRange(list);
+
             }
             return orders;
         }
