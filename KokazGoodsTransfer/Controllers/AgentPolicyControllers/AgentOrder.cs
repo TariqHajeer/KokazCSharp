@@ -15,29 +15,26 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
     [ApiController]
     public class AgentOrderController : AbstractAgentController
     {
-        private readonly IIndexService<OrderPlaced> _indexService;
         private readonly IOrderService _orderService;
         private readonly IAgentPrintService _agentPrintService;
-        public AgentOrderController(IIndexService<OrderPlaced> indexService,
-            IOrderService orderService,
+        public AgentOrderController(IOrderService orderService,
             IAgentPrintService agentPrintService)
         {
-            _indexService = indexService;
             _orderService = orderService;
             _agentPrintService = agentPrintService;
         }
         [HttpGet("InStock")]
         public async Task<IActionResult> GetInStock()
         {
-            var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint" };
-            var orders = await _orderService.GetAsync(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId(), includes);
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
+            var orders = await _orderService.GetAsync(c => c.Orderplaced == Orderplaced.Store && c.AgentId == AuthoticateUserId(), includes);
             return Ok(orders);
         }
         [HttpGet("InWay")]
         public async Task<IActionResult> GetInWay()
         {
-            var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
-            var orders = await _orderService.GetAsync(c => c.OrderplacedId == (int)OrderplacedEnum.Way
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
+            var orders = await _orderService.GetAsync(c => c.Orderplaced == Orderplaced.Way
             && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None
             || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             return Ok(orders);
@@ -45,8 +42,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("InWayByCode")]
         public async Task<IActionResult> InWayByCode([FromQuery] string code)
         {
-            var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
-            var orders = await _orderService.GetAsync(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
+            var orders = await _orderService.GetAsync(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.Orderplaced == Orderplaced.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             orders = orders.OrderBy(c => c.Date);
             if (!orders.Any())
                 return NotFound();
@@ -56,11 +53,11 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         [HttpGet("OwedOrder")]
         public async Task<IActionResult> OwedOrder()
         {
-            var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId() &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending ||
-            c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent ||
-            (c.OrderplacedId == (int)OrderplacedEnum.Way &&
+            c.MoneyPlaced == MoneyPalced.WithAgent ||
+            (c.Orderplaced == Orderplaced.Way &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove ||
             c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))), includes);
             return Ok(orders);
@@ -75,9 +72,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public async Task<IActionResult> OrderSuspended([FromQuery] DateTime dateTime)
         {
             var date = dateTime.AddDays(-4);
-            var includes = new string[] { "Client", "Country", "Region", "AgentOrderPrints.AgentPrint", "Orderplaced" };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId()
-            && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany), includes);
+            && c.Date <= date && (c.MoneyPlaced < MoneyPalced.InsideCompany), includes);
             return Ok(orders);
         }
         [HttpGet("Prints")]
@@ -97,23 +94,17 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             await _agentPrintService.SetOrderState(agentOrderStateDtos);
             return Ok();
         }
-        [HttpGet("GetOrderPlaced")]
-        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetOrderPlaced()
-        {
-            var orderPlaceds = await _indexService.GetAllLite();
-            return Ok(orderPlaceds);
-        }
         [HttpGet("GetAgentStatics")]
         public async Task<IActionResult> GetAgentStatics([FromQuery] DateTime dateTime)
         {
             var date = dateTime.AddDays(-4);
             AgentStaticsDto mainStatics = new AgentStaticsDto()
             {
-                TotalOrderInSotre = await _orderService.Count(c => c.OrderplacedId == (int)OrderplacedEnum.Store && c.AgentId == AuthoticateUserId()),
-                TotalOrderInWay = await _orderService.Count(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)),
-                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent || (c.OrderplacedId == (int)OrderplacedEnum.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
+                TotalOrderInSotre = await _orderService.Count(c => c.Orderplaced == Orderplaced.Store && c.AgentId == AuthoticateUserId()),
+                TotalOrderInWay = await _orderService.Count(c => c.Orderplaced == Orderplaced.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)),
+                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoneyPlaced == MoneyPalced.WithAgent || (c.Orderplaced == Orderplaced.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
                 TotlaPrintOrder = await _agentPrintService.Count(c => c.AgentOrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())),
-                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoenyPlacedId < (int)MoneyPalcedEnum.InsideCompany))
+                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoneyPlaced < MoneyPalced.InsideCompany))
             };
             return Ok(mainStatics);
         }

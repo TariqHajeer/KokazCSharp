@@ -2,7 +2,7 @@
 
 namespace KokazGoodsTransfer.Models.Static
 {
-    public enum OrderplacedEnum
+    public enum Orderplaced
     {
         [Description("عند العميل")]
         Client=1,

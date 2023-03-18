@@ -195,7 +195,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task IncreaseAmountByOrderFromAgent(ReceiptOfTheOrderStatus receiptOfTheOrderStatus)
         {
-            var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoneyPlacedId != (int)MoneyPalcedEnum.OutSideCompany).ToList();
+            var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId != (int)MoneyPalced.WithAgent && c.MoneyPlacedId != (int)MoneyPalced.OutSideCompany).ToList();
             if (receiptOfTheOrderStatusDetalis.Any())
             {
                 var treaury = await _repository.GetById(_userService.AuthoticateUserId());

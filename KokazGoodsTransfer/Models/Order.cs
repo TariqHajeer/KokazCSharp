@@ -34,8 +34,8 @@ namespace KokazGoodsTransfer.Models
         public string Address { get; set; }
         public string ClientNote { get; set; }
         public string CreatedBy { get; set; }
-        public int MoenyPlacedId { get; set; }
-        public int OrderplacedId { get; set; }
+        public MoneyPalced MoneyPlaced { get; set; }
+        public Orderplaced Orderplaced { get; set; }
         public bool InWayToBranch { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
@@ -62,9 +62,7 @@ namespace KokazGoodsTransfer.Models
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
-        public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
-        public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
@@ -87,41 +85,41 @@ namespace KokazGoodsTransfer.Models
         public Branch NextBranch { get; set; }
         public NameAndIdDto GetOrderPlaced()
         {
-            return (OrderplacedEnum)this.OrderplacedId;
+            return (Orderplaced)this.Orderplaced;
         }
         public NameAndIdDto GetMoneyPlaced()
         {
-            return (MoneyPalcedEnum)this.MoenyPlacedId;
+            return (MoneyPalced)this.MoneyPlaced;
         }
         public bool IsOrderReturn()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (Orderplaced == Orderplaced.CompletelyReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (Orderplaced == Orderplaced.PartialReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            if (Orderplaced == Orderplaced.Unacceptable)
                 return true;
             return false;
         }
         public decimal ShouldToPay()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (Orderplaced == Orderplaced.CompletelyReturned)
                 return 0;
             return Cost - DeliveryCost;
         }
         public bool IsOrderInMyStore()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.Store)
+            if (Orderplaced == Orderplaced.Store)
                 return true;
-            if (MoenyPlacedId != (int)MoneyPalcedEnum.InsideCompany)
+            if (MoneyPlaced != MoneyPalced.InsideCompany)
                 return false;
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (Orderplaced == Orderplaced.CompletelyReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (Orderplaced == Orderplaced.PartialReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            if (Orderplaced == Orderplaced.Unacceptable)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Delayed)
+            if (Orderplaced == Orderplaced.Delayed)
                 return true;
             return false;
         }

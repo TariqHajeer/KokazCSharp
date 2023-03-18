@@ -9,21 +9,21 @@ namespace KokazGoodsTransfer.Dtos.Common
         {
 
         }
-        private NameAndIdDto(OrderplacedEnum orderplacedEnum)
+        private NameAndIdDto(Orderplaced orderplacedEnum)
         {
             this.Id = (int)orderplacedEnum;
             this.Name = orderplacedEnum.GetDescription();
         }
-        private NameAndIdDto(MoneyPalcedEnum moneyPalcedEnum)
+        private NameAndIdDto(MoneyPalced moneyPalcedEnum)
         {
             this.Id = (int)moneyPalcedEnum;
             this.Name = moneyPalcedEnum.GetDescription();
         }
-        public static implicit operator NameAndIdDto (OrderplacedEnum orderplacedEnum)
+        public static implicit operator NameAndIdDto (Orderplaced orderplacedEnum)
         {
             return new NameAndIdDto(orderplacedEnum);
         }
-        public static implicit operator NameAndIdDto(MoneyPalcedEnum moneyPalcedEnum)
+        public static implicit operator NameAndIdDto(MoneyPalced moneyPalcedEnum)
         {
             return new NameAndIdDto(moneyPalcedEnum);
         }

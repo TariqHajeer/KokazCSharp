@@ -217,7 +217,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("NewOrders")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetNewOrders()
         {
-            var orders = await _orderService.GetAll(c => c.IsSend == true && c.OrderplacedId == (int)OrderplacedEnum.Client, new string[] { "Client.ClientPhones", "Client.Country", "Region", "Country.AgentCountries.Agent", "OrderItems.OrderTpye" });
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Client)}.{nameof(Client.Country)}", nameof(Order.Region), $"{nameof(Order.Country)}.{nameof(Country.AgentCountries)}.{nameof(AgentCountry.Agent)}", $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}" };
+            var orders = await _orderService.GetAll(c => c.IsSend == true && c.Orderplaced == Orderplaced.Client, includes);
             return Ok(orders);
         }
 
@@ -263,7 +264,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
 
             var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country) };
-            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
+            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlaced == MoneyPalced.WithAgent) || (c.IsClientDiliverdMoney == true && c.Orderplaced == Orderplaced.Way), includes);
             return Ok(orders);
         }
 

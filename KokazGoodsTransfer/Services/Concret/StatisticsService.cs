@@ -45,9 +45,9 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 TotalAgent = await _userRepository.Count(c => c.CanWorkAsAgent == true),
                 TotalClient = await _clientRepository.Count(),
-                TotalOrderInSotre = await _orderRepository.Count(c => c.OrderplacedId == (int)OrderplacedEnum.Store),
+                TotalOrderInSotre = await _orderRepository.Count(c => c.Orderplaced == Orderplaced.Store),
                 TotlaOrder = await _orderRepository.Count(),
-                TotalOrderInWay = await _orderRepository.Count(c => c.OrderplacedId == (int)OrderplacedEnum.Way),
+                TotalOrderInWay = await _orderRepository.Count(c => c.Orderplaced == Orderplaced.Way),
                 TotalOrderCountInProcess = await _orderRepository.Count(c => c.OrderStateId == (int)OrderStateEnum.Processing),
                 TotalMoneyInComapny = 0
             };
@@ -55,14 +55,14 @@ namespace KokazGoodsTransfer.Services.Concret
             var totalOutCome = await _outComeRepository.Sum(c => c.Amount);
             var orderInNigative = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true));
             orderInNigative *= -1;
-            var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Delivered && c.OrderplacedId < (int)OrderplacedEnum.Delayed && c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent);
+            var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.Orderplaced >= Orderplaced.Delivered && c.Orderplaced < Orderplaced.Delayed && c.MoneyPlaced != MoneyPalced.WithAgent);
 
 
             var totalAccount = await _receiptRepository.Sum(c => c.Amount, c => c.ClientPaymentId == null);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
-            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoenyPlacedId != (int)MoneyPalcedEnum.WithAgent && c.MoenyPlacedId != (int)MoneyPalcedEnum.OutSideCompany) && (c.OrderplacedId > (int)OrderplacedEnum.Way));
+            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoneyPlaced != MoneyPalced.WithAgent && c.MoneyPlaced != MoneyPalced.OutSideCompany) && (c.Orderplaced > Orderplaced.Way));
 
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
             mainStatics.TotalMoneyInComapny -= totalOutCome;
@@ -74,8 +74,8 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<IEnumerable<UserDto>> AgnetStatics()
         {
             var agent = await _userRepository.Select(c => c.CanWorkAsAgent == true, c => new User() { Id = c.Id, Name = c.Name });
-            var ordersInStore = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderplacedId == (int)OrderplacedEnum.Store);
-            var ordersInWay = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderplacedId == (int)OrderplacedEnum.Way);
+            var ordersInStore = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.Orderplaced == Orderplaced.Store);
+            var ordersInWay = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.Orderplaced == Orderplaced.Way);
             var userDtos = new List<UserDto>();
             foreach (var item in agent)
             {
@@ -95,7 +95,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var incomePredicate = PredicateBuilder.New<Income>(true);
             var outComePredicate = PredicateBuilder.New<OutCome>(true);
             var orderPredicate = PredicateBuilder.New<Order>(true);
-            orderPredicate = orderPredicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderplacedId != (int)OrderplacedEnum.CompletelyReturned);
+            orderPredicate = orderPredicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.Orderplaced != Orderplaced.CompletelyReturned);
             if (dateFiter.FromDate != null)
             {
                 incomePredicate = incomePredicate.And(c => c.Date >= dateFiter.FromDate);
@@ -123,8 +123,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
             var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
 
-            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoenyPlacedId != (int)MoneyPalcedEnum.Delivered);
-            var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
+            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlaced != MoneyPalced.Delivered);
+            var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlaced == MoneyPalced.InsideCompany);
 
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
@@ -149,20 +149,20 @@ namespace KokazGoodsTransfer.Services.Concret
                     return await _orderRepository.Count(pr.And(filter));
                 return await _orderRepository.Count(pr);
             }
-            var pric = PredicateBuilder.New<Order>(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.InsideCompany);
+            var pric = PredicateBuilder.New<Order>(c => c.MoneyPlaced == MoneyPalced.InsideCompany);
             var staticsDto = new StaticsDto()
             {
                 TotalOrder = await Opr(),
-                OrderDeliverdToClient = await Opr(c => c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent && (c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderplacedId == (int)OrderplacedEnum.Delivered)),
-                OrderMoneyDelived = await Opr(c => c.IsClientDiliverdMoney == true && (c.OrderplacedId == (int)OrderplacedEnum.Way || c.OrderplacedId == (int)OrderplacedEnum.Delivered)),
-                OrderInWat = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Way && c.IsClientDiliverdMoney != true),
-                OrderInStore = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Store),
-                OrderWithClient = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Client),
-                OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable) && c.MoenyPlacedId == (int)MoneyPalcedEnum.Delivered),
-                OrderPartialReturned = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.PartialReturned),
-                DelayedOrder = await Opr(c => c.OrderplacedId == (int)OrderplacedEnum.Delayed),
-                OrderMoneyInCompany = await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.Delivered || c.OrderplacedId == (int)OrderplacedEnum.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
-                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.OrderplacedId == (int)OrderplacedEnum.CompletelyReturned || c.OrderplacedId == (int)OrderplacedEnum.Unacceptable))
+                OrderDeliverdToClient = await Opr(c => c.MoneyPlaced == MoneyPalced.WithAgent && (c.Orderplaced == Orderplaced.PartialReturned || c.Orderplaced == Orderplaced.Delivered)),
+                OrderMoneyDelived = await Opr(c => c.IsClientDiliverdMoney == true && (c.Orderplaced == Orderplaced.Way || c.Orderplaced == Orderplaced.Delivered)),
+                OrderInWat = await Opr(c => c.Orderplaced == Orderplaced.Way && c.IsClientDiliverdMoney != true),
+                OrderInStore = await Opr(c => c.Orderplaced == Orderplaced.Store),
+                OrderWithClient = await Opr(c => c.Orderplaced == Orderplaced.Client),
+                OrderComplitlyReutrndDeliverd = await Opr(c => (c.Orderplaced == Orderplaced.CompletelyReturned || c.Orderplaced == Orderplaced.Unacceptable) && c.MoneyPlaced == MoneyPalced.Delivered),
+                OrderPartialReturned = await Opr(c => c.Orderplaced == Orderplaced.PartialReturned),
+                DelayedOrder = await Opr(c => c.Orderplaced == Orderplaced.Delayed),
+                OrderMoneyInCompany = await Opr(pric.And(c => c.Orderplaced == Orderplaced.Delivered || c.Orderplaced == Orderplaced.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
+                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.Orderplaced == Orderplaced.CompletelyReturned || c.Orderplaced == Orderplaced.Unacceptable))
 
             };
             return staticsDto;
