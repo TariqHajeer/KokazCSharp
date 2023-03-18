@@ -248,13 +248,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
             await _orderService.ReiveMoneyFromClient(ids);
             return Ok();
         }
-        [HttpGet("ShipmentsNotReimbursedToTheClient/{clientId}")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> ShipmentsNotReimbursedToTheClient(int clientId)
-        {
-            var includes = new string[] { $"{nameof(Order.Agent)}.{nameof(Models.User.UserPhones)}", nameof(Order.Region), nameof(Order.Country), nameof(Order.MoenyPlaced), nameof(Order.Orderplaced) };
-            var orders = await _orderService.GetAsync(c => c.ClientId == clientId && c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Way, includes);
-            return Ok(orders);
-        }
         [HttpGet("GetEarnings")]
         public async Task<IActionResult> GetEarnings([FromQuery] PagingDto pagingDto, [FromQuery] DateFiter dateFiter)
         {
@@ -269,7 +262,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> OrderVicdanAgent(int agnetId)
         {
 
-            var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced) };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country) };
             var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
             return Ok(orders);
         }
