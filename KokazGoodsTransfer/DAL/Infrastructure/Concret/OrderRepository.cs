@@ -266,7 +266,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             if (orderDontFinishedFilter.IsClientDeleviredMoney)
             {
 
-                var list = await Query.Where(predicate.And(c => c.OrderState == OrderStateEnum.ShortageOfCash))
+                var list = await Query.Where(predicate.And(c => c.OrderState == OrderState.ShortageOfCash))
                .Include(c => c.Region)
                .Include(c => c.Country)
                .Include(c => c.Agent)

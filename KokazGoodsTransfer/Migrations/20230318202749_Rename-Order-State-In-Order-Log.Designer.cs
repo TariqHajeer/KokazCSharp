@@ -4,14 +4,16 @@ using KokazGoodsTransfer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KokazGoodsTransfer.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    partial class KokazContextModelSnapshot : ModelSnapshot
+    [Migration("20230318202749_Rename-Order-State-In-Order-Log")]
+    partial class RenameOrderStateInOrderLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4836,7 +4838,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool>("IsSync")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MoneyPalce")
+                    b.Property<int>("MoenyPlacedId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -4848,10 +4850,10 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderPlace")
+                    b.Property<int>("OrderState")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderState")
+                    b.Property<int>("OrderplacedId")
                         .HasColumnType("int");
 
                     b.Property<string>("RecipientName")
@@ -4886,7 +4888,11 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("CountryId");
 
+                    b.HasIndex("MoenyPlacedId");
+
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("OrderplacedId");
 
                     b.HasIndex("RegionId");
 
@@ -6461,11 +6467,23 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK_OrderLog_Country")
                         .IsRequired();
 
+                    b.HasOne("KokazGoodsTransfer.Models.MoenyPlaced", "MoenyPlaced")
+                        .WithMany("OrderLogs")
+                        .HasForeignKey("MoenyPlacedId")
+                        .HasConstraintName("FK_OrderLog_MoenyPlaced")
+                        .IsRequired();
+
                     b.HasOne("KokazGoodsTransfer.Models.Order", "Order")
                         .WithMany("OrderLogs")
                         .HasForeignKey("OrderId")
                         .HasConstraintName("FK_OrderLog_Order")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "Orderplaced")
+                        .WithMany("OrderLogs")
+                        .HasForeignKey("OrderplacedId")
+                        .HasConstraintName("FK_OrderLog_OrderPlaced")
                         .IsRequired();
 
                     b.HasOne("KokazGoodsTransfer.Models.Region", "Region")
@@ -6479,7 +6497,11 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("Country");
 
+                    b.Navigation("MoenyPlaced");
+
                     b.Navigation("Order");
+
+                    b.Navigation("Orderplaced");
 
                     b.Navigation("Region");
                 });
@@ -6909,6 +6931,8 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.MoenyPlaced", b =>
                 {
                     b.Navigation("Notfications");
+
+                    b.Navigation("OrderLogs");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.Order", b =>
@@ -6927,6 +6951,8 @@ namespace KokazGoodsTransfer.Migrations
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderPlaced", b =>
                 {
                     b.Navigation("Notfications");
+
+                    b.Navigation("OrderLogs");
                 });
 
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>

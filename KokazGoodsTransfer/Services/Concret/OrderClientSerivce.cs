@@ -85,7 +85,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     Date = ofe.CreateDate,
                     MoneyPlace = MoneyPalce.OutSideCompany,
                     OrderPlace = OrderPlace.Client,
-                    OrderState = OrderStateEnum.Processing,
+                    OrderState = OrderState.Processing,
                     ClientId = _contextAccessorService.AuthoticateUserId(),
                     CreatedBy = _contextAccessorService.AuthoticateUserName(),
                     DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
@@ -285,7 +285,7 @@ namespace KokazGoodsTransfer.Services.Concret
             if (orderDontFinishFilter.IsClientDeleviredMoney)
             {
                 var pr2 = PredicateBuilder.New<Order>(true);
-                pr2.And(c => c.OrderState == OrderStateEnum.ShortageOfCash);
+                pr2.And(c => c.OrderState == OrderState.ShortageOfCash);
                 pr2.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.OrderPlace));
                 pr2.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
                 predicate.Or(pr2);
@@ -461,7 +461,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         Date = dateTime,
                         MoneyPlace = MoneyPalce.OutSideCompany,
                         OrderPlace = OrderPlace.Client,
-                        OrderState = OrderStateEnum.Processing,
+                        OrderState = OrderState.Processing,
                         ClientId = _contextAccessorService.AuthoticateUserId(),
                         CreatedBy = _contextAccessorService.AuthoticateUserName(),
                         DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,

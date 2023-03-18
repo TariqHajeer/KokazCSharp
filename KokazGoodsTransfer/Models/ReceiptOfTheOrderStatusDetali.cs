@@ -12,7 +12,7 @@ namespace KokazGoodsTransfer.Models
         public decimal Cost { get; set; }
         public decimal AgentCost { get; set; }
         public int AgentId { get; set; }
-        public OrderStateEnum OrderState { get; set; }
+        public OrderState OrderState { get; set; }
         public MoneyPalce MoneyPalce { get; set; }
         public int ReceiptOfTheOrderStatusId { get; set; }
         public OrderPlace OrderPlace { get; set; }

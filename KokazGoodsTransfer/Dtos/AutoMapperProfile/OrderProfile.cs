@@ -22,7 +22,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(',', src.RecipientPhones)))
                .ForMember(s => s.OrderPlace, opt => opt.MapFrom(src => OrderPlace.Client))
                .ForMember(dest => dest.MoneyPlace, opt => opt.MapFrom(src => MoneyPalce.OutSideCompany))
-               .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => OrderStateEnum.Processing))
+               .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => OrderState.Processing))
                .ForMember(dest => dest.IsSend, opt => opt.MapFrom(src => false))
                ;
 
@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.Seen, opt => opt.MapFrom(src => true))
                 .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalce.OutSideCompany))
                 .ForMember(c => c.IsClientDiliverdMoney, opt => opt.MapFrom(src => false))
-                .ForMember(c => c.OrderState, opt => opt.MapFrom(src => OrderStateEnum.Processing))
+                .ForMember(c => c.OrderState, opt => opt.MapFrom(src => OrderState.Processing))
                 .ForMember(c => c.OrderPlace, opt => opt.MapFrom(src => OrderPlace.Store));
 
             CreateMap<DisAcceptOrder, OrderDto>()
@@ -131,11 +131,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.MonePlaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.MoenyPlaced);
+                    return order.MoneyPalce;
                 }))
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.Orderplaced);
+                    return order.OrderPlace;
                 }))
                 .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
                 {

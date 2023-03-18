@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace KokazGoodsTransfer.Models.Static
 {
-    public enum OrderStateEnum
+    public enum OrderState
     {
         //قيد المعالجة
         Processing=1,

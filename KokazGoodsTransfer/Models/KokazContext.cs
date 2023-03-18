@@ -637,22 +637,11 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderLog_Country");
 
-                entity.HasOne(d => d.MoenyPlaced)
-                    .WithMany(p => p.OrderLogs)
-                    .HasForeignKey(d => d.MoenyPlacedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_OrderLog_MoenyPlaced");
-
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderLogs)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK_OrderLog_Order");
 
-                entity.HasOne(d => d.Orderplaced)
-                    .WithMany(p => p.OrderLogs)
-                    .HasForeignKey(d => d.OrderplacedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_OrderLog_OrderPlaced");
 
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.OrderLogs)

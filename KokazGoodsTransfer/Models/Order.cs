@@ -44,7 +44,7 @@ namespace KokazGoodsTransfer.Models
         public bool? Seen { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
         public bool IsSync { get; set; }
-        public OrderStateEnum OrderState { get; set; }
+        public OrderState OrderState { get; set; }
         public bool IsDollar { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
