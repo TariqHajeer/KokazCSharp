@@ -194,7 +194,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                                 if (decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                 {
-                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                    order.OrderState = OrderStateEnum.ShortageOfCash;
                                     if (order.MoneyPlace == MoneyPalced.Delivered)
                                     {
                                         order.MoneyPlace = MoneyPalced.InsideCompany;
@@ -202,7 +202,7 @@ namespace KokazGoodsTransfer.Services.Concret
                                 }
                                 else
                                 {
-                                    order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    order.OrderState = OrderStateEnum.Finished;
                                 }
                             }
                             break;
@@ -210,7 +210,7 @@ namespace KokazGoodsTransfer.Services.Concret
                             {
                                 order.OldCost ??= order.Cost;
                                 order.Cost = item.Cost;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
                     }
@@ -254,7 +254,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentId = (int)order.AgentId,
                         MoneyPlacedId = (int)order.MoneyPlace,
                         OrderPlacedId = (int)order.OrderPlace,
-                        OrderStateId = order.OrderStateId,
+                        OrderState = order.OrderState,
                         OrderId = order.Id
                     });
                 }
@@ -331,13 +331,13 @@ namespace KokazGoodsTransfer.Services.Concret
                                 order.OldCost ??= order.Cost;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
                         case OrderPlace.Unacceptable:
                             {
                                 order.OldCost ??= order.Cost;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
 
@@ -392,7 +392,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentId = (int)order.AgentId,
                         MoneyPlacedId = (int)order.MoneyPlace,
                         OrderPlacedId = (int)order.OrderPlace,
-                        OrderStateId = order.OrderStateId,
+                        OrderState = order.OrderState,
                         OrderId = order.Id
                     });
                 }
@@ -747,7 +747,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             if (filter.OrderState.HasValue)
             {
-                predicate = predicate.And(c => c.OrderStateId == (int)filter.OrderState);
+                predicate = predicate.And(c => c.OrderState == filter.OrderState);
             }
             if (filter.OriginalBranchId.HasValue)
             {
@@ -923,7 +923,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                     order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
                 }
-                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderState = OrderStateEnum.Processing;
                 order.DeliveryCost = country.DeliveryCost;
                 if (order.MoneyPlace == MoneyPalced.Delivered)
                 {
@@ -1029,7 +1029,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 if (item.OrderPlace > OrderPlace.Way)
                 {
-                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                    item.OrderState = OrderStateEnum.Finished;
                     if (item.MoneyPlace == MoneyPalced.InsideCompany)
                     {
                         item.MoneyPlace = MoneyPalced.Delivered;
@@ -1136,7 +1136,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                 if (item.OrderPlace > OrderPlace.Way)
                 {
-                    item.OrderStateId = (int)OrderStateEnum.Finished;
+                    item.OrderState = OrderStateEnum.Finished;
                     if (item.MoneyPlace == MoneyPalced.InsideCompany)
                     {
                         item.MoneyPlace = MoneyPalced.Delivered;
@@ -1263,7 +1263,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var order = await _repository.FirstOrDefualt(c => c.ClientId == clientId && c.Code == code, includes);
             if (order == null)
                 throw new ConflictException("الشحنة غير موجودة");
-            if (order.IsClientDiliverdMoney && order.OrderStateId != (int)OrderStateEnum.ShortageOfCash)
+            if (order.IsClientDiliverdMoney && order.OrderState != OrderStateEnum.ShortageOfCash)
             {
                 throw new ConflictException("تم تسليم كلفة الشحنة من قبل");
             }
@@ -1285,13 +1285,13 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task ReiveMoneyFromClient(int[] ids)
         {
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
-            orders.ToList().ForEach(c => c.OrderStateId = (int)OrderStateEnum.Finished);
+            orders.ToList().ForEach(c => c.OrderState = OrderStateEnum.Finished);
             await _repository.Update(orders);
         }
         public async Task<EarningsDto> GetEarnings(PagingDto pagingDto, DateFiter dateFiter)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            predicate = predicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderPlace != OrderPlace.CompletelyReturned);
+            predicate = predicate.And(c => c.OrderState == OrderStateEnum.Finished && c.OrderPlace != OrderPlace.CompletelyReturned);
             if (dateFiter.FromDate.HasValue)
                 predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate.HasValue)
@@ -1428,7 +1428,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             order.IsClientDiliverdMoney = false;
 
-            order.OrderStateId = (int)OrderStateEnum.Processing;
+            order.OrderState = OrderStateEnum.Processing;
             order.OrderPlace = OrderPlace.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoneyPlace = MoneyPalced.OutSideCompany;
@@ -1533,7 +1533,7 @@ namespace KokazGoodsTransfer.Services.Concret
             order.Code = updateOrder.Code;
             if (order.AgentId != updateOrder.AgentId)
             {
-                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderState = OrderStateEnum.Processing;
                 order.MoneyPlace = MoneyPalced.OutSideCompany;
                 order.OrderPlace = OrderPlace.Store;
             }
@@ -1703,7 +1703,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                                 if (Decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                 {
-                                    order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                    order.OrderState = OrderStateEnum.ShortageOfCash;
                                     if (order.MoneyPlace == MoneyPalced.Delivered)
                                     {
                                         order.MoneyPlace = MoneyPalced.InsideCompany;
@@ -1711,7 +1711,7 @@ namespace KokazGoodsTransfer.Services.Concret
                                 }
                                 else
                                 {
-                                    order.OrderStateId = (int)OrderStateEnum.Finished;
+                                    order.OrderState = OrderStateEnum.Finished;
                                 }
 
                             }
@@ -1722,7 +1722,7 @@ namespace KokazGoodsTransfer.Services.Concret
                                     order.OldCost = order.Cost;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
                         case OrderPlace.Unacceptable:
@@ -1731,7 +1731,7 @@ namespace KokazGoodsTransfer.Services.Concret
                                 {
                                     order.OldCost = order.Cost;
                                 }
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
                         case OrderPlace.PartialReturned:
@@ -1739,7 +1739,7 @@ namespace KokazGoodsTransfer.Services.Concret
                                 if (order.OldCost == null)
                                     order.OldCost = order.Cost;
                                 order.Cost = order.NewCost.Value;
-                                order.OrderStateId = (int)OrderStateEnum.ShortageOfCash;
+                                order.OrderState = OrderStateEnum.ShortageOfCash;
                             }
                             break;
                     }
@@ -1780,7 +1780,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
                     }
                 }
-                if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderPlace != OrderPlace.Way)
+                if (order.OrderState != OrderStateEnum.Finished && order.OrderPlace != OrderPlace.Way)
                 {
                     var clientNotigaction = notficationsGroup.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == (int)order.OrderPlace && c.MoneyPlacedId == (int)order.MoneyPlace).FirstOrDefault();
                     if (clientNotigaction == null)
@@ -1861,7 +1861,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     order.OldCost = null;
                 }
                 order.IsClientDiliverdMoney = false;
-                order.OrderStateId = (int)OrderStateEnum.Processing;
+                order.OrderState = OrderStateEnum.Processing;
                 order.OrderPlace = OrderPlace.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoneyPlace = MoneyPalced.OutSideCompany;

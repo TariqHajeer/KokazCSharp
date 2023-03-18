@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable disable
 
-#nullable disable
+using KokazGoodsTransfer.Models.Static;
 
 namespace KokazGoodsTransfer.Models
 {
@@ -13,7 +12,7 @@ namespace KokazGoodsTransfer.Models
         public decimal Cost { get; set; }
         public decimal AgentCost { get; set; }
         public int AgentId { get; set; }
-        public int OrderStateId { get; set; }
+        public OrderStateEnum OrderState { get; set; }
         public int MoneyPlacedId { get; set; }
         public int ReceiptOfTheOrderStatusId { get; set; }
         public int OrderPlacedId { get; set; }
@@ -24,7 +23,6 @@ namespace KokazGoodsTransfer.Models
         public virtual MoenyPlaced MoneyPlaced { get; set; }
         public virtual Order Order { get; set; }
         public virtual OrderPlaced OrderPlaced { get; set; }
-        public virtual OrderState OrderState { get; set; }
         public virtual ReceiptOfTheOrderStatus ReceiptOfTheOrderStatus { get; set; }
     }
 }

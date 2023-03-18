@@ -44,7 +44,7 @@ namespace KokazGoodsTransfer.Models
         public bool? Seen { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
         public bool IsSync { get; set; }
-        public int OrderStateId { get; set; }
+        public OrderStateEnum OrderState { get; set; }
         public bool IsDollar { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -62,7 +62,6 @@ namespace KokazGoodsTransfer.Models
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
-        public virtual OrderState OrderState { get; set; }
         public virtual Region Region { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
