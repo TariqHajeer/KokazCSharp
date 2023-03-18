@@ -254,7 +254,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentId = (int)order.AgentId,
                         MoneyPlacedId = (int)order.MoneyPlace,
                         OrderPlacedId = (int)order.OrderPlace,
-                        OrderStateId = (int)order.OrderState,
+                        OrderState = order.OrderState,
                         OrderId = order.Id
                     });
                 }
@@ -392,7 +392,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         AgentId = (int)order.AgentId,
                         MoneyPlacedId = (int)order.MoneyPlace,
                         OrderPlacedId = (int)order.OrderPlace,
-                        OrderStateId = (int)order.OrderState,
+                        OrderState = order.OrderState,
                         OrderId = order.Id
                     });
                 }

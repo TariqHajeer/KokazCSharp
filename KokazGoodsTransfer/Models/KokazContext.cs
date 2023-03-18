@@ -47,7 +47,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
         public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
-        public virtual DbSet<OrderState> OrderStates { get; set; }
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
@@ -682,15 +681,6 @@ namespace KokazGoodsTransfer.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<OrderState>(entity =>
-            {
-                entity.ToTable("OrderState");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.State).IsRequired();
-            });
-
             modelBuilder.Entity<OrderType>(entity =>
             {
                 entity.ToTable("OrderType");
@@ -862,11 +852,6 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__ReceiptOf__Order__5E1FF51F");
 
-                entity.HasOne(d => d.OrderState)
-                    .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
-                    .HasForeignKey(d => d.OrderStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ReceiptOf__Order__24E777C3");
 
                 entity.HasOne(d => d.ReceiptOfTheOrderStatus)
                     .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
