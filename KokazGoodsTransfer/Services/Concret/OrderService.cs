@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Services.Concret
         private readonly int _currentBranchId;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable
-|| (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalced.InsideCompany || c.MoneyPlace == MoneyPalced.Delivered));
+|| (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalce.InsideCompany || c.MoneyPlace == MoneyPalce.Delivered));
         private readonly string currentUser;
         private readonly int currentUserId;
         public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService,
@@ -116,7 +116,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 orders = orders.Except(finishOrders);
             }
             {
-                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalced.InsideCompany).ToList();
+                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany).ToList();
                 orders = orders.Except(orderInCompany);
             }
             if (!orders.Any())
@@ -126,7 +126,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     throw new ConflictException("الشحنة في المخزن");
                 if (lastOrderAdded.OrderPlace == OrderPlace.Client)
                     throw new ConflictException("الشحنة عند العميل");
-                if (lastOrderAdded.MoneyPlace == MoneyPalced.InsideCompany)
+                if (lastOrderAdded.MoneyPlace == MoneyPalce.InsideCompany)
                     throw new ConflictException("الشحنة داخل الشركة");
             }
             return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
@@ -135,7 +135,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var moneyPlacedes = Consts.MoneyPlaceds;
             var orderPlacedes = Consts.OrderPlaceds;
-            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalced.OutSideCompany).Name;
+            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalce.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
             if (!receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.All(c => c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.Delivered || c.OrderplacedId == OrderPlace.PartialReturned))
             {
@@ -196,9 +196,9 @@ namespace KokazGoodsTransfer.Services.Concret
                                 if (decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                 {
                                     order.OrderState = OrderStateEnum.ShortageOfCash;
-                                    if (order.MoneyPlace == MoneyPalced.Delivered)
+                                    if (order.MoneyPlace == MoneyPalce.Delivered)
                                     {
-                                        order.MoneyPlace = MoneyPalced.InsideCompany;
+                                        order.MoneyPlace = MoneyPalce.InsideCompany;
                                     }
                                 }
                                 else
@@ -225,7 +225,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         order.Cost = item.Cost;
                     }
                 }
-                if (order.MoneyPlace == MoneyPalced.InsideCompany)
+                if (order.MoneyPlace == MoneyPalce.InsideCompany)
                 {
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
@@ -252,9 +252,9 @@ namespace KokazGoodsTransfer.Services.Concret
                         ClientId = order.ClientId,
                         Cost = order.Cost,
                         AgentCost = order.AgentCost,
-                        AgentId = (int)order.AgentId,
-                        MoneyPlacedId = (int)order.MoneyPlace,
-                        OrderPlacedId = (int)order.OrderPlace,
+                        AgentId = order.AgentId.Value,
+                        MoneyPalce = order.MoneyPlace,
+                        OrderPlace = order.OrderPlace,
                         OrderState = order.OrderState,
                         OrderId = order.Id
                     });
@@ -278,7 +278,7 @@ namespace KokazGoodsTransfer.Services.Concret
         {
             var moneyPlacedes = Consts.MoneyPlaceds;
             var orderPlacedes = Consts.OrderPlaceds;
-            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalced.OutSideCompany).Name;
+            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalce.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
             var orders = (await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id))).ToList();
@@ -365,7 +365,7 @@ namespace KokazGoodsTransfer.Services.Concret
                             break;
                     }
                 }
-                if (order.MoneyPlace == MoneyPalced.InsideCompany)
+                if (order.MoneyPlace == MoneyPalce.InsideCompany)
                 {
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
@@ -390,9 +390,9 @@ namespace KokazGoodsTransfer.Services.Concret
                         ClientId = order.ClientId,
                         Cost = order.Cost,
                         AgentCost = order.AgentCost,
-                        AgentId = (int)order.AgentId,
-                        MoneyPlacedId = (int)order.MoneyPlace,
-                        OrderPlacedId = (int)order.OrderPlace,
+                        AgentId = order.AgentId.Value,
+                        MoneyPalce = order.MoneyPlace,
+                        OrderPlace = order.OrderPlace,
                         OrderState = order.OrderState,
                         OrderId = order.Id
                     });
@@ -412,7 +412,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id)
         {
-            var includes = new string[] { nameof(ReceiptOfTheOrderStatus.Recvier), $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Agent)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.MoneyPlaced)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.OrderPlaced)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Client)}" };
+            var includes = new string[] { nameof(ReceiptOfTheOrderStatus.Recvier), $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Agent)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Client)}" };
             var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, includes)).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
@@ -624,17 +624,17 @@ namespace KokazGoodsTransfer.Services.Concret
 
             var ids = response.Data.Select(c => c.Id);
 
-            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlaced }, c => c.OrderPlaced)).GroupBy(c => c.ReceiptOfTheOrderStatusId).ToDictionary(c => c.Key, c => c.ToList());
+            var types = (await _receiptOfTheOrderStatusDetalisRepository.Select(c => ids.Contains(c.ReceiptOfTheOrderStatusId), c => new { c.Id, c.ReceiptOfTheOrderStatusId, c.OrderPlace })).GroupBy(c => c.ReceiptOfTheOrderStatusId).ToDictionary(c => c.Key, c => c.ToList());
 
             var dtos = _mapper.Map<List<ReceiptOfTheOrderStatusDto>>(response.Data);
-            dtos.ForEach(c =>
+            dtos.ForEach((Action<ReceiptOfTheOrderStatusDto>)(c =>
             {
                 if (types.ContainsKey(c.Id))
                 {
-                    var orderPlaced = types.Where(t => t.Key == c.Id).SelectMany(c => c.Value.Select(c => c.OrderPlaced.Name)).ToHashSet();
-                    c.Types = String.Join(',', orderPlaced);
+                    var orderPlaced = Enumerable.ToHashSet<string>(Enumerable.SelectMany(types.Where(t => t.Key == c.Id), c => (IEnumerable<string>)Enumerable.Select(c.Value, c => EnumExtension.GetDescription<int>((int)c.OrderPlace))));
+                    c.Types = string.Join(',', orderPlaced);
                 }
-            });
+            }));
             return new PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>()
             {
                 Total = response.Total,
@@ -681,7 +681,7 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             if (filter.MoneyPalced.HasValue)
             {
-                predicate = predicate.And(c => c.MoneyPlace == (MoneyPalced)filter.MoneyPalced);
+                predicate = predicate.And(c => c.MoneyPlace == (MoneyPalce)filter.MoneyPalced);
             }
             if (filter.Orderplaced.HasValue)
             {
@@ -929,7 +929,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 order.OrderState = OrderStateEnum.Processing;
                 order.DeliveryCost = country.DeliveryCost;
-                if (order.MoneyPlace == MoneyPalced.Delivered)
+                if (order.MoneyPlace == MoneyPalce.Delivered)
                 {
                     order.IsClientDiliverdMoney = true;
 
@@ -1034,9 +1034,9 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (item.OrderPlace > OrderPlace.Way)
                 {
                     item.OrderState = OrderStateEnum.Finished;
-                    if (item.MoneyPlace == MoneyPalced.InsideCompany)
+                    if (item.MoneyPlace == MoneyPalce.InsideCompany)
                     {
-                        item.MoneyPlace = MoneyPalced.Delivered;
+                        item.MoneyPlace = MoneyPalce.Delivered;
                     }
 
                 }
@@ -1057,8 +1057,8 @@ namespace KokazGoodsTransfer.Services.Concret
                     ClientPaymentId = clientPayment.Id,
                     Phone = item.RecipientPhones,
                     DeliveryCost = item.DeliveryCost,
-                    MoneyPlacedId = (int)item.MoneyPlace,
-                    OrderPlacedId = (int)item.OrderPlace,
+                    MoneyPlace = item.MoneyPlace,
+                    OrderPlace = item.OrderPlace,
                     LastTotal = item.OldCost,
                     PayForClient = cureentPay,
                     Date = item.Date,
@@ -1141,9 +1141,9 @@ namespace KokazGoodsTransfer.Services.Concret
                 if (item.OrderPlace > OrderPlace.Way)
                 {
                     item.OrderState = OrderStateEnum.Finished;
-                    if (item.MoneyPlace == MoneyPalced.InsideCompany)
+                    if (item.MoneyPlace == MoneyPalce.InsideCompany)
                     {
-                        item.MoneyPlace = MoneyPalced.Delivered;
+                        item.MoneyPlace = MoneyPalce.Delivered;
                     }
 
                 }
@@ -1167,8 +1167,8 @@ namespace KokazGoodsTransfer.Services.Concret
                     DeliveryCost = item.DeliveryCost,
                     LastTotal = item.OldCost,
                     Note = item.Note,
-                    MoneyPlacedId = (int)item.MoneyPlace,
-                    OrderPlacedId = (int)item.OrderPlace,
+                    MoneyPlace = item.MoneyPlace,
+                    OrderPlace = item.OrderPlace,
                     PayForClient = currentPay,
                     Date = item.Date,
                     ClientNote = item.ClientNote
@@ -1435,7 +1435,7 @@ namespace KokazGoodsTransfer.Services.Concret
             order.OrderState = OrderStateEnum.Processing;
             order.OrderPlace = OrderPlace.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
-            order.MoneyPlace = MoneyPalced.OutSideCompany;
+            order.MoneyPlace = MoneyPalce.OutSideCompany;
             order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == order.AgentId)).Salary ?? 0;
             await _repository.Update(order);
         }
@@ -1450,7 +1450,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw new ConflictException("الشحنة ليست في المخزن");
             }
             order.OrderPlace = OrderPlace.CompletelyReturned;
-            order.MoneyPlace = MoneyPalced.InsideCompany;
+            order.MoneyPlace = MoneyPalce.InsideCompany;
             order.OldCost = order.Cost;
             order.Cost = 0;
             if (order.OldDeliveryCost == null)
@@ -1489,9 +1489,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var orderInStor = orders.Where(c => c.OrderPlace == OrderPlace.Store).ToList();
             orders = orders.Except(orderInStor).ToList();
 
-            var fOrder = orders.Where(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable || (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalced.InsideCompany || c.MoneyPlace == MoneyPalced.Delivered))).ToList();
+            var fOrder = orders.Where(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable || (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalce.InsideCompany || c.MoneyPlace == MoneyPalce.Delivered))).ToList();
             orders = orders.Except(fOrder).ToList();
-            var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalced.InsideCompany).ToList();
+            var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany).ToList();
             orders = orders.Except(orderInCompany).ToList();
             if (orders.Count() == 0)
             {
@@ -1499,7 +1499,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     throw new ConflictException("الشحنة ما زالت في المخزن");
                 }
-                if (lastOrderAdded.MoneyPlace == MoneyPalced.InsideCompany)
+                if (lastOrderAdded.MoneyPlace == MoneyPalce.InsideCompany)
                 {
                     throw new ConflictException("الشحنة داخل الشركة");
                 }
@@ -1538,7 +1538,7 @@ namespace KokazGoodsTransfer.Services.Concret
             if (order.AgentId != updateOrder.AgentId)
             {
                 order.OrderState = OrderStateEnum.Processing;
-                order.MoneyPlace = MoneyPalced.OutSideCompany;
+                order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.OrderPlace = OrderPlace.Store;
             }
             await _uintOfWork.BegeinTransaction();
@@ -1577,7 +1577,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber)
         {
-            var includes = new string[] { nameof(ClientPayment.Discounts), nameof(ClientPayment.Receipts), $"{nameof(ClientPayment.ClientPaymentDetails)}.{nameof(ClientPaymentDetail.OrderPlaced)}" };
+            var includes = new string[] { nameof(ClientPayment.Discounts), nameof(ClientPayment.Receipts), $"{nameof(ClientPayment.ClientPaymentDetails)}" };
             var printed = await _clientPaymentRepository.FirstOrDefualt(c => c.Id == printNumber, includes);
             if (printed == null)
                 throw new ConflictException("رقم الطباعة غير موجود");
@@ -1598,7 +1598,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 exprtion = exprtion.And(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
             }
-            var includes = new string[] { $"{nameof(ClientPayment.ClientPaymentDetails)}.{nameof(ClientPaymentDetail.OrderPlaced)}" };
+            var includes = new string[] { $"{nameof(ClientPayment.ClientPaymentDetails)}" };
             var paginResult = await _clientPaymentRepository.GetAsync(pagingDto, exprtion, includes, c => c.OrderByDescending(c => c.Id));
             return new PagingResualt<IEnumerable<PrintOrdersDto>>()
             {
@@ -1708,9 +1708,9 @@ namespace KokazGoodsTransfer.Services.Concret
                                 if (Decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                 {
                                     order.OrderState = OrderStateEnum.ShortageOfCash;
-                                    if (order.MoneyPlace == MoneyPalced.Delivered)
+                                    if (order.MoneyPlace == MoneyPalce.Delivered)
                                     {
-                                        order.MoneyPlace = MoneyPalced.InsideCompany;
+                                        order.MoneyPlace = MoneyPalce.InsideCompany;
                                     }
                                 }
                                 else
@@ -1793,7 +1793,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         {
                             ClientId = order.ClientId,
                             OrderPlacedId = (int)order.NewOrderPlace.Value,
-                            MoneyPlacedId = (int)MoneyPalced.WithAgent,
+                            MoneyPlacedId = (int)MoneyPalce.WithAgent,
                             IsSeen = false,
                             OrderCount = 1
                         };
@@ -1868,7 +1868,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 order.OrderState = OrderStateEnum.Processing;
                 order.OrderPlace = OrderPlace.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
-                order.MoneyPlace = MoneyPalced.OutSideCompany;
+                order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
             }
             await _repository.Update(orders);
@@ -1924,7 +1924,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId)
         {
-            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalced.InsideCompany && c.InWayToBranch == false);
+            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
             var data = await _repository.GetAsync(paging, predicate, c => c.Client, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1936,7 +1936,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-            predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalced.InsideCompany && c.InWayToBranch == false);
+            predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
             var orders = await _repository.GetAsync(predicate);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
                 throw new ConflictException("الشحنة ليست في فرعك");
@@ -2030,7 +2030,7 @@ namespace KokazGoodsTransfer.Services.Concret
             //get last order to check last return erorr message for the last order 
             var lastOrder = orders.Last();
             ////execpt finished order 
-            var finishedOrder = orders.Where(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable || (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalced.InsideCompany || c.MoneyPlace == MoneyPalced.Delivered)));
+            var finishedOrder = orders.Where(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable || (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalce.InsideCompany || c.MoneyPlace == MoneyPalce.Delivered)));
             orders = orders.Except(finishedOrder);
             if (!orders.Any())
             {
@@ -2038,7 +2038,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 {
                     throw new ConflictException("الشحنة ما زالت في المخزن");
                 }
-                if (lastOrder.MoneyPlace == MoneyPalced.InsideCompany)
+                if (lastOrder.MoneyPlace == MoneyPalce.InsideCompany)
                 {
                     throw new ConflictException("الشحنة داخل الشركة");
                 }

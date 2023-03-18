@@ -266,16 +266,6 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.ClientPaymentDetails)
                     .HasForeignKey(d => d.ClientPaymentId)
                     .HasConstraintName("FK__ClientPay__Clien__51300E55");
-
-                entity.HasOne(d => d.MoneyPlaced)
-                    .WithMany(p => p.ClientPaymentDetails)
-                    .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__ClientPay__Money__5224328E");
-
-                entity.HasOne(d => d.OrderPlaced)
-                    .WithMany(p => p.ClientPaymentDetails)
-                    .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__ClientPay__Order__531856C7");
             });
 
             modelBuilder.Entity<ClientPhone>(entity =>
@@ -835,22 +825,12 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__ReceiptOf__Clien__595B4002");
 
-                entity.HasOne(d => d.MoneyPlaced)
-                    .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
-                    .HasForeignKey(d => d.MoneyPlacedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ReceiptOf__Money__25DB9BFC");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK__ReceiptOf__Order__6B79F03D");
 
-                entity.HasOne(d => d.OrderPlaced)
-                    .WithMany(p => p.ReceiptOfTheOrderStatusDetalis)
-                    .HasForeignKey(d => d.OrderPlacedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ReceiptOf__Order__5E1FF51F");
 
 
                 entity.HasOne(d => d.ReceiptOfTheOrderStatus)

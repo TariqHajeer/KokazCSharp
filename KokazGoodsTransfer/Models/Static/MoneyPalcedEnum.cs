@@ -2,7 +2,7 @@
 
 namespace KokazGoodsTransfer.Models.Static
 {
-    public enum MoneyPalced
+    public enum MoneyPalce
     {
         [Description("خارج الشركة")]
         OutSideCompany =1,

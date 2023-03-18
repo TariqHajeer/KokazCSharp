@@ -16,7 +16,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 .ForMember(c => c.DeliveCost, opt => opt.MapFrom(src => src.DeliveryCost))
                 .ForMember(c => c.Orderplaced, opt => opt.MapFrom((order, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(order.OrderPlaced);
+                    return order.OrderPlace;
                 }));
             CreateMap<ClientPayment, PrintOrdersDto>()
                 .ForMember(c => c.PrintNmber, opt => opt.MapFrom(src => src.Id))

@@ -27,7 +27,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         /// <summary>
         /// موقع المبلغ
         /// </summary>
-        public MoneyPalced? MonePlacedId { get; set; }
+        public MoneyPalce? MonePlacedId { get; set; }
         /// <summary>
         /// موقع الشحنة
         /// </summary>

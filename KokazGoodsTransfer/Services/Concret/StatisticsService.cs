@@ -55,14 +55,14 @@ namespace KokazGoodsTransfer.Services.Concret
             var totalOutCome = await _outComeRepository.Sum(c => c.Amount);
             var orderInNigative = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.OrderState == OrderStateEnum.ShortageOfCash || (c.OrderState != OrderStateEnum.Finished && c.IsClientDiliverdMoney == true));
             orderInNigative *= -1;
-            var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.OrderPlace >= OrderPlace.Delivered && c.OrderPlace < OrderPlace.Delayed && c.MoneyPlace != MoneyPalced.WithAgent);
+            var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.OrderPlace >= OrderPlace.Delivered && c.OrderPlace < OrderPlace.Delayed && c.MoneyPlace != MoneyPalce.WithAgent);
 
 
             var totalAccount = await _receiptRepository.Sum(c => c.Amount, c => c.ClientPaymentId == null);
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
-            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderState == OrderStateEnum.Finished && (c.MoneyPlace != MoneyPalced.WithAgent && c.MoneyPlace != MoneyPalced.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
+            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderState == OrderStateEnum.Finished && (c.MoneyPlace != MoneyPalce.WithAgent && c.MoneyPlace != MoneyPalce.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
 
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
             mainStatics.TotalMoneyInComapny -= totalOutCome;
@@ -123,8 +123,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
             var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
 
-            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalced.Delivered);
-            var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlace == MoneyPalced.InsideCompany);
+            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered);
+            var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlace == MoneyPalce.InsideCompany);
 
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
@@ -149,16 +149,16 @@ namespace KokazGoodsTransfer.Services.Concret
                     return await _orderRepository.Count(pr.And(filter));
                 return await _orderRepository.Count(pr);
             }
-            var pric = PredicateBuilder.New<Order>(c => c.MoneyPlace == MoneyPalced.InsideCompany);
+            var pric = PredicateBuilder.New<Order>(c => c.MoneyPlace == MoneyPalce.InsideCompany);
             var staticsDto = new StaticsDto()
             {
                 TotalOrder = await Opr(),
-                OrderDeliverdToClient = await Opr(c => c.MoneyPlace == MoneyPalced.WithAgent && (c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Delivered)),
+                OrderDeliverdToClient = await Opr(c => c.MoneyPlace == MoneyPalce.WithAgent && (c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Delivered)),
                 OrderMoneyDelived = await Opr(c => c.IsClientDiliverdMoney == true && (c.OrderPlace == OrderPlace.Way || c.OrderPlace == OrderPlace.Delivered)),
                 OrderInWat = await Opr(c => c.OrderPlace == OrderPlace.Way && c.IsClientDiliverdMoney != true),
                 OrderInStore = await Opr(c => c.OrderPlace == OrderPlace.Store),
                 OrderWithClient = await Opr(c => c.OrderPlace == OrderPlace.Client),
-                OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalced.Delivered),
+                OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.Delivered),
                 OrderPartialReturned = await Opr(c => c.OrderPlace == OrderPlace.PartialReturned),
                 DelayedOrder = await Opr(c => c.OrderPlace == OrderPlace.Delayed),
                 OrderMoneyInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderStateEnum.ShortageOfCash)),

@@ -21,18 +21,18 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             CreateMap<CreateOrderFromClient, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(',', src.RecipientPhones)))
                .ForMember(s => s.OrderPlace, opt => opt.MapFrom(src => OrderPlace.Client))
-               .ForMember(dest => dest.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+               .ForMember(dest => dest.MoneyPlace, opt => opt.MapFrom(src => MoneyPalce.OutSideCompany))
                .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => OrderStateEnum.Processing))
                .ForMember(dest => dest.IsSend, opt => opt.MapFrom(src => false))
                ;
 
             CreateMap<CreateOrderFromEmployee, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)))
-               .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+               .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalce.OutSideCompany))
                .ForMember(c => c.OrderPlace, opt => opt.MapFrom(src => OrderPlace.Store));
             CreateMap<CreateMultipleOrder, Order>()
                 .ForMember(c => c.Seen, opt => opt.MapFrom(src => true))
-                .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+                .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalce.OutSideCompany))
                 .ForMember(c => c.IsClientDiliverdMoney, opt => opt.MapFrom(src => false))
                 .ForMember(c => c.OrderState, opt => opt.MapFrom(src => OrderStateEnum.Processing))
                 .ForMember(c => c.OrderPlace, opt => opt.MapFrom(src => OrderPlace.Store));
@@ -108,11 +108,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             CreateMap<ReceiptOfTheOrderStatusDetali, ReceiptOfTheOrderStatusDetaliOrderDto>()
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+                    return obj.OrderPlace;
                 }))
                 .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                    return obj.MoneyPalce;
                 }))
                 .ForMember(c => c.Reciver, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.Recvier.Name))
                 .ForMember(c => c.CreatedOn, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatus.CreatedOn));
@@ -219,11 +219,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                }))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+                    return obj.OrderPlace;
                 }))
                 .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                    return obj.MoneyPalce;
                 }))
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
@@ -238,7 +238,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.OrderTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.Cost)))
                 .ForMember(c => c.AgentTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.AgentCost)))
-                .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId == (int)MoneyPalced.Delivered || c.MoneyPlacedId == (int)MoneyPalced.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
+                .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce == MoneyPalce.Delivered || c.MoneyPalce == MoneyPalce.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
         }
     }
 }

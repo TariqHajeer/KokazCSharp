@@ -34,7 +34,7 @@ namespace KokazGoodsTransfer.Models
         public string Address { get; set; }
         public string ClientNote { get; set; } 
         public string CreatedBy { get; set; }
-        public MoneyPalced MoneyPlace { get; set; }
+        public MoneyPalce MoneyPlace { get; set; }
         public OrderPlace OrderPlace { get; set; }
         public bool InWayToBranch { get; set; }
         public DateTime? Date { get; set; }
@@ -111,7 +111,7 @@ namespace KokazGoodsTransfer.Models
         {
             if (OrderPlace == OrderPlace.Store)
                 return true;
-            if (MoneyPlace != MoneyPalced.InsideCompany)
+            if (MoneyPlace != MoneyPalce.InsideCompany)
                 return false;
             if (OrderPlace == OrderPlace.CompletelyReturned)
                 return true;

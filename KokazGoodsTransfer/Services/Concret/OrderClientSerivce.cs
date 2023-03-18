@@ -83,7 +83,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     ClientNote = ofe.Note,
                     Cost = ofe.Cost,
                     Date = ofe.CreateDate,
-                    MoneyPlace = MoneyPalced.OutSideCompany,
+                    MoneyPlace = MoneyPalce.OutSideCompany,
                     OrderPlace = OrderPlace.Client,
                     OrderState = OrderStateEnum.Processing,
                     ClientId = _contextAccessorService.AuthoticateUserId(),
@@ -294,9 +294,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetByFilterInclue(predicate, includes);
             orders.ForEach(o =>
             {
-                if (o.MoneyPlace == MoneyPalced.WithAgent)
+                if (o.MoneyPlace == MoneyPalce.WithAgent)
                 {
-                    o.MoneyPlace = MoneyPalced.OutSideCompany;
+                    o.MoneyPlace = MoneyPalce.OutSideCompany;
                 }
             });
             return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
@@ -459,7 +459,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         ClientNote = item.Note,
                         Cost = item.Cost,
                         Date = dateTime,
-                        MoneyPlace = MoneyPalced.OutSideCompany,
+                        MoneyPlace = MoneyPalce.OutSideCompany,
                         OrderPlace = OrderPlace.Client,
                         OrderState = OrderStateEnum.Processing,
                         ClientId = _contextAccessorService.AuthoticateUserId(),

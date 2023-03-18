@@ -196,7 +196,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             if (orderFilter.MoneyPalced != null)
             {
-                orderIQ = orderIQ.Where(c => c.MoneyPlace == (MoneyPalced)orderFilter.MoneyPalced);
+                orderIQ = orderIQ.Where(c => c.MoneyPlace == (MoneyPalce)orderFilter.MoneyPalced);
             }
             if (orderFilter.Orderplaced != null)
             {

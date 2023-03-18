@@ -33,7 +33,7 @@ namespace KokazGoodsTransfer.Services.Concret
             _repository = repository;
             _historyRepositroy = historyRepositroy;
             _logging = logging;
-            _cashMovmentRepositroy = cashMovmentRepositroy; 
+            _cashMovmentRepositroy = cashMovmentRepositroy;
         }
         public async Task<IEnumerable<TreasuryDto>> GetAll()
         {
@@ -98,7 +98,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<TreasuryHistoryDto>>> GetTreasuryHistory(int id, PagingDto pagingDto)
         {
-            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c => c.TreasuryId == id, new string[] { "Receipt" },c=>c.OrderByDescending(h=>h.Id));
+            var hisotres = await _historyRepositroy.GetAsync(pagingDto, c => c.TreasuryId == id, new string[] { "Receipt" }, c => c.OrderByDescending(h => h.Id));
             return new PagingResualt<IEnumerable<TreasuryHistoryDto>>()
             {
                 Total = hisotres.Total,
@@ -195,7 +195,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task IncreaseAmountByOrderFromAgent(ReceiptOfTheOrderStatus receiptOfTheOrderStatus)
         {
-            var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPlacedId != (int)MoneyPalced.WithAgent && c.MoneyPlacedId != (int)MoneyPalced.OutSideCompany).ToList();
+            var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce != MoneyPalce.WithAgent && c.MoneyPalce != MoneyPalce.OutSideCompany).ToList();
             if (receiptOfTheOrderStatusDetalis.Any())
             {
                 var treaury = await _repository.GetById(_userService.AuthoticateUserId());
@@ -220,7 +220,7 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId)
         {
             PagingResualt<IEnumerable<CashMovment>> pagingResult;
-           if (treasueryId != null)
+            if (treasueryId != null)
             {
                 pagingResult = await _cashMovmentRepositroy.GetAsync(paging, c => c.TreasuryId == treasueryId, c => c.Treasury.IdNavigation);
             }
@@ -234,10 +234,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 Data = _mapper.Map<CashMovmentDto[]>(pagingResult.Data)
             };
 
-        }   
+        }
         public async Task<CashMovmentDto> GetCashMovmentById(int id)
         {
-            var cashMovment = await _cashMovmentRepositroy.FirstOrDefualt(c=>c.Id==id,c=>c.Treasury.IdNavigation);
+            var cashMovment = await _cashMovmentRepositroy.FirstOrDefualt(c => c.Id == id, c => c.Treasury.IdNavigation);
             return _mapper.Map<CashMovmentDto>(cashMovment);
         }
 

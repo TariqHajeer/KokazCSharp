@@ -6,7 +6,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     public class ReceiptOfTheStatusOfTheDeliveredShipmentDto
     {
         public int Id { get; set; }
-        public MoneyPalced MoenyPlacedId { get; set; }
+        public MoneyPalce MoenyPlacedId { get; set; }
         public OrderPlace OrderplacedId { get; set; }
         public string Note { get; set; }
         public decimal DeliveryCost { get; set; }

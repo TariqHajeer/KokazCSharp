@@ -14,7 +14,7 @@ namespace KokazGoodsTransfer.Dtos.Common
             this.Id = (int)orderplacedEnum;
             this.Name = orderplacedEnum.GetDescription();
         }
-        private NameAndIdDto(MoneyPalced moneyPalcedEnum)
+        private NameAndIdDto(MoneyPalce moneyPalcedEnum)
         {
             this.Id = (int)moneyPalcedEnum;
             this.Name = moneyPalcedEnum.GetDescription();
@@ -23,7 +23,7 @@ namespace KokazGoodsTransfer.Dtos.Common
         {
             return new NameAndIdDto(orderplacedEnum);
         }
-        public static implicit operator NameAndIdDto(MoneyPalced moneyPalcedEnum)
+        public static implicit operator NameAndIdDto(MoneyPalce moneyPalcedEnum)
         {
             return new NameAndIdDto(moneyPalcedEnum);
         }

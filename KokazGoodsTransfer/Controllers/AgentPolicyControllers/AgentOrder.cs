@@ -56,7 +56,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId() &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending ||
-            c.MoneyPlace == MoneyPalced.WithAgent ||
+            c.MoneyPlace == MoneyPalce.WithAgent ||
             (c.OrderPlace == OrderPlace.Way &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove ||
             c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))), includes);
@@ -74,7 +74,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var date = dateTime.AddDays(-4);
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId()
-            && c.Date <= date && (c.MoneyPlace < MoneyPalced.InsideCompany), includes);
+            && c.Date <= date && (c.MoneyPlace < MoneyPalce.InsideCompany), includes);
             return Ok(orders);
         }
         [HttpGet("Prints")]
@@ -102,9 +102,9 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             {
                 TotalOrderInSotre = await _orderService.Count(c => c.OrderPlace == OrderPlace.Store && c.AgentId == AuthoticateUserId()),
                 TotalOrderInWay = await _orderService.Count(c => c.OrderPlace == OrderPlace.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)),
-                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoneyPlace == MoneyPalced.WithAgent || (c.OrderPlace == OrderPlace.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
+                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoneyPlace == MoneyPalce.WithAgent || (c.OrderPlace == OrderPlace.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
                 TotlaPrintOrder = await _agentPrintService.Count(c => c.AgentOrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())),
-                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoneyPlace < MoneyPalced.InsideCompany))
+                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoneyPlace < MoneyPalce.InsideCompany))
             };
             return Ok(mainStatics);
         }
