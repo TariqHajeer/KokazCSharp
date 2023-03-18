@@ -109,14 +109,16 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             return response;
         }
-        public async Task<IEnumerable<Privilege>> GetPrviligesByUserAndBranchId(int userId ,int branchId)
+        public async Task<IEnumerable<Privilege>> GetPrviligesByUserAndBranchId(int userId, int branchId)
         {
-            var groups = await _repository.GetByFilterInclue(c => c.UserGroups.Any(c => c.UserId == userId) && c.BranchId == branchId, new string[] { "GroupPrivileges.Privileg" });
+            var includes = new string[] { $"{nameof(Group.GroupPrivileges)}.{nameof(GroupPrivilege.Privileg)}" };
+            var groups = await _repository.GetByFilterInclue(c => c.UserGroups.Any(c => c.UserId == userId) && c.BranchId == branchId, includes);
             return groups.SelectMany(c => c.GroupPrivileges.Select(c => c.Privileg));
         }
         public async Task<IEnumerable<Privilege>> GetGroupsPrviligesByGroupsIds(IEnumerable<int> groupsIds, int branchId)
         {
-            var groups = await _repository.GetByFilterInclue(c => c.BranchId == branchId && groupsIds.Contains(c.Id), new string[] { "GroupPrivileges.Privileg" });
+            var includes = new string[] { $"{nameof(Group.GroupPrivileges)}.{nameof(GroupPrivilege.Privileg)}" };
+            var groups = await _repository.GetByFilterInclue(c => c.BranchId == branchId && groupsIds.Contains(c.Id),includes);
             var privileges = groups.SelectMany(c => c.GroupPrivileges.Select(c => c.Privileg));
             privileges = privileges.GroupBy(c => c.Id).Select(c => c.First());
             return privileges;

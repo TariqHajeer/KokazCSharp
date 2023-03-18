@@ -62,7 +62,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
 
             var ordersFromExcel = await _UintOfWork.Repository<OrderFromExcel>().GetAsync(c => ids.Contains(c.Id));
-            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id),c=>c.BranchToCountryDeliverryCosts);
+            var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id), c => c.BranchToCountryDeliverryCosts);
 
             await _UintOfWork.BegeinTransaction();
             List<Order> orders = new List<Order>();
@@ -88,7 +88,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     OrderStateId = (int)OrderStateEnum.Processing,
                     ClientId = _contextAccessorService.AuthoticateUserId(),
                     CreatedBy = _contextAccessorService.AuthoticateUserName(),
-                    DeliveryCost = country.BranchToCountryDeliverryCosts.First(c=>c.BranchId== _contextAccessorService.CurrentBranchId()).DeliveryCost,
+                    DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
                     IsSend = false,
                 };
                 orders.Add(order);
@@ -145,7 +145,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw new ConflictException(validation);
             }
             var order = _mapper.Map<Order>(createOrderFromClient);
-            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId,c=>c.BranchToCountryDeliverryCosts);
+            var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId, c => c.BranchToCountryDeliverryCosts);
             order.DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost;
             order.ClientId = _contextAccessorService.AuthoticateUserId();
             order.CreatedBy = _contextAccessorService.AuthoticateUserName();
@@ -246,7 +246,8 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
-            var includes = new string[] { "Country", "Orderplaced", "MoenyPlaced", "OrderItems.OrderTpye", "OrderClientPaymnets.ClientPayment" };
+
+            var includes = new string[] { nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
 
             var pagingResult = await _repository.GetAsync(pagingDto, predicate, includes);
             return new PagingResualt<IEnumerable<OrderDto>>()
@@ -258,7 +259,8 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<OrderDto> GetById(int id)
         {
-            var inculdes = new string[] { "Agent", "Country", "Orderplaced", "MoenyPlaced", "OrderItems.OrderTpye", "OrderClientPaymnets.ClientPayment", "OrderClientPaymnets.ClientPaymentDetails" };
+
+            var inculdes = new string[] { nameof(Order.Agent), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
             var order = await _repository.FirstOrDefualt(c => c.Id == id, inculdes);
             return _mapper.Map<OrderDto>(order);
         }
@@ -289,7 +291,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 pr2.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
                 predicate.Or(pr2);
             }
-            var includes = new string[] { "Region", "Country", "Orderplaced", "MoenyPlaced", "Agent", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var includes = new string[] { nameof(Order.Region), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced), nameof(Order.Agent), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _repository.GetByFilterInclue(predicate, includes);
             orders.ForEach(o =>
             {
@@ -464,7 +466,7 @@ namespace KokazGoodsTransfer.Services.Concret
                         OrderStateId = (int)OrderStateEnum.Processing,
                         ClientId = _contextAccessorService.AuthoticateUserId(),
                         CreatedBy = _contextAccessorService.AuthoticateUserName(),
-                        DeliveryCost = country.BranchToCountryDeliverryCosts.First(c=>c.BranchId==_contextAccessorService.CurrentBranchId()).DeliveryCost,
+                        DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
                         IsSend = false,
                     };
                     orders.Add(order);

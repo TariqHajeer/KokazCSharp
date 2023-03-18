@@ -16,6 +16,7 @@ using KokazGoodsTransfer.Models.TransferToBranchModels;
 using KokazGoodsTransfer.Services.Interfaces;
 using LinqKit;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -415,13 +416,15 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id)
         {
-            var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, new string[] { "Recvier", "ReceiptOfTheOrderStatusDetalis.Agent", "ReceiptOfTheOrderStatusDetalis.MoneyPlaced", "ReceiptOfTheOrderStatusDetalis.OrderPlaced", "ReceiptOfTheOrderStatusDetalis.Client" })).FirstOrDefault();
+            var includes = new string[] { nameof(ReceiptOfTheOrderStatus.Recvier), $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Agent)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.MoneyPlaced)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.OrderPlaced)}", $"{nameof(ReceiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis)}.{nameof(ReceiptOfTheOrderStatusDetali.Client)}" };
+            var response = (await _receiptOfTheOrderStatusRepository.GetByFilterInclue(c => c.Id == id, includes)).FirstOrDefault();
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
         }
         public async Task<int> MakeOrderInWay(int[] ids)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), new string[] { "Agent.UserPhones", "Client", "Country", "Region" });
+            var includes = new string[] { $"{nameof(Order.Agent)}.{nameof(User.UserPhones)}", nameof(Order.Client), nameof(Order.Country), nameof(Order.Region) };
+            var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), includes);
             if (orders.Any(c => c.OrderplacedId != (int)OrderplacedEnum.Store))
             {
                 var errors = orders.Where(c => c.OrderplacedId != (int)OrderplacedEnum.Store).Select(c => $"الشحنة رقم{c.Code} ليست في المخزن");
@@ -552,7 +555,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<string> GetTransferToSecondBranchReportAsString(int id)
         {
-            var includes = new string[] { "TransferToOtherBranchDetials", "TransferToOtherBranchDetials", "DestinationBranch", "SourceBranch" };
+
+            var includes = new string[] { nameof(TransferToOtherBranch.TransferToOtherBranchDetials), nameof(TransferToOtherBranch.TransferToOtherBranchDetials), nameof(TransferToOtherBranch.DestinationBranch), nameof(TransferToOtherBranch.SourceBranch) };
             var report = await _transferToOtherBranchRepository.FirstOrDefualt(c => c.Id == id, includes);
             var path = _environment.WebRootPath + "/HtmlTemplate/TransferToOtherBranchTemplate.html";
             var readText = await File.ReadAllTextAsync(path);
@@ -597,7 +601,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var predicate = PredicateBuilder.New<TransferToOtherBranch>(true);
             predicate = predicate.And(c => c.DestinationBranchId == destinationBranchId);
             predicate = predicate.And(c => c.SourceBranchId == _currentBranchId);
-            var includes = new string[] { "DestinationBranch" };
+            var includes = new string[] { nameof(TransferToOtherBranch.DestinationBranch) };
             var data = await _transferToOtherBranchRepository.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(t => t.Id));
             return new PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>()
             {
@@ -610,13 +614,15 @@ namespace KokazGoodsTransfer.Services.Concret
         public async Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code)
         {
             PagingResualt<IEnumerable<ReceiptOfTheOrderStatus>> response;
+            var includes = new string[] { nameof(ReceiptOfTheOrderStatus.Recvier) };
             if (string.IsNullOrEmpty(code))
             {
-                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+
+                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, includes, orderBy: c => c.OrderByDescending(r => r.Id));
             }
             else
             {
-                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, c => c.ReceiptOfTheOrderStatusDetalis.Any(c => c.OrderCode == code), new string[] { "Recvier" }, orderBy: c => c.OrderByDescending(r => r.Id));
+                response = await _receiptOfTheOrderStatusRepository.GetAsync(Paging, c => c.ReceiptOfTheOrderStatusDetalis.Any(c => c.OrderCode == code), includes, orderBy: c => c.OrderByDescending(r => r.Id));
 
             }
 
@@ -768,7 +774,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { "Client", "Agent", "Region", "Country", "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint", "Branch" };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch) };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1003,7 +1009,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<int> DeleiverMoneyForClientWithStatus(int[] ids)
         {
-            var includes = new string[] { "Client.ClientPhones", "Country" };
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", nameof(Order.Country) };
             var orders = await _repository.GetByFilterInclue(c => ids.Contains(c.Id), includes);
             var client = orders.FirstOrDefault().Client;
             if (orders.Any(c => c.ClientId != client.Id))
@@ -1245,7 +1251,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<IEnumerable<OrderDto>> NewOrderDontSned()
         {
-            var includes = new string[] { "Client.ClientPhones", "Client.Country", "Region", "Country.AgentCountries.Agent", "OrderItems.OrderTpye" };
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Client)}.{nameof(Client.Country)}", nameof(Order.Region), $"{nameof(Order.Country)}.{nameof(Country.AgentCountries)}.{nameof(AgentCountry.Agent)}", $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}" };
             var orders = await _repository.GetByFilterInclue(c => c.IsSend == false && c.OrderplacedId == (int)OrderplacedEnum.Client, includes);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
@@ -1258,7 +1264,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<PayForClientDto> GetByCodeAndClient(int clientId, string code)
         {
-            var includes = new string[] { "OrderClientPaymnets.ClientPayment", "AgentOrderPrints.AgentPrint" };
+            var includes = new string[] { $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var order = await _repository.FirstOrDefualt(c => c.ClientId == clientId && c.Code == code, includes);
             if (order == null)
                 throw new ConflictException("الشحنة غير موجودة");
@@ -1572,7 +1578,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber)
         {
-            var includes = new string[] { "Discounts", "Receipts", "ClientPaymentDetails.OrderPlaced" };
+            var includes = new string[] { nameof(ClientPayment.Discounts), nameof(ClientPayment.Receipts), $"{nameof(ClientPayment.ClientPaymentDetails)}.{nameof(ClientPaymentDetail.OrderPlaced)}" };
             var printed = await _clientPaymentRepository.FirstOrDefualt(c => c.Id == printNumber, includes);
             if (printed == null)
                 throw new ConflictException("رقم الطباعة غير موجود");
@@ -1593,7 +1599,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 exprtion = exprtion.And(c => c.ClientPaymentDetails.Any(c => c.Code.StartsWith(code)));
             }
-            var includes = new string[] { "ClientPaymentDetails.OrderPlaced" };
+            var includes = new string[] { $"{nameof(ClientPayment.ClientPaymentDetails)}.{nameof(ClientPaymentDetail.OrderPlaced)}" };
             var paginResult = await _clientPaymentRepository.GetAsync(pagingDto, exprtion, includes, c => c.OrderByDescending(c => c.Id));
             return new PagingResualt<IEnumerable<PrintOrdersDto>>()
             {

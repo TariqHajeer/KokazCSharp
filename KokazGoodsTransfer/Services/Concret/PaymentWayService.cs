@@ -23,8 +23,10 @@ namespace KokazGoodsTransfer.Services.Concret
                 throw new ConflictException("");
 
             }
-            PaymentWay paymentWay = new PaymentWay();
-            paymentWay.Name = createDto.Name;
+            PaymentWay paymentWay = new PaymentWay
+            {
+                Name = createDto.Name
+            };
             await _repository.AddAsync(paymentWay);
             return new ErrorRepsonse<NameAndIdDto>(_mapper.Map<NameAndIdDto>(paymentWay));
         }

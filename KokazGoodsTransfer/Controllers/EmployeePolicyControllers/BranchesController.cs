@@ -28,19 +28,5 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
             return Ok(await _branchService.GetLite());
         }
-
-        //[HttpPost]
-        //public async Task<ActionResult<BranchDto>> Create(CreateBranchDto branchDto)
-        //{
-        //    var response = await _branchService.AddAsync(branchDto);
-        //    if (response.Errors.Any())
-        //        return BadRequest(response.Errors);
-        //    return Ok(response.Data);
-        //}
-        //[HttpDelete]
-        //public async Task<ActionResult> Delete(int id)
-        //{
-        //    return Ok(await _branchService.Delete(id));
-        //}
     }
 }

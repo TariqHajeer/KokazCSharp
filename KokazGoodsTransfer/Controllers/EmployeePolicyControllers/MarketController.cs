@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
-using KokazGoodsTransfer.Dtos.Common;
 using KokazGoodsTransfer.Dtos.MarketDtos;
-using KokazGoodsTransfer.Helpers;
 using KokazGoodsTransfer.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers

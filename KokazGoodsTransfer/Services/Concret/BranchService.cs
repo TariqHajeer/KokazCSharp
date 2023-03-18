@@ -7,6 +7,7 @@ using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Helper;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,14 +18,9 @@ namespace KokazGoodsTransfer.Services.Concret
         public BranchService(IRepository<Branch> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
         {
         }
-        public override async Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)
+        public override Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)
         {
-            var any =await _repository.Any(c=>c.Id==createDto.CountryId);
-            if (any)
-            {
-
-            }
-            return await base.AddAsync(createDto);
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<NameAndIdDto>> GetLite()

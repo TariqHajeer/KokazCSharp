@@ -9,6 +9,7 @@ using KokazGoodsTransfer.DAL.Helper;
 using Wkhtmltopdf.NetCore;
 using KokazGoodsTransfer.Dtos.OrdersDtos.OrderWithBranchDto;
 using KokazGoodsTransfer.Dtos.OrdersDtos.Queries;
+using KokazGoodsTransfer.Models;
 
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
 {
@@ -250,7 +251,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("ShipmentsNotReimbursedToTheClient/{clientId}")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> ShipmentsNotReimbursedToTheClient(int clientId)
         {
-            var includes = new string[] { "Agent.UserPhones", "Region", "Country", "MoenyPlaced", "Orderplaced" };
+            var includes = new string[] { $"{nameof(Order.Agent)}.{nameof(Models.User.UserPhones)}", nameof(Order.Region), nameof(Order.Country), nameof(Order.MoenyPlaced), nameof(Order.Orderplaced) };
             var orders = await _orderService.GetAsync(c => c.ClientId == clientId && c.IsClientDiliverdMoney == false && c.OrderplacedId >= (int)OrderplacedEnum.Way, includes);
             return Ok(orders);
         }
@@ -267,7 +268,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet("OrderVicdanAgent/{agnetId}")]
         public async Task<IActionResult> OrderVicdanAgent(int agnetId)
         {
-            var includes = new string[] { "Client", "Region", "Country", "Orderplaced", "MoenyPlaced" };
+
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country), nameof(Order.Orderplaced), nameof(Order.MoenyPlaced) };
             var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoenyPlacedId == (int)MoneyPalcedEnum.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderplacedId == (int)OrderplacedEnum.Way), includes);
             return Ok(orders);
         }

@@ -91,19 +91,6 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet]
-        public IActionResult Test()
-        {
-            var countries = _context.Countries
-                .Include(c => c.MediatorCountries)
-                .Include(c => c.ToCountries)
-                .Include(c => c.FromCountries).ToList();
-            var bagdad = countries.FirstOrDefault(c => c.Name == "بغداد");
-            var x = countries.Select(c => new { c.Id, c.Name, c.FromCountries, c.MediatorCountries, c.ToCountries }).ToList();
-            var branchesIDs = new int[] { 4, 8, 3 };
-            var branchesCountries = x.Where(c => branchesIDs.Contains(c.Id)).ToList();
-            return Ok();
-        }
 
     }
 }

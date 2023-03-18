@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using KokazGoodsTransfer.Dtos.Groups;
+using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,8 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetAll()
         {
-            var groups = await this._groupService.GetAll(new string[] { "GroupPrivileges", "UserGroups.User" });
+            var includes = new string[] { nameof(Group.GroupPrivileges), $"{nameof(Group.UserGroups)}.{nameof(UserGroup.User)}" };
+            var groups = await this._groupService.GetAll(includes);
             return Ok(groups);
         }
 

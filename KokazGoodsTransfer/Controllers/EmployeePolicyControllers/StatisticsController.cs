@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AutoMapper;
 using KokazGoodsTransfer.Dtos.OrdersDtos;
-using KokazGoodsTransfer.Models;
 using KokazGoodsTransfer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
