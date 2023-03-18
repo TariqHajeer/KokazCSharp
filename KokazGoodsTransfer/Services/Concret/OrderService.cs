@@ -17,6 +17,7 @@ using KokazGoodsTransfer.Services.Interfaces;
 using LinqKit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -779,7 +780,8 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders)
         {
-            var countries = await _countryCashedService.GetAsync(c => createMultipleOrders.Select(c => c.CountryId).Contains(c.Id));
+            var countriesIds = createMultipleOrders.Select(c => c.CountryId).ToArray();
+            var countries = await _countryCashedService.GetAsync(c => countriesIds.Contains(c.Id), c => c.BranchToCountryDeliverryCosts);
             var branches = await _branchRepository.GetAll();
 
             var currentBrach = branches.First(c => c.Id == _currentBranchId);
@@ -803,7 +805,9 @@ namespace KokazGoodsTransfer.Services.Concret
             try
             {
                 var countryIds = createMultipleOrders.Select(c => c.CountryId);
-                var orders = createMultipleOrders.Select(async item =>
+
+                var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countryIds.Contains(c.ToCountryId))).ToList();
+                var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
 
@@ -818,7 +822,7 @@ namespace KokazGoodsTransfer.Services.Concret
                          order.NextBranchId = targetBranch.Id;
                          if (order.AgentId != null)
                              throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
-                         var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
                          if (midCountry != null)
                          {
                              order.NextBranchId = midCountry.MediatorCountryId;
@@ -826,7 +830,7 @@ namespace KokazGoodsTransfer.Services.Concret
                      }
                      else
                      {
-                         var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
                          if (midCountry != null)
                          {
                              order.TargetBranchId = midCountry.MediatorCountryId;
@@ -842,7 +846,7 @@ namespace KokazGoodsTransfer.Services.Concret
                          }
                      }
                      return order;
-                 });
+                 }).ToList();
                 await _uintOfWork.AddRange(orders);
                 await _uintOfWork.Commit();
             }
