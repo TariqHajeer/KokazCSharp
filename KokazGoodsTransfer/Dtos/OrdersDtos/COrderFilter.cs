@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KokazGoodsTransfer.Models.Static;
 
 namespace KokazGoodsTransfer.Dtos.OrdersDtos
 {
@@ -30,11 +27,11 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         /// <summary>
         /// موقع المبلغ
         /// </summary>
-        public int? MonePlacedId { get; set; }
+        public MoneyPalced? MonePlacedId { get; set; }
         /// <summary>
         /// موقع الشحنة
         /// </summary>
-        public int? OrderplacedId { get; set; }
+        public OrderPlace? OrderplacedId { get; set; }
         /// <summary>
         /// إذا تم التسديد
         /// </summary>

@@ -15,8 +15,8 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         public int? RegionId { get; set; }
         public int? ClientId { get; set; }
         public string RecipientName { get; set; }
-        public int? MonePlacedId { get; set; }
-        public int? OrderplacedId { get; set; }
+        public MoneyPalced? MoneyPalced { get; set; }
+        public OrderPlace? Orderplaced { get; set; }
         public int? AgentId { get; set; }
         public bool? IsClientDiliverdMoney { get; set; }
         public int? AgentPrintNumber { get; set; }

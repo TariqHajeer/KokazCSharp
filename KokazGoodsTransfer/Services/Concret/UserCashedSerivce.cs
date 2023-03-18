@@ -68,8 +68,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
             foreach (var agent in agents)
             {
-                agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
-                agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
+                agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderPlace == OrderPlace.Store);
+                agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderPlace == OrderPlace.Way);
             }
             return dtos;
         }
@@ -82,7 +82,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var user = _mapper.Map<User>(createDto);
             if (createDto.CanWorkAsAgent)
             {
-                var countries = await _countryCashedService.GetAsync(c => createDto.Countries.Contains(c.Id) && c.Branch!=null, c => c.Branch);
+                var countries = await _countryCashedService.GetAsync(c => createDto.Countries.Contains(c.Id) && c.Branch != null, c => c.Branch);
                 var branchesids = countries.Select(c => c.Id).ToArray();
                 if (branchesids.Except(_httpContextAccessorService.Branches()).Any())
                     throw new ConflictException("لا يمكنك  إضافة مدينة لمدنوب لديها فرع");
@@ -109,8 +109,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var dto = _mapper.Map<UserDto>(user);
             if (dto.CanWorkAsAgent)
             {
-                dto.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderplacedId == (int)OrderplacedEnum.Store);
-                dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderplacedId == (int)OrderplacedEnum.Way);
+                dto.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderPlace == OrderPlace.Store);
+                dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderPlace == OrderPlace.Way);
             }
             return dto;
         }

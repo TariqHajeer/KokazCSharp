@@ -32,10 +32,10 @@ namespace KokazGoodsTransfer.Models
         public string RecipientPhones { get; set; }
         public int? RegionId { get; set; }
         public string Address { get; set; }
-        public string ClientNote { get; set; }
+        public string ClientNote { get; set; } 
         public string CreatedBy { get; set; }
-        public int MoenyPlacedId { get; set; }
-        public int OrderplacedId { get; set; }
+        public MoneyPalced MoneyPlace { get; set; }
+        public OrderPlace OrderPlace { get; set; }
         public bool InWayToBranch { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? DiliveryDate { get; set; }
@@ -55,16 +55,14 @@ namespace KokazGoodsTransfer.Models
         public int PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
         public decimal? NewCost { get; set; }
-        public int? NewOrderPlacedId { get; set; }
+        public OrderPlace? NewOrderPlace { get; set; }
         public int BranchId { get; set; }
         public int? TargetBranchId { get; set; }
         public bool IsReturnedByBranch { get; set; }
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
-        public virtual MoenyPlaced MoenyPlaced { get; set; }
         public virtual OrderState OrderState { get; set; }
-        public virtual OrderPlaced Orderplaced { get; set; }
         public virtual Region Region { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<OrderClientPaymnet> OrderClientPaymnets { get; set; }
@@ -74,11 +72,6 @@ namespace KokazGoodsTransfer.Models
         public Branch Branch { get; set; }
         [ForeignKey(nameof(TargetBranchId))]
         public virtual Branch TargetBranch { get; set; }
-        /// <summary>
-        /// for agent
-        /// </summary>
-        [ForeignKey(nameof(NewOrderPlacedId))]
-        public OrderPlaced NewOrderPlaced { get; set; }
         public int CurrentBranchId { get; set; }
         [ForeignKey(nameof(CurrentBranchId))]
         public virtual Branch CurrentBranch { get; set; }
@@ -87,41 +80,47 @@ namespace KokazGoodsTransfer.Models
         public Branch NextBranch { get; set; }
         public NameAndIdDto GetOrderPlaced()
         {
-            return (OrderplacedEnum)this.OrderplacedId;
+            return this.OrderPlace;
         }
         public NameAndIdDto GetMoneyPlaced()
         {
-            return (MoneyPalcedEnum)this.MoenyPlacedId;
+            return this.MoneyPlace;
+        }
+        public NameAndIdDto GetNewOrderPlaced()
+        {
+            if (this.NewOrderPlace.HasValue)
+                return this.NewOrderPlace.Value;
+            return null;
         }
         public bool IsOrderReturn()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (OrderPlace == OrderPlace.CompletelyReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (OrderPlace == OrderPlace.PartialReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            if (OrderPlace == OrderPlace.Unacceptable)
                 return true;
             return false;
         }
         public decimal ShouldToPay()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (OrderPlace == OrderPlace.CompletelyReturned)
                 return 0;
             return Cost - DeliveryCost;
         }
         public bool IsOrderInMyStore()
         {
-            if (OrderplacedId == (int)OrderplacedEnum.Store)
+            if (OrderPlace == OrderPlace.Store)
                 return true;
-            if (MoenyPlacedId != (int)MoneyPalcedEnum.InsideCompany)
+            if (MoneyPlace != MoneyPalced.InsideCompany)
                 return false;
-            if (OrderplacedId == (int)OrderplacedEnum.CompletelyReturned)
+            if (OrderPlace == OrderPlace.CompletelyReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.PartialReturned)
+            if (OrderPlace == OrderPlace.PartialReturned)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Unacceptable)
+            if (OrderPlace == OrderPlace.Unacceptable)
                 return true;
-            if (OrderplacedId == (int)OrderplacedEnum.Delayed)
+            if (OrderPlace == OrderPlace.Delayed)
                 return true;
             return false;
         }
