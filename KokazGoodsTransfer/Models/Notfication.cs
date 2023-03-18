@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable disable
 
-#nullable disable
+using KokazGoodsTransfer.Models.Static;
 
 namespace KokazGoodsTransfer.Models
 {
@@ -11,12 +10,10 @@ namespace KokazGoodsTransfer.Models
         public int ClientId { get; set; }
         public string Note { get; set; }
         public int? OrderCount { get; set; }
-        public int? OrderPlacedId { get; set; }
-        public int? MoneyPlacedId { get; set; }
+        public OrderPlace? OrderPlace { get; set; }
+        public MoneyPalce? MoneyPlace { get; set; }
         public bool? IsSeen { get; set; }
 
         public virtual Client Client { get; set; }
-        public virtual MoenyPlaced MoneyPlaced { get; set; }
-        public virtual OrderPlaced OrderPlaced { get; set; }
     }
 }

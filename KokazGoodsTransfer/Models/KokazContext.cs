@@ -459,15 +459,6 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Notficati__Clien__1F98B2C1");
 
-                entity.HasOne(d => d.MoneyPlaced)
-                    .WithMany(p => p.Notfications)
-                    .HasForeignKey(d => d.MoneyPlacedId)
-                    .HasConstraintName("FK__Notficati__Money__208CD6FA");
-
-                entity.HasOne(d => d.OrderPlaced)
-                    .WithMany(p => p.Notfications)
-                    .HasForeignKey(d => d.OrderPlacedId)
-                    .HasConstraintName("FK__Notficati__Order__2180FB33");
             });
 
             modelBuilder.Entity<Order>(entity =>

@@ -10,11 +10,9 @@ namespace KokazGoodsTransfer.Models
     {
         public OrderPlaced()
         {
-            Notfications = new HashSet<Notfication>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<Notfication> Notfications { get; set; }
     }
 }

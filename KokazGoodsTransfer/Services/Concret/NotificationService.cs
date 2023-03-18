@@ -60,17 +60,17 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 if (order.OrderState != OrderState.Finished && order.OrderPlace != OrderPlace.Way)
                 {
-                    var clientNotigaction = totalNotfications.Where(c => c.ClientId == order.ClientId && (OrderPlace)c.OrderPlacedId == order.OrderPlace && c.MoneyPlacedId == (int)order.MoneyPlace).FirstOrDefault();
+                    var clientNotigaction = totalNotfications.Where(c => c.ClientId == order.ClientId && (OrderPlace)c.OrderPlace == order.OrderPlace && c.MoneyPlace == order.MoneyPlace).FirstOrDefault();
                     if (clientNotigaction == null)
                     {
-                        int moenyPlacedId = (int)order.MoneyPlace;
-                        if (moenyPlacedId == (int)MoneyPalce.WithAgent)
-                            moenyPlacedId = (int)MoneyPalce.OutSideCompany;
+                        var moenyPlacedId = order.MoneyPlace;
+                        if (moenyPlacedId == MoneyPalce.WithAgent)
+                            moenyPlacedId = MoneyPalce.OutSideCompany;
                         clientNotigaction = new Notfication()
                         {
                             ClientId = order.ClientId,
-                            OrderPlacedId = (int)order.OrderPlace,
-                            MoneyPlacedId = moenyPlacedId,
+                            OrderPlace = order.OrderPlace,
+                            MoneyPlace = moenyPlacedId,
                             IsSeen = false,
                             OrderCount = 1
                         };
@@ -105,7 +105,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task SendClientNotification()
         {
-            var notification = await _repository.GetAsync(c => c.ClientId == _contextAccessorService.AuthoticateUserId() && c.IsSeen == false, c => c.MoneyPlaced, c => c.OrderPlaced);
+            var notification = await _repository.GetAsync(c => c.ClientId == _contextAccessorService.AuthoticateUserId() && c.IsSeen == false);
             var dto = _mapper.Map<NotificationDto[]>(notification);
             await _notificationHub.AllNotification(_contextAccessorService.AuthoticateUserId().ToString(), dto);
         }
@@ -121,7 +121,7 @@ namespace KokazGoodsTransfer.Services.Concret
         }
         public async Task<IEnumerable<NotificationDto>> GetClientNotifcations()
         {
-            var notifications = await _repository.GetAsync(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.MoneyPlaced, c => c.OrderPlaced);
+            var notifications = await _repository.GetAsync(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId());
             var dtos = _mapper.Map<IEnumerable<NotificationDto>>(notifications.OrderByDescending(c => c.Id));
             return dtos.OrderBy(c => c.Note).ThenBy(c => c.Id);
         }

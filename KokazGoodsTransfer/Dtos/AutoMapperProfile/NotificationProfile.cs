@@ -12,11 +12,11 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             CreateMap<Notfication, NotificationDto>()
                 .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.MoneyPlaced);
+                    return obj.MoneyPlace;
                 }))
                 .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
-                    return context.Mapper.Map<NameAndIdDto>(obj.OrderPlaced);
+                    return obj.OrderPlace;
                 }));
         }
     }

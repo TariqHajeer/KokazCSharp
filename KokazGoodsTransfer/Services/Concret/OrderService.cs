@@ -1786,14 +1786,14 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
                 if (order.OrderState != OrderState.Finished && order.OrderPlace != OrderPlace.Way)
                 {
-                    var clientNotigaction = notficationsGroup.Where(c => c.ClientId == order.ClientId && c.OrderPlacedId == (int)order.OrderPlace && c.MoneyPlacedId == (int)order.MoneyPlace).FirstOrDefault();
+                    var clientNotigaction = notficationsGroup.Where(c => c.ClientId == order.ClientId && c.OrderPlace == order.OrderPlace && c.MoneyPlace == order.MoneyPlace).FirstOrDefault();
                     if (clientNotigaction == null)
                     {
                         clientNotigaction = new Notfication()
                         {
                             ClientId = order.ClientId,
-                            OrderPlacedId = (int)order.NewOrderPlace.Value,
-                            MoneyPlacedId = (int)MoneyPalce.WithAgent,
+                            OrderPlace = order.NewOrderPlace.Value,
+                            MoneyPlace = MoneyPalce.WithAgent,
                             IsSeen = false,
                             OrderCount = 1
                         };
