@@ -7,13 +7,13 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
     {
         public int Id { get; set; }
         public MoneyPalced MoenyPlacedId { get; set; }
-        public Orderplaced OrderplacedId { get; set; }
+        public OrderPlace OrderplacedId { get; set; }
         public string Note { get; set; }
         public decimal DeliveryCost { get; set; }
         public decimal AgentCost { get; set; }
         public virtual bool EqualToOrder(Order order)
         {
-            return order.Id == Id && order.MoneyPlaced == MoenyPlacedId && order.Orderplaced == OrderplacedId && order.DeliveryCost == DeliveryCost && order.AgentCost == AgentCost && order.Note == Note;
+            return order.Id == Id && order.MoneyPlace == MoenyPlacedId && order.OrderPlace == OrderplacedId && order.DeliveryCost == DeliveryCost && order.AgentCost == AgentCost && order.Note == Note;
         }
     }
     public class ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto : ReceiptOfTheStatusOfTheDeliveredShipmentDto

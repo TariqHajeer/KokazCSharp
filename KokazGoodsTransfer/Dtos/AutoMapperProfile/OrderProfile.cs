@@ -20,22 +20,22 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             CreateMap<CreateOrderType, OrderType>();
             CreateMap<CreateOrderFromClient, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(',', src.RecipientPhones)))
-               .ForMember(s => s.Orderplaced, opt => opt.MapFrom(src => (int)Orderplaced.Client))
-               .ForMember(dest => dest.MoneyPlaced, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+               .ForMember(s => s.OrderPlace, opt => opt.MapFrom(src => (int)OrderPlace.Client))
+               .ForMember(dest => dest.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
                .ForMember(dest => dest.OrderStateId, opt => opt.MapFrom(src => (int)OrderStateEnum.Processing))
                .ForMember(dest => dest.IsSend, opt => opt.MapFrom(src => false))
                ;
 
             CreateMap<CreateOrderFromEmployee, Order>()
                .ForMember(s => s.RecipientPhones, opt => opt.MapFrom(src => String.Join(", ", src.RecipientPhones)))
-               .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
-               .ForMember(c => c.Orderplaced, opt => opt.MapFrom(src => (int)Orderplaced.Store));
+               .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+               .ForMember(c => c.OrderPlace, opt => opt.MapFrom(src => (int)OrderPlace.Store));
             CreateMap<CreateMultipleOrder, Order>()
                 .ForMember(c => c.Seen, opt => opt.MapFrom(src => true))
-                .ForMember(c => c.MoneyPlaced, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
+                .ForMember(c => c.MoneyPlace, opt => opt.MapFrom(src => MoneyPalced.OutSideCompany))
                 .ForMember(c => c.IsClientDiliverdMoney, opt => opt.MapFrom(src => false))
                 .ForMember(c => c.OrderStateId, opt => opt.MapFrom(src => (int)OrderStateEnum.Processing))
-                .ForMember(c => c.Orderplaced, opt => opt.MapFrom(src => (int)Orderplaced.Store));
+                .ForMember(c => c.OrderPlace, opt => opt.MapFrom(src => (int)OrderPlace.Store));
 
             CreateMap<DisAcceptOrder, OrderDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>
@@ -154,7 +154,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
                 {
                     return context.Mapper.Map<CountryDto>(order.Country);
                 }))
-                .ForMember(c => c.CanUpdateOrDelete, opt => opt.MapFrom(src => src.Orderplaced <= KokazGoodsTransfer.Models.Static.Orderplaced.Store));
+                .ForMember(c => c.CanUpdateOrDelete, opt => opt.MapFrom(src => src.OrderPlace <= KokazGoodsTransfer.Models.Static.OrderPlace.Store));
             CreateMap<OrderType, OrderTypeDto>()
                 .ForMember(c => c.CanDelete, opt => opt.MapFrom(src => src.OrderItems.Count() == 0));
             CreateMap<OrderType, NameAndIdDto>();
@@ -175,7 +175,7 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             }))
             .ForMember(c => c.OrderPlaced, opt => opt.MapFrom((obj, dto, i, conext) =>
             {
-                return conext.Mapper.Map<NameAndIdDto>(obj.NewOrderPlaced);
+                return conext.Mapper.Map<NameAndIdDto>(obj.GetNewOrderPlaced());
             }));
             CreateMap<Order, PayForClientDto>()
                 .ForMember(c => c.Region, opt => opt.MapFrom((order, dto, i, context) =>

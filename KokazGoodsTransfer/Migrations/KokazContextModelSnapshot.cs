@@ -4619,13 +4619,13 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<bool>("IsSync")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MoneyPlaced")
+                    b.Property<int>("MoneyPlace")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("NewCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("NewOrderPlacedId")
+                    b.Property<int?>("NewOrderPlace")
                         .HasColumnType("int");
 
                     b.Property<int?>("NextBranchId")
@@ -4640,10 +4640,10 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<decimal?>("OldDeliveryCost")
                         .HasColumnType("money");
 
-                    b.Property<int>("OrderStateId")
+                    b.Property<int>("OrderPlace")
                         .HasColumnType("int");
 
-                    b.Property<int>("Orderplaced")
+                    b.Property<int>("OrderStateId")
                         .HasColumnType("int");
 
                     b.Property<int>("PrintedTimes")
@@ -4688,15 +4688,13 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("CurrentBranchId");
 
-                    b.HasIndex("MoneyPlaced");
-
-                    b.HasIndex("NewOrderPlacedId");
+                    b.HasIndex("MoneyPlace");
 
                     b.HasIndex("NextBranchId");
 
-                    b.HasIndex("OrderStateId");
+                    b.HasIndex("OrderPlace");
 
-                    b.HasIndex("Orderplaced");
+                    b.HasIndex("OrderStateId");
 
                     b.HasIndex("RegionId");
 
@@ -6413,10 +6411,6 @@ namespace KokazGoodsTransfer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("KokazGoodsTransfer.Models.OrderPlaced", "NewOrderPlaced")
-                        .WithMany()
-                        .HasForeignKey("NewOrderPlacedId");
-
                     b.HasOne("KokazGoodsTransfer.Models.Branch", "NextBranch")
                         .WithMany()
                         .HasForeignKey("NextBranchId");
@@ -6445,8 +6439,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Country");
 
                     b.Navigation("CurrentBranch");
-
-                    b.Navigation("NewOrderPlaced");
 
                     b.Navigation("NextBranch");
 

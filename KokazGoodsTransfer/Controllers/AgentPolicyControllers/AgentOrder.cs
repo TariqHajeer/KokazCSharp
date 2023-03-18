@@ -27,14 +27,14 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public async Task<IActionResult> GetInStock()
         {
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _orderService.GetAsync(c => c.Orderplaced == Orderplaced.Store && c.AgentId == AuthoticateUserId(), includes);
+            var orders = await _orderService.GetAsync(c => c.OrderPlace == OrderPlace.Store && c.AgentId == AuthoticateUserId(), includes);
             return Ok(orders);
         }
         [HttpGet("InWay")]
         public async Task<IActionResult> GetInWay()
         {
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _orderService.GetAsync(c => c.Orderplaced == Orderplaced.Way
+            var orders = await _orderService.GetAsync(c => c.OrderPlace == OrderPlace.Way
             && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None
             || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             return Ok(orders);
@@ -43,7 +43,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
         public async Task<IActionResult> InWayByCode([FromQuery] string code)
         {
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _orderService.GetAsync(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.Orderplaced == Orderplaced.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
+            var orders = await _orderService.GetAsync(c => c.Code == code && c.AgentId == AuthoticateUserId() && c.OrderPlace == OrderPlace.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
             orders = orders.OrderBy(c => c.Date);
             if (!orders.Any())
                 return NotFound();
@@ -56,8 +56,8 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId() &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending ||
-            c.MoneyPlaced == MoneyPalced.WithAgent ||
-            (c.Orderplaced == Orderplaced.Way &&
+            c.MoneyPlace == MoneyPalced.WithAgent ||
+            (c.OrderPlace == OrderPlace.Way &&
             (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove ||
             c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve))), includes);
             return Ok(orders);
@@ -74,7 +74,7 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var date = dateTime.AddDays(-4);
             var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
             var orders = await _orderService.GetAsync(c => c.AgentId == AuthoticateUserId()
-            && c.Date <= date && (c.MoneyPlaced < MoneyPalced.InsideCompany), includes);
+            && c.Date <= date && (c.MoneyPlace < MoneyPalced.InsideCompany), includes);
             return Ok(orders);
         }
         [HttpGet("Prints")]
@@ -100,11 +100,11 @@ namespace KokazGoodsTransfer.Controllers.AgentPolicyControllers
             var date = dateTime.AddDays(-4);
             AgentStaticsDto mainStatics = new AgentStaticsDto()
             {
-                TotalOrderInSotre = await _orderService.Count(c => c.Orderplaced == Orderplaced.Store && c.AgentId == AuthoticateUserId()),
-                TotalOrderInWay = await _orderService.Count(c => c.Orderplaced == Orderplaced.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)),
-                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoneyPlaced == MoneyPalced.WithAgent || (c.Orderplaced == Orderplaced.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
+                TotalOrderInSotre = await _orderService.Count(c => c.OrderPlace == OrderPlace.Store && c.AgentId == AuthoticateUserId()),
+                TotalOrderInWay = await _orderService.Count(c => c.OrderPlace == OrderPlace.Way && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove)),
+                TotlaOwedOrder = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || c.MoneyPlace == MoneyPalced.WithAgent || (c.OrderPlace == OrderPlace.Way && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove || c.AgentRequestStatus == (int)AgentRequestStatusEnum.Approve)))),
                 TotlaPrintOrder = await _agentPrintService.Count(c => c.AgentOrderPrints.Any(c => c.Order.AgentId == AuthoticateUserId())),
-                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoneyPlaced < MoneyPalced.InsideCompany))
+                TotalOrderSuspended = await _orderService.Count(c => c.AgentId == AuthoticateUserId() && c.Date <= date && (c.MoneyPlace < MoneyPalced.InsideCompany))
             };
             return Ok(mainStatics);
         }

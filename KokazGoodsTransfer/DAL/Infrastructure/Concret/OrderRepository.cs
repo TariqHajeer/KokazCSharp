@@ -60,11 +60,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             if (filter.MoneyPalced != null)
             {
-                query = query.Where(c => c.MoneyPlaced == filter.MoneyPalced);
+                query = query.Where(c => c.MoneyPlace == filter.MoneyPalced);
             }
             if (filter.Orderplaced != null)
             {
-                query = query.Where(c => c.Orderplaced == filter.Orderplaced);
+                query = query.Where(c => c.OrderPlace == filter.Orderplaced);
             }
             if (filter.Phone != string.Empty && filter.Phone != null)
             {
@@ -172,7 +172,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
                         .ThenInclude(c => c.Agent)
                 .Include(c => c.OrderItems)
                     .ThenInclude(c => c.OrderTpye)
-                .Where(c => c.IsSend == false && c.Orderplaced == Orderplaced.Client)
+                .Where(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client)
                .AsQueryable();
             if (orderFilter.CountryId != null)
             {
@@ -196,11 +196,11 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
             }
             if (orderFilter.MoneyPalced != null)
             {
-                orderIQ = orderIQ.Where(c => c.MoneyPlaced == (MoneyPalced)orderFilter.MoneyPalced);
+                orderIQ = orderIQ.Where(c => c.MoneyPlace == (MoneyPalced)orderFilter.MoneyPalced);
             }
             if (orderFilter.Orderplaced != null)
             {
-                orderIQ = orderIQ.Where(c => c.Orderplaced == orderFilter.Orderplaced);
+                orderIQ = orderIQ.Where(c => c.OrderPlace == orderFilter.Orderplaced);
             }
             if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
             {
@@ -248,7 +248,7 @@ namespace KokazGoodsTransfer.DAL.Infrastructure.Concret
         public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
             List<Order> orders = new List<Order>();
-            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.Orderplaced) && c.AgentId != null);
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
             {
                 var list = await Query.Where(predicate.And(c => c.IsClientDiliverdMoney == false))

@@ -8,7 +8,7 @@ namespace KokazGoodsTransfer.Dtos.Clients
 {
     public class OrderDontFinishFilter
     {
-        public Orderplaced[] OrderPlacedId { get; set; }
+        public OrderPlace[] OrderPlacedId { get; set; }
         public bool IsClientDeleviredMoney { get; set; }
         public bool ClientDoNotDeleviredMoney { get; set; }
     }

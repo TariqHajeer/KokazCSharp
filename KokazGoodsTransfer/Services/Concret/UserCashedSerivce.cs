@@ -68,8 +68,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var agents = dtos.Where(c => c.CanWorkAsAgent == true).ToList();
             foreach (var agent in agents)
             {
-                agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.Orderplaced == Orderplaced.Store);
-                agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.Orderplaced == Orderplaced.Way);
+                agent.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderPlace == OrderPlace.Store);
+                agent.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == agent.Id && c.OrderPlace == OrderPlace.Way);
             }
             return dtos;
         }
@@ -109,8 +109,8 @@ namespace KokazGoodsTransfer.Services.Concret
             var dto = _mapper.Map<UserDto>(user);
             if (dto.CanWorkAsAgent)
             {
-                dto.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == dto.Id && c.Orderplaced == Orderplaced.Store);
-                dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.Orderplaced == Orderplaced.Way);
+                dto.UserStatics.OrderInStore = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderPlace == OrderPlace.Store);
+                dto.UserStatics.OrderInWay = await _orderRepository.Count(c => c.AgentId == dto.Id && c.OrderPlace == OrderPlace.Way);
             }
             return dto;
         }

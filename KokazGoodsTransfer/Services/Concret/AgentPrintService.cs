@@ -103,11 +103,11 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var order = orders.First(c => c.Id == aos.Id);
                 order.NewCost = aos.Cost;
-                order.NewOrderPlacedId = aos.OrderplacedId;
+                order.NewOrderPlace = (OrderPlace)aos.OrderplacedId;
                 order.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;
             });
             await _orderRepository.Update(orders);
-            var count=  await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
+            var count = await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
             AdminNotification adminNotification = new AdminNotification()
             {
 

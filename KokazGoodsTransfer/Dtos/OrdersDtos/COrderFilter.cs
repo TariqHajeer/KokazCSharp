@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Dtos.OrdersDtos
         /// <summary>
         /// موقع الشحنة
         /// </summary>
-        public Orderplaced? OrderplacedId { get; set; }
+        public OrderPlace? OrderplacedId { get; set; }
         /// <summary>
         /// إذا تم التسديد
         /// </summary>

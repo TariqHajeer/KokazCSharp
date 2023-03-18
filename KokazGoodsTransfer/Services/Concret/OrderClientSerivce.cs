@@ -83,8 +83,8 @@ namespace KokazGoodsTransfer.Services.Concret
                     ClientNote = ofe.Note,
                     Cost = ofe.Cost,
                     Date = ofe.CreateDate,
-                    MoneyPlaced = MoneyPalced.OutSideCompany,
-                    Orderplaced = Orderplaced.Client,
+                    MoneyPlace = MoneyPalced.OutSideCompany,
+                    OrderPlace = OrderPlace.Client,
                     OrderStateId = (int)OrderStateEnum.Processing,
                     ClientId = _contextAccessorService.AuthoticateUserId(),
                     CreatedBy = _contextAccessorService.AuthoticateUserName(),
@@ -97,7 +97,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _UintOfWork.AddRange(orders);
             await _UintOfWork.Commit();
 
-            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.Orderplaced == Orderplaced.Client);
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
             AdminNotification adminNotification = new AdminNotification()
             {
                 NewOrdersDontSendCount = newOrdersDontSendCount
@@ -188,7 +188,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 }
             }
             await _UintOfWork.Commit();
-            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.Orderplaced == Orderplaced.Client);
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
             AdminNotification adminNotification = new AdminNotification()
             {
                 NewOrdersDontSendCount = newOrdersDontSendCount
@@ -228,11 +228,11 @@ namespace KokazGoodsTransfer.Services.Concret
             }
             if (orderFilter.MonePlacedId != null)
             {
-                predicate = predicate.And(c => c.MoneyPlaced == orderFilter.MonePlacedId);
+                predicate = predicate.And(c => c.MoneyPlace == orderFilter.MonePlacedId);
             }
             if (orderFilter.OrderplacedId != null)
             {
-                predicate = predicate.And(c => c.Orderplaced == orderFilter.OrderplacedId);
+                predicate = predicate.And(c => c.OrderPlace == orderFilter.OrderplacedId);
             }
             if (orderFilter.Phone != string.Empty && orderFilter.Phone != null)
             {
@@ -278,7 +278,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var pr1 = PredicateBuilder.New<Order>(true);
                 pr1.And(c => c.IsClientDiliverdMoney == false);
-                pr1.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.Orderplaced));
+                pr1.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.OrderPlace));
                 pr1.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
                 predicate.Or(pr1);
             }
@@ -286,7 +286,7 @@ namespace KokazGoodsTransfer.Services.Concret
             {
                 var pr2 = PredicateBuilder.New<Order>(true);
                 pr2.And(c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash);
-                pr2.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.Orderplaced));
+                pr2.And(c => orderDontFinishFilter.OrderPlacedId.Contains(c.OrderPlace));
                 pr2.And(c => c.ClientId == _contextAccessorService.AuthoticateUserId());
                 predicate.Or(pr2);
             }
@@ -294,9 +294,9 @@ namespace KokazGoodsTransfer.Services.Concret
             var orders = await _repository.GetByFilterInclue(predicate, includes);
             orders.ForEach(o =>
             {
-                if (o.MoneyPlaced == MoneyPalced.WithAgent)
+                if (o.MoneyPlace == MoneyPalced.WithAgent)
                 {
-                    o.MoneyPlaced = MoneyPalced.OutSideCompany;
+                    o.MoneyPlace = MoneyPalced.OutSideCompany;
                 }
             });
             return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
@@ -315,8 +315,8 @@ namespace KokazGoodsTransfer.Services.Concret
                 item.IsSend = true;
             }
             await _repository.Update(orders);
-            var newOrdersCount = await _repository.Count(c => c.IsSend == true && c.Orderplaced == Orderplaced.Client);
-            var newOrdersDontSendCount = await _repository.Count(c => c.IsSend == false && c.Orderplaced == Orderplaced.Client);
+            var newOrdersCount = await _repository.Count(c => c.IsSend == true && c.OrderPlace == OrderPlace.Client);
+            var newOrdersDontSendCount = await _repository.Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
             var adminNotification = new AdminNotification()
             {
                 NewOrdersCount = newOrdersCount,
@@ -459,8 +459,8 @@ namespace KokazGoodsTransfer.Services.Concret
                         ClientNote = item.Note,
                         Cost = item.Cost,
                         Date = dateTime,
-                        MoneyPlaced = MoneyPalced.OutSideCompany,
-                        Orderplaced = Orderplaced.Client,
+                        MoneyPlace = MoneyPalced.OutSideCompany,
+                        OrderPlace = OrderPlace.Client,
                         OrderStateId = (int)OrderStateEnum.Processing,
                         ClientId = _contextAccessorService.AuthoticateUserId(),
                         CreatedBy = _contextAccessorService.AuthoticateUserName(),
@@ -475,7 +475,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _UintOfWork.AddRange(orders);
             await _UintOfWork.Commit();
 
-            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.Orderplaced ==Orderplaced.Client);
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace ==OrderPlace.Client);
             AdminNotification adminNotification = new AdminNotification()
             {
                 NewOrdersDontSendCount = newOrdersDontSendCount

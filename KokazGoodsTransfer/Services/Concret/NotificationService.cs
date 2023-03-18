@@ -35,8 +35,8 @@ namespace KokazGoodsTransfer.Services.Concret
 
         public async Task<AdminNotification> GetAdminNotification()
         {
-            var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.Orderplaced == Orderplaced.Client);
-            var newOrdersDontSendCount = await _orderRepository.Count(c => c.IsSend == false && c.Orderplaced == Orderplaced.Client);
+            var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.OrderPlace == OrderPlace.Client);
+            var newOrdersDontSendCount = await _orderRepository.Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
             var orderRequestEditStateCount = await _orderRepository.Count(c => c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending);
             var newEditRquests = await _editRequestRepository.Count(c => c.Accept == null);
             var newPaymentRequetsCount = await _paymentRequestRepository.Count(c => c.Accept == null);
@@ -58,18 +58,18 @@ namespace KokazGoodsTransfer.Services.Concret
             List<Notfication> detailNotifications = new List<Notfication>();
             foreach (Order order in orders)
             {
-                if (order.OrderStateId != (int)OrderStateEnum.Finished && order.Orderplaced != Orderplaced.Way)
+                if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderPlace != OrderPlace.Way)
                 {
-                    var clientNotigaction = totalNotfications.Where(c => c.ClientId == order.ClientId && (Orderplaced)c.OrderPlacedId == order.Orderplaced && c.MoneyPlacedId == (int)order.MoneyPlaced).FirstOrDefault();
+                    var clientNotigaction = totalNotfications.Where(c => c.ClientId == order.ClientId && (OrderPlace)c.OrderPlacedId == order.OrderPlace && c.MoneyPlacedId == (int)order.MoneyPlace).FirstOrDefault();
                     if (clientNotigaction == null)
                     {
-                        int moenyPlacedId = (int)order.MoneyPlaced;
+                        int moenyPlacedId = (int)order.MoneyPlace;
                         if (moenyPlacedId == (int)MoneyPalced.WithAgent)
                             moenyPlacedId = (int)MoneyPalced.OutSideCompany;
                         clientNotigaction = new Notfication()
                         {
                             ClientId = order.ClientId,
-                            OrderPlacedId = (int)order.Orderplaced,
+                            OrderPlacedId = (int)order.OrderPlace,
                             MoneyPlacedId = moenyPlacedId,
                             IsSeen = false,
                             OrderCount = 1
@@ -82,7 +82,7 @@ namespace KokazGoodsTransfer.Services.Concret
                     }
                 }
                 var moneyPlacedName = order.GetMoneyPlaced().Name;
-                if (order.MoneyPlaced == MoneyPalced.WithAgent)
+                if (order.MoneyPlace == MoneyPalced.WithAgent)
                     moneyPlacedName = outSideCompny;
                 detailNotifications.Add(new Notfication()
                 {

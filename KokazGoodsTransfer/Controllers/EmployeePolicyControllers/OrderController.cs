@@ -218,7 +218,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetNewOrders()
         {
             var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Client)}.{nameof(Client.Country)}", nameof(Order.Region), $"{nameof(Order.Country)}.{nameof(Country.AgentCountries)}.{nameof(AgentCountry.Agent)}", $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}" };
-            var orders = await _orderService.GetAll(c => c.IsSend == true && c.Orderplaced == Orderplaced.Client, includes);
+            var orders = await _orderService.GetAll(c => c.IsSend == true && c.OrderPlace == OrderPlace.Client, includes);
             return Ok(orders);
         }
 
@@ -264,7 +264,7 @@ namespace KokazGoodsTransfer.Controllers.EmployeePolicyControllers
         {
 
             var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country) };
-            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlaced == MoneyPalced.WithAgent) || (c.IsClientDiliverdMoney == true && c.Orderplaced == Orderplaced.Way), includes);
+            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlace == MoneyPalced.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderPlace == OrderPlace.Way), includes);
             return Ok(orders);
         }
 

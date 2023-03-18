@@ -8,8 +8,8 @@ namespace KokazGoodsTransfer.TypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasIndex(c => c.Orderplaced);
-            builder.HasIndex(c => c.MoneyPlaced);
+            builder.HasIndex(c => c.OrderPlace);
+            builder.HasIndex(c => c.MoneyPlace);
 
         }
     }
