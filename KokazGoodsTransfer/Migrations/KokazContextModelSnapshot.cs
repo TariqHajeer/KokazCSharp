@@ -4954,37 +4954,6 @@ namespace KokazGoodsTransfer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("KokazGoodsTransfer.Models.OrderState", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderState");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            State = "قيد المعالجة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            State = "يحب اخذ النقود من العميل"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            State = "منتهية"
-                        });
-                });
-
             modelBuilder.Entity("KokazGoodsTransfer.Models.OrderType", b =>
                 {
                     b.Property<int>("Id")
@@ -5653,7 +5622,7 @@ namespace KokazGoodsTransfer.Migrations
                     b.Property<int>("OrderPlacedId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderStateId")
+                    b.Property<int>("OrderState")
                         .HasColumnType("int");
 
                     b.Property<int>("ReceiptOfTheOrderStatusId")
@@ -5671,7 +5640,7 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.HasIndex("OrderPlacedId");
 
-                    b.HasIndex("OrderStateId");
+                    b.HasIndex("OrderState");
 
                     b.HasIndex("ReceiptOfTheOrderStatusId");
 
@@ -6704,12 +6673,6 @@ namespace KokazGoodsTransfer.Migrations
                         .HasConstraintName("FK__ReceiptOf__Order__5E1FF51F")
                         .IsRequired();
 
-                    b.HasOne("KokazGoodsTransfer.Models.OrderState", "OrderState")
-                        .WithMany("ReceiptOfTheOrderStatusDetalis")
-                        .HasForeignKey("OrderStateId")
-                        .HasConstraintName("FK__ReceiptOf__Order__24E777C3")
-                        .IsRequired();
-
                     b.HasOne("KokazGoodsTransfer.Models.ReceiptOfTheOrderStatus", "ReceiptOfTheOrderStatus")
                         .WithMany("ReceiptOfTheOrderStatusDetalis")
                         .HasForeignKey("ReceiptOfTheOrderStatusId")
@@ -6725,8 +6688,6 @@ namespace KokazGoodsTransfer.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("OrderPlaced");
-
-                    b.Navigation("OrderState");
 
                     b.Navigation("ReceiptOfTheOrderStatus");
                 });
@@ -7027,11 +6988,6 @@ namespace KokazGoodsTransfer.Migrations
 
                     b.Navigation("OrderLogs");
 
-                    b.Navigation("ReceiptOfTheOrderStatusDetalis");
-                });
-
-            modelBuilder.Entity("KokazGoodsTransfer.Models.OrderState", b =>
-                {
                     b.Navigation("ReceiptOfTheOrderStatusDetalis");
                 });
 
