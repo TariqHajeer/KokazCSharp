@@ -31,7 +31,7 @@ namespace KokazGoodsTransfer.Models
                 RecipientPhones = o.RecipientPhones,
                 MoenyPlacedId = (int)o.MoneyPlace,
                 OrderplacedId = (int)o.OrderPlace,
-                OrderStateId = o.OrderStateId,
+                OrderStateId = (int)o.OrderState,
                 Seen = o.Seen,
                 UpdatedBy = o.UpdatedBy ?? o.CreatedBy,
                 UpdatedDate = o.UpdatedDate,

@@ -48,12 +48,12 @@ namespace KokazGoodsTransfer.Services.Concret
                 TotalOrderInSotre = await _orderRepository.Count(c => c.OrderPlace == OrderPlace.Store),
                 TotlaOrder = await _orderRepository.Count(),
                 TotalOrderInWay = await _orderRepository.Count(c => c.OrderPlace == OrderPlace.Way),
-                TotalOrderCountInProcess = await _orderRepository.Count(c => c.OrderStateId == (int)OrderStateEnum.Processing),
+                TotalOrderCountInProcess = await _orderRepository.Count(c => c.OrderState == OrderStateEnum.Processing),
                 TotalMoneyInComapny = 0
             };
             var totalEariningIncome = await _incomeRepository.Sum(c => c.Earining);
             var totalOutCome = await _outComeRepository.Sum(c => c.Amount);
-            var orderInNigative = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.OrderStateId == (int)OrderStateEnum.ShortageOfCash || (c.OrderStateId != (int)OrderStateEnum.Finished && c.IsClientDiliverdMoney == true));
+            var orderInNigative = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.OrderState == OrderStateEnum.ShortageOfCash || (c.OrderState != OrderStateEnum.Finished && c.IsClientDiliverdMoney == true));
             orderInNigative *= -1;
             var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.OrderPlace >= OrderPlace.Delivered && c.OrderPlace < OrderPlace.Delayed && c.MoneyPlace != MoneyPalced.WithAgent);
 
@@ -62,7 +62,7 @@ namespace KokazGoodsTransfer.Services.Concret
 
             var sumClientMone = totalAccount + orderInNigative + orderInPositve;
 
-            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderStateId == (int)OrderStateEnum.Finished && (c.MoneyPlace != MoneyPalced.WithAgent && c.MoneyPlace != MoneyPalced.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
+            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderState == OrderStateEnum.Finished && (c.MoneyPlace != MoneyPalced.WithAgent && c.MoneyPlace != MoneyPalced.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
 
             mainStatics.TotalMoneyInComapny += totalEariningIncome;
             mainStatics.TotalMoneyInComapny -= totalOutCome;
@@ -95,7 +95,7 @@ namespace KokazGoodsTransfer.Services.Concret
             var incomePredicate = PredicateBuilder.New<Income>(true);
             var outComePredicate = PredicateBuilder.New<OutCome>(true);
             var orderPredicate = PredicateBuilder.New<Order>(true);
-            orderPredicate = orderPredicate.And(c => c.OrderStateId == (int)OrderStateEnum.Finished && c.OrderPlace != OrderPlace.CompletelyReturned);
+            orderPredicate = orderPredicate.And(c => c.OrderState == OrderStateEnum.Finished && c.OrderPlace != OrderPlace.CompletelyReturned);
             if (dateFiter.FromDate != null)
             {
                 incomePredicate = incomePredicate.And(c => c.Date >= dateFiter.FromDate);
@@ -161,7 +161,7 @@ namespace KokazGoodsTransfer.Services.Concret
                 OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalced.Delivered),
                 OrderPartialReturned = await Opr(c => c.OrderPlace == OrderPlace.PartialReturned),
                 DelayedOrder = await Opr(c => c.OrderPlace == OrderPlace.Delayed),
-                OrderMoneyInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderStateId == (int)OrderStateEnum.ShortageOfCash)),
+                OrderMoneyInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderStateEnum.ShortageOfCash)),
                 OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable))
 
             };

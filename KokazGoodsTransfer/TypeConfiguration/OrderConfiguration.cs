@@ -10,6 +10,8 @@ namespace KokazGoodsTransfer.TypeConfiguration
         {
             builder.HasIndex(c => c.OrderPlace);
             builder.HasIndex(c => c.MoneyPlace);
+            builder.Property(c => c.OrderState).IsRequired();
+            builder.HasIndex(c => c.OrderState);
 
         }
     }

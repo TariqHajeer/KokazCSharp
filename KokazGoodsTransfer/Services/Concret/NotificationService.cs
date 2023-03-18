@@ -58,7 +58,7 @@ namespace KokazGoodsTransfer.Services.Concret
             List<Notfication> detailNotifications = new List<Notfication>();
             foreach (Order order in orders)
             {
-                if (order.OrderStateId != (int)OrderStateEnum.Finished && order.OrderPlace != OrderPlace.Way)
+                if (order.OrderState != OrderStateEnum.Finished && order.OrderPlace != OrderPlace.Way)
                 {
                     var clientNotigaction = totalNotfications.Where(c => c.ClientId == order.ClientId && (OrderPlace)c.OrderPlacedId == order.OrderPlace && c.MoneyPlacedId == (int)order.MoneyPlace).FirstOrDefault();
                     if (clientNotigaction == null)

@@ -530,11 +530,6 @@ namespace KokazGoodsTransfer.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Country");
 
-                entity.HasOne(d => d.OrderState)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.OrderStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Order_OrderState");
 
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Orders)
