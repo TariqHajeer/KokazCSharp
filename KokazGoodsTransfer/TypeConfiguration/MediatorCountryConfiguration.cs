@@ -46,16 +46,6 @@ namespace KokazGoodsTransfer.TypeConfiguration
                 });
             }
 
-
-            //var data = new List<MediatorCountry>()
-            //{
-            //    new MediatorCountry()
-            //    {
-            //        FromCountryId=bagdadId,
-            //        MediatorCountryId= bagdadId,
-            //        ToCountryId= bagdadId,
-            //    }
-            //};
             builder.HasData(data);
 
         }

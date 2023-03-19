@@ -25,19 +25,17 @@ namespace KokazGoodsTransfer.Services.Concret
     {
         private readonly IRepository<Order> _repository;
         private readonly IRepository<OrderType> _orderTypeRepository;
-        private readonly IRepository<MoenyPlaced> _moneyPlacedRepository;
         private readonly NotificationHub _notificationHub;
         private readonly IHttpContextAccessorService _contextAccessorService;
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IRepository<MoenyPlaced> moneyPlacedRepository, IUintOfWork uintOfWork)
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork)
         {
             _repository = repository;
             _notificationHub = notificationHub;
             _contextAccessorService = contextAccessorService;
             _mapper = mapper;
             _orderTypeRepository = orderTypeRepository;
-            _moneyPlacedRepository = moneyPlacedRepository;
             _UintOfWork = uintOfWork;
         }
 
@@ -475,7 +473,7 @@ namespace KokazGoodsTransfer.Services.Concret
             await _UintOfWork.AddRange(orders);
             await _UintOfWork.Commit();
 
-            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace ==OrderPlace.Client);
+            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
             AdminNotification adminNotification = new AdminNotification()
             {
                 NewOrdersDontSendCount = newOrdersDontSendCount
