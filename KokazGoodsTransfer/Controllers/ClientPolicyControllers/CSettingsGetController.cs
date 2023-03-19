@@ -14,18 +14,14 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
     public class CSettingsGetController : AbstractClientPolicyController
     {
 
-        private readonly IIndexService<MoenyPlaced> _moneyPlacedIndexService;
-        private readonly IIndexService<OrderPlaced> _orderPlacedIndexService;
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRegionCashedService _regionCashedService;
         private readonly IOrderTypeCashService _orderTypeCashService;
-        public CSettingsGetController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IIndexService<MoenyPlaced> moneyPlacedIndexService, IIndexService<OrderPlaced> orderPlacedIndexService, IOrderTypeCashService orderTypeCashService)
+        public CSettingsGetController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService,IOrderTypeCashService orderTypeCashService)
         {
 
             _countryCashedService = countryCashedService;
             _regionCashedService = regionCashedService;
-            _orderPlacedIndexService = orderPlacedIndexService;
-            _moneyPlacedIndexService = moneyPlacedIndexService;
             _orderTypeCashService = orderTypeCashService;
         }
 
@@ -46,9 +42,9 @@ namespace KokazGoodsTransfer.Controllers.ClientPolicyControllers
             return Ok(orderTypes);
         }
         [HttpGet("OrderPlaced")]
-        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetOrderPalce() => Ok(await _orderPlacedIndexService.GetAllLite());
+        public ActionResult<IEnumerable<NameAndIdDto>> GetOrderPalce() => Ok(Models.Static.Consts.OrderPlaceds);
         [HttpGet("MoenyPlaced")]
-        public async Task<ActionResult<IEnumerable<NameAndIdDto>>> GetMoenyPlaced() => Ok(await _moneyPlacedIndexService.GetAllLite());
+        public ActionResult<IEnumerable<NameAndIdDto>> GetMoenyPlaced() => Ok(Models.Static.Consts.MoneyPlaceds);
 
     }
 }

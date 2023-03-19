@@ -46,7 +46,6 @@ namespace KokazGoodsTransfer.Models
         public virtual DbSet<OrderFromExcel> OrderFromExcels { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<OrderLog> OrderLogs { get; set; }
-        public virtual DbSet<OrderPlaced> OrderPlaceds { get; set; }
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<OutCome> OutComes { get; set; }
         public virtual DbSet<OutComeType> OutComeTypes { get; set; }
@@ -638,17 +637,6 @@ namespace KokazGoodsTransfer.Models
                     .WithMany(p => p.OrderLogs)
                     .HasForeignKey(d => d.RegionId)
                     .HasConstraintName("FK_OrderLog_Region");
-            });
-
-            modelBuilder.Entity<OrderPlaced>(entity =>
-            {
-                entity.ToTable("OrderPlaced");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<OrderType>(entity =>

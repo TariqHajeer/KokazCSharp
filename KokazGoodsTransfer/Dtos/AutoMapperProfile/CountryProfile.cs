@@ -80,7 +80,8 @@ namespace KokazGoodsTransfer.Dtos.AutoMapperProfile
             public decimal Resolve(Country source, CountryDto destination, decimal destMember, ResolutionContext context)
             {
                 var currentBranchId = _httpContextAccessorService.CurrentBranchId();
-                var cost = source.BranchToCountryDeliverryCosts.FirstOrDefault(c => c.BranchId == currentBranchId);
+
+                var cost = source.BranchToCountryDeliverryCosts?.FirstOrDefault(c => c.BranchId == currentBranchId);
                 if (cost == null)
                     return 0;
                 return cost.DeliveryCost;
