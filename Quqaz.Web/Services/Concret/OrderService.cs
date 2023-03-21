@@ -55,8 +55,7 @@ namespace Quqaz.Web.Services.Concret
         private readonly IRepository<MediatorCountry> _mediatorCountry;
         private readonly int _currentBranchId;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-        private static readonly Func<Order, bool> _finishOrderExpression = c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable
-|| (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalce.InsideCompany || c.MoneyPlace == MoneyPalce.Delivered));
+        private static readonly Func<Order, bool> _finishOrderPlaceExpression = c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable;
         private readonly string currentUser;
         private readonly int currentUserId;
         public OrderService(IUintOfWork uintOfWork, IOrderRepository repository, INotificationService notificationService,
@@ -98,7 +97,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.CurrentBranchId == _currentBranchId && c.Code == code, c => c.Client, c => c.Agent, c => c.Country);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code &&c.BranchId==_currentBranchId||c.CurrentBranchId==_currentBranchId, c => c.Client, c => c.Agent, c => c.Country);
 
             if (!orders.Any())
             {
@@ -112,12 +111,15 @@ namespace Quqaz.Web.Services.Concret
                 orders = orders.Except(orderInSotre.Union(orderWithClient));
             }
             {
-                var finishOrders = orders.Where(_finishOrderExpression);
-                orders = orders.Except(finishOrders);
+                bool finishOrderExpression(Order c) => (_finishOrderPlaceExpression(c) && c.CurrentBranchId == _currentBranchId) || (c.OrderPlace == OrderPlace.Delivered && (c.MoneyPlace == MoneyPalce.InsideCompany || c.MoneyPlace == MoneyPalce.Delivered));
+                var finishOrders = orders.Where(finishOrderExpression);
+                orders = orders.Except(finishOrders).ToList();
             }
             {
-                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany).ToList();
-                orders = orders.Except(orderInCompany);
+            }
+            {
+                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany&&c.CurrentBranchId ==_currentBranchId).ToList();
+                orders = orders.Except(orderInCompany).ToList();
             }
             if (!orders.Any())
             {
@@ -127,7 +129,10 @@ namespace Quqaz.Web.Services.Concret
                 if (lastOrderAdded.OrderPlace == OrderPlace.Client)
                     throw new ConflictException("الشحنة عند العميل");
                 if (lastOrderAdded.MoneyPlace == MoneyPalce.InsideCompany)
-                    throw new ConflictException("الشحنة داخل الشركة");
+                {
+                    if (lastOrderAdded.CurrentBranchId == _currentBranchId)
+                        throw new ConflictException("الشحنة داخل الشركة");
+                }
             }
             return new GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>(_mapper.Map<OrderDto[]>(orders));
         }
@@ -282,7 +287,7 @@ namespace Quqaz.Web.Services.Concret
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
             var orders = (await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id))).ToList();
-            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentDtos.Any(r => r.EqualToOrder(order))).ToList();
+            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentDtos.Any(r => r.EqualToOrder(order)&&order.CurrentBranchId==_currentBranchId)).ToList();
             orders = orders.Except(repatedOrders).ToList();
             var exptedOrdersIds = repatedOrders.Select(c => c.Id);
             receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !exptedOrdersIds.Contains(c.Id));
@@ -313,6 +318,7 @@ namespace Quqaz.Web.Services.Concret
                 var order = orders.First(c => c.Id == item.Id);
                 logs.Add(order);
                 order.MoneyPlace = item.MoenyPlacedId;
+                order.CurrentBranchId = _currentBranchId;
                 order.OrderPlace = item.OrderplacedId;
                 order.Note = item.Note;
 
@@ -1952,7 +1958,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
         {
-            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && (c.InWayToBranch || (c.OrderPlace > OrderPlace.Way)));
+            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.InWayToBranch);
             var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Country, c => c.Region, c => c.Agent);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -1963,7 +1969,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
-            predicate = predicate.And((c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && (c.InWayToBranch || (c.OrderPlace > OrderPlace.Way))));
+            predicate = predicate.And(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.InWayToBranch);
             var orders = await _repository.GetAsync(predicate);
             orders.ForEach(c =>
             {

@@ -15,8 +15,8 @@ PublishToHerohuBat.bat
 /.vscode
 /Properties/PublishProfiles
 KokazGoodsTransfer/Properties/PublishProfiles/
-/KokazGoodsTransfer/wwwroot/Log.Txt
-/KokazGoodsTransfer/appsettings.Development.json
+/Quqaz.Web/wwwroot/Log.Txt
+/Quqaz.Web/appsettings.Development.json
 /Quqaz.Web/Quqaz.Web.csproj.user
 /Quqaz.Web/obj
 /Quqaz.Web/obj

@@ -66,8 +66,10 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
             public short Resolve(Country source, CountryDto destination, short destMember, ResolutionContext context)
             {
                 var currentBranchId = _httpContextAccessorService.CurrentBranchId();
-
-                return source.BranchToCountryDeliverryCosts.First(c => c.BranchId == currentBranchId).Points;
+                var cost = source.BranchToCountryDeliverryCosts?.FirstOrDefault(c => c.BranchId == currentBranchId);
+                if (cost == null)
+                    return 0;
+                return cost.Points;
             }
         }
         public class DeliveryCostValueResolver : IValueResolver<Country, CountryDto, decimal>

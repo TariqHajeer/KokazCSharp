@@ -20,7 +20,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public override async Task<CountryDto> GetById(int id)
         {
-            var list =await GetCashed();
+            var list = await GetCashed();
             return list.First(c => c.Id == id);
         }
 
