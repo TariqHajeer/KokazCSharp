@@ -97,7 +97,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code &&c.BranchId==_currentBranchId||c.CurrentBranchId==_currentBranchId, c => c.Client, c => c.Agent, c => c.Country);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code && c.BranchId == _currentBranchId || c.CurrentBranchId == _currentBranchId, c => c.Client, c => c.Agent, c => c.Country);
 
             if (!orders.Any())
             {
@@ -118,7 +118,7 @@ namespace Quqaz.Web.Services.Concret
             {
             }
             {
-                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany&&c.CurrentBranchId ==_currentBranchId).ToList();
+                var orderInCompany = orders.Where(c => c.MoneyPlace == MoneyPalce.InsideCompany && c.CurrentBranchId == _currentBranchId).ToList();
                 orders = orders.Except(orderInCompany).ToList();
             }
             if (!orders.Any())
@@ -287,7 +287,7 @@ namespace Quqaz.Web.Services.Concret
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
             var orders = (await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id))).ToList();
-            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentDtos.Any(r => r.EqualToOrder(order)&&order.CurrentBranchId==_currentBranchId)).ToList();
+            var repatedOrders = orders.Where(order => receiptOfTheStatusOfTheDeliveredShipmentDtos.Any(r => r.EqualToOrder(order) && order.CurrentBranchId == _currentBranchId)).ToList();
             orders = orders.Except(repatedOrders).ToList();
             var exptedOrdersIds = repatedOrders.Select(c => c.Id);
             receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !exptedOrdersIds.Contains(c.Id));
@@ -776,7 +776,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch) };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch) };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {

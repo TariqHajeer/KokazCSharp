@@ -96,6 +96,10 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 {
                     return context.Mapper.Map<PrintOrdersDto[]>(obj.AgentOrderPrints.Select(c => c.AgentPrint)).ToList();
                 }))
+                .ForMember(c => c.CurrentBrnach, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return context.Mapper.Map<NameAndIdDto>(obj.CurrentBranch);
+                }))
             .ForMember(c => c.ClientPrint, opt => opt.MapFrom((obj, dto, i, context) =>
             {
                 return context.Mapper.Map<PrintOrdersDto[]>(obj.OrderClientPaymnets.Select(c => c.ClientPayment));
