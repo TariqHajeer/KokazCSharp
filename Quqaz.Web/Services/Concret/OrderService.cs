@@ -26,6 +26,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -2052,6 +2053,18 @@ namespace Quqaz.Web.Services.Concret
             }
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
 
+        }
+
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferWithAgent(PagingDto pagingDto, OrderFilter orderFilter)
+        {
+            var predicate = GetFilterAsLinq(orderFilter);
+            predicate = predicate.And(c => c.OrderPlace == OrderPlace.Store && c.CurrentBranchId == _currentBranchId && c.MoneyPlace == MoneyPalce.OutSideCompany && c.OrderState == OrderState.Processing);
+            var orders = await _repository.GetAsync(pagingDto, predicate);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
+            };
         }
     }
 

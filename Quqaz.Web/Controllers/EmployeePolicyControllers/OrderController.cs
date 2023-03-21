@@ -63,6 +63,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             return Ok(await _orderService.GetInStockToTransferToSecondBranch(selectedOrdersWithFitlerDto));
         }
+        [HttpGet("GetInStockToTransferWithAgent")]
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferWithAgent([FromQuery] PagingDto pagingDto,OrderFilter orderFilter)
+        {
+            return Ok(await _orderService.GetInStockToTransferWithAgent(pagingDto, orderFilter));
+        }
         [HttpGet("WithoutPaging")]
         public async Task<IActionResult> Get([FromQuery] OrderFilter orderFilter)
         {
