@@ -64,7 +64,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetInStockToTransferToSecondBranch(selectedOrdersWithFitlerDto));
         }
         [HttpGet("GetInStockToTransferWithAgent")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferWithAgent([FromQuery] PagingDto pagingDto,OrderFilter orderFilter)
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferWithAgent([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
             return Ok(await _orderService.GetInStockToTransferWithAgent(pagingDto, orderFilter));
         }
@@ -131,7 +131,12 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             string fileName = "نقل إلى الطريق فرع برقم" + id + ".pdf";
             return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
-
+        /// <summary>
+        /// الشحنات القادمة من فرع آخر
+        /// </summary>
+        /// <param name="pagingDto"></param>
+        /// <param name="orderFilter"></param>
+        /// <returns></returns>
         [HttpGet("GetOrdersComeToMyBranch")]
         public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrderComeToBranch([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {

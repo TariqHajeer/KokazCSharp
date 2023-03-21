@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Operations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -98,7 +99,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
         {
-            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code && c.BranchId == _currentBranchId || c.CurrentBranchId == _currentBranchId, c => c.Client, c => c.Agent, c => c.Country);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => c.Code == code && (c.BranchId == _currentBranchId || c.CurrentBranchId == _currentBranchId), c => c.Client, c => c.Agent, c => c.Country);
 
             if (!orders.Any())
             {
@@ -1908,6 +1909,8 @@ namespace Quqaz.Web.Services.Concret
         {
             var ids = receiveOrdersToMyBranchDtos.Select(c => c.OrderId);
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            var agentIds = receiveOrdersToMyBranchDtos.Select(c => c.AgentId);
+            var agents = await _userRepository.GetAsync(c => agentIds.Contains(c.Id));
             receiveOrdersToMyBranchDtos.ForEach(rmb =>
             {
                 var order = orders.First(c => c.Id == rmb.OrderId);
@@ -1918,6 +1921,7 @@ namespace Quqaz.Web.Services.Concret
                     order.DeliveryCost = rmb.DeliveryCost;
                     order.RegionId = rmb.RegionId;
                     order.AgentId = rmb.AgentId;
+                    order.AgentCost = agents.First(c => c.Id == rmb.AgentId).Salary.Value;
                     order.NextBranchId = null;
                 }
                 else
@@ -2059,7 +2063,8 @@ namespace Quqaz.Web.Services.Concret
         {
             var predicate = GetFilterAsLinq(orderFilter);
             predicate = predicate.And(c => c.OrderPlace == OrderPlace.Store && c.CurrentBranchId == _currentBranchId && c.MoneyPlace == MoneyPalce.OutSideCompany && c.OrderState == OrderState.Processing);
-            var orders = await _repository.GetAsync(pagingDto, predicate);
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch) };
+            var orders = await _repository.GetAsync(pagingDto, predicate, includes);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = orders.Total,
