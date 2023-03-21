@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<parameters>
-  <parameter name="IIS Web Application Name" description="" value="goldenwing-001-site2" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\t_w19\\source\\repos\\Shipment\ Transfer\\KokazCSharp\\Quqaz\.Web\\obj\\Release\\netcoreapp3\.1\\PubTmp\\Out\\$" />
-  </parameter>
-</parameters>

@@ -7,6 +7,9 @@ bin
 /.vs
 Export.bat
 export.bat
+"Quqaz.Web"/Quqaz.Web.csproj.user
+"Quqaz.Web"/obj
+"Quqaz.Web"/obj
 KokazGoodsTransfer/obj
 PublishToHerohuBat.bat
 /.vscode
@@ -14,3 +17,12 @@ PublishToHerohuBat.bat
 KokazGoodsTransfer/Properties/PublishProfiles/
 /KokazGoodsTransfer/wwwroot/Log.Txt
 /KokazGoodsTransfer/appsettings.Development.json
+/Quqaz.Web/Quqaz.Web.csproj.user
+/Quqaz.Web/obj
+/Quqaz.Web/obj
+/Quqaz.Web/obj/
+/Quqaz.Web/obj/Debug/
+/Quqaz.Web/obj/Debug/netcoreapp3.1/Quqaz.Web.csproj.FileListAbsolute.txt
+/Quqaz.Web/obj/Debug/netcoreapp3.1/Quqaz.Web.pdb
+/Quqaz.Web/obj/Debug/netcoreapp3.1/Quqaz.Web.dll
+/Quqaz.Web/obj/Debug/netcoreapp3.1/Quqaz.Web.genruntimeconfig.cache
