@@ -1429,7 +1429,10 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task ReSend(OrderReSend orderReSend)
         {
-            var order = await _repository.FirstOrDefualt(c => c.Id == orderReSend.Id);
+            await _uintOfWork.BegeinTransaction();
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == orderReSend.Id);
+            OrderLog log = order;
+            await _uintOfWork.Add(log);
             order.CountryId = orderReSend.CountryId;
             order.RegionId = orderReSend.RegionId;
             order.AgentId = orderReSend.AgnetId;
@@ -1445,7 +1448,11 @@ namespace Quqaz.Web.Services.Concret
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoneyPlace = MoneyPalce.OutSideCompany;
             order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == order.AgentId)).Salary ?? 0;
+            order.SystemNote = "إعادة الإرسال";
+            order.UpdatedBy = _userService.AuthoticateUserName();
+            order.UpdatedDate = DateTime.UtcNow;
             await _repository.Update(order);
+            await _uintOfWork.Commit();
         }
         public async Task<OrderDto> MakeOrderCompletelyReturned(int id)
         {
@@ -1522,14 +1529,24 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task TransferOrderToAnotherAgnet(TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto)
         {
-            var agnet = await _userRepository.GetById(transferOrderToAnotherAgnetDto.NewAgentId);
-            var orders = await _repository.GetAsync(c => transferOrderToAnotherAgnetDto.Ids.Contains(c.Id));
+            await _uintOfWork.BegeinTransaction();
+            var agnet = await _uintOfWork.Repository<User>().GetById(transferOrderToAnotherAgnetDto.NewAgentId);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => transferOrderToAnotherAgnetDto.Ids.Contains(c.Id));
+            var logs = new List<OrderLog>();
+            var user = _userService.AuthoticateUserName();
+            var utc = DateTime.UtcNow;
             orders.ForEach(c =>
             {
+                logs.Add(c);
+                c.SystemNote = "نقل الطلبات إلى مندوب آخر";
+                c.UpdatedBy = user;
+                c.UpdatedDate = utc;
                 c.AgentId = agnet.Id;
                 c.AgentCost = agnet.Salary ?? 0;
             });
-            await _repository.Update(orders);
+            await _uintOfWork.AddRange(logs);
+            await _uintOfWork.UpdateRange(orders);
+            await _uintOfWork.Commit();
         }
         public async Task Edit(UpdateOrder updateOrder)
         {
@@ -1857,13 +1874,16 @@ namespace Quqaz.Web.Services.Concret
         public async Task ReSendMultiple(List<OrderReSend> orderReSends)
         {
             var ordersIds = orderReSends.Select(c => c.Id);
-
-            var orders = await _repository.GetAsync(c => ordersIds.Contains(c.Id));
+            await _uintOfWork.BegeinTransaction();
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ordersIds.Contains(c.Id));
             var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
             var agents = await _userRepository.Select(c => new { c.Id, c.Salary }, c => agentIds.Contains(c.Id));
+            List<OrderLog> logs = new List<OrderLog>();
             foreach (var orderReSend in orderReSends)
             {
                 var order = orders.Single(c => c.Id == orderReSend.Id);
+                OrderLog log = order;
+                logs.Add(log);
                 order.CountryId = orderReSend.CountryId;
                 order.RegionId = orderReSend.RegionId;
                 order.AgentId = orderReSend.AgnetId;
@@ -1878,9 +1898,13 @@ namespace Quqaz.Web.Services.Concret
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
+                order.SystemNote = "إعادة الإرسال";
+                order.UpdatedBy = _userService.AuthoticateUserName();
+                order.UpdatedDate = DateTime.UtcNow;
             }
-            await _repository.Update(orders);
-
+            await _uintOfWork.AddRange(logs);
+            await _uintOfWork.UpdateRange(orders);
+            await _uintOfWork.Commit();
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {

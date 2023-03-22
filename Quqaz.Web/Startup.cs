@@ -26,8 +26,6 @@ namespace Quqaz.Web
 {
     public class Startup
     {
-        // Scaffold-DbContext "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -F
-        //> dotnet ef dbcontext scaffold "Server=.;Database=Kokaz;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models    -F
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
