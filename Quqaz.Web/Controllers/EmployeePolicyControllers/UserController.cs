@@ -19,6 +19,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             _userCashedService = userCashedService;
             _countryCashedService = countryCashedService;
         }
+        [HttpGet("Driver")]
+        public async Task<IActionResult> GetDrivers()
+        {
+            return Ok(await _userCashedService.GetAllDriver());
+        }
         [HttpGet("ActiveAgent")]
         public async Task<IActionResult> GetActiveAgents() => Ok(await _userCashedService.GetCashed());
         [HttpGet]

@@ -13,7 +13,7 @@ namespace Quqaz.Web.Models.TransferToBranchModels
         public int Id { get; set; }
         public int SourceBranchId { get; set; }
         public int DestinationBranchId { get; set; }
-        public string DriverName { get; set; }
+        public int DriverId { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public string PrinterName { get; set; }
 
@@ -21,6 +21,8 @@ namespace Quqaz.Web.Models.TransferToBranchModels
         public virtual Branch SourceBranch { get; set; }
         [ForeignKey(nameof(DestinationBranchId))]
         public virtual Branch DestinationBranch { get; set; }
+        [ForeignKey(nameof(DriverId))]
+        public Driver Driver { get; set; }
         public virtual List<TransferToOtherBranchDetials> TransferToOtherBranchDetials { get; set; }
     }
 }

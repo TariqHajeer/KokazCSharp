@@ -23,13 +23,15 @@ namespace Quqaz.Web.Services.Concret
         private readonly IRepository<UserPhone> _userPhoneRepository;
         private readonly IRepository<UserGroup> _userGroupRepositroy;
         private readonly ICountryCashedService _countryCashedService;
-        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessorService httpContextAccessorService, ICountryCashedService countryCashedService)
+        private readonly IRepository<Driver> _driverRepository;
+        public UserCashedSerivce(IRepository<User> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<UserPhone> userPhoneRepository, IRepository<UserGroup> userGroupRepositroy, Logging logging, IHttpContextAccessorService httpContextAccessorService, ICountryCashedService countryCashedService, IRepository<Driver> driverRepository)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _userPhoneRepository = userPhoneRepository;
             _userGroupRepositroy = userGroupRepositroy;
             _countryCashedService = countryCashedService;
+            _driverRepository = driverRepository;
         }
         public override async Task<ErrorRepsonse<UserDto>> Delete(int id)
         {
@@ -196,6 +198,12 @@ namespace Quqaz.Web.Services.Concret
                 RemoveCash();
             var response = new ErrorRepsonse<UserDto>(_mapper.Map<UserDto>(await GetById(user.Id)));
             return response;
+        }
+
+        public async Task<IEnumerable<NameAndIdDto>> GetAllDriver()
+        {
+            var drivers = await _driverRepository.GetAll();
+            return _mapper.Map<IEnumerable<NameAndIdDto>>(drivers);
         }
     }
 }

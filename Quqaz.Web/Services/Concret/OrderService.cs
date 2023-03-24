@@ -16,8 +16,6 @@ using Quqaz.Web.Models.TransferToBranchModels;
 using Quqaz.Web.Services.Interfaces;
 using LinqKit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,8 +24,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Operations;
-using System.ComponentModel.DataAnnotations;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -55,6 +51,7 @@ namespace Quqaz.Web.Services.Concret
         private readonly IHttpContextAccessorService _httpContextAccessorService;
         private readonly IWebHostEnvironment _environment;
         private readonly IRepository<MediatorCountry> _mediatorCountry;
+        private readonly IRepository<Driver> _driverRepo;
         private readonly int _currentBranchId;
         static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static readonly Func<Order, bool> _finishOrderPlaceExpression = c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable;
@@ -67,7 +64,7 @@ namespace Quqaz.Web.Services.Concret
             ICountryCashedService countryCashedService,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
             IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment, IRepository<TransferToOtherBranchDetials> transferToOtherBranchDetialsRepository
-, IRepository<MediatorCountry> mediatorCountry)
+, IRepository<MediatorCountry> mediatorCountry, IRepository<Driver> driverRepo)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -95,6 +92,7 @@ namespace Quqaz.Web.Services.Concret
             _environment = environment;
             _transferToOtherBranchDetialsRepository = transferToOtherBranchDetialsRepository;
             _mediatorCountry = mediatorCountry;
+            _driverRepo = driverRepo;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -528,10 +526,22 @@ namespace Quqaz.Web.Services.Concret
                 {
                     SourceBranchId = _currentBranchId,
                     DestinationBranchId = destinationBranchId,
-                    DriverName = transferToSecondBranchDto.DriverName,
                     CreatedOnUtc = DateTime.UtcNow,
                     PrinterName = _httpContextAccessorService.AuthoticateUserName()
                 };
+                if (transferToSecondBranchDto.DriverId != null)
+                {
+                    transferToOtherBranch.DriverId = transferToSecondBranchDto.DriverId.Value;
+                }
+                else
+                {
+                    var driver = await _driverRepo.FirstOrDefualt(c => c.Name == transferToSecondBranchDto.DriverName);
+                    driver ??= new Driver()
+                    {
+                        Name = transferToSecondBranchDto.DriverName
+                    };
+                    transferToOtherBranch.Driver = driver;
+                }
                 var transferToOtherBranchDetials = new List<TransferToOtherBranchDetials>();
                 foreach (var item in orders)
                 {
