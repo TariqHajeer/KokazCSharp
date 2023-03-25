@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -25,5 +26,36 @@ namespace Quqaz.Web.Models
         public virtual Receipt Receipt { get; set; }
         public virtual ReceiptOfTheOrderStatus ReceiptOfTheOrderStatus { get; set; }
         public virtual Treasury Treasury { get; set; }
+        [NotMapped]
+        public string Type
+        {
+            get
+            {
+                if (ClientPaymentId != null)
+                    return "تسديد";
+                if (ReceiptOfTheOrderStatusId != null)
+                {
+                    return "استلام شحنة";
+                }
+                if (ReceiptId != null)
+                {
+                    if (Receipt.IsPay)
+                        return "صرف";
+                    return "قبض";
+                }
+                if (IncomeId != null)
+                    return "واردات";
+                if (OutcomeId != null)
+                    return "صادرات";
+                if (CashMovmentId != null)
+                    if (Amount > 0)
+                        return "إعطاء";
+                    else if (Amount < 0)
+                        return "اخذ";
+                    else
+                        return "0";
+                return "غير معلوم";
+            }
+        }
     }
 }

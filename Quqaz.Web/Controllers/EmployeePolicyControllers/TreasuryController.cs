@@ -14,7 +14,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
     public class TreasuryController : AbstractEmployeePolicyController
     {
         private readonly ITreasuryService _treasuryService;
-        public TreasuryController( ITreasuryService treasuryService)
+        public TreasuryController(ITreasuryService treasuryService)
         {
             _treasuryService = treasuryService;
         }
@@ -39,8 +39,8 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetTreasuryHistory(treasuryId, pagingDto));
         }
-        [HttpPatch("GiveMoney/{id}")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromForm] CreateCashMovmentDto createCashMovment)
+        [HttpPost("GiveMoney/{id}")]
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GiveMoney(int id, [FromBody] CreateCashMovmentDto createCashMovment)
         {
             var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
@@ -48,8 +48,8 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             var data = await _treasuryService.IncreaseAmount(id, createCashMovment);
             return Ok(data);
         }
-        [HttpPatch("GetMoney/{id}")]
-        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromForm] CreateCashMovmentDto createCashMovment)
+        [HttpPost("GetMoney/{id}")]
+        public async Task<ActionResult<ErrorRepsonse<TreasuryHistoryDto>>> GetMoney(int id, [FromBody] CreateCashMovmentDto createCashMovment)
         {
             var treasury = await _treasuryService.GetById(id);
             if (treasury == null)
