@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1934,6 +1935,7 @@ namespace Quqaz.Web.Services.Concret
                 if (order.NextBranchId == order.TargetBranchId)
                 {
                     order.DeliveryCost = rmb.DeliveryCost;
+                    order.Cost = rmb.Cost;
                     order.RegionId = rmb.RegionId;
                     order.AgentId = rmb.AgentId;
                     order.AgentCost = agents.First(c => c.Id == rmb.AgentId).Salary.Value;
