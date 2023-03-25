@@ -10,6 +10,7 @@ using Wkhtmltopdf.NetCore;
 using Quqaz.Web.Dtos.OrdersDtos.OrderWithBranchDto;
 using Quqaz.Web.Dtos.OrdersDtos.Queries;
 using Quqaz.Web.Models;
+using Quqaz.Web.Dtos.OrdersDtos.Commands;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -96,9 +97,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetById(id));
         }
         [HttpPut("MakeOrderInWay")]
-        public async Task<ActionResult<GenaricErrorResponse<int, string, string>>> MakeOrderInWay([FromBody] int[] ids)
+        public async Task<ActionResult<int>> MakeOrderInWay([FromBody] MakeOrderInWayDto makeOrderInWayDto)
         {
-            var response = await _orderService.MakeOrderInWay(ids);
+            var response = await _orderService.MakeOrderInWay(makeOrderInWayDto);
             return Ok(response);
         }
         [HttpPut("TransferToSecondBranch")]

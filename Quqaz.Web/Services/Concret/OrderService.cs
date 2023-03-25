@@ -24,6 +24,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Quqaz.Web.Dtos.OrdersDtos.Commands;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -423,10 +424,10 @@ namespace Quqaz.Web.Services.Concret
             var dto = _mapper.Map<ReceiptOfTheOrderStatusDto>(response);
             return new GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>(dto);
         }
-        public async Task<int> MakeOrderInWay(int[] ids)
+        public async Task<int> MakeOrderInWay(MakeOrderInWayDto makeOrderInWayDto)
         {
             var includes = new string[] { $"{nameof(Order.Agent)}.{nameof(User.UserPhones)}", nameof(Order.Client), nameof(Order.Country), nameof(Order.Region) };
-            var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => ids.Contains(c.Id), includes);
+            var orders = await _uintOfWork.Repository<Order>().GetByFilterInclue(c => makeOrderInWayDto.Ids.Contains(c.Id), includes);
             if (orders.Any(c => c.OrderPlace != OrderPlace.Store))
             {
                 var errors = orders.Where(c => c.OrderPlace != OrderPlace.Store).Select(c => $"الشحنة رقم{c.Code} ليست في المخزن");
@@ -440,6 +441,15 @@ namespace Quqaz.Web.Services.Concret
                 DestinationName = agent.Name,
                 DestinationPhone = agent.UserPhones.FirstOrDefault()?.Phone ?? ""
             };
+            if (makeOrderInWayDto.Driver.DriverId != null)
+            {
+                var driver = await _driverRepo.FirstOrDefualt(c => c.Name == makeOrderInWayDto.Driver.DriverName);
+                driver ??= new Driver()
+                {
+                    Name = makeOrderInWayDto.Driver.DriverName,
+                };
+                agnetPrint.Driver = driver;
+            }
             await _uintOfWork.BegeinTransaction();
             var agnetOrderPrints = new List<AgentOrderPrint>();
             var agentPrintsDetials = new List<AgentPrintDetail>();
@@ -529,16 +539,16 @@ namespace Quqaz.Web.Services.Concret
                     CreatedOnUtc = DateTime.UtcNow,
                     PrinterName = _httpContextAccessorService.AuthoticateUserName()
                 };
-                if (transferToSecondBranchDto.DriverId != null)
+                if (transferToSecondBranchDto.Driver.DriverId != null)
                 {
-                    transferToOtherBranch.DriverId = transferToSecondBranchDto.DriverId.Value;
+                    transferToOtherBranch.DriverId = transferToSecondBranchDto.Driver.DriverId.Value;
                 }
                 else
                 {
-                    var driver = await _driverRepo.FirstOrDefualt(c => c.Name == transferToSecondBranchDto.DriverName);
+                    var driver = await _driverRepo.FirstOrDefualt(c => c.Name == transferToSecondBranchDto.Driver.DriverName);
                     driver ??= new Driver()
                     {
-                        Name = transferToSecondBranchDto.DriverName
+                        Name = transferToSecondBranchDto.Driver.DriverName
                     };
                     transferToOtherBranch.Driver = driver;
                 }

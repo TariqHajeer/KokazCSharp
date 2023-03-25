@@ -123,19 +123,21 @@ namespace Quqaz.Web.Services.Concret
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
             var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
 
-            var paidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost - (s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered);
+            var paidOrdersWaitToRecive = await _orderRepository.Sum(c => c.ClientId, s => -(s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState != OrderState.ShortageOfCash);
+            var paidOrdersHaveShortInCash = await _orderRepository.Sum(c => c.ClientId, s => (s.Cost - s.DeliveryCost) - s.ClientPaied ?? 0, c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState == OrderState.ShortageOfCash);
             var nonPaidOrders = await _orderRepository.Sum(c => c.ClientId, s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlace == MoneyPalce.InsideCompany);
 
             List<ClientBlanaceDto> clientBlanaceDtos = new List<ClientBlanaceDto>();
             foreach (var item in clients)
             {
                 var recipeTital = totalAccount.ContainsKey(item.Id) ? totalAccount[item.Id] : 0;
-                var paidOrder = paidOrders.ContainsKey(item.Id) ? paidOrders[item.Id] : 0;
+                var paidOrder = paidOrdersWaitToRecive.ContainsKey(item.Id) ? paidOrdersWaitToRecive[item.Id] : 0;
+                var paidOrderHaveShortInCash = paidOrdersHaveShortInCash.ContainsKey(item.Id) ? paidOrdersHaveShortInCash[item.Id] : 0;
                 var nonPaidOrder = nonPaidOrders.ContainsKey(item.Id) ? nonPaidOrders[item.Id] : 0;
                 clientBlanaceDtos.Add(new ClientBlanaceDto()
                 {
                     ClientName = item.Name,
-                    Amount = recipeTital + paidOrder + nonPaidOrder
+                    Amount = recipeTital + paidOrder + nonPaidOrder + paidOrderHaveShortInCash
                 });
             }
             return clientBlanaceDtos;

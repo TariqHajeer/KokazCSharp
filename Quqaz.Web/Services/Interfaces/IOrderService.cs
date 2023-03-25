@@ -7,8 +7,8 @@ using Quqaz.Web.DAL.Helper;
 using System.Linq.Expressions;
 using System;
 using Quqaz.Web.Dtos.OrdersDtos.OrderWithBranchDto;
-using Quqaz.Web.Models.TransferToBranchModels;
 using Quqaz.Web.Dtos.OrdersDtos.Queries;
+using Quqaz.Web.Dtos.OrdersDtos.Commands;
 
 namespace Quqaz.Web.Services.Interfaces
 {
@@ -24,7 +24,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<CodeStatus>> GetCodeStatuses(int clientId, string[] codes);
         Task<GenaricErrorResponse<ReceiptOfTheOrderStatusDto, string, IEnumerable<string>>> GetReceiptOfTheOrderStatusById(int id);
         Task<PagingResualt<IEnumerable<ReceiptOfTheOrderStatusDto>>> GetReceiptOfTheOrderStatus(PagingDto Paging, string code);
-        Task<int> MakeOrderInWay(int[] ids);
+        Task<int> MakeOrderInWay(MakeOrderInWayDto makeOrderInWayDto);
         Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto);
         Task<string> GetTransferToSecondBranchReportAsString(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);

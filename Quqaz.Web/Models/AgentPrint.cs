@@ -19,7 +19,8 @@ namespace Quqaz.Web.Models
         public DateTime Date { get; set; }
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
-
+        public int? DriverId { get; set; }
+        public Driver Driver { get; set; }
         public virtual ICollection<AgentOrderPrint> AgentOrderPrints { get; set; }
         public virtual ICollection<AgentPrintDetail> AgentPrintDetails { get; set; }
         public int BranchId { get; set; }
