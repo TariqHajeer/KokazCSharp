@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Quqaz.Web.Dtos.OrdersDtos
@@ -22,7 +21,6 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public string Note { get; set; }
         [Required]
         public string[] RecipientPhones { set; get; }
-        public List<OrderItemDto> OrderTypeDtos { get; set; }
     }
     public class OrderItemDto
     {

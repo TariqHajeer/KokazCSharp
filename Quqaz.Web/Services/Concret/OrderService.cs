@@ -788,7 +788,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter)
         {
-            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch) };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch), nameof(Order.NextBranch) };
             var pagingResult = await _repository.GetAsync(pagingDto, GetFilterAsLinq(orderFilter), includes, null);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -957,35 +957,6 @@ namespace Quqaz.Web.Services.Concret
                     order.IsClientDiliverdMoney = false;
                 }
                 await _uintOfWork.Add(order);
-
-                if (createOrdersFromEmployee.OrderTypeDtos != null)
-                {
-
-                    foreach (var item in createOrdersFromEmployee.OrderTypeDtos)
-                    {
-                        int orderId;
-                        if (item.OrderTypeId != null)
-                        {
-                            orderId = (int)item.OrderTypeId;
-                        }
-                        else
-                        {
-                            OrderType orderType = new OrderType()
-                            {
-                                Name = item.OrderTypeName
-                            };
-                            await _uintOfWork.Add(orderType);
-                            orderId = orderType.Id;
-                        }
-                        OrderItem orderItem = new OrderItem()
-                        {
-                            OrderId = order.Id,
-                            Count = item.Count,
-                            OrderTpyeId = orderId
-                        };
-                        await _uintOfWork.Add(orderItem);
-                    }
-                }
 
                 await _uintOfWork.Commit();
             }

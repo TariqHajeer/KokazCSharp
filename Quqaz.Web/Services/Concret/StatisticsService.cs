@@ -75,7 +75,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var agent = await _userRepository.Select(c => c.CanWorkAsAgent == true, c => new User() { Id = c.Id, Name = c.Name });
             var ordersInStore = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderPlace == OrderPlace.Store);
-            var ordersInWay = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.OrderPlace == OrderPlace.Way);
+            var ordersInWay = await _orderRepository.CountGroupBy(c => c.AgentId, c => c.AgentId != null && c.OrderPlace == OrderPlace.Way);
             var userDtos = new List<UserDto>();
             foreach (var item in agent)
             {

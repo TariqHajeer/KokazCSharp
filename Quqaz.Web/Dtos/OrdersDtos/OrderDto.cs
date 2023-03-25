@@ -43,6 +43,8 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
         public NameAndIdDto Orderplaced { get; set; }
+        public string DispalyMoneyPlace { get; set; }
+        public string DispalyOrderplaced { get; set; }
         public UserDto Agent { get; set; }
         public List<ResponseOrderItemDto> OrderItems { get; set; }
         public List<OrderLogDto> OrderLogs { get; set; }

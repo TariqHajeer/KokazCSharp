@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Quqaz.Web.Dtos.Clients;
 using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.Countries;
@@ -6,8 +7,10 @@ using Quqaz.Web.Dtos.OrdersDtos;
 using Quqaz.Web.Dtos.OrdersTypes;
 using Quqaz.Web.Dtos.Regions;
 using Quqaz.Web.Dtos.Users;
+using Quqaz.Web.Helpers.Extensions;
 using Quqaz.Web.Models;
 using Quqaz.Web.Models.Static;
+using Quqaz.Web.Services.Interfaces;
 using System;
 using System.Linq;
 
@@ -72,6 +75,8 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 {
                     return context.Mapper.Map<NameAndIdDto>(order.GetOrderPlaced());
                 }))
+                .ForMember(c => c.DispalyMoneyPlace, opt => opt.MapFrom<DispalyMoneyPlaceValueRsolver>())
+                .ForMember(c => c.DispalyOrderplaced, opt => opt.MapFrom<DisplayOrderPlaceValueResolver>())
                 .ForMember(c => c.Agent, opt => opt.MapFrom((order, dto, i, context) =>
                 {
                     return context.Mapper.Map<UserDto>(order.Agent);
@@ -243,6 +248,49 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 .ForMember(c => c.OrderTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.Cost)))
                 .ForMember(c => c.AgentTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.AgentCost)))
                 .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce == MoneyPalce.Delivered || c.MoneyPalce == MoneyPalce.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
+        }
+        private class DispalyMoneyPlaceValueRsolver : IValueResolver<Order, OrderDto, string>
+        {
+            public string Resolve(Order source, OrderDto destination, string destMember, ResolutionContext context)
+            {
+                if (source.OrderState == OrderState.ShortageOfCash)
+                    return "لديك مبلغ مع العميل";
+                return source.MoneyPlace.GetDescription();
+            }
+        }
+        private class DisplayOrderPlaceValueResolver : IValueResolver<Order, OrderDto, string>
+        {
+            private readonly IHttpContextAccessorService _httpContextAccessorService;
+
+            public DisplayOrderPlaceValueResolver(IHttpContextAccessorService httpContextAccessorService)
+            {
+                _httpContextAccessorService = httpContextAccessorService;
+            }
+
+            public string Resolve(Order source, OrderDto destination, string destMember, ResolutionContext context)
+            {
+                if (source.OrderState == OrderState.ShortageOfCash)
+                    return "لديك مبلغ مع العميل";
+                if (source.OrderPlace == OrderPlace.Way && source.InWayToBranch)
+                {
+                    var currentBranch = _httpContextAccessorService.CurrentBranchId();
+                    if (source.BranchId == currentBranch)
+                    {
+                        if (source.NextBranch != null)
+                        {
+                            return string.Format("في الطريق إلى فرع {0}", source.NextBranch.Name);
+                        }
+                        return "في الطريق إلى فرع";
+                    }
+                    if (source.NextBranchId == currentBranch)
+                    {
+                        if (source.Branch != null)
+                            return string.Format("قادم من فرع {0}", source.Branch.Name);
+                        return "قادم من فرع";
+                    }
+                }
+                return source.OrderPlace.GetDescription();
+            }
         }
     }
 }
