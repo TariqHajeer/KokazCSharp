@@ -25,7 +25,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -496,9 +495,8 @@ namespace Quqaz.Web.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter)
         {
             var predicate = GetFilterAsLinq(orderFilter);
-            var pagingResult = await _repository.GetAsync(pagingDto, predicate);
             predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
-            pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
+            var pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResult.Total,
@@ -670,12 +668,12 @@ namespace Quqaz.Web.Services.Concret
                 Data = dtos
             };
         }
-        ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            if (selectedOrdersWithFitlerDto.SelectedIds?.Any() == true)
+            if (selectedOrdersWithFitlerDto.SelectedItems?.Any() == true)
             {
-                predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
+                predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedItems.Contains(c.Id));
                 return predicate;
             }
             if (selectedOrdersWithFitlerDto.OrderFilter != null)
@@ -1898,7 +1896,7 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.OrderPlace == OrderPlace.Store & c.NextBranchId != null && c.CurrentBranchId == _currentBranchId && c.InWayToBranch == false);
@@ -1920,7 +1918,27 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-
+        public async Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto2 receiveOrdersToMyBranchDto2)
+        {
+            var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto2.OrderFilter);
+            predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
+            var orders = await _repository.GetAsync(predicate);
+            foreach (var item in receiveOrdersToMyBranchDto2.SelectedItems)
+            {
+                var order = orders.First(c => c.Id == item.OrderId);
+                order.AgentId = item.AgentId;
+                order.RegionId = item.RegionId;
+                order.Cost = item.Cost;
+                order.DeliveryCost = item.DeliveryCost;
+            }
+            var defualtOrders = orders.Where(c => !receiveOrdersToMyBranchDto2.SelectedItems.Select(s => s.OrderId).Contains(c.Id));
+            defualtOrders.ForEach(c =>
+            {
+                c.AgentId = receiveOrdersToMyBranchDto2.AgentId;
+                c.RegionId = receiveOrdersToMyBranchDto2.RegionId;
+            });
+            await _repository.Update(orders);
+        }
         public async Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
         {
             var ids = receiveOrdersToMyBranchDtos.Select(c => c.OrderId);
@@ -1961,7 +1979,7 @@ namespace Quqaz.Web.Services.Concret
             };
         }
 
-        public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
@@ -1988,7 +2006,7 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResualt.Data)
             };
         }
-        public async Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.InWayToBranch);
@@ -2033,7 +2051,7 @@ namespace Quqaz.Web.Services.Concret
             };
         }
 
-        public async Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.IsReturnedByBranch == true && c.CurrentBranchId == _currentBranchId);

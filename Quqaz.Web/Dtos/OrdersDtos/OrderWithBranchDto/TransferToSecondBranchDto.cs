@@ -4,7 +4,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos.OrderWithBranchDto
 {
     public class TransferToSecondBranchDto
     {
-        public SelectedOrdersWithFitlerDto SelectedOrdersWithFitlerDto { get; set; }
+        public SelectedOrdersWithFitlerDto<int> SelectedOrdersWithFitlerDto { get; set; }
         public DriverDto Driver { get; set; }
     }
 }

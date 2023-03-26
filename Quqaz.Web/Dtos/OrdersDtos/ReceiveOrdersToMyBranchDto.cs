@@ -8,4 +8,9 @@
         public decimal Cost { get; set; }
         public decimal DeliveryCost { get; set; }
     }
+    public class ReceiveOrdersToMyBranchDto2:SelectedOrdersWithFitlerDto<ReceiveOrdersToMyBranchDto>
+    {
+        public int? AgentId { get; set; }
+        public int? RegionId { get; set; }
+    }
 }

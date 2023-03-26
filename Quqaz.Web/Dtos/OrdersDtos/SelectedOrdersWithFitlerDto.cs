@@ -2,11 +2,11 @@
 
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
-    public class SelectedOrdersWithFitlerDto
+    public class SelectedOrdersWithFitlerDto<T>
     {
         public OrderFilter OrderFilter { get; set; }
         public bool IsSelectedAll { get; set; }
-        public int[] SelectedIds { get; set; }
+        public T[] SelectedItems { get; set; }
         public int[] ExceptIds { get; set; }
         public PagingDto Paging { get; set; }
     }

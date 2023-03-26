@@ -65,18 +65,18 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<string>> GetCreatedByNames();
         Task<IEnumerable<OrderDto>> GetForReSendMultiple(string code);
         Task ReSendMultiple(List<OrderReSend> orderReSends);
-        Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter);
         Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos);
         Task DisApproveOrderComeToMyBranch(int id);
-        Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);
-        Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>> GetPrintsTransferToSecondBranch(PagingDto pagingDto, int destinationBranchId);
         Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto pagingDto, int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto);
-        Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
+        Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task DisApproveReturnedToMyBranch(int id);
         Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode);
     }
