@@ -166,9 +166,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("ReceiveOrdersToMyBranch")]
-        public async Task<IActionResult> ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
+        public async Task<IActionResult> ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto receiveOrdersToMyBranch)
         {
-            await _orderService.ReceiveOrdersToMyBranch(receiveOrdersToMyBranchDtos);
+            await _orderService.ReceiveOrdersToMyBranch(receiveOrdersToMyBranch);
             return Ok();
         }
         [HttpPut("DisApproveOrderComeToMyBranch")]

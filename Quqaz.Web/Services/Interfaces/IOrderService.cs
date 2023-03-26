@@ -67,7 +67,8 @@ namespace Quqaz.Web.Services.Interfaces
         Task ReSendMultiple(List<OrderReSend> orderReSends);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersComeToMyBranch(PagingDto pagingDto, OrderFilter orderFilter);
-        Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos);
+        Task ReceiveOrdersToMyBranch(IEnumerable<SetOrdersToMyBranchDto> receiveOrdersToMyBranchDtos);
+        Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto receiveOrdersToMyBranchDto);
         Task DisApproveOrderComeToMyBranch(int id);
         Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto);

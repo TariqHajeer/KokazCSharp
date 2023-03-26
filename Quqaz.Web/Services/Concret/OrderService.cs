@@ -671,9 +671,9 @@ namespace Quqaz.Web.Services.Concret
         ExpressionStarter<Order> GetFilterAsLinq(SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            if (selectedOrdersWithFitlerDto.SelectedItems?.Any() == true)
+            if (selectedOrdersWithFitlerDto.SelectedIds?.Any() == true)
             {
-                predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedItems.Contains(c.Id));
+                predicate = predicate.And(c => selectedOrdersWithFitlerDto.SelectedIds.Contains(c.Id));
                 return predicate;
             }
             if (selectedOrdersWithFitlerDto.OrderFilter != null)
@@ -1918,12 +1918,12 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-        public async Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto2 receiveOrdersToMyBranchDto2)
+        public async Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto receiveOrdersToMyBranchDto)
         {
-            var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto2.OrderFilter);
+            var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto.OrderFilter);
             predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
             var orders = await _repository.GetAsync(predicate);
-            foreach (var item in receiveOrdersToMyBranchDto2.SelectedItems)
+            foreach (var item in receiveOrdersToMyBranchDto.SelectedIds)
             {
                 var order = orders.First(c => c.Id == item.OrderId);
                 order.AgentId = item.AgentId;
@@ -1931,15 +1931,15 @@ namespace Quqaz.Web.Services.Concret
                 order.Cost = item.Cost;
                 order.DeliveryCost = item.DeliveryCost;
             }
-            var defualtOrders = orders.Where(c => !receiveOrdersToMyBranchDto2.SelectedItems.Select(s => s.OrderId).Contains(c.Id));
+            var defualtOrders = orders.Where(c => !receiveOrdersToMyBranchDto.SelectedIds.Select(s => s.OrderId).Contains(c.Id));
             defualtOrders.ForEach(c =>
             {
-                c.AgentId = receiveOrdersToMyBranchDto2.AgentId;
-                c.RegionId = receiveOrdersToMyBranchDto2.RegionId;
+                c.AgentId = receiveOrdersToMyBranchDto.AgentId;
+                c.RegionId = receiveOrdersToMyBranchDto.RegionId;
             });
             await _repository.Update(orders);
         }
-        public async Task ReceiveOrdersToMyBranch(IEnumerable<ReceiveOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
+        public async Task ReceiveOrdersToMyBranch(IEnumerable<SetOrdersToMyBranchDto> receiveOrdersToMyBranchDtos)
         {
             var ids = receiveOrdersToMyBranchDtos.Select(c => c.OrderId);
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
