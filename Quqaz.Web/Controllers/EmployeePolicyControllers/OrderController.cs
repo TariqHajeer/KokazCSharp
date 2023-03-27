@@ -60,7 +60,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 
         }
         [HttpPost("GetInStockToTransferToSecondBranch")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch([FromBody] SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetInStockToTransferToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             return Ok(await _orderService.GetInStockToTransferToSecondBranch(selectedOrdersWithFitlerDto));
         }
@@ -154,7 +154,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetOrdersReturnedToMyBranch(pagingDto));
         }
         [HttpPatch("ReceiveReturnedToMyBranch")]
-        public async Task<ActionResult> ReceiveReturnedToMyBranch([FromForm] SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
+        public async Task<ActionResult> ReceiveReturnedToMyBranch([FromForm] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             await _orderService.ReceiveReturnedToMyBranch(selectedOrdersWithFitlerDto);
             return Ok();
@@ -183,13 +183,13 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetDisApprovedOrdersReturnedByBranch(pagingDto));
         }
         [HttpPost("SetDisApproveOrdersReturnByBranchInStore")]
-        public async Task<IActionResult> SetDisApproveOrdersReturnByBranchInStore([FromBody] SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
+        public async Task<IActionResult> SetDisApproveOrdersReturnByBranchInStore([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             await _orderService.SetDisApproveOrdersReturnByBranchInStore(selectedOrdersWithFitlerDto);
             return Ok();
         }
         [HttpPut("SendOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] SelectedOrdersWithFitlerDto<int> selectedOrdersWithFitlerDto)
+        public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
             await _orderService.SendOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto);
             return Ok();
