@@ -11,6 +11,7 @@ using Quqaz.Web.Dtos.OrdersDtos.OrderWithBranchDto;
 using Quqaz.Web.Dtos.OrdersDtos.Queries;
 using Quqaz.Web.Models;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
+using System;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -34,7 +35,26 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             var result = await _orderService.GetOrderFiltered(pagingDto, orderFilter);
             return Ok(new { data = result.Data, total = result.Total });
         }
-
+        [HttpGet("TestCreateMultile")]
+        public async Task<IActionResult> TestCreateMultile([FromQuery] int startCode)
+        {
+            var c = new List<CreateMultipleOrder>();
+            for (int i = startCode; i < startCode + 30; i++)
+            {
+                c.Add(new CreateMultipleOrder()
+                {
+                    ClientId = 1,
+                    Code = i.ToString(),
+                    CountryId = 8,
+                    RecipientPhones = "65465465465",
+                    Cost = 9000,
+                    DeliveryCost = 5000,
+                    Date= DateTime.UtcNow
+                });
+            }
+            await _orderService.CreateOrders(c);
+            return Ok();
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {

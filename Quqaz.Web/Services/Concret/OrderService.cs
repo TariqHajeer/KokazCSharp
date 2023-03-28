@@ -624,7 +624,7 @@ namespace Quqaz.Web.Services.Concret
             var predicate = PredicateBuilder.New<TransferToOtherBranch>(true);
             predicate = predicate.And(c => c.DestinationBranchId == destinationBranchId);
             predicate = predicate.And(c => c.SourceBranchId == _currentBranchId);
-            var includes = new string[] { nameof(TransferToOtherBranch.DestinationBranch) };
+            var includes = new string[] { nameof(TransferToOtherBranch.DestinationBranch), nameof(TransferToOtherBranch.Driver) };
             var data = await _transferToOtherBranchRepository.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(t => t.Id));
             return new PagingResualt<IEnumerable<TransferToSecondBranchReportDto>>()
             {
@@ -2027,7 +2027,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>> GetPrintTransferToSecondBranchDetials(PagingDto paging, int id)
         {
-            var data = await _transferToOtherBranchDetialsRepository.GetAsync(paging, c => c.Id == id);
+            var data = await _transferToOtherBranchDetialsRepository.GetAsync(paging, c => c.TransferToOtherBranchId == id);
             return new PagingResualt<IEnumerable<TransferToSecondBranchDetialsReportDto>>()
             {
                 Total = data.Total,
