@@ -1923,20 +1923,41 @@ namespace Quqaz.Web.Services.Concret
             var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto.OrderFilter);
             predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
             var orders = await _repository.GetAsync(predicate);
-            foreach (var item in receiveOrdersToMyBranchDto.CustomOrderAgent)
+            var agentsIds = receiveOrdersToMyBranchDto.CustomOrderAgent.Select(c => c.AgentId);
+            if (receiveOrdersToMyBranchDto.AgentId.HasValue)
+                agentsIds = agentsIds.Append(receiveOrdersToMyBranchDto.AgentId.Value);
+            var agents = await _userRepository.GetAsync(c => agentsIds.Contains(c.Id));
+
+            foreach (var order in orders)
             {
-                var order = orders.First(c => c.Id == item.OrderId);
-                order.AgentId = item.AgentId;
-                order.RegionId = item.RegionId;
-                order.Cost = item.Cost;
-                order.DeliveryCost = item.DeliveryCost;
+                order.CurrentBranchId = _currentBranchId;
+                order.InWayToBranch = false;
+                order.OrderPlace = OrderPlace.Store;
+                if (order.NextBranchId != order.TargetBranchId)
+                {
+                    order.NextBranchId = order.TargetBranchId;
+                }
+                else
+                {
+                    var customValues = receiveOrdersToMyBranchDto.CustomOrderAgent.FirstOrDefault(c => c.OrderId == order.Id);
+                    if (customValues != null)
+                    {
+                        order.DeliveryCost = customValues.DeliveryCost;
+                        order.Cost = customValues.Cost;
+                        order.AgentId = customValues.AgentId;
+                        order.RegionId = customValues.RegionId;
+                    }
+                    else
+                    {
+                        order.RegionId = receiveOrdersToMyBranchDto.RegionId;
+                        order.AgentId = receiveOrdersToMyBranchDto.AgentId;
+
+                    }
+
+                    order.AgentCost = agents.First(c => c.Id == order.AgentId).Salary.Value;
+                    order.NextBranchId = null;
+                }
             }
-            var defualtOrders = orders.Where(c => !receiveOrdersToMyBranchDto.CustomOrderAgent.Select(s => s.OrderId).Contains(c.Id));
-            defualtOrders.ForEach(c =>
-            {
-                c.AgentId = receiveOrdersToMyBranchDto.AgentId;
-                c.RegionId = receiveOrdersToMyBranchDto.RegionId;
-            });
             await _repository.Update(orders);
         }
         public async Task ReceiveOrdersToMyBranch(IEnumerable<SetOrderAgentToMyBranchDto> receiveOrdersToMyBranchDtos)

@@ -35,6 +35,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             var result = await _orderService.GetOrderFiltered(pagingDto, orderFilter);
             return Ok(new { data = result.Data, total = result.Total });
         }
+#if DEBUG
         [HttpGet("TestCreateMultile")]
         public async Task<IActionResult> TestCreateMultile([FromQuery] int startCode)
         {
@@ -49,12 +50,13 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
                     RecipientPhones = "65465465465",
                     Cost = 9000,
                     DeliveryCost = 5000,
-                    Date= DateTime.UtcNow
+                    Date = DateTime.UtcNow
                 });
             }
             await _orderService.CreateOrders(c);
             return Ok();
         }
+#endif
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {
