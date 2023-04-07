@@ -53,14 +53,15 @@ namespace Quqaz.Web.Services.Concret
             };
             var totalEariningIncome = await _incomeRepository.Sum(c => c.Earining);
             var totalOutCome = await _outComeRepository.Sum(c => c.Amount);
-            var orderInNigative = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.OrderState == OrderState.ShortageOfCash || (c.OrderState != OrderState.Finished && c.IsClientDiliverdMoney == true));
-            orderInNigative *= -1;
-            var orderInPositve = await _orderRepository.Sum(c => c.Cost - c.AgentCost, c => c.IsClientDiliverdMoney == false && c.OrderPlace >= OrderPlace.Delivered && c.OrderPlace < OrderPlace.Delayed && c.MoneyPlace != MoneyPalce.WithAgent);
 
+            
+            var paidOrdersWaitToRecive = await _orderRepository.Sum(s => -(s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState != OrderState.ShortageOfCash);
+            var nonPaidOrders = await _orderRepository.Sum(s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlace == MoneyPalce.InsideCompany);
 
             var totalAccount = await _receiptRepository.Sum(c => c.Amount, c => c.ClientPaymentId == null);
 
-            var sumClientMone = totalAccount + orderInNigative + orderInPositve;
+            var paidOrdersHaveShortInCash = await _orderRepository.Sum(s => (s.Cost - s.DeliveryCost) - s.ClientPaied ?? 0, c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState == OrderState.ShortageOfCash);
+            var sumClientMone = totalAccount + paidOrdersWaitToRecive + nonPaidOrders+paidOrdersHaveShortInCash;
 
             var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderState == OrderState.Finished && (c.MoneyPlace != MoneyPalce.WithAgent && c.MoneyPlace != MoneyPalce.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
 
