@@ -224,7 +224,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpGet("PrintSendOrdersReturnedToSecondBranchReport/{id}")]
         public async Task<IActionResult> PrintSendOrdersReturnedToSecondBranchReport(int id)
         {
-            var txt = await _orderService.GetTransferToSecondBranchReportAsString(id);
+            var txt = await _orderService.GetSendOrdersReturnedToSecondBranchReportAsString(id);
             _generatePdf.SetConvertOptions(new ConvertOptions()
             {
                 PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,

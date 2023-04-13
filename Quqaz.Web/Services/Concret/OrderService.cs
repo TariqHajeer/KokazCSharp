@@ -2007,7 +2007,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var predicate = GetFilterAsLinq(returnOrderToMainBranchDto);
             predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
-            var orders = await _repository.GetAsync(predicate,c=>c.Country,c=>c.Client);
+            var orders = await _repository.GetAsync(predicate, c => c.Country, c => c.Client);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
                 throw new ConflictException("الشحنة ليست في فرعك");
             if (orders.Any(c => !c.IsOrderReturn()))
@@ -2064,9 +2064,48 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<string> GetSendOrdersReturnedToSecondBranchReportAsString(int id)
         {
-            var report = await _sendOrdersReturnedToMainBranchReportRepository.FirstOrDefualt(c => c.Id == id, c => c.Driver, c => c.SendOrdersReturnedToMainBranchDetalis, c => c.MainBranch, c => c.Branch);
+            var path = _environment.WebRootPath + "/HtmlTemplate/SendOrdersReturnedToSecondBranchReport.html";
+            var readTextTask = File.ReadAllTextAsync(path);
 
-            throw new NotImplementedException();
+            var report = await _sendOrdersReturnedToMainBranchReportRepository.FirstOrDefualt(c => c.Id == id, c => c.Driver, c => c.SendOrdersReturnedToMainBranchDetalis, c => c.MainBranch, c => c.Branch);
+            var readText = await readTextTask;
+
+            readText = readText.Replace("{{printNumber}}", report.Id.ToString());
+            readText = readText.Replace("{{userName}}", report.PrinterName);
+            readText = readText.Replace("{{dateOfPrint}}", report.CreatedOnUtc.ToString("yyyy-MM-dd"));
+            readText = readText.Replace("{{timeOfPrint}}", report.CreatedOnUtc.ToString("HH:mm"));
+            readText = readText.Replace("{{fromBranch}}", report.Branch.Name);
+            readText = readText.Replace("{{toBranch}}", report.MainBranch.Name);
+            readText = readText.Replace("{{DriverName}}", report.Driver.Name);
+            var c = 1;
+            var rows = new StringBuilder();
+            foreach (var item in report.SendOrdersReturnedToMainBranchDetalis)
+            {
+
+                rows.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
+                rows.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(c.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.OrderCode);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.CountryName);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.ClientName);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.DeliveryCost);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Note);
+                rows.Append("</td>");
+                rows.Append("</tr>");
+                c++;
+            }
+            readText = readText.Replace("{orders}", rows.ToString());
+            return readText;
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
         {
