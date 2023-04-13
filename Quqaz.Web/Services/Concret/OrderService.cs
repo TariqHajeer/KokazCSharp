@@ -33,6 +33,7 @@ namespace Quqaz.Web.Services.Concret
     {
         private readonly IOrderRepository _repository;
         private readonly IUintOfWork _uintOfWork;
+        private readonly IRepository<SendOrdersReturnedToMainBranchReport> _sendOrdersReturnedToMainBranchReportRepository;
         private readonly INotificationService _notificationService;
         private readonly ITreasuryService _treasuryService;
         private readonly IUserService _userService;
@@ -66,7 +67,7 @@ namespace Quqaz.Web.Services.Concret
             ICountryCashedService countryCashedService,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
             IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment, IRepository<TransferToOtherBranchDetials> transferToOtherBranchDetialsRepository
-, IRepository<MediatorCountry> mediatorCountry, IRepository<Driver> driverRepo)
+, IRepository<MediatorCountry> mediatorCountry, IRepository<Driver> driverRepo, IRepository<SendOrdersReturnedToMainBranchReport> sendOrdersReturnedToMainBranchReportRepository)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -95,6 +96,7 @@ namespace Quqaz.Web.Services.Concret
             _transferToOtherBranchDetialsRepository = transferToOtherBranchDetialsRepository;
             _mediatorCountry = mediatorCountry;
             _driverRepo = driverRepo;
+            _sendOrdersReturnedToMainBranchReportRepository = sendOrdersReturnedToMainBranchReportRepository;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -2005,7 +2007,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var predicate = GetFilterAsLinq(returnOrderToMainBranchDto);
             predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
-            var orders = await _repository.GetAsync(predicate);
+            var orders = await _repository.GetAsync(predicate,c=>c.Country,c=>c.Client);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
                 throw new ConflictException("الشحنة ليست في فرعك");
             if (orders.Any(c => !c.IsOrderReturn()))
@@ -2062,7 +2064,8 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<string> GetSendOrdersReturnedToSecondBranchReportAsString(int id)
         {
-            //var report = await _
+            var report = await _sendOrdersReturnedToMainBranchReportRepository.FirstOrDefualt(c => c.Id == id, c => c.Driver, c => c.SendOrdersReturnedToMainBranchDetalis, c => c.MainBranch, c => c.Branch);
+
             throw new NotImplementedException();
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
