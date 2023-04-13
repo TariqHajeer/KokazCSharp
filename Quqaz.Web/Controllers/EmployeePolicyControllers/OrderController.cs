@@ -166,10 +166,15 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetOrdersComeToMyBranch(pagingDto, orderFilter));
         }
         [HttpGet("GetOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> GetOrdersReturnedToSecondBranch([FromQuery] PagingDto pagingDto, [FromQuery] int destinationBranchId)
+        public async Task<IActionResult> GetOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
-            return Ok(await _orderService.GetOrdersReturnedToSecondBranch(pagingDto, destinationBranchId));
+            return Ok(await _orderService.GetOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto));
         }
+        //[HttpGet("GetOrdersReturnedToSecondBranch")]
+        //public async Task<IActionResult> GetOrdersReturnedToSecondBranch([FromQuery] PagingDto pagingDto, [FromQuery] int destinationBranchId)
+        //{
+        //    return Ok(await _orderService.GetOrdersReturnedToSecondBranch(pagingDto, destinationBranchId));
+        //}
         [HttpGet("GetOrdersReturnedToMyBranch")]
         public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrdersReturnedToMyBranch([FromQuery] PagingDto pagingDto)
         {
@@ -210,11 +215,26 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             await _orderService.SetDisApproveOrdersReturnByBranchInStore(selectedOrdersWithFitlerDto);
             return Ok();
         }
+
         [HttpPut("SendOrdersReturnedToSecondBranch")]
-        public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<IActionResult> SendOrdersReturnedToSecondBranch([FromBody] ReturnOrderToMainBranchDto returnOrderToMainBranchDto)
         {
-            await _orderService.SendOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto);
-            return Ok();
+            return Ok(await _orderService.SendOrdersReturnedToSecondBranch(returnOrderToMainBranchDto));
+        }
+        [HttpGet("PrintSendOrdersReturnedToSecondBranchReport/{id}")]
+        public async Task<IActionResult> PrintSendOrdersReturnedToSecondBranchReport(int id)
+        {
+            var txt = await _orderService.GetTransferToSecondBranchReportAsString(id);
+            _generatePdf.SetConvertOptions(new ConvertOptions()
+            {
+                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
+
+                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
+
+            });
+            var pdfBytes = _generatePdf.GetPDF(txt);
+            string fileName = "إعادة الطلبات المترجعة برقم" + id + ".pdf";
+            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)

@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
+using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -296,9 +297,9 @@ namespace Quqaz.Web.Services.Concret
             {
                 return new ErrorResponse<string, IEnumerable<string>>();
             }
-            if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.CompletelyReturned || c.OrderplacedId == OrderPlace.Unacceptable || c.OrderplacedId == OrderPlace.Unacceptable))
+            if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.All(c => c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.CompletelyReturned || c.OrderplacedId == OrderPlace.Unacceptable || c.OrderplacedId == OrderPlace.Delayed))
             {
-                var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.CompletelyReturned || c.OrderplacedId == OrderPlace.Unacceptable || c.OrderplacedId == OrderPlace.Unacceptable));
+                var wrongData = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !(c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.CompletelyReturned || c.OrderplacedId == OrderPlace.Unacceptable || c.OrderplacedId == OrderPlace.Delayed)).ToList();
                 var worngDataIds = wrongData.Select(c => c.Id);
                 var worngOrders = await _uintOfWork.Repository<Order>().GetAsync(c => worngDataIds.Contains(c.Id));
                 List<string> errors = new List<string>();
@@ -1907,17 +1908,6 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
             };
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferToSecondBranch(PagingDto pagingDto, OrderFilter filter)
-        {
-            var predicate = GetFilterAsLinq(filter);
-            predicate = predicate.And(c => c.OrderPlace == OrderPlace.Store & c.NextBranchId != null && c.CurrentBranchId == _currentBranchId && c.BranchId == _currentBranchId && c.InWayToBranch == false);
-            var pagingResult = await _repository.GetAsync(pagingDto, predicate, c => c.Country, c => c.Client);
-            return new PagingResualt<IEnumerable<OrderDto>>()
-            {
-                Total = pagingResult.Total,
-                Data = _mapper.Map<IEnumerable<OrderDto>>(pagingResult.Data)
-            };
-        }
         public async Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto receiveOrdersToMyBranchDto)
         {
             var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto.OrderFilter);
@@ -1989,6 +1979,17 @@ namespace Quqaz.Web.Services.Concret
             await _repository.Update(orders);
         }
 
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        {
+            var predicate = this.GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
+            var data = await _repository.GetAsync(selectedOrdersWithFitlerDto.Paging, predicate, c => c.Client, c => c.Country);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = data.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data)
+            };
+        }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.BranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
@@ -2000,9 +2001,9 @@ namespace Quqaz.Web.Services.Concret
             };
         }
 
-        public async Task SendOrdersReturnedToSecondBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
+        public async Task<int> SendOrdersReturnedToSecondBranch(ReturnOrderToMainBranchDto returnOrderToMainBranchDto)
         {
-            var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
+            var predicate = GetFilterAsLinq(returnOrderToMainBranchDto);
             predicate = predicate.And(c => c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
             var orders = await _repository.GetAsync(predicate);
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
@@ -2011,11 +2012,58 @@ namespace Quqaz.Web.Services.Concret
                 throw new ConflictException("الشحنة ليست مرتجعة");
             if (orders.Any(c => !c.IsOrderInMyStore()))
                 throw new ConflictException("الشحنة ليست في المخزن");
+            var mainBranchId = orders.First().BranchId;
+            if (orders.Any(c => c.BranchId != mainBranchId))
+            {
+                throw new ConflictException("ليست جميع الشحنات مرتجعة إلى نفس الفرع");
+            }
             orders.ForEach(c =>
             {
                 c.InWayToBranch = true;
             });
-            await _repository.Update(orders);
+            var report = new SendOrdersReturnedToMainBranchReport()
+            {
+                BranchId = _currentBranchId,
+                PrinterName = _httpContextAccessorService.AuthoticateUserName(),
+                MainBranchId = mainBranchId,
+                CreatedOnUtc = DateTime.UtcNow,
+                CreatedBy = _httpContextAccessorService.AuthoticateUserName(),
+            };
+            if (returnOrderToMainBranchDto.Driver.DriverId.HasValue)
+            {
+                report.DriverId = returnOrderToMainBranchDto.Driver.DriverId.Value;
+            }
+            else
+            {
+                var driver = await _driverRepo.FirstOrDefualt(c => c.Name == returnOrderToMainBranchDto.Driver.DriverName);
+                driver ??= new Driver()
+                {
+                    Name = returnOrderToMainBranchDto.Driver.DriverName
+                };
+                report.Driver = driver;
+            }
+            orders.ForEach(c =>
+            {
+                report.SendOrdersReturnedToMainBranchDetalis.Add(new SendOrdersReturnedToMainBranchDetali()
+                {
+                    OrderCode = c.Code,
+                    ClientName = c.Client.Name,
+                    CountryName = c.Country.Name,
+                    DeliveryCost = c.DeliveryCost,
+                    Note = c.Note
+                });
+            });
+            await _uintOfWork.BegeinTransaction();
+            await _uintOfWork.UpdateRange(orders);
+            await _uintOfWork.Add(report);
+            await _uintOfWork.Commit();
+            return report.Id;
+        }
+
+        public async Task<string> GetSendOrdersReturnedToSecondBranchReportAsString(int id)
+        {
+            var report = await _
+            throw new NotImplementedException();
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
         {
@@ -2127,6 +2175,7 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
             };
         }
+
     }
 
 
