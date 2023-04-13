@@ -10,7 +10,7 @@ using Quqaz.Web.Models;
 namespace Quqaz.Web.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20230412233857_Add-Send-Orders-Returned-To-Main-Branch-Report")]
+    [Migration("20230413012404_Add-Send-Orders-Returned-To-Main-Branch-Report")]
     partial class AddSendOrdersReturnedToMainBranchReport
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -6653,7 +6653,7 @@ namespace Quqaz.Web.Migrations
                     b.HasOne("Quqaz.Web.Models.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Quqaz.Web.Models.Driver", "Driver")

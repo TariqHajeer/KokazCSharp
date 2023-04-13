@@ -6651,7 +6651,7 @@ namespace Quqaz.Web.Migrations
                     b.HasOne("Quqaz.Web.Models.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Quqaz.Web.Models.Driver", "Driver")

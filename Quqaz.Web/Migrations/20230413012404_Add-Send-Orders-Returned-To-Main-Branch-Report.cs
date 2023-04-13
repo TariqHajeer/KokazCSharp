@@ -28,7 +28,7 @@ namespace Quqaz.Web.Migrations
                         column: x => x.BranchId,
                         principalTable: "Branches",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SendOrdersReturnedToMainBranchReports_Branches_MainBranchId",
                         column: x => x.MainBranchId,
