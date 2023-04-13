@@ -2062,7 +2062,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<string> GetSendOrdersReturnedToSecondBranchReportAsString(int id)
         {
-            var report = await _
+            //var report = await _
             throw new NotImplementedException();
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
