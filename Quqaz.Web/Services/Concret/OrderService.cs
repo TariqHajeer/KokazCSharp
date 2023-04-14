@@ -1992,16 +1992,6 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data)
             };
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToSecondBranch(PagingDto paging, int destinationBranchId)
-        {
-            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == destinationBranchId && c.CurrentBranchId == _currentBranchId && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.InsideCompany && c.InWayToBranch == false);
-            var data = await _repository.GetAsync(paging, predicate, c => c.Client, c => c.Country);
-            return new PagingResualt<IEnumerable<OrderDto>>()
-            {
-                Total = data.Total,
-                Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data)
-            };
-        }
 
         public async Task<int> SendOrdersReturnedToSecondBranch(ReturnOrderToMainBranchDto returnOrderToMainBranchDto)
         {
@@ -2107,9 +2097,9 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{orders}", rows.ToString());
             return readText;
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto, int sourceBranchId)
         {
-            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.InWayToBranch);
+            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId == sourceBranchId && c.InWayToBranch);
             var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Country, c => c.Region, c => c.Agent);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
@@ -2119,6 +2109,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task ReceiveReturnedToMyBranch(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)
         {
+
             var predicate = GetFilterAsLinq(selectedOrdersWithFitlerDto);
             predicate = predicate.And(c => c.BranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.InWayToBranch);
             var orders = await _repository.GetAsync(predicate);
