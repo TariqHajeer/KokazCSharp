@@ -171,9 +171,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(await _orderService.GetOrdersReturnedToSecondBranch(selectedOrdersWithFitlerDto));
         }
         [HttpGet("GetOrdersReturnedToMyBranch")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrdersReturnedToMyBranch([FromQuery] PagingDto pagingDto, [FromQuery] int sourceBranchId)
+        public async Task<ActionResult<PagingResualt<IEnumerable<OrderDto>>>> GetOrdersReturnedToMyBranch([FromQuery] PagingDto pagingDto, [FromQuery] int currentBranchId)
         {
-            return Ok(await _orderService.GetOrdersReturnedToMyBranch(pagingDto, sourceBranchId));
+            return Ok(await _orderService.GetOrdersReturnedToMyBranch(pagingDto, currentBranchId));
         }
         [HttpPatch("ReceiveReturnedToMyBranch")]
         public async Task<ActionResult> ReceiveReturnedToMyBranch([FromForm] SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto)

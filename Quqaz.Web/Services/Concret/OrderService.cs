@@ -2097,9 +2097,9 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{orders}", rows.ToString());
             return readText;
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto, int sourceBranchId)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetOrdersReturnedToMyBranch(PagingDto pagingDto, int currentBranchId)
         {
-            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId == sourceBranchId && c.InWayToBranch);
+            var predicate = PredicateBuilder.New<Order>(c => c.BranchId == _currentBranchId && c.CurrentBranchId == currentBranchId && c.InWayToBranch);
             var pagingResualt = await _repository.GetAsync(pagingDto, predicate, c => c.Client, c => c.Country, c => c.Region, c => c.Agent);
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
