@@ -9,6 +9,5 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public OrderPlace[] OrderPlacedId { get; set; }
         public bool IsClientDeleviredMoney { get; set; }
         public bool ClientDoNotDeleviredMoney { get; set; }
-        public PagingDto Paging { get; set; }
     }
 }

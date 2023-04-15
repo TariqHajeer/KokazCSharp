@@ -13,7 +13,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Interfaces
     public interface IOrderRepository : IRepository<Order>
     {
         Task<PagingResualt<IEnumerable<Order>>> Get(PagingDto paging, OrderFilter filter, string[] propertySelectors = null);
-        Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter);
+        Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter,PagingDto pagingDto);
         Task<IEnumerable<Order>> OrderAtClient(OrderFilter orderFilter);
         Task<Order> GetByIdIncludeAllForEmployee(int id);
         Task<IEnumerable<string>> GetCreatedByNames();

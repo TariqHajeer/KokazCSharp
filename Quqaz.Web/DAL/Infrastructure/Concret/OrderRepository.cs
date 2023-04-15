@@ -246,7 +246,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             return await orderIQ.ToListAsync();
         }
 
-        public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
@@ -269,8 +269,8 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             //   .ThenInclude(c => c.ClientPayment)
             //   .Include(c => c.AgentOrderPrints)
             //   .ThenInclude(c => c.AgentPrint);
-            var total =await query.CountAsync();
-            var data =await query.Skip(( orderDontFinishedFilter.Paging.Page - 1) * orderDontFinishedFilter.Paging.RowCount).Take(orderDontFinishedFilter.Paging.RowCount).ToListAsync();
+            var total = await query.CountAsync();
+            var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return new PagingResualt<IEnumerable<Order>>()
             {
                 Total = total,

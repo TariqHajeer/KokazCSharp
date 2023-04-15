@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1087,8 +1088,22 @@ namespace Quqaz.Web.Services.Concret
             semaphore.Release();
             return clientPayment.Id;
         }
-        public async Task<int> DeleiverMoneyForClient()
+        public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2)
         {
+            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
+            var predicate = PredicateBuilder.New<Order>(true);
+            if (deleiverMoneyForClientDto2.SelectedIds?.Any() == true)
+            {
+                predicate = predicate.And(c => deleiverMoneyForClientDto2.SelectedIds.Contains(c.Id));
+            }
+            else
+            {
+                predicate = predicate.And(c => c.ClientId == deleiverMoneyForClientDto2.Filter.ClientId);
+                if (deleiverMoneyForClientDto2.IsSelectedAll)
+                {
+
+                }
+            }
             return 0;
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
@@ -1247,7 +1262,7 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter,PagingDto pagingDto)
         {
             var result = await _repository.OrdersDontFinished(orderDontFinishedFilter);
             return new PagingResualt<IEnumerable<PayForClientDto>>()

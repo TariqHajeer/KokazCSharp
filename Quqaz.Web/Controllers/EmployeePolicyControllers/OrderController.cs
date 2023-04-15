@@ -247,7 +247,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         /// <param name="orderDontFinishedFilter"></param>
         /// <returns></returns>
         [HttpGet("OrdersDontFinished")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<PayForClientDto>>>> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<ActionResult<PagingResualt<IEnumerable<PayForClientDto>>>> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter, [FromQuery] PagingDto pagingDto)
         {
             return Ok(await _orderService.OrdersDontFinished(orderDontFinishedFilter));
         }
