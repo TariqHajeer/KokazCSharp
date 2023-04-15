@@ -249,7 +249,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpGet("OrdersDontFinished")]
         public async Task<ActionResult<PagingResualt<IEnumerable<PayForClientDto>>>> Get([FromQuery] OrderDontFinishedFilter orderDontFinishedFilter, [FromQuery] PagingDto pagingDto)
         {
-            return Ok(await _orderService.OrdersDontFinished(orderDontFinishedFilter,pagingDto));
+            return Ok(await _orderService.OrdersDontFinished(orderDontFinishedFilter, pagingDto));
         }
         [HttpGet("chekcCode")]
         public async Task<ActionResult<bool>> CheckCode([FromQuery] string code, int clientid)
@@ -392,12 +392,19 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
+        /// 
         [HttpPut("DeleiverMoneyForClient")]
-        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto2 deleiverMoneyForClientDto)
         {
             var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
-            return Ok(new { printNumber = id });
+            return Ok(id);
         }
+        //[HttpPut("DeleiverMoneyForClient")]
+        //public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
+        //{
+        //    var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
+        //    return Ok(new { printNumber = id });
+        //}
         /// <summary>
         /// تسديد الشركات
         /// </summary>
