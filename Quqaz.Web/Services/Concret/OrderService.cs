@@ -1208,7 +1208,7 @@ namespace Quqaz.Web.Services.Concret
             if (deleiverMoneyForClientDto2.PointsSettingId != null)
             {
 
-                var pointSetting = await _uintOfWork.Repository<PointsSetting>().FirstOrDefualt(c => c.Id == deleiverMoneyForClientDto.PointsSettingId);
+                var pointSetting = await _uintOfWork.Repository<PointsSetting>().FirstOrDefualt(c => c.Id == deleiverMoneyForClientDto2.PointsSettingId);
                 Discount discount = new Discount()
                 {
                     Money = pointSetting.Money,
