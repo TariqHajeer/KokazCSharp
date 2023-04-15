@@ -36,7 +36,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
         Task<OrderDto> GetById(int id);
-        Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter);
+        Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter);
         Task<IEnumerable<OrderDto>> NewOrderDontSned();
         Task<IEnumerable<OrderDto>> OrderAtClient(OrderFilter orderFilter);
         Task<PayForClientDto> GetByCodeAndClient(int clientId, string code);

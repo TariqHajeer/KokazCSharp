@@ -1087,6 +1087,10 @@ namespace Quqaz.Web.Services.Concret
             semaphore.Release();
             return clientPayment.Id;
         }
+        public async Task<int> DeleiverMoneyForClient()
+        {
+            return 0;
+        }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
         {
             var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
@@ -1243,10 +1247,14 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            var orders = await _repository.OrdersDontFinished(orderDontFinishedFilter);
-            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+            var result = await _repository.OrdersDontFinished(orderDontFinishedFilter);
+            return new PagingResualt<IEnumerable<PayForClientDto>>()
+            {
+                Total = result.Total,
+                Data = _mapper.Map<IEnumerable<PayForClientDto>>(result.Data)
+            };
         }
 
         public async Task<IEnumerable<OrderDto>> NewOrderDontSned()
@@ -1912,7 +1920,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task ReceiveOrdersToMyBranch(ReceiveOrdersToMyBranchDto receiveOrdersToMyBranchDto)
         {
-            var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto.OrderFilter);
+            var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto);
             predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
             var orders = await _repository.GetAsync(predicate);
             var agentsIds = receiveOrdersToMyBranchDto.CustomOrderAgent.Select(c => c.AgentId);

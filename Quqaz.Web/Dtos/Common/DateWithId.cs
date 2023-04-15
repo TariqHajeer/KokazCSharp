@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Quqaz.Web.Dtos.Common
 {
@@ -14,5 +11,9 @@ namespace Quqaz.Web.Dtos.Common
     {
         public int[] Ids { get; set; }
         public int? PointsSettingId { get; set; }
+    }
+    public class DeleiverMoneyForClientDto2
+    {
+
     }
 }

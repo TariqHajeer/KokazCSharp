@@ -1,4 +1,5 @@
-﻿using Quqaz.Web.Models.Static;
+﻿using Quqaz.Web.Dtos.Common;
+using Quqaz.Web.Models.Static;
 
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
@@ -8,5 +9,6 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public OrderPlace[] OrderPlacedId { get; set; }
         public bool IsClientDeleviredMoney { get; set; }
         public bool ClientDoNotDeleviredMoney { get; set; }
+        public PagingDto Paging { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.NetworkInformation;
 
 namespace Quqaz.Web.DAL.Infrastructure.Concret
 {
@@ -245,40 +246,36 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             return await orderIQ.ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            List<Order> orders = new List<Order>();
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
-            if (orderDontFinishedFilter.ClientDoNotDeleviredMoney)
+            if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
             {
-                var list = await Query.Where(predicate.And(c => c.IsClientDiliverdMoney == false))
-                   .Include(c => c.Region)
-                   .Include(c => c.Country)
-                   .Include(c => c.Agent)
-                   .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.AgentOrderPrints)
-                   .ThenInclude(c => c.AgentPrint)
-                   .ToListAsync();
-                orders.AddRange(list);
+                predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
             }
-
-            if (orderDontFinishedFilter.IsClientDeleviredMoney)
+            else if (!orderDontFinishedFilter.ClientDoNotDeleviredMoney && orderDontFinishedFilter.IsClientDeleviredMoney)
             {
-
-                var list = await Query.Where(predicate.And(c => c.OrderState == OrderState.ShortageOfCash))
-               .Include(c => c.Region)
-               .Include(c => c.Country)
-               .Include(c => c.Agent)
-               .Include(c => c.OrderClientPaymnets)
-                   .ThenInclude(c => c.ClientPayment)
-                   .Include(c => c.AgentOrderPrints)
-                   .ThenInclude(c => c.AgentPrint)
-               .ToListAsync();
-                orders.AddRange(list);
-
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash);
             }
-            return orders;
+            else if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
+            }
+            var query = Query.Where(predicate);
+            //.Include(c => c.Region)
+            //   .Include(c => c.Country)
+            //   .Include(c => c.Agent)
+            //   .Include(c => c.OrderClientPaymnets)
+            //   .ThenInclude(c => c.ClientPayment)
+            //   .Include(c => c.AgentOrderPrints)
+            //   .ThenInclude(c => c.AgentPrint);
+            var total =await query.CountAsync();
+            var data =await query.Skip(( orderDontFinishedFilter.Paging.Page - 1) * orderDontFinishedFilter.Paging.RowCount).Take(orderDontFinishedFilter.Paging.RowCount).ToListAsync();
+            return new PagingResualt<IEnumerable<Order>>()
+            {
+                Total = total,
+                Data = data
+            };
         }
     }
 }
