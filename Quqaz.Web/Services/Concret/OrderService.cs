@@ -1262,9 +1262,9 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter,PagingDto pagingDto)
+        public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
-            var result = await _repository.OrdersDontFinished(orderDontFinishedFilter);
+            var result = await _repository.OrdersDontFinished(orderDontFinishedFilter, pagingDto);
             return new PagingResualt<IEnumerable<PayForClientDto>>()
             {
                 Total = result.Total,
