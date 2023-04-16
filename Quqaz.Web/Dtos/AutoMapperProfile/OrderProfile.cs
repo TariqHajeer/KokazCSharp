@@ -248,6 +248,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 .ForMember(c => c.OrderTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.Cost)))
                 .ForMember(c => c.AgentTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.AgentCost)))
                 .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce == MoneyPalce.Delivered || c.MoneyPalce == MoneyPalce.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
+            CreateMap<Order, ClientPaymentDto>();
         }
         private class DispalyMoneyPlaceValueRsolver : IValueResolver<Order, OrderDto, string>
         {

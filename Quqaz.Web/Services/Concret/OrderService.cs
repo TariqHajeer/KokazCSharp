@@ -1087,6 +1087,37 @@ namespace Quqaz.Web.Services.Concret
             semaphore.Release();
             return clientPayment.Id;
         }
+        public async Task<IEnumerable<PayForClientDto>> GetDeleiverMoneyForClientForPrint(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2, PagingDto pagingDto)
+        {
+            var includes = new string[] { $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == deleiverMoneyForClientDto2.Filter.ClientId && deleiverMoneyForClientDto2.Filter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
+            if (deleiverMoneyForClientDto2.SelectedIds?.Any() == true)
+            {
+                predicate = predicate.And(c => deleiverMoneyForClientDto2.SelectedIds.Contains(c.Id));
+            }
+            else if (deleiverMoneyForClientDto2.IsSelectedAll)
+            {
+                if (deleiverMoneyForClientDto2.Filter.ClientDoNotDeleviredMoney && !deleiverMoneyForClientDto2.Filter.IsClientDeleviredMoney)
+                {
+                    predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
+                }
+                else if (!deleiverMoneyForClientDto2.Filter.ClientDoNotDeleviredMoney && deleiverMoneyForClientDto2.Filter.IsClientDeleviredMoney)
+                {
+                    predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash);
+                }
+                else if (deleiverMoneyForClientDto2.Filter.ClientDoNotDeleviredMoney && deleiverMoneyForClientDto2.Filter.IsClientDeleviredMoney)
+                {
+                    predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
+                }
+                if (deleiverMoneyForClientDto2.ExceptIds?.Any() == true)
+                {
+                    predicate = predicate.And(c => !deleiverMoneyForClientDto2.ExceptIds.Contains(c.Id));
+                }
+            }
+            var orders = await _repository.GetAsync(pagingDto, predicate, includes);
+            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+
+        }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2)
         {
             var includes = new string[] { $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };

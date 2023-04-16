@@ -1,4 +1,5 @@
-﻿using Quqaz.Web.Dtos.OrdersDtos;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Quqaz.Web.Dtos.OrdersDtos;
 using System;
 
 namespace Quqaz.Web.Dtos.Common
@@ -20,5 +21,11 @@ namespace Quqaz.Web.Dtos.Common
         public int[] SelectedIds { get; set; }
         public int[] ExceptIds { get; set; }
         public int? PointsSettingId { get; set; }
+    }
+    public class DeleiverMoneyForClientDtoResponse
+    {
+        public decimal TotlaDeliveyCost { get; set; }
+        public decimal TotlaOrderCost { get; set; }
+
     }
 }

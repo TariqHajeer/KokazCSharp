@@ -261,14 +261,25 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             {
                 predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
             }
+            if (orderDontFinishedFilter.TableSelection != null)
+            {
+                if (orderDontFinishedFilter.TableSelection.IsSelectedAll)
+                {
+                    if (orderDontFinishedFilter.TableSelection.ExceptIds?.Any() == true)
+                    {
+                        predicate = predicate.And(c => !orderDontFinishedFilter.TableSelection.ExceptIds.Contains(c.Id));
+                    }
+                }
+                else
+                {
+                    if (orderDontFinishedFilter.TableSelection.SelectedIds?.Any() == true)
+                    {
+                        predicate = predicate.And(c => orderDontFinishedFilter.TableSelection.SelectedIds.Contains(c.Id));
+                    }
+
+                }
+            }
             var query = Query.Where(predicate);
-            //.Include(c => c.Region)
-            //   .Include(c => c.Country)
-            //   .Include(c => c.Agent)
-            //   .Include(c => c.OrderClientPaymnets)
-            //   .ThenInclude(c => c.ClientPayment)
-            //   .Include(c => c.AgentOrderPrints)
-            //   .ThenInclude(c => c.AgentPrint);
             var total = await query.CountAsync();
             var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return new PagingResualt<IEnumerable<Order>>()
