@@ -1122,11 +1122,11 @@ namespace Quqaz.Web.Services.Concret
         {
             var includes = new string[] { $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == deleiverMoneyForClientDto2.Filter.ClientId && deleiverMoneyForClientDto2.Filter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
-            if (deleiverMoneyForClientDto2.SelectedIds?.Any() == true)
+            if (deleiverMoneyForClientDto2.Filter.TableSelection.SelectedIds?.Any() == true)
             {
-                predicate = predicate.And(c => deleiverMoneyForClientDto2.SelectedIds.Contains(c.Id));
+                predicate = predicate.And(c => deleiverMoneyForClientDto2.Filter.TableSelection.SelectedIds.Contains(c.Id));
             }
-            else if (deleiverMoneyForClientDto2.IsSelectedAll)
+            else if (deleiverMoneyForClientDto2.Filter.TableSelection.IsSelectedAll)
             {
                 if (deleiverMoneyForClientDto2.Filter.ClientDoNotDeleviredMoney && !deleiverMoneyForClientDto2.Filter.IsClientDeleviredMoney)
                 {
@@ -1140,9 +1140,9 @@ namespace Quqaz.Web.Services.Concret
                 {
                     predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
                 }
-                if (deleiverMoneyForClientDto2.ExceptIds?.Any() == true)
+                if (deleiverMoneyForClientDto2.Filter.TableSelection.ExceptIds?.Any() == true)
                 {
-                    predicate = predicate.And(c => !deleiverMoneyForClientDto2.ExceptIds.Contains(c.Id));
+                    predicate = predicate.And(c => !deleiverMoneyForClientDto2.Filter.TableSelection.ExceptIds.Contains(c.Id));
                 }
             }
             var orders = await _repository.GetByFilterInclue(predicate, includes);

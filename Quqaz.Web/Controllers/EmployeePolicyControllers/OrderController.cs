@@ -399,12 +399,6 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
             return Ok(id);
         }
-        //[HttpPut("DeleiverMoneyForClient")]
-        //public async Task<IActionResult> DeleiverMoneyForClient([FromBody] DeleiverMoneyForClientDto deleiverMoneyForClientDto)
-        //{
-        //    var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
-        //    return Ok(new { printNumber = id });
-        //}
         /// <summary>
         /// تسديد الشركات
         /// </summary>
