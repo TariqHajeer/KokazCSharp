@@ -1268,7 +1268,7 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.Update(treasury);
             await _uintOfWork.Add(history);
             await _uintOfWork.Commit();
-            semaphore.Release();
+           //semaphore.Release();
             return clientPayment.Id;
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
