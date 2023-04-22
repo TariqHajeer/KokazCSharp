@@ -249,6 +249,25 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
         public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
+            if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+            {
+                var orderFilterExcpt = orderDontFinishedFilter.OrderPlacedId.Except(new[] { OrderPlace.CompletelyReturned, OrderPlace.Unacceptable, OrderPlace.PartialReturned });
+                predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderFilterExcpt.Contains(c.OrderPlace) && c.AgentId != null);
+                var orderPlacePredicate = PredicateBuilder.New<Order>(false);
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.Unacceptable && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.PartialReturned && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                predicate = predicate.Or(orderPlacePredicate);
+            }
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
             {
                 predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
