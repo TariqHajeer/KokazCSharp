@@ -45,8 +45,8 @@ namespace Quqaz.Web.Services.Interfaces
         Task ReiveMoneyFromClient(int[] ids);
         Task<EarningsDto> GetEarnings(PagingDto pagingDto, DateFiter dateFiter);
         Task<IEnumerable<OrderDto>> GetAsync(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
-        Task Accept(IdsDto idsDto);
-        Task AcceptMultiple(IEnumerable<IdsDto> idsDtos);
+        Task Accept(OrderIdAndAgentId idsDto);
+        Task AcceptMultiple(IEnumerable<OrderIdAndAgentId> idsDtos);
         Task DisAccept(DateWithId<int> dateWithId);
         Task DisAcceptMultiple(DateWithId<List<int>> dateWithIds);
         Task ReSend(OrderReSend orderReSend);
@@ -82,6 +82,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto);
         Task SetDisApproveOrdersReturnByBranchInStore(SelectedOrdersWithFitlerDto selectedOrdersWithFitlerDto);
         Task DisApproveReturnedToMyBranch(int id);
+        Task DisApproveReturnedToMyBranch(OrderIdAndNote orderIdAndNote);
         Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode);
     }
 }

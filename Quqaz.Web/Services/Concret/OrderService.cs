@@ -1268,7 +1268,7 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.Update(treasury);
             await _uintOfWork.Add(history);
             await _uintOfWork.Commit();
-           //semaphore.Release();
+            //semaphore.Release();
             return clientPayment.Id;
         }
         public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
@@ -1506,7 +1506,7 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
-        public async Task Accept(IdsDto idsDto)
+        public async Task Accept(OrderIdAndAgentId idsDto)
         {
             var order = await _repository.GetById(idsDto.OrderId);
             if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
@@ -1520,7 +1520,7 @@ namespace Quqaz.Web.Services.Concret
             await _repository.Update(order);
         }
 
-        public async Task AcceptMultiple(IEnumerable<IdsDto> idsDtos)
+        public async Task AcceptMultiple(IEnumerable<OrderIdAndAgentId> idsDtos)
         {
             //get data 
             var orders = await _repository.GetAsync(c => idsDtos.Select(dto => dto.OrderId).Contains(c.Id));
@@ -1610,8 +1610,12 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task ReSend(OrderReSend orderReSend)
         {
-            await _uintOfWork.BegeinTransaction();
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == orderReSend.Id);
+            if (order.CurrentBranchId != _currentBranchId)
+            {
+                throw new ConflictException("الشحنة ليست في مخزنك");
+            }
+            await _uintOfWork.BegeinTransaction();
             OrderLog log = order;
             await _uintOfWork.Add(log);
             order.CountryId = orderReSend.CountryId;
@@ -2048,15 +2052,19 @@ namespace Quqaz.Web.Services.Concret
         {
 
             var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Country), nameof(Order.Region) };
-            var orders = await _repository.GetAsync(c => c.Code == code && c.OrderPlace != OrderPlace.Delivered && c.OrderPlace != OrderPlace.PartialReturned && c.OrderPlace != OrderPlace.Client, c => c.Client, c => c.Agent, c => c.Region, c => c.Country);
+            var orders = await _repository.GetAsync(c => c.CurrentBranchId == _currentBranchId && c.Code == code && c.OrderPlace != OrderPlace.Delivered && c.OrderPlace != OrderPlace.PartialReturned && c.OrderPlace != OrderPlace.Client, c => c.Client, c => c.Agent, c => c.Region, c => c.Country);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         public async Task ReSendMultiple(List<OrderReSend> orderReSends)
         {
             var ordersIds = orderReSends.Select(c => c.Id);
-            await _uintOfWork.BegeinTransaction();
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ordersIds.Contains(c.Id));
+            if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
+            {
+                throw new ConflictException("الشحنة ليست في مخزنك");
+            }
+            await _uintOfWork.BegeinTransaction();
             var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
             var agents = await _userRepository.Select(c => new { c.Id, c.Salary }, c => agentIds.Contains(c.Id));
             List<OrderLog> logs = new List<OrderLog>();
@@ -2307,6 +2315,13 @@ namespace Quqaz.Web.Services.Concret
                 c.InWayToBranch = false;
             });
             await _repository.Update(orders);
+        }
+        public async Task DisApproveReturnedToMyBranch(OrderIdAndNote orderIdAndNote)
+        {
+            var order = await _repository.GetById(orderIdAndNote.OrderId);
+            order.InWayToBranch = false;
+            order.Note = order.Note;
+            await _repository.Update(order);
         }
         public async Task DisApproveReturnedToMyBranch(int id)
         {

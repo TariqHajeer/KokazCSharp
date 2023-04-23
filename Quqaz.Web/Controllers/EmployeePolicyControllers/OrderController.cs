@@ -182,9 +182,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpPut("DisApproveReturnedToMyBranch")]
-        public async Task<ActionResult> DisApproveReturnedToMyBranch([FromBody] int id)
+        public async Task<ActionResult> DisApproveReturnedToMyBranch([FromBody] OrderIdAndNote orderIdAndNote)
         {
-            await _orderService.DisApproveReturnedToMyBranch(id);
+            await _orderService.DisApproveReturnedToMyBranch(orderIdAndNote);
             return Ok();
         }
         [HttpPut("ReceiveOrdersToMyBranch")]
@@ -317,13 +317,13 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         }
 
         [HttpPut("Accept")]
-        public async Task<IActionResult> Accept([FromBody] IdsDto idsDto)
+        public async Task<IActionResult> Accept([FromBody] OrderIdAndAgentId idsDto)
         {
             await _orderService.Accept(idsDto);
             return Ok();
         }
         [HttpPut("Acceptmultiple")]
-        public async Task<IActionResult> AcceptMultiple([FromBody] List<IdsDto> idsDto)
+        public async Task<IActionResult> AcceptMultiple([FromBody] List<OrderIdAndAgentId> idsDto)
         {
             await _orderService.AcceptMultiple(idsDto);
             return Ok();
