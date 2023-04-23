@@ -2110,17 +2110,22 @@ namespace Quqaz.Web.Services.Concret
         {
             var predicate = GetFilterAsLinq(receiveOrdersToMyBranchDto);
             predicate = predicate.And(c => c.NextBranchId == _currentBranchId && c.CurrentBranchId != _currentBranchId && c.OrderPlace == OrderPlace.Way && c.InWayToBranch && !c.IsReturnedByBranch);
-            var orders = await _repository.GetAsync(predicate);
+            var orders = await _uintOfWork.Repository<Order>().GetAsync(predicate);
+            List<OrderLog> logs = new List<OrderLog>();
+            logs.AddRange(orders.Select(c => (OrderLog)c));
             var agentsIds = receiveOrdersToMyBranchDto.CustomOrderAgent.Select(c => c.AgentId);
             if (receiveOrdersToMyBranchDto.AgentId.HasValue)
                 agentsIds = agentsIds.Append(receiveOrdersToMyBranchDto.AgentId.Value);
             var agents = await _userRepository.GetAsync(c => agentsIds.Contains(c.Id));
-
+            await _uintOfWork.BegeinTransaction();
             foreach (var order in orders)
             {
                 order.CurrentBranchId = _currentBranchId;
                 order.InWayToBranch = false;
                 order.OrderPlace = OrderPlace.Store;
+                order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
+                order.SystemNote = "استقبال الشحنات لفرع";
+                order.UpdatedDate = DateTime.UtcNow;  
                 if (order.NextBranchId != order.TargetBranchId)
                 {
                     order.NextBranchId = order.TargetBranchId;
@@ -2146,7 +2151,9 @@ namespace Quqaz.Web.Services.Concret
                     order.NextBranchId = null;
                 }
             }
-            await _repository.Update(orders);
+            await _uintOfWork.Update(orders);
+            await _uintOfWork.AddRange(logs);
+            await _uintOfWork.Commit();
         }
         public async Task ReceiveOrdersToMyBranch(IEnumerable<SetOrderAgentToMyBranchDto> receiveOrdersToMyBranchDtos)
         {
