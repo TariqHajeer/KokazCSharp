@@ -2327,7 +2327,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var order = await _repository.GetById(orderIdAndNote.OrderId);
             order.InWayToBranch = false;
-            order.Note = order.Note;
+            order.Note = orderIdAndNote.Note;
             await _repository.Update(order);
         }
         public async Task DisApproveReturnedToMyBranch(int id)
