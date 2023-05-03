@@ -174,6 +174,11 @@ namespace Quqaz.Web.Services.Concret
             {
                 return new ErrorResponse<string, IEnumerable<string>>();
             }
+            var OrderNotInWay = orders.Where(c => c.OrderPlace != OrderPlace.Way);
+            if (OrderNotInWay.Any())
+            {
+                throw new ConflictException("هناك شحنات ليست مع المندوب");
+            }
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var item in receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
             {
@@ -342,6 +347,8 @@ namespace Quqaz.Web.Services.Concret
                                 order.OldCost ??= order.Cost;
                                 order.Cost = 0;
                                 order.AgentCost = 0;
+                                order.OldDeliveryCost = order.DeliveryCost;
+                                order.DeliveryCost = 0;
                                 order.OrderState = OrderState.ShortageOfCash;
                             }
                             break;
@@ -446,6 +453,12 @@ namespace Quqaz.Web.Services.Concret
             };
             if (makeOrderInWayDto.Driver.DriverId != null)
             {
+                agnetPrint.DriverId = makeOrderInWayDto.Driver.DriverId;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(makeOrderInWayDto.Driver.DriverName))
+                    throw new ConflictException("يجب اختيار السائق");
                 var driver = await _driverRepo.FirstOrDefualt(c => c.Name == makeOrderInWayDto.Driver.DriverName);
                 driver ??= new Driver()
                 {
@@ -958,7 +971,7 @@ namespace Quqaz.Web.Services.Concret
                     order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
                 }
                 order.OrderState = OrderState.Processing;
-                order.DeliveryCost = country.DeliveryCost;
+                //order.DeliveryCost = country.DeliveryCost;
                 if (order.MoneyPlace == MoneyPalce.Delivered)
                 {
                     order.IsClientDiliverdMoney = true;
@@ -2125,7 +2138,7 @@ namespace Quqaz.Web.Services.Concret
                 order.OrderPlace = OrderPlace.Store;
                 order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
                 order.SystemNote = "استقبال الشحنات لفرع";
-                order.UpdatedDate = DateTime.UtcNow;  
+                order.UpdatedDate = DateTime.UtcNow;
                 if (order.NextBranchId != order.TargetBranchId)
                 {
                     order.NextBranchId = order.TargetBranchId;

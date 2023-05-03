@@ -32,7 +32,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 
         public async Task<ActionResult<UserDto>> Create([FromBody] CreateUserDto createUserDto)
         {
-            return Ok(await _userCashedService.AddAsync2(createUserDto));
+            var agent = await _userCashedService.AddAsync2(createUserDto);
+            _countryCashedService.RemoveCash();
+            return Ok(agent);
         }
 
         [HttpGet("{id}")]
