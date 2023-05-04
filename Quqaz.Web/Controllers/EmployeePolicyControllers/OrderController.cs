@@ -12,6 +12,7 @@ using Quqaz.Web.Dtos.OrdersDtos.Queries;
 using Quqaz.Web.Models;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -36,6 +37,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(new { data = result.Data, total = result.Total });
         }
 #if DEBUG
+        [AllowAnonymous]
         [HttpGet("TestCreateMultile")]
         public async Task<IActionResult> TestCreateMultile([FromQuery] int startCode)
         {

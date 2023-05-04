@@ -1639,7 +1639,7 @@ namespace Quqaz.Web.Services.Concret
                 order.Cost = (decimal)order.OldCost;
                 order.OldCost = null;
             }
-            order.IsClientDiliverdMoney = false;
+            //order.IsClientDiliverdMoney = false;
 
             order.OrderState = OrderState.Processing;
             order.OrderPlace = OrderPlace.Store;
@@ -2094,7 +2094,7 @@ namespace Quqaz.Web.Services.Concret
                     order.Cost = (decimal)order.OldCost;
                     order.OldCost = null;
                 }
-                order.IsClientDiliverdMoney = false;
+                //order.IsClientDiliverdMoney = false;
                 order.OrderState = OrderState.Processing;
                 order.OrderPlace = OrderPlace.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
