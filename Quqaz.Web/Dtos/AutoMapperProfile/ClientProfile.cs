@@ -55,8 +55,8 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
-                    return context.Mapper.Map<Country>(client.Country);
-                }))
+                    return context.Mapper.Map<CountryDto>(client.Country);
+                })) 
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
                 {
                     return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);

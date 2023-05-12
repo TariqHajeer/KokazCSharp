@@ -25,11 +25,12 @@ namespace Quqaz.Web.Services.Concret
     {
         private readonly IRepository<Order> _repository;
         private readonly IRepository<OrderType> _orderTypeRepository;
+        private readonly IRepository<Client> _clientRepository;
         private readonly NotificationHub _notificationHub;
         private readonly IHttpContextAccessorService _contextAccessorService;
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork)
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -37,6 +38,7 @@ namespace Quqaz.Web.Services.Concret
             _mapper = mapper;
             _orderTypeRepository = orderTypeRepository;
             _UintOfWork = uintOfWork;
+            _clientRepository = clientRepository;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -129,9 +131,12 @@ namespace Quqaz.Web.Services.Concret
                 errors.Add("يجب وضع اسم نوع الشحنة");
             }
             var orderTypesIds = orderItemDtos.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
-            if (await CheckOrderTypesIdsExists(orderTypesIds))
+            if (orderTypesIds.Any())
             {
-                errors.Add("النوع غير موجود");
+                if (await CheckOrderTypesIdsExists(orderTypesIds))
+                {
+                    errors.Add("النوع غير موجود");
+                }
             }
             return errors;
         }
@@ -143,9 +148,12 @@ namespace Quqaz.Web.Services.Concret
                 throw new ConflictException(validation);
             }
             var order = _mapper.Map<Order>(createOrderFromClient);
+            var client = await _clientRepository.GetById(_contextAccessorService.AuthoticateUserId());
             var country = await _UintOfWork.Repository<Country>().FirstOrDefualt(c => c.Id == order.CountryId, c => c.BranchToCountryDeliverryCosts);
             order.DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost;
             order.ClientId = _contextAccessorService.AuthoticateUserId();
+            order.BranchId = client.BranchId;
+            order.CurrentBranchId = client.BranchId;
             order.CreatedBy = _contextAccessorService.AuthoticateUserName();
             await _UintOfWork.BegeinTransaction();
             await _UintOfWork.Add(order);
