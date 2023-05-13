@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Quqaz.Web.Models;
 
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
@@ -17,7 +18,8 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("{printNumber}")]
         public async Task<IActionResult> Get(int printNumber)
         {
-            var includes = new string[] { "OrderClientPaymnets.Order", "Receipts", "ClientPaymentDetails" };
+
+            var includes = new string[] { nameof(ClientPayment.OrderClientPaymnets) + "." + nameof(OrderClientPaymnet.Order), nameof(ClientPayment.Receipts), nameof(ClientPayment.ClientPaymentDetails) };
             return Ok(await _clientPaymentService.GetFirst(c => c.Id == printNumber && c.OrderClientPaymnets.All(c => c.Order.ClientId == AuthoticateUserId()), includes));
         }
     }

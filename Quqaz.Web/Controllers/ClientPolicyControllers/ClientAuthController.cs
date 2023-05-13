@@ -31,10 +31,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             List<string> errors = new List<string>();
             var appVersion = AppVersion();
-            if (appVersion == -1)
-            {
-                return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
-            }
+
+            //if (appVersion == -1)
+            //{
+            //    return Conflict(new MobileErrorLogin() { Message = "عليك التحديث", URL = "" });
+            //}
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)

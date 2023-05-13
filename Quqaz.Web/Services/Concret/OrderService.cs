@@ -853,8 +853,10 @@ namespace Quqaz.Web.Services.Concret
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
-
-                     order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
+                     if (order.AgentId != null)
+                     {
+                         order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
+                     }
                      order.Date = item.Date;
                      order.CreatedBy = currentUser;
                      order.CurrentBranchId = _currentBranchId;
@@ -945,6 +947,11 @@ namespace Quqaz.Web.Services.Concret
                     else if (!order.AgentId.HasValue)
                     {
                         throw new ConflictException("يجب اختيار المندوب");
+
+                    }
+                    else
+                    {
+                        order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
                     }
                 }
 
@@ -968,7 +975,7 @@ namespace Quqaz.Web.Services.Concret
                         order.RegionId = region.Id;
                         order.Seen = true;
                     }
-                    order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
+
                 }
                 order.OrderState = OrderState.Processing;
                 //order.DeliveryCost = country.DeliveryCost;
@@ -1526,8 +1533,49 @@ namespace Quqaz.Web.Services.Concret
             {
                 throw new ConflictException("تضارب المندوب و المدينة");
             }
-            order.AgentId = idsDto.AgentId;
-            order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == idsDto.AgentId))?.Salary ?? 0;
+            var country = await _countryCashedService.GetById(order.CountryId);
+            var currentBrach = await _branchRepository.GetById(_currentBranchId);
+            var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
+            if (targetBranch != null)
+            {
+                order.TargetBranchId = targetBranch.Id;
+                order.NextBranchId = targetBranch.Id;
+                if (order.AgentId.HasValue)
+                {
+                    throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                }
+
+
+                var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+
+                if (midCountry != null)
+                {
+
+                    order.NextBranchId = midCountry.MediatorCountryId;
+                }
+                order.AgentId = null;
+            }
+            else
+            {
+                var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                if (midCountry != null)
+                {
+                    order.NextBranchId = midCountry.MediatorCountryId;
+                    order.TargetBranchId = midCountry.MediatorCountryId;
+                    if (order.AgentId.HasValue)
+                    {
+                        throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                    }
+                }
+                else if (!order.AgentId.HasValue)
+                {
+                    throw new ConflictException("يجب اختيار المندوب");
+                }
+                else
+                {
+                    order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
+                }
+            }
             order.OrderPlace = OrderPlace.Store;
             order.IsSend = true;
             await _repository.Update(order);
