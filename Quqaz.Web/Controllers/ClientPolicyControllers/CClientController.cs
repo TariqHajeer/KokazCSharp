@@ -1,14 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Quqaz.Web.Dtos.Clients;
-using Quqaz.Web.Dtos.NotifcationDtos;
-using Quqaz.Web.HubsConfig;
-using Quqaz.Web.Models;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
@@ -16,11 +10,9 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
     [ApiController]
     public class CClientController : AbstractClientPolicyController
     {
-        private readonly NotificationHub _notificationHub;
         private readonly IClientCashedService _clientCashedService;
-        public CClientController(NotificationHub notificationHub, IClientCashedService clientCashedService)
+        public CClientController( IClientCashedService clientCashedService)
         {
-            _notificationHub = notificationHub;
             _clientCashedService = clientCashedService;
         }
         [HttpGet("CheckUserName/{username}")]
