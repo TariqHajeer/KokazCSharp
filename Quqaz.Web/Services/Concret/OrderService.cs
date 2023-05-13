@@ -847,9 +847,8 @@ namespace Quqaz.Web.Services.Concret
             }
             try
             {
-                var countryIds = createMultipleOrders.Select(c => c.CountryId);
 
-                var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countryIds.Contains(c.ToCountryId))).ToList();
+                var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countriesIds.Contains(c.ToCountryId))).ToList();
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
@@ -1583,28 +1582,60 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task AcceptMultiple(IEnumerable<OrderIdAndAgentId> idsDtos)
         {
-            //get data 
+
             var orders = await _repository.GetAsync(c => idsDtos.Select(dto => dto.OrderId).Contains(c.Id));
-            var agentsContries = await _agentCountryRepository.GetAsync(c => idsDtos.Select(dto => dto.AgentId).Contains(c.AgentId));
 
-            //validation 
-            if (idsDtos.Select(c => c.OrderId).Except(orders.Select(c => c.Id)).Any())
-                throw new ConflictException("");
+            var countriesIds = orders.Select(c => c.CountryId).ToArray();
+            var countries = await _countryCashedService.GetAsync(c => countriesIds.Contains(c.Id), c => c.BranchToCountryDeliverryCosts);
+            var branches = await _branchRepository.GetAll();
 
-            if (idsDtos.Select(c => c.AgentId).Except(agentsContries.Select(c => c.AgentId)).Any())
-                throw new ConflictException("");
+            var currentBrach = branches.First(c => c.Id == _currentBranchId);
+            
+            var agnets = await _uintOfWork.Repository<User>().Select(c => idsDtos.Where(c => c.AgentId.HasValue).Select(c => c.AgentId).Contains(c.Id), c => new { c.Id, c.Salary });
+
+            var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countriesIds.Contains(c.ToCountryId))).ToList();
             var agentsIds = orders.Select(c => c.AgentId);
             var agents = await _userRepository.GetAsync(c => agentsIds.Contains(c.Id));
+
             foreach (var item in idsDtos)
             {
                 var order = orders.First(c => c.Id == item.OrderId);
-                var agentCountries = agentsContries.Where(c => c.AgentId == item.AgentId).ToList();
-                if (!agentsContries.Any(c => c.CountryId != order.CountryId))
+                if (item.AgentId.HasValue)
                 {
-                    throw new ConflictException("تضارب المندوب و المدينة");
+                    order.AgentId = item.AgentId;
+                    order.AgentCost = agnets.FirstOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
                 }
-                order.AgentId = item.AgentId;
-                order.AgentCost = agents.First(c => c.Id == item.AgentId)?.Salary ?? 0;
+
+                var targetBranch = branches.FirstOrDefault(c => c.Id == order.CountryId && c.Id != _currentBranchId);
+                if (targetBranch != null)
+                {
+                    order.TargetBranchId = targetBranch.Id;
+                    order.NextBranchId = targetBranch.Id;
+                    if (order.AgentId != null)
+                        throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                    var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+                    if (midCountry != null)
+                    {
+                        order.NextBranchId = midCountry.MediatorCountryId;
+                    }
+                }
+                else
+                {
+                    var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                    if (midCountry != null)
+                    {
+                        order.TargetBranchId = midCountry.MediatorCountryId;
+                        order.NextBranchId = midCountry.MediatorCountryId;
+                        if (order.AgentId.HasValue)
+                        {
+                            throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                        }
+                    }
+                    else if (!order.AgentId.HasValue)
+                    {
+                        throw new ConflictException("يجب اختيار المندوب");
+                    }
+                }
                 order.OrderPlace = OrderPlace.Store;
                 order.IsSend = true;
             }
