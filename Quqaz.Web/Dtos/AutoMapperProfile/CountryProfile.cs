@@ -27,7 +27,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 }))
                 .ForMember(c => c.Points, opt => opt.MapFrom<PointsValueResolver>())
                 .ForMember(c => c.DeliveryCost, opt => opt.MapFrom<DeliveryCostValueResolver>())
-                .ForMember(c => c.Agnets, opt => opt.MapFrom((obj, dto, i, context) =>
+                .ForMember(c => c.Agents, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     if (obj.AgentCountries == null)
                         return null;

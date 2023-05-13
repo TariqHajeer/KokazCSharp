@@ -15,7 +15,7 @@ namespace Quqaz.Web.Dtos.Countries
         public bool CanDeleteWithRegion { get; set; }
         public Int16 Points { get; set; }
         public List<NameAndIdDto> Regions { get; set; }
-        public List<NameAndIdDto> Agnets { get; set; }
+        public List<NameAndIdDto> Agents { get; set; }
         public bool RequiredAgent { get; set; }
 
     }
