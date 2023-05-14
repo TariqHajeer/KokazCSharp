@@ -1591,8 +1591,9 @@ namespace Quqaz.Web.Services.Concret
             var branches = await _branchRepository.GetAll();
 
             var currentBrach = branches.First(c => c.Id == _currentBranchId);
+            var agentIds = idsDtos.Where(c => c.AgentId.HasValue).Select(c=>c.AgentId).ToList();
             
-            var agnets = await _uintOfWork.Repository<User>().Select(c => idsDtos.Where(c => c.AgentId.HasValue).Select(c => c.AgentId).Contains(c.Id), c => new { c.Id, c.Salary });
+            var agnets = await _uintOfWork.Repository<User>().Select(c => agentIds.Contains(c.Id), c => new { c.Id, c.Salary });
 
             var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countriesIds.Contains(c.ToCountryId))).ToList();
             var agentsIds = orders.Select(c => c.AgentId);
