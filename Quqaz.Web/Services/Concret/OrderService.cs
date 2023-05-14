@@ -1566,12 +1566,13 @@ namespace Quqaz.Web.Services.Concret
                         throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
                     }
                 }
-                else if (!order.AgentId.HasValue)
+                else if (!idsDto.AgentId.HasValue)
                 {
                     throw new ConflictException("يجب اختيار المندوب");
                 }
                 else
                 {
+                    order.AgentId = idsDto.AgentId.Value;
                     order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
                 }
             }

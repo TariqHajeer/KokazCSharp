@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Quqaz.Web.Models.Static
+﻿namespace Quqaz.Web.Models.Static
 {
     public enum OrderState
     {
