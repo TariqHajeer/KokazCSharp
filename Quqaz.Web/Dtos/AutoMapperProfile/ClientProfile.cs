@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Quqaz.Web.Dtos.Clients;
 using Quqaz.Web.Dtos.Common;
-using Quqaz.Web.Dtos.Countries;
 using Quqaz.Web.Dtos.EditRequestDtos;
 using Quqaz.Web.Helpers;
 using Quqaz.Web.Models;
@@ -55,7 +54,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>
                 {
-                    return context.Mapper.Map<CountryDto>(client.Country);
+                    return context.Mapper.Map<NameAndIdDto>(client.Country);
                 })) 
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
                 {

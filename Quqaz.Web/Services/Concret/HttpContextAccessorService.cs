@@ -44,6 +44,12 @@ namespace Quqaz.Web.Services.Concret
                 }
                 return branchId;
             }
+            var claims = _httpContextAccessor.HttpContext.User.Claims.ToList();
+            var type = claims.First(c => c.Type == "Type").Value;
+            if(type== "Client")
+            {
+                return int.Parse(claims.First(c => c.Type == "branchId").Value);
+            }
             throw new System.Exception("Branch Not Exist");
         }
 

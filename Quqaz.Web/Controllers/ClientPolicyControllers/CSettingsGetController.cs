@@ -25,7 +25,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         }
 
         [HttpGet("Countries")]
-        public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountreis() => Ok(await _countryCashedService.GetAll());
+        public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountreis() => Ok(await _countryCashedService.GetCashed());
 
         /// <summary>
         /// مناطق

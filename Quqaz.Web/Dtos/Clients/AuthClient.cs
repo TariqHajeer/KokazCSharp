@@ -15,8 +15,8 @@ namespace Quqaz.Web.Dtos.Clients
         public string Token { get; set; }
         public string Address { get; set; }
         public string Mail { get; set; }
-        public CountryDto Country { get; set; }
-        public List<PhoneDto> Phones { get; set; }
+        public NameAndIdDto Country { get; set; }
+        public List<PhoneDto> Phones {   get; set; }
         public bool CanAddOrder { get; set; }
 
     }
