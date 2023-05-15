@@ -23,6 +23,7 @@ namespace Quqaz.Web.Services.Concret
             var editRequest = await _uintOfWork.Repository<EditRequest>().FirstOrDefualt(c => c.Id == id);
             editRequest.Accept = true;
             editRequest.UserId = _httpContextAccessorService.AuthoticateUserId();
+            await _uintOfWork.BegeinTransaction();
             var client = await _uintOfWork.Repository<Client>().FirstOrDefualt(c=>c.Id==editRequest.ClientId);
             client.Name = editRequest.NewName;
             client.UserName = editRequest.NewUserName;

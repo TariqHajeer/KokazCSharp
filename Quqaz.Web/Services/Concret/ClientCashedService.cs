@@ -203,8 +203,8 @@ namespace Quqaz.Web.Services.Concret
             client.UserName = clientUserName;
             if (client.Password == "")
                 client.Password = oldPassword;
-            await _uintOfWork.Update(client);
             await _uintOfWork.Repository<Client>().LoadCollection(client, c => c.ClientPhones);
+            
             if (updateClientDto.Phones?.Any() == true)
             {
                 client.ClientPhones.Clear();
@@ -216,6 +216,7 @@ namespace Quqaz.Web.Services.Concret
                     });
                 }
             }
+            await _uintOfWork.Update(client);
             bool isEditRequest = clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName;
             if (isEditRequest)
             {

@@ -1,6 +1,4 @@
 ﻿using Quqaz.Web.Dtos.Common;
-using Quqaz.Web.Dtos.Regions;
-using Quqaz.Web.Dtos.Users;
 using System;
 using System.Collections.Generic;
 

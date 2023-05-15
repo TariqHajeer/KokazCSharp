@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Quqaz.Web.Dtos.PointSettingsDtos;
-using Quqaz.Web.Models;
+﻿using System.Threading.Tasks;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

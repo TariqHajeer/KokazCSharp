@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.Countries;
 using Quqaz.Web.Dtos.Regions;
-using Quqaz.Web.Models;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
