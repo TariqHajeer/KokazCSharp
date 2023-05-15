@@ -60,7 +60,7 @@ namespace Quqaz.Web.Services.Concret
             var ids = pairs.Select(c => c.Key).ToList();
             var cids = pairs.Select(c => c.Value).ToList();
 
-
+            var client = await _clientRepository.GetById(_contextAccessorService.AuthoticateUserId());
             var ordersFromExcel = await _UintOfWork.Repository<OrderFromExcel>().GetAsync(c => ids.Contains(c.Id));
             var countries = await _UintOfWork.Repository<Country>().GetAsync(c => cids.Contains(c.Id), c => c.BranchToCountryDeliverryCosts);
 
@@ -90,6 +90,8 @@ namespace Quqaz.Web.Services.Concret
                     CreatedBy = _contextAccessorService.AuthoticateUserName(),
                     DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
                     IsSend = false,
+                    BranchId = client.BranchId,
+                    CurrentBranchId = client.BranchId
                 };
                 orders.Add(order);
             }
@@ -412,7 +414,7 @@ namespace Quqaz.Web.Services.Concret
             var (excelOrder, errors) = await GetOrderFromExcelFile(file);
 
             var codes = excelOrder.Select(c => c.Code);
-            var similarOrders = await _UintOfWork.Repository<Order>().Select(c => c.Code, c => codes.Contains(c.Code) && c.ClientId == _contextAccessorService.AuthoticateUserId());
+            var similarOrders = await _UintOfWork.Repository<Order>().Select(c => codes.Any(co => co == c.Code) && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Code);
             var simialrCodeInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(c => c.Code, c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code));
             if (similarOrders.Any())
             {
@@ -426,6 +428,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 throw new ConflictException(errors);
             }
+            var client = await _clientRepository.GetById(_contextAccessorService.AuthoticateUserId());
             bool correct = false;
 
 
@@ -472,6 +475,8 @@ namespace Quqaz.Web.Services.Concret
                         CreatedBy = _contextAccessorService.AuthoticateUserName(),
                         DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
                         IsSend = false,
+                        BranchId = client.BranchId,
+                        CurrentBranchId = client.BranchId
                     };
                     orders.Add(order);
                 }
