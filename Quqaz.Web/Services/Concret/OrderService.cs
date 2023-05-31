@@ -752,7 +752,9 @@ namespace Quqaz.Web.Services.Concret
             }
             if (filter.CreatedDate.HasValue)
             {
-                predicate = predicate.And(c => c.Date == filter.CreatedDate);
+                var date = filter.CreatedDate.Value.Date;
+                var nextDate = date.AddDays(1);
+                predicate = predicate.And(c => c.Date.Value.Date >= date&&c.Date.Value<nextDate);
             }
             if (filter.Note != "" && filter.Note != null)
             {

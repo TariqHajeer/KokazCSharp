@@ -53,6 +53,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public int? CurrentCountry { get; set; }
         public int? PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
+        public int BranchId { get; set; }
         public string BranchName { get; set; }
         public NameAndIdDto CurrentBrnach { get; set; }
         public List<ReceiptOfTheOrderStatusDetaliOrderDto> ReceiptOfTheOrderStatusDetalis { get; set; }
