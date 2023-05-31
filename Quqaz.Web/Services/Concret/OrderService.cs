@@ -1896,7 +1896,7 @@ namespace Quqaz.Web.Services.Concret
             }
             if (clientName != null)
             {
-                exprtion = exprtion.And(c => c.DestinationName == clientName);
+                exprtion = exprtion.And(c => c.DestinationName.Contains(clientName));
             }
             if (!string.IsNullOrEmpty(code))
             {

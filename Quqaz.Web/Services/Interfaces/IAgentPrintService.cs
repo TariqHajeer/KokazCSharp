@@ -15,7 +15,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetPrint(PagingDto pagingDto, PrintFilterDto printFilterDto);
         Task<PrintOrdersDto> GetPrintById(int printNumber);
         Task<int> Count(Expression<Func<AgentPrint, bool>> filter = null);
-        Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName);
+        Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName,string code);
         Task<PrintOrdersDto> GetOrderByAgnetPrintNumber(int printNumber);
         Task SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos);
 

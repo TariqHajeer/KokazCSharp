@@ -430,9 +430,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("GetAgentPrint")]
-        public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName)
+        public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName,string code)
         {
-            return Ok(await _agentPrintService.GetAgentPrint(pagingDto, number, agnetName));
+            return Ok(await _agentPrintService.GetAgentPrint(pagingDto, number, agnetName,code));
         }
         [HttpGet("GetOrderByAgnetPrintNumber")]
         public async Task<IActionResult> GetOrderByAgnetPrintNumber([FromQuery] int printNumber)

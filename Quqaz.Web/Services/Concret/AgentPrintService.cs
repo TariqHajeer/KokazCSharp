@@ -71,7 +71,7 @@ namespace Quqaz.Web.Services.Concret
             return await _repository.Count(filter);
         }
 
-        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName)
+        public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetAgentPrint(PagingDto pagingDto, int? number, string agnetName, string code)
         {
             var predicte = PredicateBuilder.New<AgentPrint>(true);
             if (number != null)
@@ -80,7 +80,11 @@ namespace Quqaz.Web.Services.Concret
             }
             if (!String.IsNullOrWhiteSpace(agnetName))
             {
-                predicte = predicte.And(c => c.DestinationName == agnetName);
+                predicte = predicte.And(c => c.DestinationName.Contains(agnetName));
+            }
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                predicte = predicte.And(c => c.AgentPrintDetails.Any(d => d.Code == code));
             }
             var data = await _repository.GetAsync(pagingDto, predicte, null, c => c.OrderByDescending(x => x.Id)); ;
             return new PagingResualt<IEnumerable<PrintOrdersDto>>()
