@@ -145,14 +145,15 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<StaticsDto> GetClientStatistic()
         {
-            var pr = PredicateBuilder.New<Order>(c => c.ClientId == _httpContextAccessorService.AuthoticateUserId());
+            
             async Task<int> Opr(Expression<Func<Order, bool>> filter = null)
             {
+                var pr = PredicateBuilder.New<Order>(c => c.ClientId == _httpContextAccessorService.AuthoticateUserId());
                 if (filter != null)
                     return await _orderRepository.Count(pr.And(filter));
                 return await _orderRepository.Count(pr);
             }
-            var pric = PredicateBuilder.New<Order>(c => c.MoneyPlace == MoneyPalce.InsideCompany);
+            var pric = PredicateBuilder.New<Order>();
             var staticsDto = new StaticsDto()
             {
                 TotalOrder = await Opr(),
@@ -164,8 +165,8 @@ namespace Quqaz.Web.Services.Concret
                 OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.Delivered),
                 OrderPartialReturned = await Opr(c => c.OrderPlace == OrderPlace.PartialReturned),
                 DelayedOrder = await Opr(c => c.OrderPlace == OrderPlace.Delayed),
-                OrderMoneyInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderState.ShortageOfCash)),
-                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable))
+                OrderMoneyInCompany = await Opr(c => c.MoneyPlace == MoneyPalce.InsideCompany && ( c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderState.ShortageOfCash)),
+                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.MoneyPlace == MoneyPalce.InsideCompany &&( c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable)))
 
             };
             return staticsDto;

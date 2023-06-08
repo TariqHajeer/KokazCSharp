@@ -135,7 +135,7 @@ namespace Quqaz.Web.Services.Concret
             var orderTypesIds = orderItemDtos.Where(c => c.OrderTypeId != null).Select(c => c.OrderTypeId.Value).ToArray();
             if (orderTypesIds.Any())
             {
-                if (await CheckOrderTypesIdsExists(orderTypesIds))
+                if (!(await CheckOrderTypesIdsExists(orderTypesIds)))
                 {
                     errors.Add("النوع غير موجود");
                 }

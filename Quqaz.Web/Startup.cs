@@ -39,7 +39,7 @@ namespace Quqaz.Web
         {
 
             services.AddControllers();
-            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TestDb")));
+            services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BranchDB")));
             services.AddHttpContextAccessor();
             services.AddCors(options =>
             {
