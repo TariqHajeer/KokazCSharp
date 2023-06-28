@@ -24,6 +24,7 @@ namespace Quqaz.Web.Services.Concret
         private readonly IRepository<AgentPrint> _repository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessorService _httpContextAccessorService;
         private readonly IRepository<Order> _orderRepository;
         private readonly NotificationHub _notificationHub;
         protected int AuthoticateUserId()
@@ -31,13 +32,14 @@ namespace Quqaz.Web.Services.Concret
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.ToList().Where(c => c.Type == "UserID").Single();
             return Convert.ToInt32(userIdClaim.Value);
         }
-        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IRepository<Order> orderRepository, NotificationHub notificationHub)
+        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IRepository<Order> orderRepository, NotificationHub notificationHub, IHttpContextAccessorService httpContextAccessorService)
         {
             _repository = repository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _orderRepository = orderRepository;
             _notificationHub = notificationHub;
+            _httpContextAccessorService = httpContextAccessorService;
         }
 
         public async Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetPrint(PagingDto pagingDto, PrintFilterDto printFilterDto)
@@ -103,9 +105,13 @@ namespace Quqaz.Web.Services.Concret
         public async Task SetOrderState(List<AgentOrderStateDto> agentOrderStateDtos)
         {
             var orders = await _orderRepository.GetAsync(c => agentOrderStateDtos.Select(c => c.Id).ToList().Contains(c.Id));
+            var logs = new List<OrderLog>();
             agentOrderStateDtos.ForEach(aos =>
             {
                 var order = orders.First(c => c.Id == aos.Id);
+                logs.Add(order);
+                order.UpdatedDate = DateTime.UtcNow;
+                order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
                 order.NewCost = aos.Cost;
                 order.NewOrderPlace = (OrderPlace)aos.OrderplacedId;
                 order.AgentRequestStatus = (int)AgentRequestStatusEnum.Pending;

@@ -13,6 +13,7 @@ using Quqaz.Web.Dtos.Clients;
 using Quqaz.Web.ClientDtos;
 using System.Linq.Expressions;
 using System;
+using Quqaz.Web.Migrations;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -45,30 +46,15 @@ namespace Quqaz.Web.Services.Concret
             {
                 TotalAgent = await _userRepository.Count(c => c.CanWorkAsAgent == true),
                 TotalClient = await _clientRepository.Count(),
-                TotalOrderInSotre = await _orderRepository.Count(c => c.OrderPlace == OrderPlace.Store),
+                TotalOrderInSotre = await _orderRepository.Count(c => c.OrderPlace == OrderPlace.Store && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId()),
                 TotlaOrder = await _orderRepository.Count(),
                 TotalOrderInWay = await _orderRepository.Count(c => c.OrderPlace == OrderPlace.Way),
                 TotalOrderCountInProcess = await _orderRepository.Count(c => c.OrderState == OrderState.Processing),
                 TotalMoneyInComapny = 0
             };
-            var totalEariningIncome = await _incomeRepository.Sum(c => c.Earining);
-            var totalOutCome = await _outComeRepository.Sum(c => c.Amount);
-
-            
-            var paidOrdersWaitToRecive = await _orderRepository.Sum(s => -(s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState != OrderState.ShortageOfCash);
-            var nonPaidOrders = await _orderRepository.Sum(s => s.Cost - s.DeliveryCost, c => !c.IsClientDiliverdMoney && c.MoneyPlace == MoneyPalce.InsideCompany);
-
+            var orderInWayAndDelived = await _orderRepository.Sum(c => c.Cost - c.DeliveryCost, c => c.BranchId == _httpContextAccessorService.CurrentBranchId() && c.OrderState == OrderState.Processing && c.IsClientDiliverdMoney == false && c.MoneyPlace == MoneyPalce.InsideCompany);
             var totalAccount = await _receiptRepository.Sum(c => c.Amount, c => c.ClientPaymentId == null);
-
-            var paidOrdersHaveShortInCash = await _orderRepository.Sum(s => (s.Cost - s.DeliveryCost) - s.ClientPaied ?? 0, c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState == OrderState.ShortageOfCash);
-            var sumClientMone = totalAccount + paidOrdersWaitToRecive + nonPaidOrders+paidOrdersHaveShortInCash;
-
-            var totalOrderEarinig = await _orderRepository.Sum(c => c.DeliveryCost - c.AgentCost, c => c.OrderState == OrderState.Finished && (c.MoneyPlace != MoneyPalce.WithAgent && c.MoneyPlace != MoneyPalce.OutSideCompany) && (c.OrderPlace > OrderPlace.Way));
-
-            mainStatics.TotalMoneyInComapny += totalEariningIncome;
-            mainStatics.TotalMoneyInComapny -= totalOutCome;
-            mainStatics.TotalMoneyInComapny += sumClientMone;
-            mainStatics.TotalMoneyInComapny += totalOrderEarinig;
+            mainStatics.TotalMoneyInComapny = orderInWayAndDelived + totalAccount;
             return mainStatics;
         }
 
@@ -145,7 +131,7 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<StaticsDto> GetClientStatistic()
         {
-            
+
             async Task<int> Opr(Expression<Func<Order, bool>> filter = null)
             {
                 var pr = PredicateBuilder.New<Order>(c => c.ClientId == _httpContextAccessorService.AuthoticateUserId());
@@ -165,8 +151,8 @@ namespace Quqaz.Web.Services.Concret
                 OrderComplitlyReutrndDeliverd = await Opr(c => (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable) && c.MoneyPlace == MoneyPalce.Delivered),
                 OrderPartialReturned = await Opr(c => c.OrderPlace == OrderPlace.PartialReturned),
                 DelayedOrder = await Opr(c => c.OrderPlace == OrderPlace.Delayed),
-                OrderMoneyInCompany = await Opr(c => c.MoneyPlace == MoneyPalce.InsideCompany && ( c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderState.ShortageOfCash)),
-                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.MoneyPlace == MoneyPalce.InsideCompany &&( c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable)))
+                OrderMoneyInCompany = await Opr(c => c.MoneyPlace == MoneyPalce.InsideCompany && (c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned || c.OrderState == OrderState.ShortageOfCash)),
+                OrderComplitlyReutrndInCompany = await Opr(pric.And(c => c.MoneyPlace == MoneyPalce.InsideCompany && (c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable)))
 
             };
             return staticsDto;

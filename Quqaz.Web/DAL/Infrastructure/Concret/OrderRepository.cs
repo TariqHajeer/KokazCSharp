@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net.NetworkInformation;
 
 namespace Quqaz.Web.DAL.Infrastructure.Concret
 {
@@ -266,7 +265,9 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
                 {
                     orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.PartialReturned && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
                 }
+                orderPlacePredicate = orderPlacePredicate.And(c => c.ClientId == orderDontFinishedFilter.ClientId && c.AgentId != null);
                 predicate = predicate.Or(orderPlacePredicate);
+                
             }
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
             {
@@ -298,7 +299,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
 
                 }
             }
-            var query = Query.Where(predicate);
+            var query = Query.Include(c=>c.Country).Where(predicate);
             var total = await query.CountAsync();
             var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return new PagingResualt<IEnumerable<Order>>()

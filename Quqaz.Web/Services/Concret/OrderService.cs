@@ -194,6 +194,9 @@ namespace Quqaz.Web.Services.Concret
                 order.DeliveryCost = item.DeliveryCost;
                 order.AgentCost = item.AgentCost;
                 order.SystemNote = "ReceiptOfTheStatusOfTheDeliveredShipment";
+                order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
+                order.NewCost = null;
+                order.NewOrderPlace = null;
                 if (order.IsClientDiliverdMoney)
                 {
                     switch (order.OrderPlace)
@@ -338,6 +341,9 @@ namespace Quqaz.Web.Services.Concret
                 order.DeliveryCost = item.DeliveryCost;
                 order.AgentCost = item.AgentCost;
                 order.SystemNote = "ReceiptOfTheStatusOfTheReturnedShipment";
+                order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
+                order.NewCost = null;
+                order.NewOrderPlace = null;
                 if (order.IsClientDiliverdMoney)
                 {
                     switch (order.OrderPlace)
@@ -754,7 +760,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 var date = filter.CreatedDate.Value.Date;
                 var nextDate = date.AddDays(1);
-                predicate = predicate.And(c => c.Date.Value.Date >= date&&c.Date.Value<nextDate);
+                predicate = predicate.And(c => c.Date.Value.Date >= date && c.Date.Value < nextDate);
             }
             if (filter.Note != "" && filter.Note != null)
             {
@@ -979,7 +985,6 @@ namespace Quqaz.Web.Services.Concret
 
                 }
                 order.OrderState = OrderState.Processing;
-                //order.DeliveryCost = country.DeliveryCost;
                 if (order.MoneyPlace == MoneyPalce.Delivered)
                 {
                     order.IsClientDiliverdMoney = true;
@@ -1451,6 +1456,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var result = await _repository.OrdersDontFinished(orderDontFinishedFilter, pagingDto);
+
             return new PagingResualt<IEnumerable<PayForClientDto>>()
             {
                 Total = result.Total,
@@ -1505,12 +1511,12 @@ namespace Quqaz.Web.Services.Concret
         public async Task<EarningsDto> GetEarnings(PagingDto pagingDto, DateFiter dateFiter)
         {
             var predicate = PredicateBuilder.New<Order>(true);
-            predicate = predicate.And(c => c.OrderState == OrderState.Finished && c.OrderPlace != OrderPlace.CompletelyReturned);
+            predicate = predicate.And(c => c.BranchId == _currentBranchId && ((c.OrderState == OrderState.Finished) || (c.MoneyPlace == MoneyPalce.InsideCompany || (c.MoneyPlace == MoneyPalce.Delivered))) && c.OrderPlace != OrderPlace.CompletelyReturned);
             if (dateFiter.FromDate.HasValue)
                 predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate.HasValue)
                 predicate = predicate.And(c => c.Date <= dateFiter.ToDate);
-            var pagingResualt = await _repository.GetAsync(pagingDto, predicate);
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate,null,c=>c.OrderByDescending(o=>o.Id));
             var sum = await _repository.Sum(c => c.DeliveryCost - c.AgentCost, predicate);
             return new EarningsDto()
             {
@@ -1593,8 +1599,8 @@ namespace Quqaz.Web.Services.Concret
             var branches = await _branchRepository.GetAll();
 
             var currentBrach = branches.First(c => c.Id == _currentBranchId);
-            var agentIds = idsDtos.Where(c => c.AgentId.HasValue).Select(c=>c.AgentId).ToList();
-            
+            var agentIds = idsDtos.Where(c => c.AgentId.HasValue).Select(c => c.AgentId).ToList();
+
             var agnets = await _uintOfWork.Repository<User>().Select(c => agentIds.Contains(c.Id), c => new { c.Id, c.Salary });
 
             var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countriesIds.Contains(c.ToCountryId))).ToList();
@@ -1878,6 +1884,8 @@ namespace Quqaz.Web.Services.Concret
             order.RecipientName = updateOrder.RecipientName;
             order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
             order.Note = updateOrder.Note;
+            order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
+            order.UpdatedDate = DateTime.UtcNow;
             await _uintOfWork.Update(order);
             await _uintOfWork.Commit();
         }
@@ -1967,6 +1975,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task DisAproveOrderRequestEditState(int[] ids)
         {
             var orders = await _repository.GetAsync(c => ids.Contains(c.Id));
+            orders = orders.Where(c => c.AgentRequestStatus != (int)AgentRequestStatusEnum.None);
             orders.ForEach(c =>
             {
                 c.AgentRequestStatus = (int)AgentRequestStatusEnum.DisApprove;
@@ -1978,6 +1987,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task AproveOrderRequestEditState(int[] ids)
         {
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ids.Contains(c.Id));
+            orders = orders.Where(c => c.AgentRequestStatus != (int)AgentRequestStatusEnum.None);
             orders.ForEach(c =>
             {
                 c.AgentRequestStatus = (int)AgentRequestStatusEnum.Approve;
