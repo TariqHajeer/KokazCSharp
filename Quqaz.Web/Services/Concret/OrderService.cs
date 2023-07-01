@@ -680,7 +680,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 if (types.ContainsKey(c.Id))
                 {
-                    var orderPlaced = Enumerable.ToHashSet<string>(Enumerable.SelectMany(types.Where(t => t.Key == c.Id), c => (IEnumerable<string>)Enumerable.Select(c.Value, c => EnumExtension.GetDescription<int>((int)c.OrderPlace))));
+                    var orderPlaced = Enumerable.ToHashSet<string>(Enumerable.SelectMany(types.Where(t => t.Key == c.Id), c => c.Value.Select(c => EnumExtension.GetDescription(c.OrderPlace))));
                     c.Types = string.Join(',', orderPlaced);
                 }
             }));
@@ -1516,7 +1516,7 @@ namespace Quqaz.Web.Services.Concret
                 predicate = predicate.And(c => c.Date >= dateFiter.FromDate);
             if (dateFiter.ToDate.HasValue)
                 predicate = predicate.And(c => c.Date <= dateFiter.ToDate);
-            var pagingResualt = await _repository.GetAsync(pagingDto, predicate,null,c=>c.OrderByDescending(o=>o.Id));
+            var pagingResualt = await _repository.GetAsync(pagingDto, predicate, null, c => c.OrderByDescending(o => o.Id));
             var sum = await _repository.Sum(c => c.DeliveryCost - c.AgentCost, predicate);
             return new EarningsDto()
             {
@@ -2187,7 +2187,6 @@ namespace Quqaz.Web.Services.Concret
                     order.Cost = (decimal)order.OldCost;
                     order.OldCost = null;
                 }
-                //order.IsClientDiliverdMoney = false;
                 order.OrderState = OrderState.Processing;
                 order.OrderPlace = OrderPlace.Store;
                 order.DeliveryCost = orderReSend.DeliveryCost;
@@ -2196,6 +2195,7 @@ namespace Quqaz.Web.Services.Concret
                 order.SystemNote = "إعادة الإرسال";
                 order.UpdatedBy = _userService.AuthoticateUserName();
                 order.UpdatedDate = DateTime.UtcNow;
+                order.Note = orderReSend.Note;
             }
             await _uintOfWork.AddRange(logs);
             await _uintOfWork.UpdateRange(orders);

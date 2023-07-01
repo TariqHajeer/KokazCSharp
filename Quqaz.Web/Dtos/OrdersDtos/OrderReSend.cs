@@ -7,6 +7,7 @@
         public int? RegionId { get; set; }
         public int AgnetId { get; set; }
         public decimal DeliveryCost { get; set; }
+        public string Note { get; set; }
 
     }
 }
