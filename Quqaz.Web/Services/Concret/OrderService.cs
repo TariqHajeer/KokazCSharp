@@ -1299,134 +1299,6 @@ namespace Quqaz.Web.Services.Concret
             //semaphore.Release();
             return clientPayment.Id;
         }
-        public async Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto)
-        {
-            var includes = new string[] { $"{nameof(Order.Client)}.{nameof(Client.ClientPhones)}", $"{nameof(Order.Country)}.{nameof(Country.BranchToCountryDeliverryCosts)}" };
-            var orders = await _repository.GetByFilterInclue(c => deleiverMoneyForClientDto.Ids.Contains(c.Id), includes);
-            var client = orders.FirstOrDefault().Client;
-            if (orders.Any(c => c.ClientId != client.Id))
-            {
-                throw new ConflictException("ليست جميع الشحنات لنفس العميل");
-            }
-            semaphore.Wait();
-            var clientPayment = new ClientPayment()
-            {
-                Date = DateTime.UtcNow,
-                PrinterName = currentUser,
-                DestinationName = client.Name,
-                DestinationPhone = client.ClientPhones.FirstOrDefault()?.Phone ?? "",
-
-            };
-            var total = 0m;
-            await _uintOfWork.BegeinTransaction();
-            await _uintOfWork.Add(clientPayment);
-            if (!orders.All(c => c.OrderPlace == OrderPlace.CompletelyReturned || c.OrderPlace == OrderPlace.Unacceptable))
-            {
-                var recepits = await _uintOfWork.Repository<Receipt>().GetAsync(c => c.ClientPaymentId == null && c.ClientId == client.Id);
-                total += recepits.Sum(c => c.Amount);
-                recepits.ForEach(c =>
-                {
-                    c.ClientPaymentId = clientPayment.Id;
-
-                });
-                await _uintOfWork.UpdateRange(recepits);
-            }
-            int totalPoints = 0;
-            foreach (var item in orders)
-            {
-                var points = item.Country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _currentBranchId).Points;
-                if (!item.IsClientDiliverdMoney)
-                {
-                    if (!(item.OrderPlace == OrderPlace.CompletelyReturned || item.OrderPlace == OrderPlace.Delayed))
-                    {
-
-                        totalPoints += points;
-                    }
-                }
-                else
-                {
-                    if ((item.OrderPlace == OrderPlace.CompletelyReturned || item.OrderPlace == OrderPlace.Delayed))
-                    {
-                        totalPoints -= points;
-                    }
-                }
-
-                if (item.OrderPlace > OrderPlace.Way)
-                {
-                    item.OrderState = OrderState.Finished;
-                    if (item.MoneyPlace == MoneyPalce.InsideCompany)
-                    {
-                        item.MoneyPlace = MoneyPalce.Delivered;
-                    }
-
-                }
-                item.IsClientDiliverdMoney = true;
-                var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                item.ClientPaied = item.ShouldToPay();
-                await _repository.Update(item);
-                var orderClientPaymnet = new OrderClientPaymnet()
-                {
-                    OrderId = item.Id,
-                    ClientPaymentId = clientPayment.Id
-                };
-
-                var clientPaymentDetials = new ClientPaymentDetail()
-                {
-                    Code = item.Code,
-                    Total = item.Cost,
-                    Country = item.Country.Name,
-                    ClientPaymentId = clientPayment.Id,
-                    Phone = item.RecipientPhones,
-                    DeliveryCost = item.DeliveryCost,
-                    LastTotal = item.OldCost,
-                    Note = item.Note,
-                    MoneyPlace = item.MoneyPlace,
-                    OrderPlace = item.OrderPlace,
-                    PayForClient = currentPay,
-                    Date = item.Date,
-                    ClientNote = item.ClientNote
-                };
-                total += currentPay;
-                await _uintOfWork.Add(orderClientPaymnet);
-                await _uintOfWork.Add(clientPaymentDetials);
-            }
-            client.Points += totalPoints;
-            await _uintOfWork.Update(client);
-            if (deleiverMoneyForClientDto.PointsSettingId != null)
-            {
-
-                var pointSetting = await _uintOfWork.Repository<PointsSetting>().FirstOrDefualt(c => c.Id == deleiverMoneyForClientDto.PointsSettingId);
-                Discount discount = new Discount()
-                {
-                    Money = pointSetting.Money,
-                    Points = pointSetting.Points,
-                    ClientPaymentId = clientPayment.Id
-                };
-                await _uintOfWork.Add(discount);
-                total -= discount.Money;
-            }
-            await _uintOfWork.Add(new Notfication()
-            {
-                Note = "تم تسديدك برقم " + clientPayment.Id,
-                ClientId = client.Id
-            });
-
-            var treasury = await _uintOfWork.Repository<Treasury>().FirstOrDefualt(c => c.Id == currentUserId);
-            treasury.Total -= total;
-            var history = new TreasuryHistory()
-            {
-                ClientPaymentId = clientPayment.Id,
-                CashMovmentId = null,
-                TreasuryId = currentUserId,
-                Amount = -total,
-                CreatedOnUtc = DateTime.UtcNow
-            };
-            await _uintOfWork.Update(treasury);
-            await _uintOfWork.Add(history);
-            await _uintOfWork.Commit();
-            semaphore.Release();
-            return clientPayment.Id;
-        }
 
         public async Task Delete(int id)
         {
@@ -1455,7 +1327,7 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<(PagingResualt<IEnumerable<PayForClientDto>>, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
+        public async Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var result = await _repository.OrdersDontFinished2(orderDontFinishedFilter, pagingDto);
             var response = new PagingResualt<IEnumerable<PayForClientDto>>()

@@ -9,11 +9,6 @@ namespace Quqaz.Web.Dtos.Common
         public DateTime Date { get; set; }
         public T Ids { get; set; }
     }
-    public class DeleiverMoneyForClientDto
-    {
-        public int[] Ids { get; set; }
-        public int? PointsSettingId { get; set; }
-    }
     public class DeleiverMoneyForClientDto2
     {
         public OrderDontFinishedFilter Filter { get; set; }
@@ -21,11 +16,5 @@ namespace Quqaz.Web.Dtos.Common
         //public int[] SelectedIds { get; set; }
         //public int[] ExceptIds { get; set; }
         public int? PointsSettingId { get; set; }
-    }
-    public class DeleiverMoneyForClientDtoResponse
-    {
-        public decimal TotlaDeliveyCost { get; set; }
-        public decimal TotlaOrderCost { get; set; }
-
     }
 }

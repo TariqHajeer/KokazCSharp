@@ -249,9 +249,15 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         /// <param name="orderDontFinishedFilter"></param>
         /// <returns></returns>
         [HttpPost("OrdersDontFinished")]
-        public async Task<ActionResult<PagingResualt<IEnumerable<PayForClientDto>>>> Get([FromBody] OrderDontFinishedFilter orderDontFinishedFilter)
+        public async Task<IActionResult> Get([FromBody] OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            return Ok(await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging));
+            var (Data, orderCostTotal, deliveryCostTOtal) = await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging);
+            return Ok(new
+            {
+                Data,
+                OrderTotal = orderCostTotal,
+                DeliveryTotal = deliveryCostTOtal
+            });
         }
         [HttpGet("chekcCode")]
         public async Task<ActionResult<bool>> CheckCode([FromQuery] string code, int clientid)
@@ -430,9 +436,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         }
 
         [HttpGet("GetAgentPrint")]
-        public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName,string code)
+        public async Task<IActionResult> GetAgentPrint([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string agnetName, string code)
         {
-            return Ok(await _agentPrintService.GetAgentPrint(pagingDto, number, agnetName,code));
+            return Ok(await _agentPrintService.GetAgentPrint(pagingDto, number, agnetName, code));
         }
         [HttpGet("GetOrderByAgnetPrintNumber")]
         public async Task<IActionResult> GetOrderByAgnetPrintNumber([FromQuery] int printNumber)
