@@ -10,6 +10,7 @@ namespace Quqaz.Web.Models
         public string OrderCode { get; set; }
         public int ClientId { get; set; }
         public decimal Cost { get; set; }
+        public decimal? OldCost { get; set; }
         public decimal AgentCost { get; set; }
         public int AgentId { get; set; }
         public OrderState OrderState { get; set; }

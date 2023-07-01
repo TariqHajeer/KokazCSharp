@@ -251,7 +251,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPost("OrdersDontFinished")]
         public async Task<ActionResult<PagingResualt<IEnumerable<PayForClientDto>>>> Get([FromBody] OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            return Ok(await _orderService.OrdersDontFinished(orderDontFinishedFilter, orderDontFinishedFilter.Paging));
+            return Ok(await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging));
         }
         [HttpGet("chekcCode")]
         public async Task<ActionResult<bool>> CheckCode([FromQuery] string code, int clientid)

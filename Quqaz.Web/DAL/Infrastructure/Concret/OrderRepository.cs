@@ -244,7 +244,72 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             }
             return await orderIQ.ToListAsync();
         }
+        public async Task<(PagingResualt<IEnumerable<Order>> pagingResualt,decimal ordersCost,decimal deliveryCost)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
+        {
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
+            if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+            {
+                var orderFilterExcpt = orderDontFinishedFilter.OrderPlacedId.Except(new[] { OrderPlace.CompletelyReturned, OrderPlace.Unacceptable, OrderPlace.PartialReturned });
+                predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderFilterExcpt.Contains(c.OrderPlace) && c.AgentId != null);
+                var orderPlacePredicate = PredicateBuilder.New<Order>(false);
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.Unacceptable && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.PartialReturned && c.CurrentBranchId == _httpContextAccessorService.CurrentBranchId());
+                }
+                orderPlacePredicate = orderPlacePredicate.And(c => c.ClientId == orderDontFinishedFilter.ClientId && c.AgentId != null);
+                predicate = predicate.Or(orderPlacePredicate);
 
+            }
+            if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
+            }
+            else if (!orderDontFinishedFilter.ClientDoNotDeleviredMoney && orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash);
+            }
+            else if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && orderDontFinishedFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
+            }
+            if (orderDontFinishedFilter.TableSelection != null)
+            {
+                if (orderDontFinishedFilter.TableSelection.IsSelectedAll)
+                {
+                    if (orderDontFinishedFilter.TableSelection.ExceptIds?.Any() == true)
+                    {
+                        predicate = predicate.And(c => !orderDontFinishedFilter.TableSelection.ExceptIds.Contains(c.Id));
+                    }
+                }
+                else
+                {
+                    if (orderDontFinishedFilter.TableSelection.SelectedIds?.Any() == true)
+                    {
+                        predicate = predicate.And(c => orderDontFinishedFilter.TableSelection.SelectedIds.Contains(c.Id));
+                    }
+
+                }
+            }
+            var query = Query.Include(c => c.Country).Where(predicate);
+            var total = await query.CountAsync();
+            var costTotal = await query.SumAsync(c => c.Cost);
+            var dtotal = await query.SumAsync(c => c.DeliveryCost);
+            var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
+            var result= new PagingResualt<IEnumerable<Order>>()
+            {
+                Total = total,
+                Data = data
+            };
+            return (result, costTotal, dtotal);
+        }
         public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);

@@ -268,6 +268,7 @@ namespace Quqaz.Web.Services.Concret
                         OrderCode = order.Code,
                         ClientId = order.ClientId,
                         Cost = order.Cost,
+                        OldCost = order.OldCost,
                         AgentCost = order.AgentCost,
                         AgentId = order.AgentId.Value,
                         MoneyPalce = order.MoneyPlace,
@@ -412,6 +413,7 @@ namespace Quqaz.Web.Services.Concret
                         OrderCode = order.Code,
                         ClientId = order.ClientId,
                         Cost = order.Cost,
+                        OldCost = order.OldCost,
                         AgentCost = order.AgentCost,
                         AgentId = order.AgentId.Value,
                         MoneyPalce = order.MoneyPlace,
@@ -1453,6 +1455,16 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
+        public async Task<(PagingResualt<IEnumerable<PayForClientDto>>, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
+        {
+            var result = await _repository.OrdersDontFinished2(orderDontFinishedFilter, pagingDto);
+            var response = new PagingResualt<IEnumerable<PayForClientDto>>()
+            {
+                Total = result.pagingResualt.Total,
+                Data = _mapper.Map<IEnumerable<PayForClientDto>>(result.pagingResualt.Data)
+            };
+            return (response, result.ordersCost, result.deliveryCost);
+        }
         public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var result = await _repository.OrdersDontFinished(orderDontFinishedFilter, pagingDto);

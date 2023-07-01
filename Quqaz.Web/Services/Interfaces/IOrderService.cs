@@ -34,6 +34,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto deleiverMoneyForClientDto);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2);
+        Task<(PagingResualt<IEnumerable<PayForClientDto>>, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
         //Task<IEnumerable<PayForClientDto>> GetDeleiverMoneyForClientForPrint(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2, PagingDto pagingDto);
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
