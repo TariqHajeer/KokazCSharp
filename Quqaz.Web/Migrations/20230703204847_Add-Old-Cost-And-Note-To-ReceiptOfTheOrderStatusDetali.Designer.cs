@@ -10,8 +10,8 @@ using Quqaz.Web.Models;
 namespace Quqaz.Web.Migrations
 {
     [DbContext(typeof(KokazContext))]
-    [Migration("20230701141318_Add-Old-Cost-To-ReceiptOfTheOrderStatusDetali")]
-    partial class AddOldCostToReceiptOfTheOrderStatusDetali
+    [Migration("20230703204847_Add-Old-Cost-And-Note-To-ReceiptOfTheOrderStatusDetali")]
+    partial class AddOldCostAndNoteToReceiptOfTheOrderStatusDetali
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -5531,6 +5531,9 @@ namespace Quqaz.Web.Migrations
 
                     b.Property<int>("MoneyPalce")
                         .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("OldCost")
                         .HasColumnType("decimal(18,2)");

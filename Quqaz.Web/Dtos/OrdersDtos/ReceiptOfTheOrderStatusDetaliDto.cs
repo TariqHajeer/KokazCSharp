@@ -1,6 +1,4 @@
-﻿using Quqaz.Web.Dtos.Clients;
-using Quqaz.Web.Dtos.Common;
-using Quqaz.Web.Dtos.Users;
+﻿using Quqaz.Web.Dtos.Common;
 
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
@@ -10,6 +8,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public string OrderCode { get; set; }
         public decimal Cost { get; set; }
         public decimal? OldCost { get; set; }
+        public string Note { get; set; }
         public decimal AgentCost { get; set; }  
         public NameAndIdDto Client { get; set; }
         public NameAndIdDto Agent { get; set; }

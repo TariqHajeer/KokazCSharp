@@ -5530,6 +5530,9 @@ namespace Quqaz.Web.Migrations
                     b.Property<int>("MoneyPalce")
                         .HasColumnType("int");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("OldCost")
                         .HasColumnType("decimal(18,2)");
 

@@ -2,10 +2,16 @@
 
 namespace Quqaz.Web.Migrations
 {
-    public partial class AddOldCostToReceiptOfTheOrderStatusDetali : Migration
+    public partial class AddOldCostAndNoteToReceiptOfTheOrderStatusDetali : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "Note",
+                table: "ReceiptOfTheOrderStatusDetalis",
+                type: "nvarchar(max)",
+                nullable: true);
+
             migrationBuilder.AddColumn<decimal>(
                 name: "OldCost",
                 table: "ReceiptOfTheOrderStatusDetalis",
@@ -15,6 +21,10 @@ namespace Quqaz.Web.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Note",
+                table: "ReceiptOfTheOrderStatusDetalis");
+
             migrationBuilder.DropColumn(
                 name: "OldCost",
                 table: "ReceiptOfTheOrderStatusDetalis");

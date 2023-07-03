@@ -269,6 +269,7 @@ namespace Quqaz.Web.Services.Concret
                         ClientId = order.ClientId,
                         Cost = order.Cost,
                         OldCost = order.OldCost,
+                        Note = order.Note,
                         AgentCost = order.AgentCost,
                         AgentId = order.AgentId.Value,
                         MoneyPalce = order.MoneyPlace,
