@@ -1781,6 +1781,8 @@ namespace Quqaz.Web.Services.Concret
                     else
                     {
                         order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
+                        order.NextBranchId = null;
+                        order.TargetBranchId = null;
                     }
                 }
                 order.OrderPlace = OrderPlace.Store;
@@ -1789,6 +1791,7 @@ namespace Quqaz.Web.Services.Concret
             }
             else
             {
+
                 order.Map(updateOrder);
             }
             
