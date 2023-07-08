@@ -1722,55 +1722,82 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task Edit(UpdateOrder updateOrder)
         {
+            var country = await _countryCashedService.GetById(updateOrder.CountryId);
+            var currentBrach = await _branchRepository.GetById(_currentBranchId);
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
+            if (order.ClientId != updateOrder.ClientId)
+            {
+                throw new ConflictException($"لا يمكن تغير العميل مؤقتاً الرجاء حذف الطلب و إعادة الإضافة");
+            }
             OrderLog log = order;
             if (order.Code != updateOrder.Code)
             {
                 if (await _uintOfWork.Repository<Order>().Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
                 {
-                    throw new ConflictException("الكود{order.Code} مكرر");
+                    throw new ConflictException($"الكود{order.Code} مكرر");
                 }
             }
-            order.Code = updateOrder.Code;
-            if (order.AgentId != updateOrder.AgentId)
+
+            if (order.CountryId != updateOrder.CountryId)
             {
-                order.OrderState = OrderState.Processing;
-                order.MoneyPlace = MoneyPalce.OutSideCompany;
+                order.Map(updateOrder);
+                var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
+                if (targetBranch != null)
+                {
+                    order.TargetBranchId = targetBranch.Id;
+                    order.NextBranchId = targetBranch.Id;
+                    if (order.AgentId.HasValue)
+                    {
+                        throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                    }
+
+
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+
+                    if (midCountry != null)
+                    {
+
+                        order.NextBranchId = midCountry.MediatorCountryId;
+                    }
+                    order.AgentId = null;
+                }
+                else
+                {
+                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                    if (midCountry != null)
+                    {
+                        order.NextBranchId = midCountry.MediatorCountryId;
+                        order.TargetBranchId = midCountry.MediatorCountryId;
+                        if (order.AgentId.HasValue)
+                        {
+                            throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                        }
+                    }
+                    else if (!order.AgentId.HasValue)
+                    {
+                        throw new ConflictException("يجب اختيار المندوب");
+
+                    }
+                    else
+                    {
+                        order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
+                    }
+                }
                 order.OrderPlace = OrderPlace.Store;
+                order.MoneyPlace = MoneyPalce.OutSideCompany;
+                order.CurrentBranchId = order.BranchId;
             }
+            else
+            {
+                order.Map(updateOrder);
+            }
+            
+            
+
+            
             await _uintOfWork.BegeinTransaction();
             await _uintOfWork.Add(log);
-            if (order.ClientId != updateOrder.ClientId)
-            {
-                if (order.IsClientDiliverdMoney)
-                {
-                    order.IsClientDiliverdMoney = false;
-                    Receipt receipt = new Receipt()
-                    {
-                        IsPay = true,
-                        ClientId = order.ClientId,
-                        Amount = ((order.Cost - order.DeliveryCost) * -1),
-                        CreatedBy = "النظام",
-                        Manager = "",
-                        Date = DateTime.Now,
-                        About = "",
-                        Note = " بعد تعديل طلب بكود " + order.Code,
-                    };
-                    await _uintOfWork.Add(receipt);
-                }
-            }
-            order.DeliveryCost = updateOrder.DeliveryCost;
-            order.Cost = updateOrder.Cost;
-            order.ClientId = updateOrder.ClientId;
-            order.AgentId = updateOrder.AgentId;
-            order.CountryId = updateOrder.CountryId;
-            order.RegionId = updateOrder.RegionId;
-            order.Address = updateOrder.Address;
-            order.RecipientName = updateOrder.RecipientName;
-            order.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
-            order.Note = updateOrder.Note;
             order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
-            order.UpdatedDate = DateTime.UtcNow;
             await _uintOfWork.Update(order);
             await _uintOfWork.Commit();
         }

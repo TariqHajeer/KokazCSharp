@@ -1,4 +1,5 @@
 ﻿using Quqaz.Web.Dtos.Common;
+using Quqaz.Web.Dtos.OrdersDtos;
 using Quqaz.Web.Models.Infrastrcuter;
 using Quqaz.Web.Models.Static;
 using System;
@@ -122,6 +123,21 @@ namespace Quqaz.Web.Models
             if (OrderPlace == OrderPlace.Delayed)
                 return true;
             return false;
+        }
+        public void Map(UpdateOrder updateOrder)
+        {
+            this.Code = updateOrder.Code;
+            this.DeliveryCost = updateOrder.DeliveryCost;
+            this.Cost = updateOrder.Cost;
+            this.ClientId = updateOrder.ClientId;
+            this.AgentId = updateOrder.AgentId;
+            this.CountryId = updateOrder.CountryId;
+            this.RegionId = updateOrder.RegionId;
+            this.Address = updateOrder.Address;
+            this.RecipientName = updateOrder.RecipientName;
+            this.RecipientPhones = String.Join(",", updateOrder.RecipientPhones);
+            this.Note = updateOrder.Note;
+            this.UpdatedDate = DateTime.UtcNow;
         }
     }
 }
