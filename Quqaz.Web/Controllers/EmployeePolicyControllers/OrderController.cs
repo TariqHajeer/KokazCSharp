@@ -236,7 +236,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
-            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));  
         }
         [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
@@ -406,6 +406,21 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             var id = await _orderService.DeleiverMoneyForClient(deleiverMoneyForClientDto);
             return Ok(id);
+        }
+        [HttpGet("PrintDeleiverMoneyForClient/{id:int}")]
+        public async Task<IActionResult> PrintDeleiverMoneyForClient(int id)
+        {
+            var txt = await _orderService.GetDeleiverMoneyForClient(id);
+            _generatePdf.SetConvertOptions(new ConvertOptions()
+            {
+                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
+
+                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
+
+            });
+            var pdfBytes = _generatePdf.GetPDF(txt);
+            string fileName = "تم تسديد العميل برقم" + id + ".pdf";
+            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
         /// <summary>
         /// تسديد الشركات

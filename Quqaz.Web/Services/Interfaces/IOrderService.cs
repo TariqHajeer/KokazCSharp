@@ -27,6 +27,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<int> MakeOrderInWay(MakeOrderInWayDto makeOrderInWayDto);
         Task<int> TransferToSecondBranch(TransferToSecondBranchDto transferToSecondBranchDto);
         Task<string> GetTransferToSecondBranchReportAsString(int id);
+        Task<string> GetDeleiverMoneyForClient(int id);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrderFromEmployee createOrdersFromEmployee);
@@ -34,11 +35,10 @@ namespace Quqaz.Web.Services.Interfaces
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2);
         Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
-        //Task<IEnumerable<PayForClientDto>> GetDeleiverMoneyForClientForPrint(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2, PagingDto pagingDto);
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
         Task<OrderDto> GetById(int id);
-        Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter,PagingDto pagingDto);
+        Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
         Task<IEnumerable<OrderDto>> NewOrderDontSned();
         Task<IEnumerable<OrderDto>> OrderAtClient(OrderFilter orderFilter);
         Task<PayForClientDto> GetByCodeAndClient(int clientId, string code);

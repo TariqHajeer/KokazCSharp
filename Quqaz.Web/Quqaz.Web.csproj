@@ -44,6 +44,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DeleiverMoneyForClientReport.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DiscountRow.Html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="wkhtmltopdf\Windows\wkhtmltopdf.exe">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

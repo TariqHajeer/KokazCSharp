@@ -1,6 +1,8 @@
 ﻿using Quqaz.Web.Models.Infrastrcuter;
+using Quqaz.Web.Models.Static;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #nullable disable
 
@@ -30,5 +32,9 @@ namespace Quqaz.Web.Models
         public virtual ICollection<TreasuryHistory> TreasuryHistories { get; set; }
         public int BranchId { get; set; }
         public Branch Branch { get; set; }
+        public IEnumerable<OrderPlace> GetOrdersPalced()
+        {
+            return this.ClientPaymentDetails.Select(c => c.OrderPlace.Value).Distinct();
+        }
     }
 }

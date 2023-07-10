@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
+using Microsoft.OpenApi.Extensions;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -174,8 +175,10 @@ namespace Quqaz.Web.Services.Concret
             {
                 return new ErrorResponse<string, IEnumerable<string>>();
             }
-            var OrderNotInWay = orders.Where(c => c.OrderPlace != OrderPlace.Way);
-            if (OrderNotInWay.Any())
+            var orderNotInWay = orders.Where(c => c.OrderPlace != OrderPlace.Way);
+            ///TODO:
+            //orderNotInWay = orderNotInWay.Except(c=>c.)
+            if (orderNotInWay.Any())
             {
                 throw new ConflictException("هناك شحنات ليست مع المندوب");
             }
@@ -1421,10 +1424,10 @@ namespace Quqaz.Web.Services.Concret
         public async Task Accept(OrderIdAndAgentId idsDto)
         {
             var order = await _repository.GetById(idsDto.OrderId);
-            if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
-            {
-                throw new ConflictException("تضارب المندوب و المدينة");
-            }
+            //if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
+            //{
+            //    throw new ConflictException("تضارب المندوب و المدينة");
+            //}
             var country = await _countryCashedService.GetById(order.CountryId);
             var currentBrach = await _branchRepository.GetById(_currentBranchId);
             var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
@@ -1794,10 +1797,10 @@ namespace Quqaz.Web.Services.Concret
 
                 order.Map(updateOrder);
             }
-            
-            
 
-            
+
+
+
             await _uintOfWork.BegeinTransaction();
             await _uintOfWork.Add(log);
             order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
@@ -2274,6 +2277,121 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.Add(report);
             await _uintOfWork.Commit();
             return report.Id;
+        }
+        public async Task<string> GetDeleiverMoneyForClient(int id)
+        {
+            var path = _environment.WebRootPath + "/HtmlTemplate/DeleiverMoneyForClientReports/DeleiverMoneyForClientReport.html";
+            var readTextTask = File.ReadAllTextAsync(path);
+
+            var report = await _clientPaymentRepository.FirstOrDefualt(c => c.Id == id, c => c.ClientPaymentDetails, c => c.Discounts, c => c.Receipts);
+            var readText = await readTextTask;
+
+            readText = readText.Replace("{{printNumber}}", report.Id.ToString());
+            readText = readText.Replace("{{userName}}", report.PrinterName);
+            readText = readText.Replace("{{dateOfPrint}}", report.Date.ToString("yyyy-MM-dd"));
+            readText = readText.Replace("{{timeOfPrint}}", report.Date.ToString("HH:mm"));
+            readText = readText.Replace("{{clientName}}", report.DestinationName);
+            readText = readText.Replace("{{clientPhones}}", report.DestinationPhone);
+            readText = readText.Replace("{{orderplacedName}}", string.Join('-', report.GetOrdersPalced().Select(c => c.GetDisplayName())));
+            readText = readText.Replace("{{ordersCounts}}", report.ClientPaymentDetails.Count().ToString());
+            readText = readText.Replace("{{TotalCost}}", report.ClientPaymentDetails.Sum(c => c.Total).ToString());
+            readText = readText.Replace("{{deliveryCostCount}}", report.ClientPaymentDetails.Sum(c => c.DeliveryCost).ToString());
+            var payForClient = report.ClientPaymentDetails.Sum(c => c.Total - c.DeliveryCost);
+            readText = readText.Replace("{{PayForClient}}", payForClient.ToString());
+
+            var rows = new StringBuilder();
+            var c = 1;
+            foreach (var item in report.ClientPaymentDetails)
+            {
+
+                rows.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
+                rows.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(c.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Code);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Country);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Date.Value.ToString("yyyy-mm-dd"));
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Total);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.DeliveryCost);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.PayForClient);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.LastTotal?.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.ClientNote);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Note);
+                rows.Append("</td>");
+                rows.Append("</tr>");
+                c++;
+            }
+            readText = readText.Replace("{{orders}}", rows.ToString());
+            rows.Clear();
+            if (report.Discounts.Any())
+            {
+                var discountRowTemplate = await File.ReadAllTextAsync(_environment.WebRootPath + "/HtmlTemplate/DeleiverMoneyForClientReports/DiscountRow.Html");
+                foreach (var item in report.Discounts)
+                {
+                    var tempDiscountRow = discountRowTemplate.Replace("{{points}}", item.Points.ToString());
+                    tempDiscountRow = tempDiscountRow.Replace("{{pointsMoney}}", item.Money.ToString());
+                    payForClient -= item.Money;
+                    tempDiscountRow = tempDiscountRow.Replace("{{pointsmoneyclientCalctotal}}", payForClient.ToString());
+                    rows.AppendLine(tempDiscountRow);
+                }
+                readText = readText.Replace("{{discountRow}}", rows.ToString());
+            }
+            else
+            {
+                readText = readText.Replace("{{discountRow}}", string.Empty);
+            }
+            rows.Clear();
+            var receiptsTotal = report.Receipts.Sum(c => c.Amount);
+            payForClient -= receiptsTotal;
+            readText = readText.Replace("{{total}}", payForClient.ToString());
+            readText = readText.Replace("{{reportstotal}}", receiptsTotal.ToString());
+
+            //var receiptRowTemplate = await File.ReadAllTextAsync(_environment.WebRootPath + "/HtmlTemplate/DeleiverMoneyForClientReports/DiscountRow.Html");
+            c = 1;
+            foreach (var item in report.Receipts)
+            {
+                rows.Append(@"<tr style=""border: 1px black solid;padding: 5px;text-align: center;margin-bottom: 20%;overflow: auto;"">");
+                rows.Append(@"<td style=""width: 3%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(c.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 5%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Id.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Date.ToString("yyyy-mm-dd"));
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.IsPay?"صرف":"قبض");
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Amount.ToString());
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.About);
+                rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.Note);
+                rows.Append("</td>");
+            }
+            readText = readText.Replace("{{reports}}", rows.ToString());
+            return readText;
         }
 
         public async Task<string> GetSendOrdersReturnedToSecondBranchReportAsString(int id)
