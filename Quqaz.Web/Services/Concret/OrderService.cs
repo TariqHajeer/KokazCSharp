@@ -1640,6 +1640,10 @@ namespace Quqaz.Web.Services.Concret
             {
                 throw new ConflictException("الشحنة ليست في المخزن");
             }
+            if (order.CurrentBranchId != _currentBranchId)
+            {
+                throw new ConflictException("الشحنة ليست في مخزنك");
+            }
             order.OrderPlace = OrderPlace.CompletelyReturned;
             order.MoneyPlace = MoneyPalce.InsideCompany;
             order.OldCost = order.Cost;
@@ -1724,11 +1728,43 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
         }
+        public void UpdateValidationForSameBranch(UpdateOrder updateOrder, Order order)
+        {
+
+        }
+        public void UpdateValidationForOtherBranch(UpdateOrder updateOrder, Order order)
+        {
+            if (updateOrder.CountryId != order.CountryId)
+            {
+                throw new ConflictException("لا يمكنك تغير المدينة");
+            }
+            if (updateOrder.ClientId != order.ClientId)
+            {
+                throw new ConflictException("لا يمكنك تغير العميل ");
+            }
+            if (order.AgentId.Value != updateOrder.AgentId)
+            {
+                if (!order.CanChangeTheAgent())
+                {
+                    throw new ConflictException("لا يمكنك تعديل المندوب ");
+                }
+            }
+        }
         public async Task Edit(UpdateOrder updateOrder)
         {
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
+            var isMainBranch = _currentBranchId == order.BranchId;
+            if (isMainBranch)
+            {
+                UpdateValidationForOtherBranch(updateOrder, order);
+            }
+            else
+            {
+                UpdateValidationForOtherBranch(updateOrder, order);
+            }
+
             var country = await _countryCashedService.GetById(updateOrder.CountryId);
             var currentBrach = await _branchRepository.GetById(_currentBranchId);
-            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
             if (order.ClientId != updateOrder.ClientId)
             {
                 throw new ConflictException($"لا يمكن تغير العميل مؤقتاً الرجاء حذف الطلب و إعادة الإضافة");

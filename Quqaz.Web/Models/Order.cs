@@ -33,7 +33,7 @@ namespace Quqaz.Web.Models
         public string RecipientPhones { get; set; }
         public int? RegionId { get; set; }
         public string Address { get; set; }
-        public string ClientNote { get; set; } 
+        public string ClientNote { get; set; }
         public string CreatedBy { get; set; }
         public MoneyPalce MoneyPlace { get; set; }
         public OrderPlace OrderPlace { get; set; }
@@ -81,6 +81,10 @@ namespace Quqaz.Web.Models
         public NameAndIdDto GetOrderPlaced()
         {
             return this.OrderPlace;
+        }
+        public bool CanChangeTheAgent()
+        {
+            return (OrderPlace == OrderPlace.Store && MoneyPlace == MoneyPalce.OutSideCompany);
         }
         public NameAndIdDto GetMoneyPlaced()
         {
