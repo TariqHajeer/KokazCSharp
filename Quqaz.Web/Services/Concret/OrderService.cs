@@ -26,7 +26,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
-using Microsoft.OpenApi.Extensions;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -176,6 +175,7 @@ namespace Quqaz.Web.Services.Concret
                 return new ErrorResponse<string, IEnumerable<string>>();
             }
             var orderNotInWay = orders.Where(c => c.OrderPlace != OrderPlace.Way);
+            orderNotInWay = orderNotInWay.Except(orderNotInWay.Where(c => c.OrderPlace == OrderPlace.Delivered && c.MoneyPlace == MoneyPalce.WithAgent));
             ///TODO:
             //orderNotInWay = orderNotInWay.Except(c=>c.)
             if (orderNotInWay.Any())
@@ -308,6 +308,7 @@ namespace Quqaz.Web.Services.Concret
             orders = orders.Except(repatedOrders).ToList();
             var exptedOrdersIds = repatedOrders.Select(c => c.Id);
             receiptOfTheStatusOfTheDeliveredShipmentDtos = receiptOfTheStatusOfTheDeliveredShipmentDtos.Where(c => !exptedOrdersIds.Contains(c.Id));
+            var x = receiptOfTheStatusOfTheDeliveredShipmentDtos.ToList();
             if (!receiptOfTheStatusOfTheDeliveredShipmentDtos.Any())
             {
                 return new ErrorResponse<string, IEnumerable<string>>();
@@ -1795,7 +1796,17 @@ namespace Quqaz.Web.Services.Concret
             else
             {
 
-                order.Map(updateOrder);
+                if (order.AgentId != updateOrder.AgentId)
+                {
+                    if (_currentBranchId == order.CurrentBranchId)
+                    {
+                        order.Map(updateOrder);
+                        order.AgentId = updateOrder.AgentId;
+
+                    }
+                    //order.OrderPlace = OrderPlace.Store;
+
+                }
             }
 
 
@@ -1944,12 +1955,12 @@ namespace Quqaz.Web.Services.Concret
                                     order.OrderState = OrderState.ShortageOfCash;
                                     if (order.MoneyPlace == MoneyPalce.Delivered)
                                     {
-                                        order.MoneyPlace = MoneyPalce.InsideCompany;
+                                        order.MoneyPlace = MoneyPalce.WithAgent;
                                     }
                                 }
                                 else
                                 {
-                                    order.OrderState = OrderState.Finished;
+                                    order.OrderState = OrderState.Processing;
                                 }
 
                             }
@@ -1961,23 +1972,22 @@ namespace Quqaz.Web.Services.Concret
                                 order.Cost = 0;
                                 order.AgentCost = 0;
                                 order.OrderState = OrderState.ShortageOfCash;
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
                         case OrderPlace.Unacceptable:
                             {
-                                if (order.OldCost == null)
-                                {
-                                    order.OldCost = order.Cost;
-                                }
+                                order.OldCost ??= order.Cost;
                                 order.OrderState = OrderState.ShortageOfCash;
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
                         case OrderPlace.PartialReturned:
                             {
-                                if (order.OldCost == null)
-                                    order.OldCost = order.Cost;
+                                order.OldCost ??= order.Cost;
                                 order.Cost = order.NewCost.Value;
                                 order.OrderState = OrderState.ShortageOfCash;
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
                     }
@@ -1995,24 +2005,24 @@ namespace Quqaz.Web.Services.Concret
                                         order.OldCost = order.Cost;
                                     order.Cost = order.NewCost.Value;
                                 }
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
                         case OrderPlace.CompletelyReturned:
                             {
-                                if (order.OldCost == null)
-                                {
-                                    order.OldCost = order.Cost;
-                                }
+                                order.OldCost ??= order.Cost;
                                 order.Cost = 0;
                                 order.OldDeliveryCost ??= order.DeliveryCost;
                                 order.DeliveryCost = 0;
                                 order.AgentCost = 0;
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
                         case OrderPlace.Unacceptable:
                             {
                                 order.OldCost ??= order.Cost;
                                 order.Cost = 0;
+                                order.MoneyPlace = MoneyPalce.WithAgent;
                             }
                             break;
 
@@ -2292,7 +2302,7 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{timeOfPrint}}", report.Date.ToString("HH:mm"));
             readText = readText.Replace("{{clientName}}", report.DestinationName);
             readText = readText.Replace("{{clientPhones}}", report.DestinationPhone);
-            readText = readText.Replace("{{orderplacedName}}", string.Join('-', report.GetOrdersPalced().Select(c => c.GetDisplayName())));
+            readText = readText.Replace("{{orderplacedName}}", string.Join('-', report.GetOrdersPalced().Select(c => c.GetDescription())));
             readText = readText.Replace("{{ordersCounts}}", report.ClientPaymentDetails.Count().ToString());
             readText = readText.Replace("{{TotalCost}}", report.ClientPaymentDetails.Sum(c => c.Total).ToString());
             readText = readText.Replace("{{deliveryCostCount}}", report.ClientPaymentDetails.Sum(c => c.DeliveryCost).ToString());
@@ -2357,13 +2367,18 @@ namespace Quqaz.Web.Services.Concret
             {
                 readText = readText.Replace("{{discountRow}}", string.Empty);
             }
+
+            if (report.Receipts?.Any() != true)
+            {
+                readText = readText.Replace("{{ReceiptsHtml}}", "");
+                return readText;
+            }
+            var receiptsHtml = _environment.WebRootPath + "/HtmlTemplate/DeleiverMoneyForClientReports/Receipts.html";
             rows.Clear();
             var receiptsTotal = report.Receipts.Sum(c => c.Amount);
             payForClient -= receiptsTotal;
-            readText = readText.Replace("{{total}}", payForClient.ToString());
-            readText = readText.Replace("{{reportstotal}}", receiptsTotal.ToString());
-
-            //var receiptRowTemplate = await File.ReadAllTextAsync(_environment.WebRootPath + "/HtmlTemplate/DeleiverMoneyForClientReports/DiscountRow.Html");
+            receiptsHtml = receiptsHtml.Replace("{{total}}", payForClient.ToString());
+            receiptsHtml = receiptsHtml.Replace("{{reportstotal}}", receiptsTotal.ToString());
             c = 1;
             foreach (var item in report.Receipts)
             {
@@ -2378,7 +2393,7 @@ namespace Quqaz.Web.Services.Concret
                 rows.Append(item.Date.ToString("yyyy-mm-dd"));
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 15%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                rows.Append(item.IsPay?"صرف":"قبض");
+                rows.Append(item.IsPay ? "صرف" : "قبض");
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 10%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append(item.Amount.ToString());
@@ -2390,7 +2405,9 @@ namespace Quqaz.Web.Services.Concret
                 rows.Append(item.Note);
                 rows.Append("</td>");
             }
-            readText = readText.Replace("{{reports}}", rows.ToString());
+            receiptsHtml = receiptsHtml.Replace("{{reports}}", rows.ToString());
+            readText = readText.Replace("{{ReceiptsHtml}}", receiptsHtml);
+
             return readText;
         }
 

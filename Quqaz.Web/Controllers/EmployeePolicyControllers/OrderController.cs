@@ -236,7 +236,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
-            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));  
+            return Ok(await _orderService.ReceiptOfTheStatusOfTheDeliveredShipment(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos));
         }
         [HttpPut("ReceiptOfTheStatusOfTheReturnedShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
@@ -320,7 +320,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
 
             var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country) };
-            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlace == MoneyPalce.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderPlace == OrderPlace.Way), includes);
+            var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlace == MoneyPalce.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderPlace == OrderPlace.Way)), includes);
             return Ok(orders);
         }
 

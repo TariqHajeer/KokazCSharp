@@ -129,9 +129,9 @@ namespace Quqaz.Web.Models
             this.Code = updateOrder.Code;
             this.DeliveryCost = updateOrder.DeliveryCost;
             this.Cost = updateOrder.Cost;
-            this.ClientId = updateOrder.ClientId;
-            this.AgentId = updateOrder.AgentId;
-            this.CountryId = updateOrder.CountryId;
+            //this.ClientId = updateOrder.ClientId;
+            //this.AgentId = updateOrder.AgentId;
+            //this.CountryId = updateOrder.CountryId;
             this.RegionId = updateOrder.RegionId;
             this.Address = updateOrder.Address;
             this.RecipientName = updateOrder.RecipientName;

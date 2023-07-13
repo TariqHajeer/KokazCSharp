@@ -108,7 +108,7 @@ namespace Quqaz.Web.Services.Concret
         {
 
             var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
-            var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId != null);
+            var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId == null);
 
             var paidOrdersWaitToRecive = await _orderRepository.Sum(c => c.ClientId, s => -(s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState != OrderState.ShortageOfCash);
             var paidOrdersHaveShortInCash = await _orderRepository.Sum(c => c.ClientId, s => (s.Cost - s.DeliveryCost) - s.ClientPaied ?? 0, c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState == OrderState.ShortageOfCash);

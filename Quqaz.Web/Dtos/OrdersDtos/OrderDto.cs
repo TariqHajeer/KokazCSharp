@@ -50,7 +50,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public List<OrderLogDto> OrderLogs { get; set; }
         public List<PrintOrdersDto> AgentPrint { get; set; }
         public List<PrintOrdersDto> ClientPrint { get; set; }
-        public int? CurrentCountry { get; set; }
+        public int CurrentBranchId { get; set; }
         public int? PrintedTimes { get; set; }
         public int AgentRequestStatus { get; set; }
         public int BranchId { get; set; }

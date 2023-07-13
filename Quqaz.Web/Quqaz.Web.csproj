@@ -15,6 +15,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
 		<PackageReference Include="ExcelDataReader" Version="3.6.0" />
@@ -48,6 +52,15 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DiscountRow.Html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HtmlTemplate\SendOrdersReturnedToSecondBranchReport.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HtmlTemplate\TransferToOtherBranchTemplate.html">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
