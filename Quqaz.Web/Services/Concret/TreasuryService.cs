@@ -192,7 +192,27 @@ namespace Quqaz.Web.Services.Concret
             treausry.IsActive = true;
             await _repository.Update(treausry);
         }
-
+        public async Task OrderCostChange(decimal oldCost, decimal newCost)
+        {
+            var treaury = await _uintOfWork.Repository<Treasury>().GetById(_userService.AuthoticateUserId());
+            treaury.Total += (newCost - oldCost);
+            var cashMove = new CashMovment()
+            {
+                TreasuryId = treaury.Id,
+                Amount =  (newCost-oldCost),
+                Note ="تعديل كلفة طلب"
+            };
+            await _uintOfWork.Add(cashMove);
+            var history = new TreasuryHistory()
+            {
+                Amount = (newCost - oldCost),
+                TreasuryId = treaury.Id,
+                CreatedOnUtc = DateTime.UtcNow,
+                CashMovmentId = cashMove.Id
+            };
+            await _uintOfWork.Add(history);
+            await _uintOfWork.Update(treaury);
+        }
         public async Task IncreaseAmountByOrderFromAgent(ReceiptOfTheOrderStatus receiptOfTheOrderStatus)
         {
             var receiptOfTheOrderStatusDetalis = receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce != MoneyPalce.WithAgent && c.MoneyPalce != MoneyPalce.OutSideCompany).ToList();

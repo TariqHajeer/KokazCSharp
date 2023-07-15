@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -176,8 +177,7 @@ namespace Quqaz.Web.Services.Concret
             }
             var orderNotInWay = orders.Where(c => c.OrderPlace != OrderPlace.Way);
             orderNotInWay = orderNotInWay.Except(orderNotInWay.Where(c => c.OrderPlace == OrderPlace.Delivered && c.MoneyPlace == MoneyPalce.WithAgent));
-            ///TODO:
-            //orderNotInWay = orderNotInWay.Except(c=>c.)
+            orderNotInWay = orderNotInWay.Except(orderNotInWay.Where(c => c.OrderPlace == OrderPlace.Delivered && c.MoneyPlace == MoneyPalce.OutSideCompany));
             if (orderNotInWay.Any())
             {
                 throw new ConflictException("هناك شحنات ليست مع المندوب");
@@ -1728,11 +1728,7 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
         }
-        public void UpdateValidationForSameBranch(UpdateOrder updateOrder, Order order)
-        {
-
-        }
-        public void UpdateValidationForOtherBranch(UpdateOrder updateOrder, Order order)
+        public void ValidateOtherBranchEdit(UpdateOrder updateOrder, Order order)
         {
             if (updateOrder.CountryId != order.CountryId)
             {
@@ -1742,6 +1738,9 @@ namespace Quqaz.Web.Services.Concret
             {
                 throw new ConflictException("لا يمكنك تغير العميل ");
             }
+        }
+        public void ValidateForCurrentBranch(UpdateOrder updateOrder, Order order)
+        {
             if (order.AgentId.Value != updateOrder.AgentId)
             {
                 if (!order.CanChangeTheAgent())
@@ -1750,109 +1749,141 @@ namespace Quqaz.Web.Services.Concret
                 }
             }
         }
+        public async Task EditForOthrBrnach(UpdateOrder updateOrder)
+        {
+
+        }
+        public async Task<int?> GetMiddleBranchId(int fromCountryId, int ToCountryId)
+        {
+            if (fromCountryId == ToCountryId)
+                return null;
+            var branch = await _branchRepository.FirstOrDefualt(c => c.Id == ToCountryId);
+            if (branch != null)
+                return branch.Id;
+            var middeator = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == fromCountryId && c.ToCountryId == ToCountryId);
+            if (middeator != null)
+                return middeator.MediatorCountryId;
+            return null;
+        }
         public async Task Edit(UpdateOrder updateOrder)
         {
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
-            var isMainBranch = _currentBranchId == order.BranchId;
-            if (isMainBranch)
-            {
-                UpdateValidationForOtherBranch(updateOrder, order);
-            }
-            else
-            {
-                UpdateValidationForOtherBranch(updateOrder, order);
-            }
-
-            var country = await _countryCashedService.GetById(updateOrder.CountryId);
-            var currentBrach = await _branchRepository.GetById(_currentBranchId);
-            if (order.ClientId != updateOrder.ClientId)
-            {
-                throw new ConflictException($"لا يمكن تغير العميل مؤقتاً الرجاء حذف الطلب و إعادة الإضافة");
-            }
             OrderLog log = order;
-            if (order.Code != updateOrder.Code)
+            var country = await _countryCashedService.GetById(updateOrder.CountryId);
+            bool countryEditng = order.CountryId == updateOrder.CountryId;
+
+            if (countryEditng)
             {
-                if (await _uintOfWork.Repository<Order>().Any(c => c.ClientId == order.ClientId && c.Code == updateOrder.Code))
+                if (order.OrderPlace == OrderPlace.Delivered)
                 {
-                    throw new ConflictException($"الكود{order.Code} مكرر");
+                    throw new ConflictException("لا يمكنك تعديل الشحنة وقد تم تسليمها ");
                 }
-            }
-
-            if (order.CountryId != updateOrder.CountryId)
-            {
-                order.Map(updateOrder);
-                var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
-                if (targetBranch != null)
+                var middleBrnachId = await GetMiddleBranchId(_currentBranchId, updateOrder.CountryId);
+                if (middleBrnachId != null)
                 {
-                    order.TargetBranchId = targetBranch.Id;
-                    order.NextBranchId = targetBranch.Id;
-                    if (order.AgentId.HasValue)
+                    if (updateOrder.AgentId.HasValue)
                     {
-                        throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
+                        throw new ConflictException("لا يمكنك اختيار العميل");
                     }
 
 
-                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
-
-                    if (midCountry != null)
+                    if (middleBrnachId != order.TargetBranchId)
                     {
-
-                        order.NextBranchId = midCountry.MediatorCountryId;
-                    }
-                    order.AgentId = null;
-                }
-                else
-                {
-                    var midCountry = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
-                    if (midCountry != null)
-                    {
-                        order.NextBranchId = midCountry.MediatorCountryId;
-                        order.TargetBranchId = midCountry.MediatorCountryId;
-                        if (order.AgentId.HasValue)
-                        {
-                            throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
-                        }
-                    }
-                    else if (!order.AgentId.HasValue)
-                    {
-                        throw new ConflictException("يجب اختيار المندوب");
-
+                        order.OrderPlace = OrderPlace.Store;
+                        order.MoneyPlace = MoneyPalce.OutSideCompany;
+                        order.CurrentBranchId = _currentBranchId;
+                        order.InWayToBranch = false;
+                        order.TargetBranchId = middleBrnachId;
+                        order.NextBranchId = middleBrnachId;
                     }
                     else
                     {
-                        order.AgentCost = (await _uintOfWork.Repository<User>().FirstOrDefualt(c => c.Id == order.AgentId))?.Salary ?? 0;
-                        order.NextBranchId = null;
-                        order.TargetBranchId = null;
+                        if (order.CurrentBranchId == middleBrnachId)
+                        {
+                            var exits = (await _agentCountryRepository.FirstOrDefualt(c => c.AgentId == order.AgentId && c.CountryId == updateOrder.CountryId) != null);
+                            if (!exits)
+                            {
+                                order.OrderPlace = OrderPlace.Way;
+                                order.MoneyPlace = MoneyPalce.OutSideCompany;
+                                order.InWayToBranch = true;
+                                order.CurrentBranchId = _currentBranchId;
+
+                            }
+                        }
                     }
                 }
-                order.OrderPlace = OrderPlace.Store;
-                order.MoneyPlace = MoneyPalce.OutSideCompany;
-                order.CurrentBranchId = order.BranchId;
-            }
-            else
-            {
-
-                if (order.AgentId != updateOrder.AgentId)
+                else
                 {
-                    if (_currentBranchId == order.CurrentBranchId)
+                    order.NextBranchId = null;
+                    order.TargetBranchId = null;
+                    order.CurrentBranchId = _currentBranchId;
+                    order.InWayToBranch = false;
+                    if (order.AgentId != updateOrder.AgentId)
                     {
-                        order.Map(updateOrder);
-                        order.AgentId = updateOrder.AgentId;
+                        order.OrderPlace = OrderPlace.Store;
+                        order.MoneyPlace = MoneyPalce.OutSideCompany;
 
                     }
-                    //order.OrderPlace = OrderPlace.Store;
-
                 }
             }
+            order.CountryId = updateOrder.CountryId;
+            Receipt receipt = null;
+            if (order.ClientId != updateOrder.ClientId)
+            {
+                if (order.IsClientDiliverdMoney)
+                {
+                    string note = " بعد تعديل طلب بكود " + order.Code;
+                    if (order.Code != updateOrder.Code)
+                    {
+                        note = $"بعد تعديل الطلب بكود{order.Code} و اصبح بكود{updateOrder.Code}";
+                    }
+                    order.IsClientDiliverdMoney = false;
+                    receipt = new Receipt()
+                    {
+                        IsPay = true,
+                        ClientId = order.ClientId,
+                        Amount = ((order.Cost - order.DeliveryCost) * -1),
+                        CreatedBy = "النظام",
+                        Manager = "طارق",
+                        Date = DateTime.UtcNow,
+                        Note = note
+                    };
+                    order.ClientId = updateOrder.ClientId;
+                }
+            }
+            if (order.Code != updateOrder.Code)
+            {
+                if (await _uintOfWork.Repository<Order>().Any(c => c.ClientId == updateOrder.ClientId && c.Code == updateOrder.Code))
+                {
+                    throw new ConflictException($"الكود{order.Code} مكرر");
+                }
 
-
-
-
+            }
             await _uintOfWork.BegeinTransaction();
-            await _uintOfWork.Add(log);
-            order.UpdatedBy = _httpContextAccessorService.AuthoticateUserName();
+            if (order.Cost != updateOrder.Cost)
+            {
+                if (order.MoneyPlace == MoneyPalce.InsideCompany || order.MoneyPlace == MoneyPalce.Delivered)
+                {
+                    await _treasuryService.OrderCostChange(order.Cost, updateOrder.Cost);
+                }
+            }
+            order.Code = updateOrder.Code;
+            order.ClientId = updateOrder.ClientId;
+            order.CountryId = updateOrder.CountryId;
+            order.RegionId = updateOrder.RegionId;
+            order.Address = updateOrder.Address;
+            order.AgentId = updateOrder.AgentId;
+            order.Cost = updateOrder.Cost;
+            order.DeliveryCost = updateOrder.DeliveryCost;
+            order.RecipientName = updateOrder.RecipientName;
+            order.Note = updateOrder.Note;
+            order.RecipientPhones = String.Join(", ", updateOrder.RecipientPhones);
             await _uintOfWork.Update(order);
+
+            if (receipt != null)
+                await _uintOfWork.Add(receipt);
             await _uintOfWork.Commit();
+           
         }
         public async Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber)
         {
@@ -2156,7 +2187,7 @@ namespace Quqaz.Web.Services.Concret
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
-                order.SystemNote = "إعادة الإرسال";
+                order.SystemNote = "إعادة إرسال متعدد";
                 order.UpdatedBy = _userService.AuthoticateUserName();
                 order.UpdatedDate = DateTime.UtcNow;
                 order.Note = orderReSend.Note;

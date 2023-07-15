@@ -387,6 +387,12 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             await _orderService.TransferOrderToAnotherAgnet(transferOrderToAnotherAgnetDto);
             return Ok();
         }
+        [HttpPatch("EditForOthrBrnach")]
+        public async Task<IActionResult> EditForOthrBrnach([FromBody] UpdateOrder updateOrder)
+        {
+            await _orderService.EditForOthrBrnach(updateOrder);
+            return Ok();
+        }
         [HttpPatch]
         public async Task<IActionResult> Edit([FromBody] UpdateOrder updateOrder)
         {

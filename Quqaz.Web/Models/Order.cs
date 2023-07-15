@@ -74,6 +74,7 @@ namespace Quqaz.Web.Models
         public virtual Branch TargetBranch { get; set; }
         public int CurrentBranchId { get; set; }
         [ForeignKey(nameof(CurrentBranchId))]
+        
         public virtual Branch CurrentBranch { get; set; }
         public int? NextBranchId { get; set; }
         [ForeignKey(nameof(NextBranchId))]
@@ -127,6 +128,14 @@ namespace Quqaz.Web.Models
             if (OrderPlace == OrderPlace.Delayed)
                 return true;
             return false;
+        }
+        public bool IsTheOrderInTheMainBrnach()
+        {
+            return this.CurrentBranchId == this.BranchId;
+        }
+        public bool IsTheOrderWithTheOtherBracnh()
+        {
+            return this.CurrentBranchId == this.NextBranchId;
         }
         public void Map(UpdateOrder updateOrder)
         {

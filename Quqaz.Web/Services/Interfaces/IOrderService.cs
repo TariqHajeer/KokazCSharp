@@ -56,6 +56,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<OrderDto>> GetOrderByAgent(string orderCode);
         Task TransferOrderToAnotherAgnet(TransferOrderToAnotherAgnetDto transferOrderToAnotherAgnetDto);
         Task Edit(UpdateOrder updateOrder);
+        Task EditForOthrBrnach(UpdateOrder updateOrder);
         Task<int> DeleiverMoneyForClientWithStatus(int[] ids);
         Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber);
         Task<PagingResualt<IEnumerable<PrintOrdersDto>>> GetClientprint(PagingDto pagingDto, int? number, string clientName, string code);
