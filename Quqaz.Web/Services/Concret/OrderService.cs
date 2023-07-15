@@ -1751,7 +1751,18 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task EditForOthrBrnach(UpdateOrder updateOrder)
         {
-
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
+            order.Code = updateOrder.Code;
+            order.ClientId = updateOrder.ClientId;
+            order.CountryId = updateOrder.CountryId;
+            order.RegionId = updateOrder.RegionId;
+            order.Address = updateOrder.Address;
+            order.AgentId = updateOrder.AgentId;
+            order.Cost = updateOrder.Cost;
+            order.DeliveryCost = updateOrder.DeliveryCost;
+            order.RecipientName = updateOrder.RecipientName;
+            order.Note = updateOrder.Note;
+            order.RecipientPhones = String.Join(", ", updateOrder.RecipientPhones);
         }
         public async Task<int?> GetMiddleBranchId(int fromCountryId, int ToCountryId)
         {
