@@ -1632,7 +1632,6 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<OrderDto> MakeOrderCompletelyReturned(int id)
         {
-
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == id);
             OrderLog log = order;
             await _uintOfWork.BegeinTransaction();
@@ -1781,7 +1780,7 @@ namespace Quqaz.Web.Services.Concret
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == updateOrder.Id);
             OrderLog log = order;
             var country = await _countryCashedService.GetById(updateOrder.CountryId);
-            bool countryEditng = order.CountryId == updateOrder.CountryId;
+            bool countryEditng = order.CountryId != updateOrder.CountryId;
 
             if (countryEditng)
             {
