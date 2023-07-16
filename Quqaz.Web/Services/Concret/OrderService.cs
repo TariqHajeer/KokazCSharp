@@ -1874,7 +1874,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 if (order.MoneyPlace == MoneyPalce.InsideCompany || order.MoneyPlace == MoneyPalce.Delivered)
                 {
-                    await _treasuryService.OrderCostChange(order.Cost, updateOrder.Cost);
+                    await _treasuryService.OrderCostChange(order.Cost, updateOrder.Cost,updateOrder.Code);
                 }
             }
             order.Code = updateOrder.Code;

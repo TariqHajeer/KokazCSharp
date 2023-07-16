@@ -192,7 +192,7 @@ namespace Quqaz.Web.Services.Concret
             treausry.IsActive = true;
             await _repository.Update(treausry);
         }
-        public async Task OrderCostChange(decimal oldCost, decimal newCost)
+        public async Task OrderCostChange(decimal oldCost, decimal newCost,string code)
         {
             var treaury = await _uintOfWork.Repository<Treasury>().GetById(_userService.AuthoticateUserId());
             treaury.Total += (newCost - oldCost);
@@ -200,7 +200,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 TreasuryId = treaury.Id,
                 Amount =  (newCost-oldCost),
-                Note ="تعديل كلفة طلب",
+                Note =$"تعديل كلفة طلب بكود {code}",
                 CreatedBy ="System",
                 CreatedOnUtc = DateTime.UtcNow,
             };
