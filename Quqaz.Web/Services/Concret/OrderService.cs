@@ -1793,7 +1793,7 @@ namespace Quqaz.Web.Services.Concret
                 {
                     if (updateOrder.AgentId.HasValue)
                     {
-                        throw new ConflictException("لا يمكنك اختيار العميل");
+                        throw new ConflictException("لا يمكنك اختيار المندوب");
                     }
 
 

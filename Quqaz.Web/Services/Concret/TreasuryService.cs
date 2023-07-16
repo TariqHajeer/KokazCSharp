@@ -200,7 +200,9 @@ namespace Quqaz.Web.Services.Concret
             {
                 TreasuryId = treaury.Id,
                 Amount =  (newCost-oldCost),
-                Note ="تعديل كلفة طلب"
+                Note ="تعديل كلفة طلب",
+                CreatedBy ="System",
+                CreatedOnUtc = DateTime.UtcNow,
             };
             await _uintOfWork.Add(cashMove);
             var history = new TreasuryHistory()
