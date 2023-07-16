@@ -149,6 +149,8 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
        .Include(c => c.ReceiptOfTheOrderStatusDetalis)
             .ThenInclude(c => c.ReceiptOfTheOrderStatus)
             .ThenInclude(c => c.Recvier)
+        .Include(c=>c.OrderLogs)
+            .ThenInclude(c=>c.Country)
    .FirstOrDefaultAsync(c => c.Id == id);
         }
 
