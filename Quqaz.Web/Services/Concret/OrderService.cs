@@ -457,6 +457,10 @@ namespace Quqaz.Web.Services.Concret
                 throw new ConflictException(errors);
             }
             var agent = orders.FirstOrDefault().Agent;
+            if (orders.Any(c => c.AgentId != agent.Id))
+            {
+                throw new ConflictException("ليست جميع الشحنات مع نفس المندوب الرجاء إعادة التحديد");
+            }
             var agnetPrint = new AgentPrint()
             {
                 Date = DateTime.UtcNow,

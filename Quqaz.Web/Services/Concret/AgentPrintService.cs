@@ -25,14 +25,14 @@ namespace Quqaz.Web.Services.Concret
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpContextAccessorService _httpContextAccessorService;
-        private readonly IRepository<Order> _orderRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly NotificationHub _notificationHub;
         protected int AuthoticateUserId()
         {
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.ToList().Where(c => c.Type == "UserID").Single();
             return Convert.ToInt32(userIdClaim.Value);
         }
-        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IRepository<Order> orderRepository, NotificationHub notificationHub, IHttpContextAccessorService httpContextAccessorService)
+        public AgentPrintService(IRepository<AgentPrint> repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IOrderRepository orderRepository, NotificationHub notificationHub, IHttpContextAccessorService httpContextAccessorService)
         {
             _repository = repository;
             _mapper = mapper;
