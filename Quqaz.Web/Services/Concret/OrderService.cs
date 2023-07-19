@@ -1878,7 +1878,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 if (order.MoneyPlace == MoneyPalce.InsideCompany || order.MoneyPlace == MoneyPalce.Delivered)
                 {
-                    await _treasuryService.OrderCostChange(order.Cost, updateOrder.Cost,updateOrder.Code);
+                    await _treasuryService.OrderCostChange(order.Cost, updateOrder.Cost, updateOrder.Code);
                 }
             }
             order.Code = updateOrder.Code;
@@ -1897,7 +1897,7 @@ namespace Quqaz.Web.Services.Concret
             if (receipt != null)
                 await _uintOfWork.Add(receipt);
             await _uintOfWork.Commit();
-           
+
         }
         public async Task<PrintOrdersDto> GetOrderByClientPrintNumber(int printNumber)
         {
@@ -2181,7 +2181,7 @@ namespace Quqaz.Web.Services.Concret
             }
             await _uintOfWork.BegeinTransaction();
             var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
-            var agents = await _userRepository.Select(c => new { c.Id, c.Salary }, c => agentIds.Contains(c.Id));
+            var agents = await _userRepository.Select(filter: c => agentIds.Contains(c.Id), projection: c => new { c.Id, c.Salary }, null);
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var orderReSend in orderReSends)
             {
@@ -2198,6 +2198,7 @@ namespace Quqaz.Web.Services.Concret
                 }
                 order.OrderState = OrderState.Processing;
                 order.OrderPlace = OrderPlace.Store;
+                order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.DeliveryCost = orderReSend.DeliveryCost;
                 order.MoneyPlace = MoneyPalce.OutSideCompany;
                 order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;

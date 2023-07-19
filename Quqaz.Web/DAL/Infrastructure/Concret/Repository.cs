@@ -288,10 +288,6 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             return data.ToDictionary(c => c.Key, c => c.Count);
         }
 
-        public async Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors)
-        {
-            return await Query.Select(projection).ToListAsync();
-        }
 
         public async Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null)
         {

@@ -107,7 +107,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task<IEnumerable<ClientBlanaceDto>> GetClientBalance()
         {
 
-            var clients = await _clientRepository.Select(c => new { c.Id, c.Name });
+            var clients = await _clientRepository.Select(c => true, c => new { c.Id, c.Name });
             var totalAccount = await _receiptRepository.Sum(c => c.ClientId, h => h.Amount, c => c.ClientPaymentId == null);
 
             var paidOrdersWaitToRecive = await _orderRepository.Sum(c => c.ClientId, s => -(s.ClientPaied ?? 0), c => c.IsClientDiliverdMoney && c.MoneyPlace != MoneyPalce.Delivered && c.ClientPaied != null && c.OrderState != OrderState.ShortageOfCash);

@@ -36,6 +36,5 @@ namespace Quqaz.Web.DAL.Infrastructure.Interfaces
         Task<Dictionary<Tkey, int>> CountGroupBy<Tkey>(Expression<Func<T, Tkey>> propertySelectors, Expression<Func<T, bool>> filter = null);
         Task<PagingResualt<IEnumerable<T>>> GetAsync(PagingDto paging, Expression<Func<T, bool>> filter = null, string[] propertySelectors = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
         Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, bool>> filter, Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
-        Task<IEnumerable<Projection>> Select<Projection>(Expression<Func<T, Projection>> projection, params Expression<Func<T, object>>[] propertySelectors);
     }
 }

@@ -44,7 +44,7 @@ namespace Quqaz.Web.Services.Concret
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
         {
             ids = ids.Distinct().ToArray();
-            var orderTypeIds = await _orderTypeRepository.Select(c => c.Id, c => ids.Contains(c.Id));
+            var orderTypeIds = await _orderTypeRepository.Select(filter: c => ids.Contains(c.Id), c => c.Id, null);
             if (orderTypeIds.Count() == ids.Length)
                 return true;
             return false;
@@ -415,7 +415,7 @@ namespace Quqaz.Web.Services.Concret
 
             var codes = excelOrder.Select(c => c.Code);
             var similarOrders = await _UintOfWork.Repository<Order>().Select(c => codes.Any(co => co == c.Code) && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Code);
-            var simialrCodeInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(c => c.Code, c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code));
+            var simialrCodeInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(filter: c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code), c => c.Code, null);
             if (similarOrders.Any())
             {
                 errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
