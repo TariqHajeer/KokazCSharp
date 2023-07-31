@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.InteropServices;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -846,7 +847,6 @@ namespace Quqaz.Web.Services.Concret
             var countries = await _countryCashedService.GetAsync(c => countriesIds.Contains(c.Id), c => c.BranchToCountryDeliverryCosts);
             var branches = await _branchRepository.GetAll();
 
-            var currentBrach = branches.First(c => c.Id == _currentBranchId);
             var agnets = await _uintOfWork.Repository<User>().Select(c => createMultipleOrders.Select(c => c.AgentId).Contains(c.Id), c => new { c.Id, c.Salary });
             await _uintOfWork.BegeinTransaction();
             {
@@ -867,7 +867,7 @@ namespace Quqaz.Web.Services.Concret
             try
             {
 
-                var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == currentBrach.Id && countriesIds.Contains(c.ToCountryId))).ToList();
+                var midCountrires = (await _mediatorCountry.GetAsync(c => c.FromCountryId == _currentBranchId && countriesIds.Contains(c.ToCountryId))).ToList();
                 var orders = createMultipleOrders.Select(item =>
                  {
                      var order = _mapper.Map<Order>(item);
@@ -885,7 +885,7 @@ namespace Quqaz.Web.Services.Concret
                          order.NextBranchId = targetBranch.Id;
                          if (order.AgentId != null)
                              throw new ConflictException("لا يمكن اختيار مندوب إذا كان الطلب موجه إلى فرع آخر");
-                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == targetBranch.Id);
+                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == _currentBranchId && c.ToCountryId == targetBranch.Id);
                          if (midCountry != null)
                          {
                              order.NextBranchId = midCountry.MediatorCountryId;
@@ -893,7 +893,7 @@ namespace Quqaz.Web.Services.Concret
                      }
                      else
                      {
-                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == currentBrach.Id && c.ToCountryId == order.CountryId);
+                         var midCountry = midCountrires.FirstOrDefault(c => c.FromCountryId == _currentBranchId && c.ToCountryId == order.CountryId);
                          if (midCountry != null)
                          {
                              order.TargetBranchId = midCountry.MediatorCountryId;
@@ -1429,10 +1429,6 @@ namespace Quqaz.Web.Services.Concret
         public async Task Accept(OrderIdAndAgentId idsDto)
         {
             var order = await _repository.GetById(idsDto.OrderId);
-            //if (!await _agentCountryRepository.Any(c => c.CountryId == order.CountryId && c.AgentId == idsDto.AgentId))
-            //{
-            //    throw new ConflictException("تضارب المندوب و المدينة");
-            //}
             var country = await _countryCashedService.GetById(order.CountryId);
             var currentBrach = await _branchRepository.GetById(_currentBranchId);
             var targetBranch = await _branchRepository.FirstOrDefualt(c => c.Id == country.Id && c.Id != _currentBranchId);
@@ -1603,16 +1599,8 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.Commit();
 
         }
-        public async Task ReSend(OrderReSend orderReSend)
+        private void ReSendFromOtherBranch(Order order, OrderReSend orderReSend, decimal? agentCost = null)
         {
-            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == orderReSend.Id);
-            if (order.CurrentBranchId != _currentBranchId)
-            {
-                throw new ConflictException("الشحنة ليست في مخزنك");
-            }
-            await _uintOfWork.BegeinTransaction();
-            OrderLog log = order;
-            await _uintOfWork.Add(log);
             order.CountryId = orderReSend.CountryId;
             order.RegionId = orderReSend.RegionId;
             order.AgentId = orderReSend.AgnetId;
@@ -1621,16 +1609,92 @@ namespace Quqaz.Web.Services.Concret
                 order.Cost = (decimal)order.OldCost;
                 order.OldCost = null;
             }
-            //order.IsClientDiliverdMoney = false;
-
             order.OrderState = OrderState.Processing;
             order.OrderPlace = OrderPlace.Store;
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoneyPlace = MoneyPalce.OutSideCompany;
-            order.AgentCost = (await _userRepository.FirstOrDefualt(c => c.Id == order.AgentId)).Salary ?? 0;
+            order.AgentCost = agentCost ?? 0;
             order.SystemNote = "إعادة الإرسال";
             order.UpdatedBy = _userService.AuthoticateUserName();
             order.UpdatedDate = DateTime.UtcNow;
+        }
+        private void ResnedOrderFunctionality(Order order, OrderReSend orderReSend, IEnumerable<Branch> branches, IEnumerable<MediatorCountry> mediatorCountries, Dictionary<int, decimal> agentSalary)
+        {
+            if (order.TargetBranchId == _currentBranchId)
+            {
+                orderReSend.CountryId = order.CountryId;
+                this.ReSendFromOtherBranch(order, orderReSend);
+            }
+            else
+            {
+                if (order.CountryId == orderReSend.CountryId)
+                {
+                    order.NextBranchId = order.TargetBranchId;
+                    this.ReSendFromOtherBranch(order, orderReSend);
+                }
+                else
+                {
+                    if (orderReSend.CountryId != _currentBranchId)
+                    {
+                        var branch = branches.FirstOrDefault(c => c.Id == orderReSend.CountryId);
+                        if (branch != null)
+                        {
+                            order.NextBranchId = branch.Id;
+                            order.TargetBranchId = branch.Id;
+                            this.ReSendFromOtherBranch(order, orderReSend);
+                        }
+                        else
+                        {
+                            var midatotrBrnach = mediatorCountries.FirstOrDefault(c => c.FromCountryId == _currentBranchId && c.ToCountryId == orderReSend.CountryId);
+                            if (midatotrBrnach != null)
+                            {
+                                order.NextBranchId = midatotrBrnach.MediatorCountryId;
+                                order.TargetBranchId = midatotrBrnach.MediatorCountryId;
+                            }
+                            else
+                            {
+                                order.NextBranchId = null;
+                                order.TargetBranchId = null;
+                                if (order.AgentId == null)
+                                {
+                                    throw new ConflictException("يجب اختيار المندوب ");
+
+                                }
+                                var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
+                                this.ReSendFromOtherBranch(order, orderReSend, agentCost);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        order.NextBranchId = null;
+                        order.TargetBranchId = null;
+                        if (order.AgentId == null)
+                        {
+                            throw new ConflictException("يجب اختيار المندوب ");
+
+                        }
+                        var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
+                        this.ReSendFromOtherBranch(order, orderReSend, agentCost);
+                    }
+                }
+            }
+        }
+        public async Task ReSend(OrderReSend orderReSend)
+        {
+            var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == orderReSend.Id);
+            if (order.CurrentBranchId != _currentBranchId)
+            {
+                throw new ConflictException("الشحنة ليست في مخزنك");
+            }
+
+            var branches = await _branchRepository.GetAll();
+            var meiators = await _mediatorCountry.GetAsync(c => c.FromCountryId == _currentBranchId && c.ToCountryId == orderReSend.CountryId);
+            var agentsSalary = (await _userRepository.Select(c => c.Id == orderReSend.AgnetId, c => new { c.Id, c.Salary })).ToDictionary(c=>c.Id,c=>c.Salary.Value);
+            OrderLog log = order;
+            this.ResnedOrderFunctionality(order, orderReSend, branches, meiators, agentsSalary);
+            await _uintOfWork.BegeinTransaction();
+            await _uintOfWork.Add(log);
             await _repository.Update(order);
             await _uintOfWork.Commit();
         }
@@ -1730,27 +1794,6 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.AddRange(logs);
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
-        }
-        public void ValidateOtherBranchEdit(UpdateOrder updateOrder, Order order)
-        {
-            if (updateOrder.CountryId != order.CountryId)
-            {
-                throw new ConflictException("لا يمكنك تغير المدينة");
-            }
-            if (updateOrder.ClientId != order.ClientId)
-            {
-                throw new ConflictException("لا يمكنك تغير العميل ");
-            }
-        }
-        public void ValidateForCurrentBranch(UpdateOrder updateOrder, Order order)
-        {
-            if (order.AgentId.Value != updateOrder.AgentId)
-            {
-                if (!order.CanChangeTheAgent())
-                {
-                    throw new ConflictException("لا يمكنك تعديل المندوب ");
-                }
-            }
         }
         public async Task EditForOthrBrnach(UpdateOrder updateOrder)
         {
@@ -2179,34 +2222,18 @@ namespace Quqaz.Web.Services.Concret
             {
                 throw new ConflictException("الشحنة ليست في مخزنك");
             }
-            await _uintOfWork.BegeinTransaction();
-            var agentIds = orderReSends.Select(c => c.AgnetId).Distinct();
-            var agents = await _userRepository.Select(filter: c => agentIds.Contains(c.Id), projection: c => new { c.Id, c.Salary }, null);
-            List<OrderLog> logs = new List<OrderLog>();
+            var agentIds = orderReSends.Where(c => c.AgnetId.HasValue).Select(c => c.Id).Distinct();
+            var agentsSalary = (await _userRepository.Select(c => agentIds.Contains(c.Id), c => new { c.Id, c.Salary })).ToDictionary(c => c.Id, c => c.Salary.Value);
+            var branches = await _branchRepository.GetAll();
+            var toCountriesIds = orderReSends.Select(c => c.CountryId);
+            var mediatorCountry = await _mediatorCountry.GetAsync(c => c.FromCountryId == _currentBranchId && toCountriesIds.Contains(c.ToCountryId));
+            List<OrderLog> logs = orders.Select(c => (OrderLog)c).ToList();
             foreach (var orderReSend in orderReSends)
             {
-                var order = orders.Single(c => c.Id == orderReSend.Id);
-                OrderLog log = order;
-                logs.Add(log);
-                order.CountryId = orderReSend.CountryId;
-                order.RegionId = orderReSend.RegionId;
-                order.AgentId = orderReSend.AgnetId;
-                if (order.OldCost != null)
-                {
-                    order.Cost = (decimal)order.OldCost;
-                    order.OldCost = null;
-                }
-                order.OrderState = OrderState.Processing;
-                order.OrderPlace = OrderPlace.Store;
-                order.MoneyPlace = MoneyPalce.OutSideCompany;
-                order.DeliveryCost = orderReSend.DeliveryCost;
-                order.MoneyPlace = MoneyPalce.OutSideCompany;
-                order.AgentCost = agents.SingleOrDefault(c => c.Id == order.AgentId)?.Salary ?? 0;
-                order.SystemNote = "إعادة إرسال متعدد";
-                order.UpdatedBy = _userService.AuthoticateUserName();
-                order.UpdatedDate = DateTime.UtcNow;
-                order.Note = orderReSend.Note;
+                var order = orders.First(c => c.Id == orderReSend.Id);
+                this.ResnedOrderFunctionality(order, orderReSend, branches, mediatorCountry, agentsSalary);
             }
+            await _uintOfWork.BegeinTransaction();
             await _uintOfWork.AddRange(logs);
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
