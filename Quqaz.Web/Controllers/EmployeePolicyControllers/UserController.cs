@@ -61,7 +61,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 
         }
         [HttpPut("deleteGroup/{userId}")]
-        public async Task<IActionResult> DelteGroup(int userId, [FromForm] int groupId)
+        public async Task<IActionResult> DelteGroup(int userId, [FromBody] int groupId)
         {
 
             await _userCashedService.DeleteGroup(userId, groupId);
@@ -70,7 +70,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 
         }
         [HttpPut("AddToGroup/{userId}")]
-        public async Task<IActionResult> AddToGroup(int userId, [FromForm] int groupId)
+        public async Task<IActionResult> AddToGroup(int userId, [FromBody] int groupId)
         {
             await _userCashedService.AddToGroup(userId, groupId);
             return Ok();

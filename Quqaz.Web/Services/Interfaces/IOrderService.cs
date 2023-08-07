@@ -34,7 +34,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders);
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2);
-        Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
+        Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal, decimal payForClientTotal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
         Task Delete(int id);
         Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder);
         Task<OrderDto> GetById(int id);
@@ -85,5 +85,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task DisApproveReturnedToMyBranch(int id);
         Task DisApproveReturnedToMyBranch(OrderIdAndNote orderIdAndNote);
         Task<IEnumerable<OrderDto>> GetOrdersByAgentRegionAndCode(GetOrdersByAgentRegionAndCodeQuery getOrderByAgentRegionAndCode);
+        Task<IEnumerable<OrderDto>> GetOrderInAllBranches(string code);
     }
 }

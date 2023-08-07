@@ -13,6 +13,7 @@ using Quqaz.Web.Models;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -251,12 +252,13 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPost("OrdersDontFinished")]
         public async Task<IActionResult> Get([FromBody] OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            var (Data, orderCostTotal, deliveryCostTOtal) = await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging);
+            var (Data, orderCostTotal, deliveryCostTOtal, p) = await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging);
             return Ok(new
             {
                 Data,
                 OrderTotal = orderCostTotal,
-                DeliveryTotal = deliveryCostTOtal
+                DeliveryTotal = deliveryCostTOtal,
+                PayForCientTotal = p
             });
         }
         [HttpGet("chekcCode")]
@@ -501,6 +503,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             await _orderService.ReSendMultiple(orderReSends);
             return Ok();
+        }
+        [HttpGet("GetOrderInAllBranches")]
+        public async Task<IActionResult> GetOrderInAllBranches(string code)
+        {
+            return Ok(await _orderService.GetOrderInAllBranches(code));
         }
     }
 }

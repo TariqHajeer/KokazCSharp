@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace Quqaz.Web.DAL.Infrastructure.Concret
 {
@@ -149,8 +150,8 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
        .Include(c => c.ReceiptOfTheOrderStatusDetalis)
             .ThenInclude(c => c.ReceiptOfTheOrderStatus)
             .ThenInclude(c => c.Recvier)
-        .Include(c=>c.OrderLogs)
-            .ThenInclude(c=>c.Country)
+        .Include(c => c.OrderLogs)
+            .ThenInclude(c => c.Country)
    .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -246,7 +247,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             }
             return await orderIQ.ToListAsync();
         }
-        public async Task<(PagingResualt<IEnumerable<Order>> pagingResualt,decimal ordersCost,decimal deliveryCost)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
+        public async Task<(PagingResualt<IEnumerable<Order>> pagingResualt, decimal ordersCost, decimal deliveryCost, decimal payForClient)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == orderDontFinishedFilter.ClientId && orderDontFinishedFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
             if (orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable) || orderDontFinishedFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
@@ -304,13 +305,15 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             var total = await query.CountAsync();
             var costTotal = await query.SumAsync(c => c.Cost);
             var dtotal = await query.SumAsync(c => c.DeliveryCost);
+            var payForClient = await query.SumAsync(c => (c.Cost - c.DeliveryCost) - (c.ClientPaied ?? 0));
             var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
-            var result= new PagingResualt<IEnumerable<Order>>()
+
+            var result = new PagingResualt<IEnumerable<Order>>()
             {
                 Total = total,
                 Data = data
             };
-            return (result, costTotal, dtotal);
+            return (result, costTotal, dtotal, payForClient);
         }
         public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
@@ -334,7 +337,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
                 }
                 orderPlacePredicate = orderPlacePredicate.And(c => c.ClientId == orderDontFinishedFilter.ClientId && c.AgentId != null);
                 predicate = predicate.Or(orderPlacePredicate);
-                
+
             }
             if (orderDontFinishedFilter.ClientDoNotDeleviredMoney && !orderDontFinishedFilter.IsClientDeleviredMoney)
             {
@@ -366,7 +369,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
 
                 }
             }
-            var query = Query.Include(c=>c.Country).Where(predicate);
+            var query = Query.Include(c => c.Country).Where(predicate);
             var total = await query.CountAsync();
             var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
             return new PagingResualt<IEnumerable<Order>>()
@@ -374,6 +377,16 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
                 Total = total,
                 Data = data
             };
+        }
+
+        public Task<List<Order>> GetOrderInAllBranches(string code)
+        {
+            var query = this._kokazContext.Set<Order>()
+                .Include(c => c.Client)
+                .Include(c => c.Branch)
+                .Include(c => c.CurrentBranch)
+                .Include(c => c.Country);
+            return query.AsNoTracking().Where(c => c.Code == code).ToListAsync();
         }
     }
 }

@@ -164,6 +164,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var user = await _repository.GetById(updateDto.Id);
             await _repository.LoadCollection(user, c => c.AgentCountries);
+            await _repository.LoadCollection(user, c => c.Branches);
             bool requeirdReacsh = user.CanWorkAsAgent == true || updateDto.CanWorkAsAgent != user.CanWorkAsAgent;
             var similerUserByname = await _repository.Any(c => c.Name.ToLower() == updateDto.Name.ToLower() && c.Id != updateDto.Id);
             if (similerUserByname)
@@ -191,7 +192,7 @@ namespace Quqaz.Web.Services.Concret
             }
 
             user.AgentCountries.Clear();
-            _mapper.Map<UpdateUserDto, User>(updateDto, user);
+            _mapper.Map(updateDto, user);
             await _repository.Update(user);
 
             if (requeirdReacsh)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Quqaz.Web.Dtos.Users
         public string Note { get; set; }
         public bool CanWorkAsAgent { get; set; }
         public int[] Countries { get; set; }
+        public IEnumerable<int> BranchesIds { get; set; }
         public decimal Salary { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
