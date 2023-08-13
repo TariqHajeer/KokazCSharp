@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using Quqaz.Web.Helpers;
-using Microsoft.AspNetCore.Http;
 using Quqaz.Web.HubsConfig;
 using Quqaz.Web.Dtos.NotifcationDtos;
 
@@ -23,7 +22,8 @@ namespace Quqaz.Web.Services.Concret
         private readonly IRepository<ClientPhone> _clientPhoneReposiotry;
         private readonly IUintOfWork _uintOfWork;
         private readonly NotificationHub _notificationHub;
-        public ClientCashedService(IRepository<Client> repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService, NotificationHub notificationHub)
+        private readonly new IClientRepository _repository;
+        public ClientCashedService(IClientRepository repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService, NotificationHub notificationHub)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
@@ -204,7 +204,7 @@ namespace Quqaz.Web.Services.Concret
             if (client.Password == "")
                 client.Password = oldPassword;
             await _uintOfWork.Repository<Client>().LoadCollection(client, c => c.ClientPhones);
-            
+
             if (updateClientDto.Phones?.Any() == true)
             {
                 client.ClientPhones.Clear();
@@ -240,7 +240,7 @@ namespace Quqaz.Web.Services.Concret
             await _uintOfWork.Commit();
             if (isEditRequest)
             {
-                var newEditRquests =await _uintOfWork.Repository<EditRequest>().Count(c => c.Accept == null);
+                var newEditRquests = await _uintOfWork.Repository<EditRequest>().Count(c => c.Accept == null);
 
                 var adminNotification = new AdminNotification()
                 {
@@ -248,6 +248,12 @@ namespace Quqaz.Web.Services.Concret
                 };
                 await _notificationHub.AdminNotifcation(adminNotification);
             }
+        }
+
+        public async Task<List<ClientDto>> GetClientsByBranchId(int branchId)
+        {
+            var clients = await _repository.GetClientsByBranchId(branchId);
+            return _mapper.Map<List<ClientDto>>(clients);
         }
     }
 }

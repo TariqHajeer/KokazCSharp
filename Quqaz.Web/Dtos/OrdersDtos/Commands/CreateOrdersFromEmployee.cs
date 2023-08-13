@@ -21,6 +21,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public string Note { get; set; }
         [Required]
         public string[] RecipientPhones { set; get; }
+        public int? BranchId { get; set; }
     }
     public class OrderItemDto
     {

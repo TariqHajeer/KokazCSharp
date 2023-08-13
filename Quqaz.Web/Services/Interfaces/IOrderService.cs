@@ -31,6 +31,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<PagingResualt<IEnumerable<OrderDto>>> GetOrderFiltered(PagingDto pagingDto, OrderFilter orderFilter);
         Task<IEnumerable<OrderDto>> GetAll(Expression<Func<Order, bool>> expression, string[] propertySelector = null);
         Task CreateOrder(CreateOrderFromEmployee createOrdersFromEmployee);
+        Task CreateOrderForOtherBranch(CreateOrderFromEmployee createOrdersFromEmployee);
         Task CreateOrders(IEnumerable<CreateMultipleOrder> createMultipleOrders);
         Task<bool> Any(Expression<Func<Order, bool>> expression);
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2);

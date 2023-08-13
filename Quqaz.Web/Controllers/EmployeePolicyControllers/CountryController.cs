@@ -66,5 +66,10 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok();
 
         }
+        [HttpGet("GetCountriesFromBrachToCurrentBranch/{branchId:int}")]
+        public async Task<IActionResult> GetCountriesFromBrachToCurrentBranch(int branchId)
+        {
+            return Ok(await _countryCashedService.GetCountriesFromBrachToCurrentBranch(branchId));
+        }
     }
 }

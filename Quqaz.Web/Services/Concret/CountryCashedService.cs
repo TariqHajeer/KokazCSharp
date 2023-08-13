@@ -14,9 +14,19 @@ namespace Quqaz.Web.Services.Concret
 {
     public class CountryCashedService : CashService<Country, CountryDto, CreateCountryDto, UpdateCountryDto>, ICountryCashedService
     {
-        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessorService httpContextAccessorService)
+        private readonly IRepository<MediatorCountry> _mediatorCountryRepo;
+        public CountryCashedService(IRepository<Country> repository, IMapper mapper, IMemoryCache cache, Logging logging, IHttpContextAccessorService httpContextAccessorService, IRepository<MediatorCountry> mediatorCountryRepo)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
+            _mediatorCountryRepo = mediatorCountryRepo;
+        }
+        public async Task<List<CountryDto>> GetCountriesFromBrachToCurrentBranch(int brnachId)
+        {
+            var mddileCountris = await _mediatorCountryRepo.GetAsync(c => c.FromCountryId == brnachId && c.MediatorCountryId == _currentBranch);
+            var countriesId = mddileCountris.Select(c => c.ToCountryId).ToList();
+            countriesId.Add(brnachId);
+            var countreis = await _repository.GetAsync(c => countriesId.Contains(c.Id), c => c.AgentCountries.Select(c => c.Agent));
+            return _mapper.Map<List<CountryDto>>(countreis);
         }
         public override async Task<CountryDto> GetById(int id)
         {
@@ -58,7 +68,7 @@ namespace Quqaz.Web.Services.Concret
         {
             if (!_cache.TryGetValue(cashName, out IEnumerable<CountryDto> entites))
             {
-                entites = await GetAsync(null, c => c.Regions, c => c.Branch,  c => c.ToCountries, c => c.BranchToCountryDeliverryCosts, c => c.AgentCountries.Select(a => a.Agent));
+                entites = await GetAsync(null, c => c.Regions, c => c.Branch, c => c.ToCountries, c => c.BranchToCountryDeliverryCosts, c => c.AgentCountries.Select(a => a.Agent));
                 _cache.Set(cashName, entites);
             }
             return entites;

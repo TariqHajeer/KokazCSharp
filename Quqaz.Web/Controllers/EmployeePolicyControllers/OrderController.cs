@@ -13,7 +13,6 @@ using Quqaz.Web.Models;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using System;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Cryptography;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -63,6 +62,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {
+            createOrdersFromEmployee.BranchId = null;
             await _orderService.CreateOrder(createOrdersFromEmployee);
             return Ok();
         }
@@ -508,6 +508,12 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> GetOrderInAllBranches(string code)
         {
             return Ok(await _orderService.GetOrderInAllBranches(code));
+        }
+        [HttpPost("CreateOrderWithBranch")]
+        public async Task<IActionResult> CreateOrderWithBranch(CreateOrderFromEmployee createOrderFromEmployee)
+        {
+            await _orderService.CreateOrderForOtherBranch(createOrderFromEmployee);
+            return Ok();
         }
     }
 }

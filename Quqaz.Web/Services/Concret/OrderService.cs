@@ -1614,6 +1614,7 @@ namespace Quqaz.Web.Services.Concret
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoneyPlace = MoneyPalce.OutSideCompany;
             order.AgentCost = agentCost ?? 0;
+            order.Note = orderReSend.Note;
             order.SystemNote = "إعادة الإرسال";
             order.UpdatedBy = _userService.AuthoticateUserName();
             order.UpdatedDate = DateTime.UtcNow;
@@ -2688,6 +2689,29 @@ namespace Quqaz.Web.Services.Concret
         {
             var data=await _repository.GetOrderInAllBranches(code);
             return _mapper.Map<IEnumerable<OrderDto>>(data);
+        }
+
+        public async Task CreateOrderForOtherBranch(CreateOrderFromEmployee createOrdersFromEmployee)
+        {
+            var order = _mapper.Map<CreateOrderFromEmployee, Order>(createOrdersFromEmployee);
+            await _uintOfWork.BegeinTransaction();
+            order.BranchId=  
+            order.CurrentBranchId = _currentBranchId;
+            order.TargetBranchId = _currentBranchId;
+            order.NextBranchId = _currentBranchId;
+            order.OrderState = OrderState.Processing;
+            order.MoneyPlace = MoneyPalce.OutSideCompany;
+            order.OrderPlace = OrderPlace.Store;
+            if (order.CountryId != _currentBranchId)
+            {
+                var middleCountryId = await _mediatorCountry.FirstOrDefualt(c => c.FromCountryId == createOrdersFromEmployee.BranchId.Value && c.ToCountryId == createOrdersFromEmployee.CountryId);
+                if (middleCountryId.MediatorCountryId != _currentBranchId)
+                {
+                    throw new ConflictException("ليس هذا هو الفرع الوسيط للمدينة  المحددة من الفرع المحدد");
+                }
+            }
+            await _repository.AddAsync(order);
+            await _uintOfWork.Commit();
         }
     }
 
