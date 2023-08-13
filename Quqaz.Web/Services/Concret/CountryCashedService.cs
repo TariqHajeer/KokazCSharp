@@ -24,7 +24,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var mddileCountris = await _mediatorCountryRepo.GetAsync(c => c.FromCountryId == brnachId && c.MediatorCountryId == _currentBranch);
             var countriesId = mddileCountris.Select(c => c.ToCountryId).ToList();
-            countriesId.Add(brnachId);
+            countriesId.Add(_currentBranch);
             var countreis = await _repository.GetAsync(c => countriesId.Contains(c.Id), c => c.AgentCountries.Select(c => c.Agent));
             return _mapper.Map<List<CountryDto>>(countreis);
         }

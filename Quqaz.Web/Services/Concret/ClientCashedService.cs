@@ -30,6 +30,7 @@ namespace Quqaz.Web.Services.Concret
             _clientPhoneReposiotry = clientPhoneReposiotry;
             _uintOfWork = uintOfWork;
             _notificationHub = notificationHub;
+            this._repository =repository;
         }
         public override async Task<IEnumerable<ClientDto>> GetCashed()
         {
