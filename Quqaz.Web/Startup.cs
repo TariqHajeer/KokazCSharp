@@ -246,6 +246,7 @@ namespace Quqaz.Web
             services.AddScoped<IReceiptService, ReceiptService>();
             services.AddScoped<IOrderClientSerivce, OrderClientSerivce>();
             services.AddScoped<IClientPaymentService, ClientPaymentService>();
+            services.AddScoped<IClientRepository, ClientRepository>();
         }
     }
 }
