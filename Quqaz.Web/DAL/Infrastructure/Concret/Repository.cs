@@ -66,7 +66,9 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
         {
             if (IsIHaveBranch())
             {
-                ((IHaveBranch)entity).BranchId = branchId;
+                ///this used for create product from another branch
+                if (((IHaveBranch)entity).BranchId == 0)
+                    ((IHaveBranch)entity).BranchId = branchId;
             }
             await _kokazContext.AddAsync(entity);
             await _kokazContext.SaveChangesAsync();

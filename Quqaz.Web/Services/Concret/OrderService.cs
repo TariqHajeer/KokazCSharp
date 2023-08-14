@@ -26,8 +26,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
-using Microsoft.IdentityModel.Tokens;
-using System.Runtime.InteropServices;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -2697,7 +2695,6 @@ namespace Quqaz.Web.Services.Concret
         {
             var order = _mapper.Map<CreateOrderFromEmployee, Order>(createOrdersFromEmployee);
             await _uintOfWork.BegeinTransaction();
-            order.BranchId =
             order.CurrentBranchId = _currentBranchId;
             order.TargetBranchId = _currentBranchId;
             order.NextBranchId = _currentBranchId;
