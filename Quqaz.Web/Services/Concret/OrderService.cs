@@ -35,6 +35,7 @@ namespace Quqaz.Web.Services.Concret
     {
         private readonly IOrderRepository _repository;
         private readonly IUintOfWork _uintOfWork;
+        private readonly IRepository<Client> _clientRepo;
         private readonly IRepository<SendOrdersReturnedToMainBranchReport> _sendOrdersReturnedToMainBranchReportRepository;
         private readonly INotificationService _notificationService;
         private readonly ITreasuryService _treasuryService;
@@ -69,7 +70,7 @@ namespace Quqaz.Web.Services.Concret
             ICountryCashedService countryCashedService,
             IRepository<Country> countryRepository, IRepository<AgentCountry> agentCountryRepository,
             IRepository<User> userRepository, IRepository<ClientPayment> clientPaymentRepository, IRepository<DisAcceptOrder> disAcceptOrderRepository, NotificationHub notificationHub, IRepository<Branch> branchRepository, IHttpContextAccessorService httpContextAccessorService, IRepository<TransferToOtherBranch> transferToOtherBranch, IWebHostEnvironment environment, IRepository<TransferToOtherBranchDetials> transferToOtherBranchDetialsRepository
-, IRepository<MediatorCountry> mediatorCountry, IRepository<Driver> driverRepo, IRepository<SendOrdersReturnedToMainBranchReport> sendOrdersReturnedToMainBranchReportRepository)
+, IRepository<MediatorCountry> mediatorCountry, IRepository<Driver> driverRepo, IRepository<SendOrdersReturnedToMainBranchReport> sendOrdersReturnedToMainBranchReportRepository, IRepository<Client> clientRepo)
         {
             _uintOfWork = uintOfWork;
             _notificationService = notificationService;
@@ -99,6 +100,7 @@ namespace Quqaz.Web.Services.Concret
             _mediatorCountry = mediatorCountry;
             _driverRepo = driverRepo;
             _sendOrdersReturnedToMainBranchReportRepository = sendOrdersReturnedToMainBranchReportRepository;
+            _clientRepo = clientRepo;
         }
 
         public async Task<GenaricErrorResponse<IEnumerable<OrderDto>, string, IEnumerable<string>>> GetOrderToReciveFromAgent(string code)
@@ -1321,13 +1323,13 @@ namespace Quqaz.Web.Services.Concret
             IEnumerable<Order> orders;
             if (frozenOrder.AgentId != null)
             {
-                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && c.OrderPlace == OrderPlace.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
+                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && (c.OrderPlace == OrderPlace.Store || c.OrderPlace == OrderPlace.Way), c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             }
             else
             {
-                orders = await _repository.GetAsync(c => c.Date <= date && c.OrderPlace == OrderPlace.Way, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
+                orders = await _repository.GetAsync(c => c.Date <= date && (c.OrderPlace == OrderPlace.Store || c.OrderPlace == OrderPlace.Way), c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             }
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders.OrderBy(c => c.Code));
         }
 
         public async Task<OrderDto> GetById(int id)
@@ -1336,7 +1338,7 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal,decimal payForClientTotal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
+        public async Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal, decimal payForClientTotal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
             var result = await _repository.OrdersDontFinished2(orderDontFinishedFilter, pagingDto);
             var response = new PagingResualt<IEnumerable<PayForClientDto>>()
@@ -1344,7 +1346,7 @@ namespace Quqaz.Web.Services.Concret
                 Total = result.pagingResualt.Total,
                 Data = _mapper.Map<IEnumerable<PayForClientDto>>(result.pagingResualt.Data)
             };
-            return (response, result.ordersCost, result.deliveryCost,result.payForClient);
+            return (response, result.ordersCost, result.deliveryCost, result.payForClient);
         }
         public async Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
@@ -1691,7 +1693,7 @@ namespace Quqaz.Web.Services.Concret
 
             var branches = await _branchRepository.GetAll();
             var meiators = await _mediatorCountry.GetAsync(c => c.FromCountryId == _currentBranchId && c.ToCountryId == orderReSend.CountryId);
-            var agentsSalary = (await _userRepository.Select(c => c.Id == orderReSend.AgnetId, c => new { c.Id, c.Salary })).ToDictionary(c=>c.Id,c=>c.Salary.Value);
+            var agentsSalary = (await _userRepository.Select(c => c.Id == orderReSend.AgnetId, c => new { c.Id, c.Salary })).ToDictionary(c => c.Id, c => c.Salary.Value);
             OrderLog log = order;
             this.ResnedOrderFunctionality(order, orderReSend, branches, meiators, agentsSalary);
             await _uintOfWork.BegeinTransaction();
@@ -2687,7 +2689,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<IEnumerable<OrderDto>> GetOrderInAllBranches(string code)
         {
-            var data=await _repository.GetOrderInAllBranches(code);
+            var data = await _repository.GetOrderInAllBranches(code);
             return _mapper.Map<IEnumerable<OrderDto>>(data);
         }
 
@@ -2695,7 +2697,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var order = _mapper.Map<CreateOrderFromEmployee, Order>(createOrdersFromEmployee);
             await _uintOfWork.BegeinTransaction();
-            order.BranchId=  
+            order.BranchId =
             order.CurrentBranchId = _currentBranchId;
             order.TargetBranchId = _currentBranchId;
             order.NextBranchId = _currentBranchId;
@@ -2709,6 +2711,21 @@ namespace Quqaz.Web.Services.Concret
                 {
                     throw new ConflictException("ليس هذا هو الفرع الوسيط للمدينة  المحددة من الفرع المحدد");
                 }
+            }
+            if (createOrdersFromEmployee.TransferToOtherBranchNumber != null)
+            {
+                var country = await _countryRepository.FirstOrDefualt(c => c.Id == order.CountryId);
+                var client = await _clientRepo.FirstOrDefualt(c => c.Id == order.ClientId);
+                await _transferToOtherBranchDetialsRepository.AddAsync(new TransferToOtherBranchDetials()
+                {
+                    Code = order.Code,
+                    Total = order.Cost,
+                    CountryName = country.Name,
+                    ClientName = client.Name,
+                    Phone = order.RecipientPhones,
+                    Note = order.Note,
+                    TransferToOtherBranchId = createOrdersFromEmployee.TransferToOtherBranchNumber.Value
+                });
             }
             await _repository.AddAsync(order);
             await _uintOfWork.Commit();
