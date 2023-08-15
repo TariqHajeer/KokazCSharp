@@ -1241,7 +1241,8 @@ namespace Quqaz.Web.Services.Concret
                     }
 
                 }
-                item.IsClientDiliverdMoney = true;
+                if (item.OrderPlace != OrderPlace.CompletelyReturned)
+                    item.IsClientDiliverdMoney = true;
                 var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
                 item.ClientPaied = item.ShouldToPay();
                 await _repository.Update(item);
@@ -1611,6 +1612,7 @@ namespace Quqaz.Web.Services.Concret
             }
             order.OrderState = OrderState.Processing;
             order.OrderPlace = OrderPlace.Store;
+            order.InWayToBranch = false;
             order.DeliveryCost = orderReSend.DeliveryCost;
             order.MoneyPlace = MoneyPalce.OutSideCompany;
             order.AgentCost = agentCost ?? 0;
@@ -1621,65 +1623,65 @@ namespace Quqaz.Web.Services.Concret
         }
         private void ResnedOrderFunctionality(Order order, OrderReSend orderReSend, IEnumerable<Branch> branches, IEnumerable<MediatorCountry> mediatorCountries, Dictionary<int, decimal> agentSalary)
         {
-            if (order.TargetBranchId == _currentBranchId)
+
+            if (order.CountryId == orderReSend.CountryId)
+            {
+                order.NextBranchId = order.TargetBranchId;
+                this.ReSendFromOtherBranch(order, orderReSend);
+            }
+            if (orderReSend.CountryId == _currentBranchId)
             {
                 orderReSend.CountryId = order.CountryId;
                 this.ReSendFromOtherBranch(order, orderReSend);
+                return;
+            }
+            if (orderReSend.CountryId == _currentBranchId)
+            {
+                order.NextBranchId = null;
+                order.TargetBranchId = null;
+                if (orderReSend.AgnetId == null)
+                {
+                    throw new ConflictException("يجب اختيار المندوب ");
+
+                }
+                var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
+                this.ReSendFromOtherBranch(order, orderReSend, agentCost);
+                return;
+            }
+            var branch = branches.FirstOrDefault(c => c.Id == orderReSend.CountryId);
+            if (branch != null)
+            {
+                order.NextBranchId = branch.Id;
+                order.TargetBranchId = branch.Id;
+                orderReSend.AgnetId = null;
+                this.ReSendFromOtherBranch(order, orderReSend);
+                return;
             }
             else
             {
-                if (order.CountryId == orderReSend.CountryId)
+                var midatotrBrnach = mediatorCountries.FirstOrDefault(c => c.FromCountryId == _currentBranchId && c.ToCountryId == orderReSend.CountryId);
+                if (midatotrBrnach != null)
                 {
-                    order.NextBranchId = order.TargetBranchId;
-                    this.ReSendFromOtherBranch(order, orderReSend);
+                    orderReSend.AgnetId = null;
+                    order.NextBranchId = midatotrBrnach.MediatorCountryId;
+                    order.TargetBranchId = midatotrBrnach.MediatorCountryId;
+                    this.ReSendFromOtherBranch(order, orderReSend, null);
+
                 }
                 else
                 {
-                    if (orderReSend.CountryId != _currentBranchId)
+                    order.NextBranchId = null;
+                    order.TargetBranchId = null;
+                    if (order.AgentId == null)
                     {
-                        var branch = branches.FirstOrDefault(c => c.Id == orderReSend.CountryId);
-                        if (branch != null)
-                        {
-                            order.NextBranchId = branch.Id;
-                            order.TargetBranchId = branch.Id;
-                            this.ReSendFromOtherBranch(order, orderReSend);
-                        }
-                        else
-                        {
-                            var midatotrBrnach = mediatorCountries.FirstOrDefault(c => c.FromCountryId == _currentBranchId && c.ToCountryId == orderReSend.CountryId);
-                            if (midatotrBrnach != null)
-                            {
-                                order.NextBranchId = midatotrBrnach.MediatorCountryId;
-                                order.TargetBranchId = midatotrBrnach.MediatorCountryId;
-                            }
-                            else
-                            {
-                                order.NextBranchId = null;
-                                order.TargetBranchId = null;
-                                if (order.AgentId == null)
-                                {
-                                    throw new ConflictException("يجب اختيار المندوب ");
+                        throw new ConflictException("يجب اختيار المندوب ");
 
-                                }
-                                var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
-                                this.ReSendFromOtherBranch(order, orderReSend, agentCost);
-                            }
-                        }
                     }
-                    else
-                    {
-                        order.NextBranchId = null;
-                        order.TargetBranchId = null;
-                        if (order.AgentId == null)
-                        {
-                            throw new ConflictException("يجب اختيار المندوب ");
-
-                        }
-                        var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
-                        this.ReSendFromOtherBranch(order, orderReSend, agentCost);
-                    }
+                    var agentCost = agentSalary.ContainsKey(orderReSend.AgnetId.Value) ? agentSalary[orderReSend.AgnetId.Value] : 0;
+                    this.ReSendFromOtherBranch(order, orderReSend, agentCost);
                 }
             }
+
         }
         public async Task ReSend(OrderReSend orderReSend)
         {
@@ -2617,6 +2619,7 @@ namespace Quqaz.Web.Services.Concret
         {
             var order = await _repository.GetById(id);
             order.IsReturnedByBranch = true;
+            order.CurrentBranchId = order.BranchId;
             await _repository.Update(order);
         }
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetDisApprovedOrdersReturnedByBranch(PagingDto pagingDto)
