@@ -17,5 +17,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task<int>Account(AccountDto accountDto);
         Task<AuthClient> GetAuthClient();
         Task Update(CUpdateClientDto cUpdateClientDto);
+        Task<List<ClientDto>> GetClientsByBranchId(int branchId);   
     }
 }

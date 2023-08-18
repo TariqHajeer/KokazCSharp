@@ -62,6 +62,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderFromEmployee createOrdersFromEmployee)
         {
+            createOrdersFromEmployee.BranchId = null;
             await _orderService.CreateOrder(createOrdersFromEmployee);
             return Ok();
         }
@@ -100,7 +101,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(new { data = result.Data, total = result.Total });
         }
         [HttpPost("ForzenInWay")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromForm] FrozenOrder frozenOrder)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromBody] FrozenOrder frozenOrder)
         {
             return Ok(await _orderService.ForzenInWay(frozenOrder));
         }
@@ -251,12 +252,13 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         [HttpPost("OrdersDontFinished")]
         public async Task<IActionResult> Get([FromBody] OrderDontFinishedFilter orderDontFinishedFilter)
         {
-            var (Data, orderCostTotal, deliveryCostTOtal) = await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging);
+            var (Data, orderCostTotal, deliveryCostTOtal, p) = await _orderService.OrdersDontFinished2(orderDontFinishedFilter, orderDontFinishedFilter.Paging);
             return Ok(new
             {
                 Data,
                 OrderTotal = orderCostTotal,
-                DeliveryTotal = deliveryCostTOtal
+                DeliveryTotal = deliveryCostTOtal,
+                PayForCientTotal = p
             });
         }
         [HttpGet("chekcCode")]
@@ -500,6 +502,17 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> ReSendMultiple(List<OrderReSend> orderReSends)
         {
             await _orderService.ReSendMultiple(orderReSends);
+            return Ok();
+        }
+        [HttpGet("GetOrderInAllBranches")]
+        public async Task<IActionResult> GetOrderInAllBranches(string code)
+        {
+            return Ok(await _orderService.GetOrderInAllBranches(code));
+        }
+        [HttpPost("CreateOrderWithBranch")]
+        public async Task<IActionResult> CreateOrderWithBranch(CreateOrderFromEmployee createOrderFromEmployee)
+        {
+            await _orderService.CreateOrderForOtherBranch(createOrderFromEmployee);
             return Ok();
         }
     }

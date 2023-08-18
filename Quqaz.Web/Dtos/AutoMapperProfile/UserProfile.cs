@@ -116,6 +116,15 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                     });
                 }
                 return agentCountries;
+            }))
+            .ForMember(c => c.Branches, opt => opt.MapFrom((src, dest, i, context) =>
+            {
+                dest.Branches.Clear();
+                var branches = src.BranchesIds.Select(c => new UserBranch()
+                {
+                    BranchId = c
+                });
+                return branches;
             }));
             CreateMap<Privilege, UserPrivilegeDto>();
             CreateMap<User, AuthenticatedUserDto>()

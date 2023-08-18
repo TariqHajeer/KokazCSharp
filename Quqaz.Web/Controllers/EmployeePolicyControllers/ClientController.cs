@@ -77,5 +77,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             await _clientCashedService.GivePoints(giveOrDiscountPointsDto);
             return Ok();
         }
+
+        [HttpGet("GetClientByBranchId/{branchId:int}")]
+        public async Task<IActionResult> GetClientByBranchId(int branchId)
+        {
+            return Ok(await _clientCashedService.GetClientsByBranchId(branchId));
+        }
     }
 }
