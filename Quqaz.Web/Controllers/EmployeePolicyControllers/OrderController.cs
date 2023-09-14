@@ -234,6 +234,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             string fileName = "إعادة الطلبات المترجعة برقم" + id + ".pdf";
             return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
+        /// <summary>
+        /// استلام الشحنات المستلمة
+        /// </summary>
+        /// <param name="receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos"></param>
+        /// <returns></returns>
         [HttpPut("ReceiptOfTheStatusOfTheDeliveredShipment")]
         public async Task<ActionResult<ErrorResponse<string, IEnumerable<string>>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
@@ -514,6 +519,11 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             await _orderService.CreateOrderForOtherBranch(createOrderFromEmployee);
             return Ok();
+        }
+        [HttpGet("GetNegativeAlert")]
+        public async Task<IActionResult> GetNegativeAlert([FromQuery] PagingDto pagingDto,[FromQuery] OrderFilter orderFilter)
+        {
+            return Ok(await _orderService.GetNegativeAlert(pagingDto, orderFilter));
         }
     }
 }

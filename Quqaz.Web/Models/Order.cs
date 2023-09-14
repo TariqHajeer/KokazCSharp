@@ -60,6 +60,7 @@ namespace Quqaz.Web.Models
         public int BranchId { get; set; }
         public int? TargetBranchId { get; set; }
         public bool IsReturnedByBranch { get; set; }
+        public bool? NegativeAlert { get; set; }
         public virtual User Agent { get; set; }
         public virtual Client Client { get; set; }
         public virtual Country Country { get; set; }
@@ -74,7 +75,7 @@ namespace Quqaz.Web.Models
         public virtual Branch TargetBranch { get; set; }
         public int CurrentBranchId { get; set; }
         [ForeignKey(nameof(CurrentBranchId))]
-        
+
         public virtual Branch CurrentBranch { get; set; }
         public int? NextBranchId { get; set; }
         [ForeignKey(nameof(NextBranchId))]
@@ -142,9 +143,6 @@ namespace Quqaz.Web.Models
             this.Code = updateOrder.Code;
             this.DeliveryCost = updateOrder.DeliveryCost;
             this.Cost = updateOrder.Cost;
-            //this.ClientId = updateOrder.ClientId;
-            //this.AgentId = updateOrder.AgentId;
-            //this.CountryId = updateOrder.CountryId;
             this.RegionId = updateOrder.RegionId;
             this.Address = updateOrder.Address;
             this.RecipientName = updateOrder.RecipientName;

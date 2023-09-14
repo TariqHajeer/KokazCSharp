@@ -17,6 +17,7 @@ namespace Quqaz.Web.Services.Interfaces
     /// </summary>
     public partial interface IOrderService
     {
+        Task<PagingResualt<IEnumerable<OrderDto>>> GetNegativeAlert(PagingDto pagingDto, OrderFilter orderFilter);
         Task<PagingResualt<IEnumerable<OrderDto>>> GetInStockToTransferWithAgent(PagingDto pagingDto, OrderFilter orderFilter);
         Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentDtos);
         Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos);
