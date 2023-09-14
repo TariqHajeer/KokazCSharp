@@ -250,6 +250,10 @@ namespace Quqaz.Web.Services.Concret
                 {
                     order.AgentRequestStatus = (int)AgentRequestStatusEnum.None;
                 }
+                if (order.DeliveryCost - order.AgentCost <= 0)
+                {
+                    order.NegativeAlert = true;
+                }
             }
 
             await _uintOfWork.BegeinTransaction();
@@ -2729,6 +2733,19 @@ namespace Quqaz.Web.Services.Concret
             }
             await _repository.AddAsync(order);
             await _uintOfWork.Commit();
+        }
+
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetNegativeAlert(PagingDto pagingDto, OrderFilter orderFilter)
+        {
+            var predicate = GetFilterAsLinq(orderFilter);
+            predicate = predicate.And(c => c.NegativeAlert==true);
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch) };
+            var orders = await _repository.GetAsync(pagingDto, predicate, includes);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
+            };
         }
     }
 
