@@ -43,8 +43,8 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
                     return Conflict();
                 if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
                     return Conflict();
-                if (DateTime.UtcNow.Date.Day==20)
-                    return Conflict();
+                if (DateTime.UtcNow.Date.Day == 10)
+                    return Conflict("تسديد الحساب");
                 var climes = new List<Claim>
                 {
                     new Claim("UserID", user.Id.ToString())
@@ -89,7 +89,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + "\n" + _context.Database.GetDbConnection().ConnectionString);
             }
         }
 
