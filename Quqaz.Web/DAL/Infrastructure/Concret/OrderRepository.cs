@@ -306,7 +306,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             var costTotal = await query.SumAsync(c => c.Cost);
             var dtotal = await query.SumAsync(c => c.DeliveryCost);
             var payForClient = await query.SumAsync(c => (c.Cost - c.DeliveryCost) - (c.ClientPaied ?? 0));
-            var data = await query.Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
+            var data = await query.OrderBy(c=>c.Code).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
 
             var result = new PagingResualt<IEnumerable<Order>>()
             {

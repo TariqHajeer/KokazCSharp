@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
+using Microsoft.OpenApi.Validations;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1245,10 +1246,16 @@ namespace Quqaz.Web.Services.Concret
                     }
 
                 }
-                if (item.OrderPlace != OrderPlace.CompletelyReturned)
-                    item.IsClientDiliverdMoney = true;
+                item.IsClientDiliverdMoney = true;
                 var currentPay = item.ShouldToPay() - (item.ClientPaied ?? 0);
-                item.ClientPaied = item.ShouldToPay();
+                if (item.OrderPlace == OrderPlace.CompletelyReturned)
+                {
+                    item.ClientPaied = null;
+                }
+                else
+                {
+                    item.ClientPaied = item.ShouldToPay();
+                }
                 await _repository.Update(item);
                 var orderClientPaymnet = new OrderClientPaymnet()
                 {
@@ -1320,9 +1327,55 @@ namespace Quqaz.Web.Services.Concret
             await _repository.Delete(order);
         }
 
-        public async Task<IEnumerable<OrderDto>> ForzenInWay(FrozenOrder frozenOrder)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, FrozenOrder frozenOrder)
         {
             var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
+            Expression<Func<Order, bool>> filter = c => c.Date <= date;
+            if (frozenOrder.AgentId != null)
+            {
+                Expression<Func<Order, bool>> tempFilter = c => c.AgentId == frozenOrder.AgentId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
+            }
+            if (frozenOrder.CountryId != null)
+            {
+                Expression<Func<Order, bool>> tempFilter = c => c.CountryId == frozenOrder.CountryId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
+            }
+            if (frozenOrder.ClientId != null)
+            {
+                Expression<Func<Order, bool>> tempFilter = c => c.ClientId == frozenOrder.ClientId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
+            }
+            {
+                Expression<Func<Order, bool>> tempFilter = null;
+                if (frozenOrder.IsInWay)
+                {
+                    tempFilter = c => c.OrderPlace == OrderPlace.Way;
+                }
+                if (frozenOrder.IsInStock)
+                {
+                    Expression<Func<Order, bool>> stockFilter = c => c.OrderPlace == OrderPlace.Store;
+                    if (tempFilter == null)
+                        tempFilter = stockFilter;
+                    else
+                    {
+                        var inStockInvok = Expression.Invoke(stockFilter, tempFilter.Parameters);
+                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(tempFilter.Body, inStockInvok), tempFilter.Parameters);
+                    }
+                }
+                if (frozenOrder.IsWithAgent)
+                {
+
+                }
+            }
+            var data = await _repository.GetAsync(paging, filter, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
+            return new PagingResualt<IEnumerable<OrderDto>>() { Total = data.Total, Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data) };
+
+
+
             IEnumerable<Order> orders;
             if (frozenOrder.AgentId != null)
             {
@@ -1332,7 +1385,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 orders = await _repository.GetAsync(c => c.Date <= date && (c.OrderPlace == OrderPlace.Store || c.OrderPlace == OrderPlace.Way), c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             }
-            return _mapper.Map<IEnumerable<OrderDto>>(orders.OrderBy(c => c.Code));
+            //return _mapper.Map<IEnumerable<OrderDto>>(orders.OrderBy(c => c.Code));
         }
 
         public async Task<OrderDto> GetById(int id)
@@ -1690,6 +1743,8 @@ namespace Quqaz.Web.Services.Concret
         public async Task ReSend(OrderReSend orderReSend)
         {
             var order = await _uintOfWork.Repository<Order>().FirstOrDefualt(c => c.Id == orderReSend.Id);
+            if (order.ClientPaied == null)
+                order.IsClientDiliverdMoney = false;
             if (order.CurrentBranchId != _currentBranchId)
             {
                 throw new ConflictException("الشحنة ليست في مخزنك");
@@ -2225,6 +2280,11 @@ namespace Quqaz.Web.Services.Concret
         {
             var ordersIds = orderReSends.Select(c => c.Id);
             var orders = await _uintOfWork.Repository<Order>().GetAsync(c => ordersIds.Contains(c.Id));
+            orders.ForEach(c =>
+            {
+                if (c.ClientPaied == null)
+                    c.IsClientDiliverdMoney = false;
+            });
             if (orders.Any(c => c.CurrentBranchId != _currentBranchId))
             {
                 throw new ConflictException("الشحنة ليست في مخزنك");
@@ -2738,14 +2798,21 @@ namespace Quqaz.Web.Services.Concret
         public async Task<PagingResualt<IEnumerable<OrderDto>>> GetNegativeAlert(PagingDto pagingDto, OrderFilter orderFilter)
         {
             var predicate = GetFilterAsLinq(orderFilter);
-            predicate = predicate.And(c => c.NegativeAlert==true);
+            predicate = predicate.And(c => c.NegativeAlert == true);
             var includes = new string[] { nameof(Order.Client), nameof(Order.Agent), nameof(Order.Region), nameof(Order.Country), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}", nameof(Order.Branch), nameof(Order.CurrentBranch) };
-            var orders = await _repository.GetAsync(pagingDto, predicate, includes);
+            var orders = await _repository.GetAsync(pagingDto, predicate, includes, orderBy: c => c.OrderBy(x => x.UpdatedDate));
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = orders.Total,
                 Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
             };
+        }
+
+        public async Task DeleteNegativeAlert(int id)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == id);
+            order.NegativeAlert = false;
+            await _repository.Update(order);
         }
     }
 
