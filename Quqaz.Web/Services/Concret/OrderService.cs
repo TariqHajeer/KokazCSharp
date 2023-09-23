@@ -1363,29 +1363,25 @@ namespace Quqaz.Web.Services.Concret
                     else
                     {
                         var inStockInvok = Expression.Invoke(stockFilter, tempFilter.Parameters);
-                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(tempFilter.Body, inStockInvok), tempFilter.Parameters);
+                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.OrElse(tempFilter.Body, inStockInvok), tempFilter.Parameters);
                     }
                 }
                 if (frozenOrder.IsWithAgent)
                 {
-
+                    Expression<Func<Order, bool>> withAgentFilter = c => c.MoneyPlace == MoneyPalce.WithAgent;
+                    if (tempFilter == null)
+                        tempFilter = withAgentFilter;
+                    else
+                    {
+                        var withAgentInvok = Expression.Invoke(withAgentFilter, tempFilter.Parameters);
+                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.OrElse(tempFilter.Body, withAgentFilter), tempFilter.Parameters);
+                    }
                 }
+                var tempFilterInvok = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, tempFilterInvok), filter.Parameters);
             }
             var data = await _repository.GetAsync(paging, filter, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>() { Total = data.Total, Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data) };
-
-
-
-            IEnumerable<Order> orders;
-            if (frozenOrder.AgentId != null)
-            {
-                orders = await _repository.GetAsync(c => c.Date <= date && c.AgentId == frozenOrder.AgentId && (c.OrderPlace == OrderPlace.Store || c.OrderPlace == OrderPlace.Way), c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
-            }
-            else
-            {
-                orders = await _repository.GetAsync(c => c.Date <= date && (c.OrderPlace == OrderPlace.Store || c.OrderPlace == OrderPlace.Way), c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
-            }
-            //return _mapper.Map<IEnumerable<OrderDto>>(orders.OrderBy(c => c.Code));
         }
 
         public async Task<OrderDto> GetById(int id)
