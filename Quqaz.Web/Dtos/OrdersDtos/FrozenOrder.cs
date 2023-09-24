@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
@@ -10,7 +7,12 @@ namespace Quqaz.Web.Dtos.OrdersDtos
     {
         [Required(ErrorMessage ="Hour is Requird")]
         public int Hour { get; set; }
+        public int? CountryId { get; set; }
+        public int? ClientId { get; set; }
         public int? AgentId { get; set; }
         public DateTime CurrentDate { get; set; }
+        public bool IsInStock { get; set; }
+        public bool IsInWay { get; set; }
+        public bool IsWithAgent { get; set; }
     }
 }

@@ -101,9 +101,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(new { data = result.Data, total = result.Total });
         }
         [HttpPost("ForzenInWay")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromBody] FrozenOrder frozenOrder)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromQuery] PagingDto paging, [FromBody] FrozenOrder frozenOrder)
         {
-            return Ok(await _orderService.ForzenInWay(frozenOrder));
+            return Ok(await _orderService.ForzenInWay(paging, frozenOrder));
         }
         [HttpGet("ReceiptOfTheOrderStatus/{id}")]
         public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
@@ -521,9 +521,15 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok();
         }
         [HttpGet("GetNegativeAlert")]
-        public async Task<IActionResult> GetNegativeAlert([FromQuery] PagingDto pagingDto,[FromQuery] OrderFilter orderFilter)
+        public async Task<IActionResult> GetNegativeAlert([FromQuery] PagingDto pagingDto, [FromQuery] OrderFilter orderFilter)
         {
             return Ok(await _orderService.GetNegativeAlert(pagingDto, orderFilter));
+        }
+        [HttpPost("DeleteNegativeAlert")]
+        public async Task<IActionResult> DeleteNegativeAlert([FromBody] int id)
+        {
+            await _orderService.DeleteNegativeAlert(id);
+            return Ok();
         }
     }
 }
