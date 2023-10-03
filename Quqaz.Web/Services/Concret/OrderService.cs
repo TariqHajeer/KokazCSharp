@@ -27,7 +27,6 @@ using System.Threading.Tasks;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
 using Microsoft.OpenApi.Validations;
-using Quqaz.Web.Dtos.OrdersDtos.Common;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1327,89 +1326,61 @@ namespace Quqaz.Web.Services.Concret
             var order = await _repository.FirstOrDefualt(c => c.Id == id);
             await _repository.Delete(order);
         }
-        private ExpressionStarter<Order> GetFrozenInWayFilter(SelectionOrderFilter<FrozenOrder> selectionOrderFilter)
-        {
-            var predicate = PredicateBuilder.New<Order>(true);
-            if (selectionOrderFilter.SelectedIds?.Any() == true)
-            {
-                predicate = predicate.And(c => selectionOrderFilter.SelectedIds.Contains(c.Id));
-                return predicate;
-            }
-            if (selectionOrderFilter.Filter != null)
-                predicate = GetFrozenInWayFilter(selectionOrderFilter.Filter);
-            if (selectionOrderFilter.IsSelectedAll)
-            {
-                if (selectionOrderFilter.ExceptIds?.Any() == true)
-                {
-                    predicate = predicate.And(c => !selectionOrderFilter.ExceptIds.Contains(c.Id));
-                }
-            }
-            return predicate;
-        }
-        private ExpressionStarter<Order> GetFrozenInWayFilter(FrozenOrder frozenOrder)
+
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, FrozenOrder frozenOrder)
         {
             var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
-            Expression<Func<Order, bool>> filter = c => c.Date >= date;
-            var predicate = PredicateBuilder.New<Order>(c => c.Date >= date);
+            Expression<Func<Order, bool>> filter = c => c.Date <= date;
             if (frozenOrder.AgentId != null)
             {
-                predicate = predicate.And(c => c.AgentId == frozenOrder.AgentId);
+                Expression<Func<Order, bool>> tempFilter = c => c.AgentId == frozenOrder.AgentId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
             }
             if (frozenOrder.CountryId != null)
             {
-                predicate = predicate.And(c => c.CountryId == frozenOrder.CountryId);
+                Expression<Func<Order, bool>> tempFilter = c => c.CountryId == frozenOrder.CountryId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
             }
             if (frozenOrder.ClientId != null)
             {
-                predicate = predicate.And(c => c.ClientId == frozenOrder.ClientId);
+                Expression<Func<Order, bool>> tempFilter = c => c.ClientId == frozenOrder.ClientId;
+                var invokedExpr = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, invokedExpr), filter.Parameters);
             }
             {
-                var statusPredicate = PredicateBuilder.New<Order>(false);
+                Expression<Func<Order, bool>> tempFilter = null;
                 if (frozenOrder.IsInWay)
                 {
-                    statusPredicate = statusPredicate.Or(c => c.OrderPlace == OrderPlace.Way);
+                    tempFilter = c => c.OrderPlace == OrderPlace.Way;
                 }
                 if (frozenOrder.IsInStock)
                 {
-                    statusPredicate = statusPredicate.Or(c => c.OrderPlace == OrderPlace.Store);
+                    Expression<Func<Order, bool>> stockFilter = c => c.OrderPlace == OrderPlace.Store;
+                    if (tempFilter == null)
+                        tempFilter = stockFilter;
+                    else
+                    {
+                        var inStockInvok = Expression.Invoke(stockFilter, tempFilter.Parameters);
+                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.OrElse(tempFilter.Body, inStockInvok), tempFilter.Parameters);
+                    }
                 }
                 if (frozenOrder.IsWithAgent)
                 {
-                    statusPredicate = statusPredicate.Or(c => c.MoneyPlace == MoneyPalce.WithAgent);
+                    Expression<Func<Order, bool>> withAgentFilter = c => c.MoneyPlace == MoneyPalce.WithAgent;
+                    if (tempFilter == null)
+                        tempFilter = withAgentFilter;
+                    else
+                    {
+                        var withAgentInvok = Expression.Invoke(withAgentFilter, tempFilter.Parameters);
+                        tempFilter = Expression.Lambda<Func<Order, bool>>(Expression.OrElse(tempFilter.Body, withAgentFilter), tempFilter.Parameters);
+                    }
                 }
-                predicate = predicate.And(statusPredicate);
+                var tempFilterInvok = Expression.Invoke(tempFilter, filter.Parameters);
+                filter = Expression.Lambda<Func<Order, bool>>(Expression.AndAlso(filter.Body, tempFilterInvok), filter.Parameters);
             }
-            return predicate;
-        }
-
-        public async Task<string> GetFrozenInWayHtml(SelectionOrderFilter<FrozenOrder> frozenOrder)
-        {
-            var predicate = GetFrozenInWayFilter(frozenOrder);
-            var folderPath = _environment.WebRootPath + "/HtmlTemplate/FrozenInWayTemplates/";
-            var data = (await _repository.GetAsync(predicate, c => c.Country, c => c.Agent)).ToArray();
-            var readText = await File.ReadAllTextAsync(folderPath + "FrozenInWayTemplate.html");
-            var tableBodyTemplate = await File.ReadAllTextAsync(folderPath + "FrozenInWayTemplateRow.html");
-            StringBuilder rows = new StringBuilder();
-            for (int i = 0; i < data.Length; i++)
-            {
-                var order = data[i];
-                var temptableBodyTemplate = tableBodyTemplate.Replace("{{number}}", (i + 1).ToString());
-                temptableBodyTemplate = temptableBodyTemplate.Replace("{{code}}", order.Code);
-                temptableBodyTemplate = temptableBodyTemplate.Replace("{{date}}", order.Date?.ToString("yyyy-MM-dd"));
-                temptableBodyTemplate = temptableBodyTemplate.Replace("{{country}}", order.Country.Name);
-                temptableBodyTemplate = temptableBodyTemplate.Replace("{{agentName}}", order.Agent.Name);
-                rows.AppendLine(temptableBodyTemplate);
-            }
-            var userName = _httpContextAccessorService.AuthoticateUserName();
-            readText = readText.Replace("{{orders}}", rows.ToString());
-            readText = readText.Replace("{{userName}}", userName);
-            readText = readText.Replace("{{dateOfPrint}}", DateTime.UtcNow.Date.ToString("yyy-MM-dd"));
-            return readText;
-        }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, FrozenOrder frozenOrder)
-        {
-            var predicate = GetFrozenInWayFilter(frozenOrder);
-            var data = await _repository.GetAsync(paging, predicate, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.AgentOrderPrints);
+            var data = await _repository.GetAsync(paging, filter, c => c.Client, c => c.Region, c => c.Agent, c => c.Country);
             return new PagingResualt<IEnumerable<OrderDto>>() { Total = data.Total, Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data) };
         }
 
