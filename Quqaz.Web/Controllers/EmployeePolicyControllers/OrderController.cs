@@ -13,7 +13,6 @@ using Quqaz.Web.Models;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using System;
 using Microsoft.AspNetCore.Authorization;
-using Quqaz.Web.Dtos.OrdersDtos.Common;
 
 namespace Quqaz.Web.Controllers.EmployeePolicyControllers
 {
@@ -105,21 +104,6 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromQuery] PagingDto paging, [FromBody] FrozenOrder frozenOrder)
         {
             return Ok(await _orderService.ForzenInWay(paging, frozenOrder));
-        }
-        [HttpPost("PrintFrozenInWay")]
-        public async Task<ActionResult> PrintFrozenInWay([FromBody] SelectionOrderFilter<FrozenOrder> frozenOrder)
-        {
-            var txt = await _orderService.GetFrozenInWayHtml(frozenOrder);
-            _generatePdf.SetConvertOptions(new ConvertOptions()
-            {
-                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
-
-                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
-
-            });
-            var pdfBytes = _generatePdf.GetPDF(txt);
-            string fileName = "معلقات.pdf";
-            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
         [HttpGet("ReceiptOfTheOrderStatus/{id}")]
         public async Task<ActionResult<GenaricErrorResponse<ReceiptOfTheOrderStatusDetaliDto, string, IEnumerable<string>>>> ReceiptOfTheOrderStatusById(int id)
