@@ -1397,7 +1397,7 @@ namespace Quqaz.Web.Services.Concret
                 temptableBodyTemplate = temptableBodyTemplate.Replace("{{code}}", order.Code);
                 temptableBodyTemplate = temptableBodyTemplate.Replace("{{date}}", order.Date?.ToString("yyyy-MM-dd"));
                 temptableBodyTemplate = temptableBodyTemplate.Replace("{{country}}", order.Country.Name);
-                temptableBodyTemplate = temptableBodyTemplate.Replace("{{agentName}}", order.Agent.Name);
+                temptableBodyTemplate = temptableBodyTemplate.Replace("{{agentName}}", order.Agent?.Name);
                 rows.AppendLine(temptableBodyTemplate);
             }
             var userName = _httpContextAccessorService.AuthoticateUserName();
