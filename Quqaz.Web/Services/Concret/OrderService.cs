@@ -1349,8 +1349,7 @@ namespace Quqaz.Web.Services.Concret
         private ExpressionStarter<Order> GetFrozenInWayFilter(FrozenOrder frozenOrder)
         {
             var date = frozenOrder.CurrentDate.AddHours(-frozenOrder.Hour);
-            Expression<Func<Order, bool>> filter = c => c.Date <= date;
-            var predicate = PredicateBuilder.New<Order>(c => c.Date >= date);
+            var predicate = PredicateBuilder.New<Order>(c => c.Date <= date);
             if (frozenOrder.AgentId != null)
             {
                 predicate = predicate.And(c => c.AgentId == frozenOrder.AgentId);
