@@ -1278,7 +1278,8 @@ namespace Quqaz.Web.Services.Concret
                     OrderPlace = item.OrderPlace,
                     PayForClient = currentPay,
                     Date = item.Date,
-                    ClientNote = item.ClientNote
+                    ClientNote = item.ClientNote,
+                    RecipientPhones = item.RecipientPhones
                 };
                 total += currentPay;
                 await _uintOfWork.Add(orderClientPaymnet);
@@ -2540,8 +2541,12 @@ namespace Quqaz.Web.Services.Concret
                 rows.Append(item.LastTotal?.ToString());
                 rows.Append("</td>");
                 rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
-                rows.Append(item.ClientNote);
+                rows.Append(item.RecipientPhones);
                 rows.Append("</td>");
+                rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
+                rows.Append(item.ClientNote?.ToString());
+                rows.Append("</td>");
+                
                 rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append(item.Note);
                 rows.Append("</td>");

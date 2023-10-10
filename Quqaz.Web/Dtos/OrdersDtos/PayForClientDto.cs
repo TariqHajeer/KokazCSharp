@@ -24,6 +24,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public int? ClientPrintNumber { get; set; }
         public string ClientNote { get; set; }
         public string Note { get; set; }
+        public string RecipientPhones { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
     }
 }

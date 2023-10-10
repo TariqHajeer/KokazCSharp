@@ -16,6 +16,7 @@ namespace Quqaz.Web.Models
         public decimal DeliveryCost { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
+        public string RecipientPhones { get; set; }
         public MoneyPalce? MoneyPlace { get; set; }
         public OrderPlace? OrderPlace { get; set; }
         public DateTime? Date { get; set; }
