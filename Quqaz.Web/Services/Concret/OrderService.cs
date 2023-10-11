@@ -28,6 +28,7 @@ using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
 using Microsoft.OpenApi.Validations;
 using Quqaz.Web.Dtos.OrdersDtos.Common;
+using Quqaz.Web.Dtos.OrdersDtos.Queries.AgentQueries;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -2546,7 +2547,7 @@ namespace Quqaz.Web.Services.Concret
                 rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append(item.ClientNote?.ToString());
                 rows.Append("</td>");
-                
+
                 rows.Append(@"<td style=""width: 12%;border: 1px black solid;padding: 5px;text-align: center;"">");
                 rows.Append(item.Note);
                 rows.Append("</td>");
@@ -2842,6 +2843,26 @@ namespace Quqaz.Web.Services.Concret
             var order = await _repository.FirstOrDefualt(c => c.Id == id);
             order.NegativeAlert = false;
             await _repository.Update(order);
+        }
+
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetAsync(PagingDto paging, Expression<Func<Order, bool>> filter = null, string[] propertySelectors=null)
+        {
+            var orders = await _repository.GetAsync(paging: paging, filter: filter, propertySelectors: propertySelectors);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data)
+            };
+        }
+
+        public Task<PagingResualt<IEnumerable<OrderDto>>> GetInWayForAgent(PagingDto paging, OrderFilter orderFilter)
+        {
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
+            var predicate = GetFilterAsLinq(orderFilter);
+            predicate = predicate.And(c => c.OrderPlace == OrderPlace.Way
+            && c.AgentId == _httpContextAccessorService.AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None
+            || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove));
+            return GetAsync(paging, predicate, includes);
         }
     }
 
