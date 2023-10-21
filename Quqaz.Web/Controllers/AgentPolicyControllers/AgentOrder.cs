@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Quqaz.Web.Services.Interfaces;
+using Quqaz.Web.Dtos.OrdersDtos.Queries.AgentQueries;
+using LinqKit;
+using Quqaz.Web.Dtos.OrdersDtos;
 
 namespace Quqaz.Web.Controllers.AgentPolicyControllers
 {
@@ -31,12 +34,9 @@ namespace Quqaz.Web.Controllers.AgentPolicyControllers
             return Ok(orders);
         }
         [HttpGet("InWay")]
-        public async Task<IActionResult> GetInWay()
+        public async Task<IActionResult> GetInWay([FromQuery] PagingDto paging, [FromQuery] OrderFilter orderFilter)
         {
-            var includes = new string[] { nameof(Order.Client), nameof(Order.Country), nameof(Order.Region), $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _orderService.GetAsync(c => c.OrderPlace == OrderPlace.Way
-            && c.AgentId == AuthoticateUserId() && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.None
-            || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove), includes);
+            var orders = await _orderService.GetInWayForAgent(paging: paging, orderFilter);
             return Ok(orders);
         }
         [HttpGet("InWayByCode")]
