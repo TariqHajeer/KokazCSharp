@@ -132,5 +132,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             await _orderClientSerivce.CorrectOrderCountry(pairs);
             return Ok();
         }
+        [HttpGet("GetNumberOrdersStatus")]
+        public async Task<IActionResult> GetNumberOrdersStatus([FromQuery] string number)
+        {
+
+            return Ok();
+        }
     }
 }

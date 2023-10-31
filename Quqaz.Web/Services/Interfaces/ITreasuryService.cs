@@ -25,6 +25,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<bool> Any(Expression<Func<Treasury,bool>> expression);
         Task<PagingResualt<IEnumerable<CashMovmentDto>>> GetCashMovment(PagingDto paging, int? treasueryId);
         Task<CashMovmentDto> GetCashMovmentById(int id);
+        Task<TreasuryReportResponseDto> GetTreasuryReportResponse(GetTreasuryReportRequestDto getTreasuryReportRequest);
 
 
     }

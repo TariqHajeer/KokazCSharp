@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<AssemblyName>Quqaz.Web</AssemblyName>
-		<UserSecretsId>9755a4aa-4a0e-472c-a0d4-59e243e999de</UserSecretsId>
+		<UserSecretsId> </UserSecretsId>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	</PropertyGroup>
