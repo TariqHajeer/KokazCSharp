@@ -274,38 +274,38 @@ namespace Quqaz.Web.Services.Concret
             {
                 ClientPayment = new TreasuryReportItemResponseDto()
                 {
-                    Amount = clientPamynetAmount,
+                    Amount = Math.Abs( clientPamynetAmount),
                     Count = clientPamynetCount,
 
                 },
                 Income = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.IncomeId.HasValue),
+                    Amount =Math.Abs( await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.IncomeId.HasValue)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.IncomeId.HasValue),
                 },
                 OutCome = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.OutcomeId.HasValue),
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.OutcomeId.HasValue)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.OutcomeId.HasValue),
                 },
                 PayReceipt = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue&&c.Receipt.IsPay),
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue && c.Receipt.IsPay)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue && c.Receipt.IsPay),
                 },
                 GetReceipt = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue && !c.Receipt.IsPay),
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue && !c.Receipt.IsPay)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptId.HasValue && !c.Receipt.IsPay),
                 },
                 Give = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue&&c.Amount>0),
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount > 0)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount > 0),
                 },
                 Take = new TreasuryReportItemResponseDto()
                 {
-                    Amount = await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount < 0),
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount < 0)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount < 0),
                 },
                 

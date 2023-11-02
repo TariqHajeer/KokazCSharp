@@ -102,9 +102,9 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             return Ok(new { data = result.Data, total = result.Total });
         }
         [HttpPost("ForzenInWay")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromQuery] PagingDto paging, [FromBody] FrozenOrder frozenOrder)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> ForzenInWay([FromQuery] PagingDto paging, [FromBody] SelectionOrderFilter<FrozenOrder> selectionOrderFilter)
         {
-            return Ok(await _orderService.ForzenInWay(paging, frozenOrder));
+            return Ok(await _orderService.ForzenInWay(paging, selectionOrderFilter));
         }
         [HttpPost("PrintFrozenInWay")]
         public async Task<ActionResult> PrintFrozenInWay([FromBody] SelectionOrderFilter<FrozenOrder> frozenOrder)

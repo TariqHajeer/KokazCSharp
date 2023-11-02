@@ -1407,9 +1407,9 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{dateOfPrint}}", DateTime.UtcNow.Date.ToString("yyy-MM-dd"));
             return readText;
         }
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, FrozenOrder frozenOrder)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, SelectionOrderFilter<FrozenOrder> selectionOrderFilter)
         {
-            var predicate = GetFrozenInWayFilter(frozenOrder);
+            var predicate = GetFrozenInWayFilter(selectionOrderFilter);
             var data = await _repository.GetAsync(paging, predicate, c => c.Client, c => c.Region, c => c.Agent, c => c.Country, c => c.AgentOrderPrints);
             return new PagingResualt<IEnumerable<OrderDto>>() { Total = data.Total, Data = _mapper.Map<IEnumerable<OrderDto>>(data.Data) };
         }
