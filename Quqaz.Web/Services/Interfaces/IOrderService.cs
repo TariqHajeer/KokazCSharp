@@ -41,7 +41,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<int> DeleiverMoneyForClient(DeleiverMoneyForClientDto2 deleiverMoneyForClientDto2);
         Task<(PagingResualt<IEnumerable<PayForClientDto>> Data, decimal orderCostTotal, decimal deliveryCostTOtal, decimal payForClientTotal)> OrdersDontFinished2(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
         Task Delete(int id);
-        Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto pagingDto, FrozenOrder frozenOrder);
+        Task<PagingResualt<IEnumerable<OrderDto>>> ForzenInWay(PagingDto paging, SelectionOrderFilter<FrozenOrder> selectionOrderFilter);
         Task<OrderDto> GetById(int id);
         Task<PagingResualt<IEnumerable<PayForClientDto>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto);
         Task<IEnumerable<OrderDto>> NewOrderDontSned();

@@ -43,8 +43,6 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
                     return Conflict();
                 if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
                     return Conflict();
-                if (DateTime.UtcNow.Date.Day == 9)
-                    return Conflict("تسديد الحساب");
                 var climes = new List<Claim>
                 {
                     new Claim("UserID", user.Id.ToString())

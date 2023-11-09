@@ -79,5 +79,10 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         {
             return Ok(await _treasuryService.GetCashMovmentById(id));
         }
+        [HttpGet("GetTreasuryReport")]
+        public async Task<IActionResult> GetTreasuryReport([FromQuery] GetTreasuryReportRequestDto treasuryReportRequest)
+        {
+            return Ok(await _treasuryService.GetTreasuryReportResponse(treasuryReportRequest));
+        }
     }
 }
