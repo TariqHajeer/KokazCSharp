@@ -308,7 +308,11 @@ namespace Quqaz.Web.Services.Concret
                     Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount < 0)),
                     Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.CashMovmentId.HasValue && c.Amount < 0),
                 },
-                
+                ReciveOrder = new TreasuryReportItemResponseDto()
+                {
+                    Amount = Math.Abs(await _historyRepositroy.Sum(c => c.Amount, c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptOfTheOrderStatusId.HasValue)),
+                    Count = await _historyRepositroy.Count(c => c.TreasuryId == getTreasuryReportRequest.TreasuryId && c.CreatedOnUtc >= getTreasuryReportRequest.DateRangeFilter.Start && c.CreatedOnUtc <= getTreasuryReportRequest.DateRangeFilter.End && c.ReceiptOfTheOrderStatusId.HasValue),
+                },
             };
         }
     }

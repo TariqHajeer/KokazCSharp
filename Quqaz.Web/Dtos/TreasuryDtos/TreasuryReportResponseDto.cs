@@ -13,6 +13,7 @@
         public TreasuryReportItemResponseDto Give { get; set; }
         public TreasuryReportItemResponseDto PayReceipt { get; set; }
         public TreasuryReportItemResponseDto GetReceipt { get; set; }
+        public TreasuryReportItemResponseDto ReciveOrder { get; set; }
     }
     public class TreasuryReportItemResponseDto
     {
