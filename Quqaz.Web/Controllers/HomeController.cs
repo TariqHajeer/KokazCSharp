@@ -14,9 +14,16 @@ namespace Quqaz.Web.Controllers
     public class HomeController : OldAbstractController
     {
         private readonly ICountryCashedService _countryCashedService;
-        public HomeController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService) : base(context, mapper)
+        private readonly IBranchService _branchService;
+        public HomeController(KokazContext context, IMapper mapper, ICountryCashedService countryCashedService, IBranchService branchService) : base(context, mapper)
         {
             _countryCashedService = countryCashedService;
+            _branchService = branchService;
+        }
+        [HttpGet("Countries")]
+        public async Task<IActionResult> GetCountries()
+        {
+            return Ok(await _branchService.GetBranchPrices());
         }
         [HttpGet("Country")]
         public async Task<IActionResult> GetCountry() => Ok(await _countryCashedService.GetCashed());
