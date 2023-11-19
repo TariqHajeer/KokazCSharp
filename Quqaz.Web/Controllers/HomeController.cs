@@ -6,6 +6,7 @@ using Quqaz.Web.Dtos.MarketDtos;
 using Quqaz.Web.Models;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Quqaz.Web.Dtos.HomeDto;
 
 namespace Quqaz.Web.Controllers
 {
@@ -20,8 +21,40 @@ namespace Quqaz.Web.Controllers
             _countryCashedService = countryCashedService;
             _branchService = branchService;
         }
-        [HttpGet("Countries")]
-        public async Task<IActionResult> GetCountries()
+        [HttpGet("Statistics")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            return Ok(new StatisticsDto()
+            {
+                ClientCount= 10,
+                Employee =120,
+                Shipment=500,
+                ShipmentFromGlobal = 10,
+                ContactCompanies =20
+            });
+        }
+        [HttpPost("RequestShipment")]
+        public async Task<IActionResult> RequestShipment(RequestShipmentDto requestShipment)
+        {
+            return Ok(requestShipment);
+        }
+        [HttpGet("GetShipmentTracking")]
+        public async Task<IActionResult> GetShipmentTracking(ShipmentTrackingRequestDto shipmentTrackingRequest)
+        {
+            return Ok(shipmentTrackingRequest);
+        }
+        [HttpPost("ReserveMailBox")]
+        public async Task<IActionResult> ReserveMailBox(ReserveMailBoxRequestDto reserveMailBoxRequest)
+        {
+            return Ok(reserveMailBoxRequest);
+        }
+        [HttpGet("ClientMessages")]
+        public async Task<IActionResult> ClientMessages()
+        {
+            return Ok(new List<ClientMessageReponse>());
+        }
+        [HttpGet("Branches")]
+        public async Task<IActionResult> GetBranches()
         {
             return Ok(await _branchService.GetBranchPrices());
         }
