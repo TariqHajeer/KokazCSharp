@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Quqaz.Web.Dtos.Common;
+
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
     [Route("api/[controller]")]
@@ -18,6 +20,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         public async Task<IActionResult> Get()
         {
             return Ok(await _statisticsService.GetClientStatistic());
+        }
+        [HttpGet("GetPaymentReport")]
+        public async Task<IActionResult> GetPaymentReport([FromQuery] DateRangeFilter dateRangeFilter)
+        {
+            return Ok();
         }
 
         [HttpGet("GetNo")]

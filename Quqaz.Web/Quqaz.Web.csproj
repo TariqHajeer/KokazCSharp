@@ -45,6 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="wwwroot\ClientMessages\" />
 		<Folder Include="wwwroot\MarketLogo\" />
 	</ItemGroup>
 

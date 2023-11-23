@@ -29,6 +29,7 @@ using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
 using Microsoft.OpenApi.Validations;
 using Quqaz.Web.Dtos.OrdersDtos.Common;
 using Quqaz.Web.Dtos.OrdersDtos.Queries.AgentQueries;
+using Quqaz.Web.Dtos.HomeDto;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -2845,7 +2846,7 @@ namespace Quqaz.Web.Services.Concret
             await _repository.Update(order);
         }
 
-        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetAsync(PagingDto paging, Expression<Func<Order, bool>> filter = null, string[] propertySelectors=null)
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> GetAsync(PagingDto paging, Expression<Func<Order, bool>> filter = null, string[] propertySelectors = null)
         {
             var orders = await _repository.GetAsync(paging: paging, filter: filter, propertySelectors: propertySelectors);
             return new PagingResualt<IEnumerable<OrderDto>>()
@@ -2864,6 +2865,26 @@ namespace Quqaz.Web.Services.Concret
             || c.AgentRequestStatus == (int)AgentRequestStatusEnum.DisApprove));
             return GetAsync(paging, predicate, includes);
         }
+
+        public async Task<ShipmentTrackingResponse> GetShipmentPath(ShipmentTrackingRequestDto shipmentTracking)
+        {
+            if (string.IsNullOrEmpty(shipmentTracking.Phone))
+            {
+                var count = await _repository.Count(c => c.Code == shipmentTracking.Code);
+                if (count == 0)
+                {
+                    throw new NotFoundException();
+                }
+                if (count > 1)
+                {
+                    throw new ConflictException("الرجاء إدخال رقم الهاتف");
+                }                
+
+                return _mapper.Map<ShipmentTrackingRequestDto>(await _repository.FirstOrDefualt(c=>c.Code==shipmentTracking.Code,)
+            }
+            var orders = 
+        }
+        
     }
 
 

@@ -68,7 +68,6 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             await _orderClientSerivce.Edit(editOrder);
             return Ok();
-
         }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] COrderFilter orderFilter)
@@ -135,8 +134,24 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("GetNumberOrdersStatus")]
         public async Task<IActionResult> GetNumberOrdersStatus([FromQuery] string number)
         {
-
-            return Ok();
+            return Ok(new List<NumberOrderStatusCount>()
+            {
+                new NumberOrderStatusCount()
+                {
+                    Number=10,
+                    Title= "مرتجع"
+                },
+                 new NumberOrderStatusCount()
+                {
+                    Number=5,
+                    Title= "تم التسليم"
+                },
+                  new NumberOrderStatusCount()
+                {
+                    Number=7,
+                    Title= "مرفوض"
+                }
+            });
         }
     }
 }

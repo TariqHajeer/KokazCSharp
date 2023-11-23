@@ -10,6 +10,7 @@ using Quqaz.Web.Dtos.OrdersDtos.OrderWithBranchDto;
 using Quqaz.Web.Dtos.OrdersDtos.Queries;
 using Quqaz.Web.Dtos.OrdersDtos.Commands;
 using Quqaz.Web.Dtos.OrdersDtos.Common;
+using Quqaz.Web.Dtos.HomeDto;
 
 namespace Quqaz.Web.Services.Interfaces
 {
@@ -93,5 +94,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<OrderDto>> GetOrderInAllBranches(string code);
         Task DeleteNegativeAlert(int id);
         Task<string> GetFrozenInWayHtml(SelectionOrderFilter<FrozenOrder> frozenOrder);
+        Task<ShipmentTrackingResponse> GetShipmentPath(ShipmentTrackingRequestDto shipmentTracking);
     }
 }

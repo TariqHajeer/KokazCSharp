@@ -133,5 +133,10 @@ namespace Quqaz.Web.Services.Concret
                 Total = data.Total
             };
         }
+
+        public Task<int> Count(Expression<Func<TEntity, bool>> filter = null)
+        {
+            return _repository.Count(filter);
+        }
     }
 }

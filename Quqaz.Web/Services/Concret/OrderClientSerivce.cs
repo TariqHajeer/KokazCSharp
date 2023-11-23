@@ -254,6 +254,17 @@ namespace Quqaz.Web.Services.Concret
             {
                 predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
+            if (orderFilter.DateRange!=null)
+            {
+                if (orderFilter.DateRange.FromDate.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date>=orderFilter.DateRange.FromDate.Value);
+                }
+                if (orderFilter.DateRange.ToDate.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date <= orderFilter.DateRange.ToDate.Value);
+                }
+            }
 
             var includes = new string[] { nameof(Order.Country), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
 
