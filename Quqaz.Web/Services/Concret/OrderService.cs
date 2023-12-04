@@ -2878,11 +2878,11 @@ namespace Quqaz.Web.Services.Concret
                 if (count > 1)
                 {
                     throw new ConflictException("الرجاء إدخال رقم الهاتف");
-                }                
+                }
 
-                return _mapper.Map<ShipmentTrackingRequestDto>(await _repository.FirstOrDefualt(c=>c.Code==shipmentTracking.Code,)
+                return _mapper.Map<ShipmentTrackingResponse>(await _repository.FirstOrDefualt(c => c.Code == shipmentTracking.Code));
             }
-            var orders = 
+            return null;
         }
         
     }

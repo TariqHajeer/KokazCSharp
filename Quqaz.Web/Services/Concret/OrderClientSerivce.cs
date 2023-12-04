@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -30,7 +32,8 @@ namespace Quqaz.Web.Services.Concret
         private readonly IHttpContextAccessorService _contextAccessorService;
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository)
+        private readonly IWebHostEnvironment _environment;
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -39,6 +42,7 @@ namespace Quqaz.Web.Services.Concret
             _orderTypeRepository = orderTypeRepository;
             _UintOfWork = uintOfWork;
             _clientRepository = clientRepository;
+            _environment = environment;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -254,11 +258,11 @@ namespace Quqaz.Web.Services.Concret
             {
                 predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
-            if (orderFilter.DateRange!=null)
+            if (orderFilter.DateRange != null)
             {
                 if (orderFilter.DateRange.FromDate.HasValue)
                 {
-                    predicate = predicate.And(c => c.Date>=orderFilter.DateRange.FromDate.Value);
+                    predicate = predicate.And(c => c.Date >= orderFilter.DateRange.FromDate.Value);
                 }
                 if (orderFilter.DateRange.ToDate.HasValue)
                 {
@@ -284,10 +288,14 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<IEnumerable<OrderDto>> NonSendOrder()
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> NonSendOrder(PagingDto pagingDto)
         {
-            var orders = await _repository.GetAsync(c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country);
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            var orders = await _repository.GetAsync(paging: pagingDto, c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data),
+                Total = orders.Total
+            };
         }
 
         public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter)
@@ -558,6 +566,13 @@ namespace Quqaz.Web.Services.Concret
             }
             await _UintOfWork.Update(order);
             await _UintOfWork.Commit();
+        }
+
+        public async Task<string> GetReceipt(int id)
+        {
+            var filePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderReceipt.html";
+            var readText = await File.ReadAllTextAsync(filePath);
+            return readText;
         }
     }
 }
