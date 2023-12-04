@@ -14,7 +14,7 @@ namespace Quqaz.Web.Services.Interfaces
     {
         Task Delete(int id);
         Task Send(int[] ids);
-        Task<IEnumerable<OrderDto>> NonSendOrder();
+        Task<PagingResualt<IEnumerable<OrderDto>>> NonSendOrder(PagingDto paging);
         Task<PagingResualt<IEnumerable<OrderDto>>> Get(PagingDto pagingDto, COrderFilter orderFilter);
         Task<bool> CodeExist(string code);
         Task<bool> CheckOrderTypesIdsExists(int[] ids);
@@ -26,5 +26,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient);
         Task<bool> CreateFromExcel(IFormFile file,DateTime dateTime);
         Task Edit(EditOrder editOrder);
+        Task<string> GetReceipt(int id);
     }
 }

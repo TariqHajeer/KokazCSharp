@@ -2,6 +2,8 @@
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Quqaz.Web.Dtos.Common;
+using System.Collections.Generic;
+using Quqaz.Web.Dtos.Statics;
 
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
@@ -21,10 +23,46 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             return Ok(await _statisticsService.GetClientStatistic());
         }
-        [HttpGet("GetPaymentReport")]
-        public async Task<IActionResult> GetPaymentReport([FromQuery] DateRangeFilter dateRangeFilter)
+        [HttpGet("AccountReport")]
+        public async Task<IActionResult> AccountReport([FromQuery] DateRangeFilter dateRangeFilter)
         {
-            return Ok();
+            return Ok(new List<AccountReportDto>()
+            {
+                new AccountReportDto()
+                {
+                    Text ="100 دع",
+                    Title ="تستديد"
+                },
+                new AccountReportDto()
+                {
+                    Text ="100 دع",
+                    Title ="تستديد"
+                }
+
+            });
+        }
+        [HttpGet("GetPhoneOrderStatusCount")]
+        public async Task<IActionResult> GetPhoneOrderStatusCount([FromQuery] string phone)
+        {
+            var list = new List<AccountReportDto>
+            {
+                new AccountReportDto()
+                {
+                    Text = "10",
+                    Title="مرتجع كلي"
+                },
+                new AccountReportDto()
+                {
+                    Text = "50",
+                    Title="تم التسليم"
+                },
+                new AccountReportDto()
+                {
+                    Text = "20",
+                    Title="مرتجع جزئي "
+                },
+            };
+            return Ok(list);
         }
 
         [HttpGet("GetNo")]

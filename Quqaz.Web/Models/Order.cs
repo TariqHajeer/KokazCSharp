@@ -80,6 +80,14 @@ namespace Quqaz.Web.Models
         public int? NextBranchId { get; set; }
         [ForeignKey(nameof(NextBranchId))]
         public Branch NextBranch { get; set; }
+        [NotMapped]
+        public string[] RecipientPhonesAsArray
+        {
+            get
+            {
+                return this.RecipientPhones.Split(",");
+            }
+        }
         public NameAndIdDto GetOrderPlaced()
         {
             return this.OrderPlace;
@@ -138,6 +146,7 @@ namespace Quqaz.Web.Models
         {
             return this.CurrentBranchId == this.NextBranchId;
         }
+        
         public void Map(UpdateOrder updateOrder)
         {
             this.Code = updateOrder.Code;

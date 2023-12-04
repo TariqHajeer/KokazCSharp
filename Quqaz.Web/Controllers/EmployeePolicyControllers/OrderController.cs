@@ -547,5 +547,6 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
             await _orderService.DeleteNegativeAlert(id);
             return Ok();
         }
+
     }
 }

@@ -7,6 +7,7 @@ using Quqaz.Web.Dtos.OrdersDtos;
 using Quqaz.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Wkhtmltopdf.NetCore;
 
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
@@ -17,11 +18,13 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         private readonly IOrderClientSerivce _orderClientSerivce;
         private readonly INotificationService _notificationService;
         private readonly IReceiptService _receiptService;
-        public COrderController(IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService)
+        private readonly IGeneratePdf _generatePdf;
+        public COrderController(IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService, IGeneratePdf generatePdf)
         {
             _orderClientSerivce = orderClientSerivce;
             _notificationService = notificationService;
             _receiptService = receiptService;
+            _generatePdf = generatePdf;
         }
         /// <summary>
         /// إضافة طلب
@@ -63,6 +66,21 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             return Ok(await _orderClientSerivce.GetById(id));
         }
+        [HttpGet("DownloadReceipt/{id:int}")]
+        public async Task<IActionResult> DownloadReceipt(int id)
+        {
+            var txt = await _orderClientSerivce.GetReceipt(id);
+            _generatePdf.SetConvertOptions(new ConvertOptions()
+            {
+                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
+
+                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
+
+            });
+            var pdfBytes = _generatePdf.GetPDF(txt);
+            string fileName = "وصل.pdf";
+            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
+        }
         [HttpPut]
         public async Task<IActionResult> Edit([FromBody] EditOrder editOrder)
         {
@@ -76,12 +94,18 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             return Ok(new { data = paginResult.Data, total = paginResult.Total });
         }
         [HttpGet("NonSendOrder")]
-        public async Task<IActionResult> NonSendOrder()
+        public async Task<IActionResult> NonSendOrder([FromQuery] PagingDto pagingDto)
         {
-            return Ok(await _orderClientSerivce.NonSendOrder());
+            return Ok(await _orderClientSerivce.NonSendOrder(pagingDto));
+        }
+        [HttpPost("Send")]
+        public async Task<IActionResult> Send([FromBody] IdCollection ids )
+        {
+            await _orderClientSerivce.Send(ids.Ids);
+            return Ok();
         }
         [HttpPost("Sned")]
-        public async Task<IActionResult> Send([FromBody] int[] ids)
+        public async Task<IActionResult> Sned([FromBody] int[] ids)
         {
             await _orderClientSerivce.Send(ids);
             return Ok();
@@ -134,7 +158,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("GetNumberOrdersStatus")]
         public async Task<IActionResult> GetNumberOrdersStatus([FromQuery] string number)
         {
-            return Ok(new List<NumberOrderStatusCount>()
+            return Ok(Task.FromResult(new List<NumberOrderStatusCount>()
             {
                 new NumberOrderStatusCount()
                 {
@@ -151,7 +175,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
                     Number=7,
                     Title= "مرفوض"
                 }
-            });
+            }));
         }
     }
 }

@@ -27,14 +27,16 @@ namespace Quqaz.Web.Controllers
         private readonly IBranchService _branchService;
         private readonly IEmailService _emailService;
         private readonly IClientMessageService _clientMessageService;
+        private readonly IOrderService _orderService;
         private readonly IWebHostEnvironment _environment;
-        public HomeController(KokazContext context, IMapper mapper, IBranchService branchService, IEmailService emailService, IClientMessageService clientMessageService, IIndexService<Country> countrySerivce, IWebHostEnvironment environment) : base(context, mapper)
+        public HomeController(KokazContext context, IMapper mapper, IBranchService branchService, IEmailService emailService, IClientMessageService clientMessageService, IIndexService<Country> countrySerivce, IWebHostEnvironment environment, IOrderService orderService) : base(context, mapper)
         {
             _branchService = branchService;
             _emailService = emailService;
             _clientMessageService = clientMessageService;
             _countrySerivce = countrySerivce;
             _environment = environment;
+            _orderService = orderService;
         }
         [HttpGet("Statistics")]
         public async Task<IActionResult> GetStatistics()
@@ -62,8 +64,7 @@ namespace Quqaz.Web.Controllers
         [HttpGet("GetShipmentTracking")]
         public async Task<ActionResult<ShipmentTrackingResponse>> GetShipmentTracking([FromQuery] ShipmentTrackingRequestDto shipmentTrackingRequest)
         {
-            
-            return Ok(shipmentTrackingRequest);
+            return Ok(await _orderService.GetShipmentPath(shipmentTrackingRequest));
         }
         [HttpPost("ReserveMailBox")]
         public async Task<IActionResult> ReserveMailBox(ReserveMailBoxRequestDto reserveMailBoxRequest)

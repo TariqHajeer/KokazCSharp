@@ -249,6 +249,12 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 .ForMember(c => c.AgentTotal, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Sum(c => c.AgentCost)))
                 .ForMember(c => c.TreasuryIncome, opt => opt.MapFrom(src => src.ReceiptOfTheOrderStatusDetalis.Where(c => c.MoneyPalce == MoneyPalce.Delivered || c.MoneyPalce == MoneyPalce.InsideCompany).Sum(c => c.Cost - c.AgentCost)));
             CreateMap<Order, ClientPaymentDto>();
+
+            CreateMap<Order, ShipmentTrackingResponse>()
+                .ForMember(c => c.Source, opt => opt.MapFrom(src=>src.Branch.Name))
+                .ForMember(c=>c.Destination,opt=>opt.MapFrom(src=>src.Country.Name))
+                .ForMember(c => c.CurrentPlace, opt => opt.MapFrom(src => src.CurrentBranch.Name));
+
         }
         private class DispalyMoneyPlaceValueRsolver : IValueResolver<Order, OrderDto, string>
         {
