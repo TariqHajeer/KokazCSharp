@@ -18,8 +18,8 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public DateTime Date { get; set; }
         public string DestinationName { get; set; }
         public string DestinationPhone { get; set; }
-        public List<PrintDto> Orders { get; set; }
         public List<ReceiptDto> Receipts { get; set; }
+        public List<PrintDto> Orders { get; set; }
         public DiscountDto Discount { get; set; }
 
     }

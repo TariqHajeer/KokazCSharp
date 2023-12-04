@@ -21,6 +21,8 @@ using Quqaz.Web.Services.Interfaces;
 using Quqaz.Web.Services.Concret;
 using Quqaz.Web.Middlewares;
 using Wkhtmltopdf.NetCore;
+using Quqaz.Web.Services.Interfaces.Additional;
+using Quqaz.Web.Services.Concret.Additional;
 
 namespace Quqaz.Web
 {
@@ -247,6 +249,8 @@ namespace Quqaz.Web
             services.AddScoped<IOrderClientSerivce, OrderClientSerivce>();
             services.AddScoped<IClientPaymentService, ClientPaymentService>();
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IClientMessageService, ClientMessageService>();
         }
     }
 }

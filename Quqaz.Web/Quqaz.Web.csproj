@@ -45,10 +45,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="wwwroot\ClientMessages\" />
 		<Folder Include="wwwroot\MarketLogo\" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Update="wwwroot\HtmlTemplate\ClientTemplate\OrderReceipt.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DeleiverMoneyForClientReport.html">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

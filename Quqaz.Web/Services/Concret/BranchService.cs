@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -17,6 +18,11 @@ namespace Quqaz.Web.Services.Concret
     {
         public BranchService(IRepository<Branch> repository, IMapper mapper, Logging logging, IHttpContextAccessorService httpContextAccessorService) : base(repository, mapper, logging, httpContextAccessorService)
         {
+        }
+        public async Task<List<BranchPricesDto>> GetBranchPrices()
+        {
+            var branches = await _repository.GetAsync(null, c => c.BranchToCountryDeliverryCosts.Select(c => c.Country));
+            return _mapper.Map<List<BranchPricesDto>>(branches);
         }
         public override Task<ErrorRepsonse<BranchDto>> AddAsync(CreateBranchDto createDto)
         {
