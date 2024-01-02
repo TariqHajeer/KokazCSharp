@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Quqaz.Web.Services.Concret
@@ -298,7 +297,7 @@ namespace Quqaz.Web.Services.Concret
             };
         }
 
-        public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter)
+        public async Task<PagingResualt<List<PayForClientDto>>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter, PagingDto paging)
         {
             var predicate = PredicateBuilder.New<Order>(false);
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
@@ -318,15 +317,19 @@ namespace Quqaz.Web.Services.Concret
                 predicate.Or(pr2);
             }
             var includes = new string[] { nameof(Order.Region), nameof(Order.Country), nameof(Order.Agent), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _repository.GetByFilterInclue(predicate, includes);
-            orders.ForEach(o =>
+            var orders = await _repository.GetByFilterInclue(paging, predicate, includes);
+            orders.Data.ForEach(o =>
             {
                 if (o.MoneyPlace == MoneyPalce.WithAgent)
                 {
                     o.MoneyPlace = MoneyPalce.OutSideCompany;
                 }
             });
-            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+            return new PagingResualt<List<PayForClientDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<List<PayForClientDto>>(orders.Data)
+            };
         }
 
         public async Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision()
@@ -574,5 +577,6 @@ namespace Quqaz.Web.Services.Concret
             var readText = await File.ReadAllTextAsync(filePath);
             return readText;
         }
+
     }
 }

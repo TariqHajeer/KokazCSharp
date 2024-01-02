@@ -139,6 +139,23 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
                 Total = total,
             };
         }
+        public virtual async Task<PagingResualt<IEnumerable<T>>> GetByFilterInclue(PagingDto paging, Expression<Func<T, bool>> filter, string[] propertySelectors)
+        {
+            var query = Query;
+            if (filter != null)
+                query = query.Where(filter);
+            if (propertySelectors?.Any() == true)
+                foreach (var item in propertySelectors)
+                {
+                    query = query.Include(item);
+                }
+            var total = await query.CountAsync();
+            return new PagingResualt<IEnumerable<T>>()
+            {
+                Data = await query.Skip((paging.Page - 1) * paging.RowCount).Take(paging.RowCount).ToListAsync(),
+                Total = total,
+            };
+        }
         public virtual async Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors)
         {
             var query = Query;

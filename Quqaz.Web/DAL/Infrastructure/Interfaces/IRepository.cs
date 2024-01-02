@@ -22,6 +22,7 @@ namespace Quqaz.Web.DAL.Infrastructure.Interfaces
         Task<decimal> Sum(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
         Task<Dictionary<TKey, decimal>> Sum<TKey>(Expression<Func<T, TKey>> groupBySelector, Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> filter = null);
         Task<IEnumerable<T>> GetByFilterInclue(Expression<Func<T, bool>> filter, string[] propertySelectors);
+        Task<PagingResualt<IEnumerable<T>>> GetByFilterInclue(PagingDto paging, Expression<Func<T, bool>> filter, string[] propertySelectors);
         Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] propertySelectors);
         Task<IEnumerable<T>> GetAll(string[] propertySelectors);
         Task Update(T entity);

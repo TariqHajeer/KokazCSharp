@@ -99,7 +99,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             return Ok(await _orderClientSerivce.NonSendOrder(pagingDto));
         }
         [HttpPost("Send")]
-        public async Task<IActionResult> Send([FromBody] IdCollection ids )
+        public async Task<IActionResult> Send([FromBody] IdCollection ids)
         {
             await _orderClientSerivce.Send(ids.Ids);
             return Ok();
@@ -110,10 +110,25 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             await _orderClientSerivce.Send(ids);
             return Ok();
         }
-        [HttpGet("OrdersDontFinished")]
-        public async Task<IActionResult> OrdersDontFinished([FromQuery] OrderDontFinishFilter orderDontFinishFilter)
+        [HttpPost("OrdersDontFinished")]
+        public async Task<IActionResult> OrdersDontFinished([FromQuery] PagingDto paging, [FromBody] OrderDontFinishFilter orderDontFinishFilter)
         {
-            return Ok(await _orderClientSerivce.OrdersDontFinished(orderDontFinishFilter));
+            return Ok(await _orderClientSerivce.OrdersDontFinished(orderDontFinishFilter, paging));
+        }
+        [HttpPost("DownloadOrdersDontFinished")]
+        public async Task<IActionResult> DownloadOrdersDontFinished([FromBody] OrderDontFinishFilter orderDontFinishFilter)
+        {
+            var txt = await _orderClientSerivce.GetReceipt(10);
+            _generatePdf.SetConvertOptions(new ConvertOptions()
+            {
+                PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,
+
+                PageMargins = new Wkhtmltopdf.NetCore.Options.Margins() { Bottom = 10, Left = 10, Right = 10, Top = 10 },
+
+            });
+            var pdfBytes = _generatePdf.GetPDF(txt);
+            string fileName = "وصل.pdf";
+            return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
         [HttpGet("UnPaidRecipt")]
         public async Task<IActionResult> UnPaidRecipt()
@@ -176,6 +191,47 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
                     Title= "مرفوض"
                 }
             }));
+        }
+        [HttpGet("Track")]
+        public async Task<IActionResult> Track([FromQuery] int Id)
+        {
+            if (Id == 1)
+                return NotFound();
+            List<ClientTracShipmentDto> tracking = new List<ClientTracShipmentDto>() {
+            new ClientTracShipmentDto()
+            {
+                Number = 1,
+                Text = "في المخزن",
+                ExtraText = "الأربعاء ",
+                Checked = true
+            }, new ClientTracShipmentDto()
+            {
+                Number = 2,
+                Text = "متوجعة إلى بغداد",
+                ExtraText = "الأربعاء ",
+                Checked = false
+            }, new ClientTracShipmentDto()
+            {
+                Number = 3,
+                Text = "وصلت إلى محافظة",
+                ExtraText = "الأربعاء ",
+                Checked = false
+            }, new ClientTracShipmentDto()
+            {
+                Number = 4,
+                Text = "خرجت مع مندوب",
+                ExtraText = "00000000000 ",
+                Checked = false
+            },
+             new ClientTracShipmentDto()
+            {
+                Number = 5,
+                Text = "في إننزظار التسليم",
+                ExtraText = "الأربعاء ",
+                Checked = false
+                }
+            };
+            return Ok(tracking);
         }
     }
 }
