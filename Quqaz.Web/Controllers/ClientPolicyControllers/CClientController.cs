@@ -11,10 +11,22 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
     public class CClientController : AbstractClientPolicyController
     {
         private readonly IClientCashedService _clientCashedService;
-        public CClientController( IClientCashedService clientCashedService)
+        public CClientController(IClientCashedService clientCashedService)
         {
             _clientCashedService = clientCashedService;
         }
+        [HttpPost("SetFirebaseToken")]
+        public async Task<IActionResult> SetFirebaseToken([FromForm] string token)
+        {
+            await _clientCashedService.
+        }
+        [HttpPost("UpdatePassword")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto updatePasswordDto)
+        {
+            await _clientCashedService.UpdatePassword(updatePasswordDto);
+            return Ok();
+        }
+
         [HttpGet("CheckUserName/{username}")]
         public async Task<IActionResult> CheckUserName(string username)
         {
@@ -25,8 +37,15 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             return Ok(await _clientCashedService.Any(c => c.Name == name && c.Id != AuthoticateUserId()));
         }
+        [HttpGet("GetMyProfile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+
+            var authClient = await _clientCashedService.GetAuthClient();
+            return Ok(authClient);
+        }
         [HttpPut("updateInformation")]
-        public async Task<IActionResult> Update([FromBody] CUpdateClientDto updateClientDto)
+        public async Task<IActionResult> Update([FromForm] CUpdateClientDto updateClientDto)
         {
             await _clientCashedService.Update(updateClientDto);
             return Ok();

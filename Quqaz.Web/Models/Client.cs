@@ -23,7 +23,6 @@ namespace Quqaz.Web.Models
             ReceiptOfTheOrderStatusDetalis = new HashSet<ReceiptOfTheOrderStatusDetali>();
             Receipts = new HashSet<Receipt>();
         }
-
         public int Id { get; set; }
         public string Name { get; set; }
         public int? CountryId { get; set; }
@@ -36,6 +35,10 @@ namespace Quqaz.Web.Models
         public string Mail { get; set; }
         public int Points { get; set; }
         public int BranchId { get; set; }
+        public string Photo {get;set;}
+        public string FacebookLinke { get; set; }
+        public string IGLink { get; set; }
+        public string FirebaseToken {get; set;}
 
         public virtual Country Country { get; set; }
         public virtual User User { get; set; }

@@ -17,7 +17,6 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet]
         public async Task<IActionResult> GetALL()
         {
-
             return Ok(await _branchService.GetAll());
 
         }
