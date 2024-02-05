@@ -23,15 +23,20 @@ using Quqaz.Web.Middlewares;
 using Wkhtmltopdf.NetCore;
 using Quqaz.Web.Services.Interfaces.Additional;
 using Quqaz.Web.Services.Concret.Additional;
+using System.IO;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 namespace Quqaz.Web
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration)
+        public IHostEnvironment _hostEnvironment;
+        public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
+            _hostEnvironment = hostEnvironment;
         }
 
 
@@ -169,7 +174,10 @@ namespace Quqaz.Web
             RegiserServices(services);
             services.AddWkhtmltopdf("wkhtmltopdf");
             services.AddScoped<Logging, Logging>();
-
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromFile(Path.Combine(_hostEnvironment.ContentRootPath, Configuration["firebaseFileName"]))
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

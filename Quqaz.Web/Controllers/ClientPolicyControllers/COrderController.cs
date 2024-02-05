@@ -16,13 +16,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
     public class COrderController : AbstractClientPolicyController
     {
         private readonly IOrderClientSerivce _orderClientSerivce;
-        private readonly INotificationService _notificationService;
         private readonly IReceiptService _receiptService;
         private readonly IGeneratePdf _generatePdf;
-        public COrderController(IOrderClientSerivce orderClientSerivce, INotificationService notificationService, IReceiptService receiptService, IGeneratePdf generatePdf)
+        public COrderController(IOrderClientSerivce orderClientSerivce,  IReceiptService receiptService, IGeneratePdf generatePdf)
         {
             _orderClientSerivce = orderClientSerivce;
-            _notificationService = notificationService;
             _receiptService = receiptService;
             _generatePdf = generatePdf;
         }
@@ -134,24 +132,6 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         public async Task<IActionResult> UnPaidRecipt()
         {
             return Ok(await _receiptService.UnPaidRecipt(AuthoticateUserId()));
-        }
-
-        [HttpGet("NewNotfiaction")]
-        public async Task<IActionResult> NewNotfiaction()
-        {
-            return Ok(await _notificationService.NewNotfiactionCount());
-        }
-        [HttpGet("Notifcation")]
-        public async Task<IActionResult> Notifcation()
-        {
-            return Ok(await _notificationService.GetClientNotifcations());
-
-        }
-        [HttpPut("SeeNotifactions")]
-        public async Task<IActionResult> SeeNotifactions([FromBody] int[] ids)
-        {
-            await _notificationService.SeeNotifactions(ids);
-            return Ok();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)

@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using FirebaseAdmin.Messaging;
+using Quqaz.Web.DAL.Helper;
 using Quqaz.Web.DAL.Infrastructure.Interfaces;
+using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.NotifcationDtos;
 using Quqaz.Web.HubsConfig;
 using Quqaz.Web.Models;
@@ -129,6 +132,22 @@ namespace Quqaz.Web.Services.Concret
         public async Task<int> NewNotfiactionCount()
         {
             return await _repository.Count(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId());
+        }
+
+        public Task<PagingResualt<List<NewNotificationDto>>> GetNotifications(PagingDto paging)
+        {
+            return Task.FromResult(new PagingResualt<List<NewNotificationDto>>()
+            {
+                Data = new List<NewNotificationDto>()
+                {
+                    new NewNotificationDto(){
+                        Title="عمار",
+                        Body="ليش مافي حدا موظف بالعائلة ؟",
+                        Data =new Dictionary<string, string>(){{"id","1"}}
+                    }
+                },
+                Total = 10
+            });
         }
     }
 }

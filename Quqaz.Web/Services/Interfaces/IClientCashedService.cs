@@ -17,6 +17,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task Update(CUpdateClientDto cUpdateClientDto);
         Task<List<ClientDto>> GetClientsByBranchId(int branchId);   
         Task UpdatePassword(UpdatePasswordDto updatePasswordDto);
-        Task SetToken(string token);
+        Task SetToken(SetFCMTokenDto setFCMToken);
     }
 }

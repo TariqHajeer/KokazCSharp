@@ -15,10 +15,12 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         {
             _clientCashedService = clientCashedService;
         }
-        [HttpPost("SetFirebaseToken")]
-        public async Task<IActionResult> SetFirebaseToken([FromForm] string token)
+        
+
+        [HttpPost("LogOut")]
+        public async Task<IActionResult> LogOut([FromForm] string mackAddress)
         {
-            await _clientCashedService.
+            return Ok();
         }
         [HttpPost("UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto updatePasswordDto)
@@ -40,7 +42,6 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("GetMyProfile")]
         public async Task<IActionResult> GetMyProfile()
         {
-
             var authClient = await _clientCashedService.GetAuthClient();
             return Ok(authClient);
         }

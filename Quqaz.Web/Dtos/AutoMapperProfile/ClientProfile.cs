@@ -48,8 +48,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                         return obj.Password;
                     return MD5Hash.GetMd5Hash(dto.Password);
                 }));
-            CreateMap<CUpdateClientDto, Client>()
-                .ForMember(c => c.Password, opt => opt.MapFrom(src => src.Password == null ? "" : MD5Hash.GetMd5Hash(src.Password)));
+            CreateMap<CUpdateClientDto, Client>();
 
             CreateMap<Client, AuthClient>()
                 .ForMember(d => d.Country, opt => opt.MapFrom((client, authclient, i, context) =>

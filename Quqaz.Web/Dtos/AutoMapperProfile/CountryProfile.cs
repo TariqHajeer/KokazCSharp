@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.Countries;
-using Quqaz.Web.Dtos.Regions;
-using Quqaz.Web.Dtos.Users;
 using Quqaz.Web.Models;
+using Quqaz.Web.Models.Static;
 using Quqaz.Web.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,6 +24,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                     country.Regions.ToList().ForEach(c => c.Country = null);
                     return context.Mapper.Map<NameAndIdDto[]>(country.Regions);
                 }))
+                .ForMember(c => c.MapId, opt => opt.MapFrom(src => Consts.CountryMap.ContainsKey(src.Id) == true ? Consts.CountryMap[src.Id] : -1))
                 .ForMember(c => c.Points, opt => opt.MapFrom<PointsValueResolver>())
                 .ForMember(c => c.DeliveryCost, opt => opt.MapFrom<DeliveryCostValueResolver>())
                 .ForMember(c => c.Agents, opt => opt.MapFrom((obj, dto, i, context) =>

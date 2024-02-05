@@ -293,10 +293,13 @@ namespace Quqaz.Web.Services.Concret
             await _repository.Update(client);
         }
 
-        public async Task SetToken(string token)
+        public async Task SetToken(SetFCMTokenDto setFCMToken)
         {
-            var client = await _repository.GetById(_httpContextAccessorService.AuthoticateUserId());
-            client.FirebaseToken = token;
+            var client = await _repository.FirstOrDefualt(c=>c.Id== _httpContextAccessorService.AuthoticateUserId(),c=>c.FCMTokens);
+            client.FCMTokens.Add(new FCMTokens(){
+                Token = setFCMToken.Token,
+                MacAddress= setFCMToken.MackAddress
+            });
             await _repository.Update(client);            
         }
     }
