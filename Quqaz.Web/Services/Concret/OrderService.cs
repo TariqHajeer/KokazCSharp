@@ -285,7 +285,6 @@ namespace Quqaz.Web.Services.Concret
                 }
                 receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
                 await _uintOfWork.Add(receiptOfTheOrderStatus);
-
                 await _treasuryService.IncreaseAmountByOrderFromAgent(receiptOfTheOrderStatus);
                 await _uintOfWork.Commit();
                 return response;
@@ -520,6 +519,14 @@ namespace Quqaz.Web.Services.Concret
                 agnetOrderPrints.Add(agnetOrderPrint);
                 agentPrintsDetials.Add(agentPrintDetials);
             }
+            
+            var notifcations =  orders.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+            {
+                ClientId = c.Key,
+                Title = "طلبات في الطريق ",
+                Body = $"لديك {c.Count()} طلبات خرجت مع المندوب "
+            }).ToList();
+            await _notificationService.CreateRange(notifcations);
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.AddRange(agnetOrderPrints);
             await _uintOfWork.AddRange(agentPrintsDetials);

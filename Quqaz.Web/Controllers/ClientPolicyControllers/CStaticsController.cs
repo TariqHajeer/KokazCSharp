@@ -13,10 +13,12 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
     {
         private readonly INotificationService _notificationService;
         private readonly IStatisticsService _statisticsService;
-        public CStaticsController(INotificationService notificationService, IStatisticsService statisticsService)
+        private readonly IOrderClientSerivce _orderClientSerivce;
+        public CStaticsController(INotificationService notificationService, IStatisticsService statisticsService, IOrderClientSerivce orderClientSerivce)
         {
             _notificationService = notificationService;
             _statisticsService = statisticsService;
+            _orderClientSerivce = orderClientSerivce;
         }
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -26,43 +28,12 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("AccountReport")]
         public async Task<IActionResult> AccountReport([FromQuery] DateRangeFilter dateRangeFilter)
         {
-            return Ok(new List<AccountReportDto>()
-            {
-                new AccountReportDto()
-                {
-                    Text ="100 دع",
-                    Title ="تستديد"
-                },
-                new AccountReportDto()
-                {
-                    Text ="100 دع",
-                    Title ="تستديد"
-                }
-
-            });
+            return Ok(await _orderClientSerivce.GetOrderStatics(dateRangeFilter));
         }
         [HttpGet("GetPhoneOrderStatusCount")]
         public async Task<IActionResult> GetPhoneOrderStatusCount([FromQuery] string phone)
         {
-            var list = new List<AccountReportDto>
-            {
-                new AccountReportDto()
-                {
-                    Text = "10",
-                    Title="مرتجع كلي"
-                },
-                new AccountReportDto()
-                {
-                    Text = "50",
-                    Title="تم التسليم"
-                },
-                new AccountReportDto()
-                {
-                    Text = "20",
-                    Title="مرتجع جزئي "
-                },
-            };
-            return Ok(list);
+            return Ok(await _orderClientSerivce.GetPhoneOrderStatusCount(phone));
         }
 
         [HttpGet("GetNo")]

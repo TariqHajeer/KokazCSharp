@@ -58,7 +58,8 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 .ForMember(d => d.Phones, opt => opt.MapFrom((client, auth, i, context) =>
                 {
                     return context.Mapper.Map<PhoneDto[]>(client.ClientPhones);
-                }));
+                }))
+                .ForMember(c=>c.Logo,opt=>opt.MapFrom(src=>src.Photo));
 
             CreateMap<EditRequest, EditRequestDto>()
                 .ForMember(c => c.Client, opt => opt.MapFrom((obj, dto, i, context) =>

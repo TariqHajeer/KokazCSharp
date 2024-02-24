@@ -18,6 +18,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             _clientPaymentService = clientPaymentService;
             _generatePdf = generatePdf;
         }
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] PagingDto pagingDto, [FromQuery] int? number, string code)
+        {
+            return Ok(await _clientPaymentService.GetClientprints(pagingDto, number, code));
+        }
 
         [HttpGet("{printNumber}")]
         public async Task<IActionResult> Get(int printNumber)
@@ -27,7 +32,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         }
 
         [HttpGet("Orders/{printId:int}")]
-        public async Task<IActionResult> GetOrders(int printId,[FromQuery] PagingDto pagingDto)
+        public async Task<IActionResult> GetOrders(int printId, [FromQuery] PagingDto pagingDto)
         {
             return Ok(await _clientPaymentService.GetOrdersByPrintNumberId(printId, pagingDto));
         }

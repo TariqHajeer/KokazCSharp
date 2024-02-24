@@ -1,7 +1,6 @@
 ﻿using Quqaz.Web.Models.Infrastrcuter;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 

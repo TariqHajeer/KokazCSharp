@@ -92,10 +92,6 @@ namespace Quqaz.Web.Models
         {
             return this.OrderPlace;
         }
-        public bool CanChangeTheAgent()
-        {
-            return (OrderPlace == OrderPlace.Store && MoneyPlace == MoneyPalce.OutSideCompany);
-        }
         public NameAndIdDto GetMoneyPlaced()
         {
             return this.MoneyPlace;

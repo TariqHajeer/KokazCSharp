@@ -3,8 +3,12 @@
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
 
-    public class ClientTracShipmentDto
+    public class ClientTrackShipmentDto
     {
+        public ClientTrackShipmentDto()
+        {
+            this.Checked= false;
+        }
         public int Number { get; set; }
         public bool Checked { get; set; }
         public string Text { get; set; }

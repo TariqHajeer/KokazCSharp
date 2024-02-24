@@ -18,7 +18,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         private readonly IOrderClientSerivce _orderClientSerivce;
         private readonly IReceiptService _receiptService;
         private readonly IGeneratePdf _generatePdf;
-        public COrderController(IOrderClientSerivce orderClientSerivce,  IReceiptService receiptService, IGeneratePdf generatePdf)
+        public COrderController(IOrderClientSerivce orderClientSerivce, IReceiptService receiptService, IGeneratePdf generatePdf)
         {
             _orderClientSerivce = orderClientSerivce;
             _receiptService = receiptService;
@@ -102,12 +102,6 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             await _orderClientSerivce.Send(ids.Ids);
             return Ok();
         }
-        [HttpPost("Sned")]
-        public async Task<IActionResult> Sned([FromBody] int[] ids)
-        {
-            await _orderClientSerivce.Send(ids);
-            return Ok();
-        }
         [HttpPost("OrdersDontFinished")]
         public async Task<IActionResult> OrdersDontFinished([FromQuery] PagingDto paging, [FromBody] OrderDontFinishFilter orderDontFinishFilter)
         {
@@ -150,68 +144,10 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             await _orderClientSerivce.CorrectOrderCountry(pairs);
             return Ok();
         }
-        [HttpGet("GetNumberOrdersStatus")]
-        public async Task<IActionResult> GetNumberOrdersStatus([FromQuery] string number)
-        {
-            return Ok(Task.FromResult(new List<NumberOrderStatusCount>()
-            {
-                new NumberOrderStatusCount()
-                {
-                    Number=10,
-                    Title= "مرتجع"
-                },
-                 new NumberOrderStatusCount()
-                {
-                    Number=5,
-                    Title= "تم التسليم"
-                },
-                  new NumberOrderStatusCount()
-                {
-                    Number=7,
-                    Title= "مرفوض"
-                }
-            }));
-        }
         [HttpGet("Track")]
         public async Task<IActionResult> Track([FromQuery] int Id)
         {
-            if (Id == 1)
-                return NotFound();
-            List<ClientTracShipmentDto> tracking = new List<ClientTracShipmentDto>() {
-            new ClientTracShipmentDto()
-            {
-                Number = 1,
-                Text = "في المخزن",
-                ExtraText = "الأربعاء ",
-                Checked = true
-            }, new ClientTracShipmentDto()
-            {
-                Number = 2,
-                Text = "متوجعة إلى بغداد",
-                ExtraText = "الأربعاء ",
-                Checked = false
-            }, new ClientTracShipmentDto()
-            {
-                Number = 3,
-                Text = "وصلت إلى محافظة",
-                ExtraText = "الأربعاء ",
-                Checked = false
-            }, new ClientTracShipmentDto()
-            {
-                Number = 4,
-                Text = "خرجت مع مندوب",
-                ExtraText = "00000000000 ",
-                Checked = false
-            },
-             new ClientTracShipmentDto()
-            {
-                Number = 5,
-                Text = "في إننزظار التسليم",
-                ExtraText = "الأربعاء ",
-                Checked = false
-                }
-            };
-            return Ok(tracking);
+            return Ok(await _orderClientSerivce.GetShipmentTracking(Id));
         }
     }
 }

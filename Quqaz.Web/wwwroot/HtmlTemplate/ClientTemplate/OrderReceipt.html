@@ -1,10 +1,676 @@
-﻿<html dir="rtl">
-<head>
+﻿<!DOCTYPE html>
+<html dir="rtl">
+  <head>
+    <title>وصل طلب برقم {{orderCode}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    style="
+      font-family: 'Cairo', sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    "
+  >
+    <div
+      style="
+        background-color: rgba(189, 35, 34, 1);
+        color: #fff;
+        width: 100vw;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+      "
+    >
+      <div
+        style="
+          justify-content: space-between;
+          flex-wrap: wrap;
+          display: flex;
+          width: 100%;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            padding: 2rem;
+            justify-content: center;
+            font-size: 1.5rem;
+          "
+        >
+          القوقز للتوصيل السريع
+        </div>
+        <div style="display: flex">
+          <div
+            style="
+              background-color: #ffffff7a;
+              width: 0.5px !important;
+              height: 3rem;
+              margin: 3rem 0rem;
+            "
+          ></div>
+        </div>
+        <div style="display: flex; padding: 2rem; justify-content: center">
+          <div style="display: flex; flex-flow: column">
+            <div style="display: flex; font-size: 1.5rem">
+              فرع {{branchName}}
+            </div>
+            <div style="display: flex; align-items: center">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style="padding-left: 0.3rem"
+              >
+                <path
+                  d="M4 5.7C3.62112 5.7 3.25776 5.54197 2.98985 5.26066C2.72194 4.97936 2.57143 4.59783 2.57143 4.2C2.57143 3.80218 2.72194 3.42064 2.98985 3.13934C3.25776 2.85804 3.62112 2.7 4 2.7C4.37888 2.7 4.74224 2.85804 5.01015 3.13934C5.27806 3.42064 5.42857 3.80218 5.42857 4.2C5.42857 4.39698 5.39162 4.59204 5.31983 4.77403C5.24804 4.95601 5.14281 5.12137 5.01015 5.26066C4.8775 5.39995 4.72001 5.51044 4.54669 5.58582C4.37337 5.6612 4.1876 5.7 4 5.7ZM4 0C2.93913 0 1.92172 0.442499 1.17157 1.23015C0.421427 2.0178 0 3.08609 0 4.2C0 7.35 4 12 4 12C4 12 8 7.35 8 4.2C8 3.08609 7.57857 2.0178 6.82843 1.23015C6.07828 0.442499 5.06087 0 4 0Z"
+                  fill="white"
+                />
+              </svg>
+              <span style="padding-left: 0.3rem">{branchAddress}</span>
+              <span> {{branchPhone}} </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="
+          height: 0.5px;
+          background-color: #ffffff7a;
+          width: 90%;
+          margin-right: 5%;
+          display: flex;
+        "
+      ></div>
+      <div
+        style="
+          justify-content: space-between;
+          flex-wrap: wrap;
+          display: flex;
+          width: 100%;
+        "
+      >
+        <div style="display: flex; padding: 1rem 2rem">
+          <div style="display: flex; flex-flow: column">
+            <div style="display: flex; flex-wrap: wrap; align-items: center">
+              <div
+                style="
+                  background-color: #fff;
+                  border-radius: 50%;
+                  width: 14px;
+                  height: 14px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <svg
+                  width="5"
+                  height="9"
+                  viewBox="0 0 5 9"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M3.90468 2.3098C3.68132 2.26513 3.37966 2.23176 3.18993 2.23176C2.67621 2.23176 2.64284 2.45511 2.64284 2.81249V3.44867H3.92702L3.81508 4.76649H2.64284V8.77486H1.03492V4.76649H0.208496V3.44867H1.03492V2.63354C1.03492 1.51701 1.55968 0.891602 2.87723 0.891602C3.33499 0.891602 3.67002 0.95861 4.10544 1.04795L3.90468 2.3098Z"
+                    fill="#3B5998"
+                  />
+                </svg>
+              </div>
+              <div style="display: flex">القوقز للتوصيل السريع</div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center">
+              <div
+                style="
+                  background-color: #fff;
+                  border-radius: 50%;
+                  width: 14px;
+                  height: 14px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.00016 1.30821C6.14829 1.30821 6.28429 1.3126 6.73771 1.33328C7.15695 1.3524 7.38463 1.42245 7.53615 1.48134C7.73686 1.55934 7.8801 1.65252 8.03056 1.80298C8.18104 1.95346 8.27421 2.0967 8.35222 2.29741C8.41111 2.44893 8.48116 2.6766 8.50027 3.09585C8.52096 3.54926 8.52535 3.68526 8.52535 4.83338C8.52535 5.98152 8.52096 6.11753 8.50027 6.57094C8.48116 6.99018 8.41111 7.21786 8.35222 7.36938C8.27421 7.57009 8.18104 7.71333 8.03058 7.86379C7.8801 8.01426 7.73686 8.10744 7.53615 8.18545C7.38463 8.24433 7.15695 8.31438 6.73771 8.3335C6.28436 8.35419 6.14838 8.35857 5.00016 8.35857C3.85193 8.35857 3.71596 8.35419 3.2626 8.3335C2.84336 8.31438 2.61568 8.24433 2.46416 8.18545C2.26345 8.10744 2.12021 8.01426 1.96975 7.86379C1.81929 7.71333 1.72609 7.57009 1.64809 7.36938C1.5892 7.21786 1.51915 6.99018 1.50004 6.57094C1.47935 6.11753 1.47496 5.98152 1.47496 4.83338C1.47496 3.68526 1.47935 3.54926 1.50004 3.09585C1.51915 2.6766 1.5892 2.44893 1.64809 2.29741C1.72609 2.0967 1.81927 1.95346 1.96975 1.803C2.12021 1.65252 2.26345 1.55934 2.46416 1.48134C2.61568 1.42245 2.84336 1.3524 3.2626 1.33328C3.71602 1.3126 3.85202 1.30821 5.00016 1.30821ZM5.00016 0.533447C3.83236 0.533447 3.68592 0.538397 3.22729 0.559323C2.76961 0.580198 2.45703 0.652894 2.18352 0.75918C1.90076 0.869068 1.66096 1.0161 1.42189 1.25514C1.18285 1.49421 1.03582 1.73401 0.925946 2.01676C0.819642 2.29027 0.746947 2.60285 0.726071 3.06053C0.705145 3.51916 0.700195 3.6656 0.700195 4.83338C0.700195 6.00119 0.705145 6.14762 0.726071 6.60625C0.746947 7.06393 0.819642 7.37651 0.925946 7.65002C1.03582 7.93278 1.18285 8.17258 1.42189 8.41164C1.66096 8.65069 1.90076 8.79772 2.18352 8.90759C2.45703 9.01389 2.76961 9.08659 3.22729 9.10746C3.68592 9.12839 3.83236 9.13334 5.00016 9.13334C6.16795 9.13334 6.31439 9.12839 6.77302 9.10746C7.2307 9.08659 7.54328 9.01389 7.81679 8.90759C8.09955 8.79772 8.33935 8.65069 8.57841 8.41164C8.81746 8.17258 8.96449 7.93278 9.07438 7.65002C9.18067 7.37651 9.25336 7.06393 9.27424 6.60625C9.29516 6.14762 9.30011 6.00119 9.30011 4.83338C9.30011 3.6656 9.29516 3.51916 9.27424 3.06053C9.25336 2.60285 9.18067 2.29027 9.07438 2.01676C8.96449 1.73401 8.81746 1.49421 8.57841 1.25514C8.33935 1.0161 8.09955 0.869068 7.81679 0.75918C7.54328 0.652894 7.2307 0.580198 6.77302 0.559323C6.31439 0.538397 6.16795 0.533447 5.00016 0.533447Z"
+                    fill="#C13584"
+                  />
+                  <path
+                    d="M5.00222 2.62744C3.78271 2.62744 2.79413 3.61602 2.79413 4.83551C2.79413 6.05502 3.78271 7.0436 5.00222 7.0436C6.22171 7.0436 7.2103 6.05502 7.2103 4.83551C7.2103 3.61602 6.22171 2.62744 5.00222 2.62744ZM5.00222 6.26884C4.21061 6.26884 3.56889 5.62712 3.56889 4.83551C3.56889 4.04392 4.21061 3.4022 5.00222 3.4022C5.79382 3.4022 6.43553 4.04392 6.43553 4.83551C6.43553 5.62712 5.79382 6.26884 5.00222 6.26884Z"
+                    fill="#C13584"
+                  />
+                  <path
+                    d="M7.81343 2.53871C7.81343 2.82367 7.5824 3.0547 7.29742 3.0547C7.01246 3.0547 6.78143 2.82367 6.78143 2.53871C6.78143 2.25373 7.01246 2.02271 7.29742 2.02271C7.5824 2.02271 7.81343 2.25373 7.81343 2.53871Z"
+                    fill="#C13584"
+                  />
+                </svg>
+              </div>
+              <div style="display: flex">quqaz.fast</div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style="padding-left: 0.3rem"
+              >
+                <path
+                  d="M4 5.7C3.62112 5.7 3.25776 5.54197 2.98985 5.26066C2.72194 4.97936 2.57143 4.59783 2.57143 4.2C2.57143 3.80218 2.72194 3.42064 2.98985 3.13934C3.25776 2.85804 3.62112 2.7 4 2.7C4.37888 2.7 4.74224 2.85804 5.01015 3.13934C5.27806 3.42064 5.42857 3.80218 5.42857 4.2C5.42857 4.39698 5.39162 4.59204 5.31983 4.77403C5.24804 4.95601 5.14281 5.12137 5.01015 5.26066C4.8775 5.39995 4.72001 5.51044 4.54669 5.58582C4.37337 5.6612 4.1876 5.7 4 5.7ZM4 0C2.93913 0 1.92172 0.442499 1.17157 1.23015C0.421427 2.0178 0 3.08609 0 4.2C0 7.35 4 12 4 12C4 12 8 7.35 8 4.2C8 3.08609 7.57857 2.0178 6.82843 1.23015C6.07828 0.442499 5.06087 0 4 0Z"
+                  fill="white"
+                />
+              </svg>
+              كركوك 0773600800
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style="padding-left: 0.3rem"
+              >
+                <path
+                  d="M4 5.7C3.62112 5.7 3.25776 5.54197 2.98985 5.26066C2.72194 4.97936 2.57143 4.59783 2.57143 4.2C2.57143 3.80218 2.72194 3.42064 2.98985 3.13934C3.25776 2.85804 3.62112 2.7 4 2.7C4.37888 2.7 4.74224 2.85804 5.01015 3.13934C5.27806 3.42064 5.42857 3.80218 5.42857 4.2C5.42857 4.39698 5.39162 4.59204 5.31983 4.77403C5.24804 4.95601 5.14281 5.12137 5.01015 5.26066C4.8775 5.39995 4.72001 5.51044 4.54669 5.58582C4.37337 5.6612 4.1876 5.7 4 5.7ZM4 0C2.93913 0 1.92172 0.442499 1.17157 1.23015C0.421427 2.0178 0 3.08609 0 4.2C0 7.35 4 12 4 12C4 12 8 7.35 8 4.2C8 3.08609 7.57857 2.0178 6.82843 1.23015C6.07828 0.442499 5.06087 0 4 0Z"
+                  fill="white"
+                />
+              </svg>
+              الموصل 0773600800
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style="padding-left: 0.3rem"
+              >
+                <path
+                  d="M4 5.7C3.62112 5.7 3.25776 5.54197 2.98985 5.26066C2.72194 4.97936 2.57143 4.59783 2.57143 4.2C2.57143 3.80218 2.72194 3.42064 2.98985 3.13934C3.25776 2.85804 3.62112 2.7 4 2.7C4.37888 2.7 4.74224 2.85804 5.01015 3.13934C5.27806 3.42064 5.42857 3.80218 5.42857 4.2C5.42857 4.39698 5.39162 4.59204 5.31983 4.77403C5.24804 4.95601 5.14281 5.12137 5.01015 5.26066C4.8775 5.39995 4.72001 5.51044 4.54669 5.58582C4.37337 5.6612 4.1876 5.7 4 5.7ZM4 0C2.93913 0 1.92172 0.442499 1.17157 1.23015C0.421427 2.0178 0 3.08609 0 4.2C0 7.35 4 12 4 12C4 12 8 7.35 8 4.2C8 3.08609 7.57857 2.0178 6.82843 1.23015C6.07828 0.442499 5.06087 0 4 0Z"
+                  fill="white"
+                />
+              </svg>
+              بغداد 0773600800
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; padding: 1rem 2rem">
+          <div
+            style="
+              background-color: #fff;
+              border-radius: 50%;
+              width: 8rem;
+              height: 8rem;
+            "
+          ></div>
+        </div>
+        <div style="display: flex; padding: 1rem 2rem; flex-flow: column">
+          <div style="display: flex">معلومات العميل</div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center">
+            <div
+              style="
+                background-color: #fff;
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <svg
+                width="5"
+                height="9"
+                viewBox="0 0 5 9"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M3.90468 2.3098C3.68132 2.26513 3.37966 2.23176 3.18993 2.23176C2.67621 2.23176 2.64284 2.45511 2.64284 2.81249V3.44867H3.92702L3.81508 4.76649H2.64284V8.77486H1.03492V4.76649H0.208496V3.44867H1.03492V2.63354C1.03492 1.51701 1.55968 0.891602 2.87723 0.891602C3.33499 0.891602 3.67002 0.95861 4.10544 1.04795L3.90468 2.3098Z"
+                  fill="#3B5998"
+                />
+              </svg>
+            </div>
+            <div style="display: flex">{{clientFbName}}</div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center">
+            <div
+              style="
+                background-color: #fff;
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.00016 1.30821C6.14829 1.30821 6.28429 1.3126 6.73771 1.33328C7.15695 1.3524 7.38463 1.42245 7.53615 1.48134C7.73686 1.55934 7.8801 1.65252 8.03056 1.80298C8.18104 1.95346 8.27421 2.0967 8.35222 2.29741C8.41111 2.44893 8.48116 2.6766 8.50027 3.09585C8.52096 3.54926 8.52535 3.68526 8.52535 4.83338C8.52535 5.98152 8.52096 6.11753 8.50027 6.57094C8.48116 6.99018 8.41111 7.21786 8.35222 7.36938C8.27421 7.57009 8.18104 7.71333 8.03058 7.86379C7.8801 8.01426 7.73686 8.10744 7.53615 8.18545C7.38463 8.24433 7.15695 8.31438 6.73771 8.3335C6.28436 8.35419 6.14838 8.35857 5.00016 8.35857C3.85193 8.35857 3.71596 8.35419 3.2626 8.3335C2.84336 8.31438 2.61568 8.24433 2.46416 8.18545C2.26345 8.10744 2.12021 8.01426 1.96975 7.86379C1.81929 7.71333 1.72609 7.57009 1.64809 7.36938C1.5892 7.21786 1.51915 6.99018 1.50004 6.57094C1.47935 6.11753 1.47496 5.98152 1.47496 4.83338C1.47496 3.68526 1.47935 3.54926 1.50004 3.09585C1.51915 2.6766 1.5892 2.44893 1.64809 2.29741C1.72609 2.0967 1.81927 1.95346 1.96975 1.803C2.12021 1.65252 2.26345 1.55934 2.46416 1.48134C2.61568 1.42245 2.84336 1.3524 3.2626 1.33328C3.71602 1.3126 3.85202 1.30821 5.00016 1.30821ZM5.00016 0.533447C3.83236 0.533447 3.68592 0.538397 3.22729 0.559323C2.76961 0.580198 2.45703 0.652894 2.18352 0.75918C1.90076 0.869068 1.66096 1.0161 1.42189 1.25514C1.18285 1.49421 1.03582 1.73401 0.925946 2.01676C0.819642 2.29027 0.746947 2.60285 0.726071 3.06053C0.705145 3.51916 0.700195 3.6656 0.700195 4.83338C0.700195 6.00119 0.705145 6.14762 0.726071 6.60625C0.746947 7.06393 0.819642 7.37651 0.925946 7.65002C1.03582 7.93278 1.18285 8.17258 1.42189 8.41164C1.66096 8.65069 1.90076 8.79772 2.18352 8.90759C2.45703 9.01389 2.76961 9.08659 3.22729 9.10746C3.68592 9.12839 3.83236 9.13334 5.00016 9.13334C6.16795 9.13334 6.31439 9.12839 6.77302 9.10746C7.2307 9.08659 7.54328 9.01389 7.81679 8.90759C8.09955 8.79772 8.33935 8.65069 8.57841 8.41164C8.81746 8.17258 8.96449 7.93278 9.07438 7.65002C9.18067 7.37651 9.25336 7.06393 9.27424 6.60625C9.29516 6.14762 9.30011 6.00119 9.30011 4.83338C9.30011 3.6656 9.29516 3.51916 9.27424 3.06053C9.25336 2.60285 9.18067 2.29027 9.07438 2.01676C8.96449 1.73401 8.81746 1.49421 8.57841 1.25514C8.33935 1.0161 8.09955 0.869068 7.81679 0.75918C7.54328 0.652894 7.2307 0.580198 6.77302 0.559323C6.31439 0.538397 6.16795 0.533447 5.00016 0.533447Z"
+                  fill="#C13584"
+                />
+                <path
+                  d="M5.00222 2.62744C3.78271 2.62744 2.79413 3.61602 2.79413 4.83551C2.79413 6.05502 3.78271 7.0436 5.00222 7.0436C6.22171 7.0436 7.2103 6.05502 7.2103 4.83551C7.2103 3.61602 6.22171 2.62744 5.00222 2.62744ZM5.00222 6.26884C4.21061 6.26884 3.56889 5.62712 3.56889 4.83551C3.56889 4.04392 4.21061 3.4022 5.00222 3.4022C5.79382 3.4022 6.43553 4.04392 6.43553 4.83551C6.43553 5.62712 5.79382 6.26884 5.00222 6.26884Z"
+                  fill="#C13584"
+                />
+                <path
+                  d="M7.81343 2.53871C7.81343 2.82367 7.5824 3.0547 7.29742 3.0547C7.01246 3.0547 6.78143 2.82367 6.78143 2.53871C6.78143 2.25373 7.01246 2.02271 7.29742 2.02271C7.5824 2.02271 7.81343 2.25373 7.81343 2.53871Z"
+                  fill="#C13584"
+                />
+              </svg>
+            </div>
+            <div style="display: flex">{{clientIgName}}</div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center">
+            <div
+              style="
+                background-color: #fff;
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <svg
+                width="8"
+                height="8"
+                viewBox="0 0 8 8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.75833 3.49583C2.35833 4.675 3.325 5.6375 4.50417 6.24167L5.42083 5.325C5.53333 5.2125 5.7 5.175 5.84583 5.225C6.3125 5.37917 6.81667 5.4625 7.33333 5.4625C7.5625 5.4625 7.75 5.65 7.75 5.87917V7.33333C7.75 7.5625 7.5625 7.75 7.33333 7.75C3.42083 7.75 0.25 4.57917 0.25 0.666667C0.25 0.4375 0.4375 0.25 0.666667 0.25H2.125C2.35417 0.25 2.54167 0.4375 2.54167 0.666667C2.54167 1.1875 2.625 1.6875 2.77917 2.15417C2.825 2.3 2.79167 2.4625 2.675 2.57917L1.75833 3.49583Z"
+                  fill="#BD2322"
+                />
+              </svg>
+            </div>
+            <div style="display: flex">{{clientPhoneNumber}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="
+        justify-content: space-between;
+        flex-wrap: wrap;
+        display: flex;
+        width: 100%;
+      "
+    >
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div style="display: flex">التاريخ:</div>
+        <div
+          style="display: flex; color: rgba(0, 0, 0, 0.5); margin-right: 0.2rem"
+        >
+          {{orderDate}}
+        </div>
+      </div>
+      <div style="display: flex; font-size: 0.8rem">
+        التوصيل لجميع المحافظات والتسوق من جميع المواقع
+      </div>
+    </div>
+    <div
+      style="
+        justify-content: space-between;
+        flex-wrap: wrap;
+        display: flex;
+        width: 100%;
+      "
+    >
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          الإسم التجاري
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{clientName}}
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          الهاتف
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{clientPhoneNumber}}
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          المبلغ مع التوصيل
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{orderCost}}
+        </div>
+      </div>
+    </div>
+    <div
+      style="
+        height: 0.5px;
+        background-color: #0000007a;
+        width: 90%;
+        margin-right: 5%;
+        display: flex;
+      "
+    ></div>
+    <div
+      style="
+        flex-flow: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: rgba(189, 35, 34, 1);
+        font-size: 1.5rem;
+      "
+    >
+      معلومات المستلم
+    </div>
+    <div
+      style="
+        height: 0.5px;
+        background-color: #0000007a;
+        width: 90%;
+        margin-right: 5%;
+        display: flex;
+      "
+    ></div>
+    <div
+      style="
+        justify-content: space-between;
+        flex-wrap: wrap;
+        display: flex;
+        width: 100%;
+      "
+    >
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          الإسم
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{receiverName}}
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          رقم المسلتم
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{receiverPhone}}
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; padding: 1rem; width: 100%">
+      <div
+        style="
+          display: flex;
+          background-color: rgba(189, 35, 34, 1);
+          color: #fff;
+          border-radius: 10px;
+          padding: 5px;
+          width: 10%;
+        "
+      >
+        العنوان
+      </div>
+      <div
+        style="
+          display: flex;
+          padding: 5px 15px;
+          border: 0.5px rgb(94, 94, 94) solid;
+          margin-inline-start: -10px;
+          border-right: none;
+          border-top-left-radius: 10px;
+          border-bottom-left-radius: 10px;
+          width: 85%;
+        "
+      >
+        {{orderAddress}}
+      </div>
+    </div>
+    <div
+      style="
+        justify-content: space-between;
+        flex-wrap: wrap;
+        display: flex;
+        width: 100%;
+        margin-top: 2rem;
+      "
+    >
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          نوع البضاعة
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{orderType}}
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; padding: 1rem">
+        <div
+          style="
+            display: flex;
+            background-color: rgba(189, 35, 34, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 5px;
+          "
+        >
+          العدد
+        </div>
+        <div
+          style="
+            display: flex;
+            padding: 5px 15px;
+            border: 0.5px rgb(94, 94, 94) solid;
+            margin-inline-start: -10px;
+            border-right: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+          "
+        >
+          {{orderTypeCount}}
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; padding: 1rem; width: 100%">
+      <div
+        style="
+          display: flex;
+          background-color: rgba(189, 35, 34, 1);
+          color: #fff;
+          border-radius: 10px;
+          padding: 5px;
+          width: 10%;
+          text-align: center;
+        "
+      >
+        معلومات وملاحظات للمندوب
+      </div>
+      <div
+        style="
+          display: flex;
+          padding: 5px 15px;
+          border: 0.5px rgb(94, 94, 94) solid;
+          margin-inline-start: -10px;
+          border-right: none;
+          border-top-left-radius: 10px;
+          border-bottom-left-radius: 10px;
+          width: 85%;
+        "
+      >{{Note}}</div>
+    </div>
 
-</head>
-<body>
-    <h1>
-        Hi
-    </h1>
-</body>
+    <div
+      style="display: flex; flex-wrap: wrap; align-items: center; padding: 1rem"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.91667 9.91667H8.08333V4.41667H9.91667M8.08333 11.75H9.91667V13.5833H8.08333M12.4192 0.75H5.58083L0.75 5.58083V12.4192L5.58083 17.25H12.4192L17.25 12.4192V5.58083L12.4192 0.75Z"
+          fill="#BD2322"
+        />
+      </svg>
+      <div>شركة القوقز غير مسؤولة عن محتوى الطلب ونوعه</div>
+    </div>
+    <div
+      style="display: flex; flex-wrap: wrap; align-items: center; padding: 1rem"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.91667 9.91667H8.08333V4.41667H9.91667M8.08333 11.75H9.91667V13.5833H8.08333M12.4192 0.75H5.58083L0.75 5.58083V12.4192L5.58083 17.25H12.4192L17.25 12.4192V5.58083L12.4192 0.75Z"
+          fill="#BD2322"
+        />
+      </svg>
+      <div>
+        المبلغ المكتوب في الوصل كامل مع التوصيل وغير مسؤوولين عن اي مبلغ اخر
+        يعطى للمندوب
+      </div>
+    </div>
+  </body>
 </html>

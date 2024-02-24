@@ -8,6 +8,7 @@ using Quqaz.Web.HubsConfig;
 using Quqaz.Web.Models;
 using Quqaz.Web.Models.Static;
 using Quqaz.Web.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,81 @@ namespace Quqaz.Web.Services.Concret
             _repository = repository;
             _contextAccessorService = contextAccessorService;
         }
+        public Task SendNotification(List<Models.Notfication> notifications, bool withNotification = true)
+        {
+            if (notifications == null || !notifications.Any())
+            {
+                return Task.CompletedTask;
+            }
 
+            var tasks = new List<Task>();
+            foreach (var notification in notifications)
+            {
+                var clientTokens = notification.Client.FCMTokens?.Select(t => t.Token).ToList();
+                if (clientTokens == null || !clientTokens.Any())
+                {
+                    continue;
+                }
+
+                tasks.Add(SendNotification(clientTokens, notification, withNotification));
+            }
+
+            return Task.WhenAll(tasks);
+        }
+        public Task SendNotification(List<string> clientToken, Models.Notfication notification, bool withNotification = true)
+        {
+            var registrationTokens = clientToken;
+            if (registrationTokens == null || registrationTokens.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
+            var message = new MulticastMessage()
+            {
+                Tokens = registrationTokens,
+                Data = new Dictionary<string, string>()
+                {
+                    { "id", notification.Id.ToString() }
+                }
+
+            };
+            if (withNotification)
+            {
+                message.Notification = new Notification()
+                {
+                    Body = notification.Title,
+                    Title = notification.Body,
+                };
+            }
+            return FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+        }
+        public async Task SendNotification(List<string> clientToken, int id, bool withNotification = true)
+        {
+            var registrationTokens = clientToken;
+            if (registrationTokens == null || registrationTokens.Count == 0)
+            {
+                return;
+            }
+            var notification = await _repository.GetById(id);
+
+            var message = new MulticastMessage()
+            {
+                Tokens = registrationTokens,
+                Data = new Dictionary<string, string>()
+                {
+                    { "id", id.ToString() }
+                }
+
+            };
+            if (withNotification)
+            {
+                message.Notification = new Notification()
+                {
+                    Body = notification.Title,
+                    Title = notification.Body,
+                };
+            }
+            await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message).ConfigureAwait(true);
+        }
         public async Task<AdminNotification> GetAdminNotification()
         {
             var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.OrderPlace == OrderPlace.Client);
@@ -134,20 +209,29 @@ namespace Quqaz.Web.Services.Concret
             return await _repository.Count(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId());
         }
 
-        public Task<PagingResualt<List<NewNotificationDto>>> GetNotifications(PagingDto paging)
+        public async Task<PagingResualt<List<NewNotificationDto>>> GetNotifications(PagingDto paging)
         {
-            return Task.FromResult(new PagingResualt<List<NewNotificationDto>>()
+            var notification = await _repository.GetAsync(paging: paging, propertySelectors: null, orderBy: c => c.OrderBy(c => c.CreatedDate));
+            return new PagingResualt<List<NewNotificationDto>>()
             {
-                Data = new List<NewNotificationDto>()
-                {
-                    new NewNotificationDto(){
-                        Title="عمار",
-                        Body="ليش مافي حدا موظف بالعائلة ؟",
-                        Data =new Dictionary<string, string>(){{"id","1"}}
-                    }
-                },
-                Total = 10
+                Total = notification.Total,
+                Data = _mapper.Map<List<NewNotificationDto>>(notification.Data)
+            };
+        }
+
+        public async Task CreateRange(List<CreateNotificationDto> createNotificationDtos)
+        {
+            var currentDate = DateTime.UtcNow;
+            var notification = createNotificationDtos.Select(c => new Models.Notfication()
+            {
+                ClientId = c.ClientId,
+                Body = c.Body,
+                Title = c.Title,
+                CreatedDate = currentDate
             });
+            await _repository.AddRangeAsync(notification);
+            notification = await _repository.GetAsync(c => notification.Select(c => c.Id).Contains(c.Id), c => c.Client.FCMTokens);
+            await SendNotification(notification.ToList(), true);
         }
     }
 }

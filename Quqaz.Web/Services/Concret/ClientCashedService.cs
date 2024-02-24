@@ -239,7 +239,7 @@ namespace Quqaz.Web.Services.Concret
                 {
                     await file.CopyToAsync(stream);
                 }
-                client.Photo = filePath;
+                client.Photo = Path.Combine("clientphoto",uniqueFileName);
             }
 
             await _uintOfWork.Update(client);

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.NotifcationDtos;
 using Quqaz.Web.Models;
 

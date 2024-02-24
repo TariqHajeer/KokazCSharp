@@ -19,6 +19,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Razor.Language;
+using System.Linq.Expressions;
+using Quqaz.Web.Dtos.Statics;
+using Microsoft.Win32.SafeHandles;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -271,7 +276,7 @@ namespace Quqaz.Web.Services.Concret
 
             var includes = new string[] { nameof(Order.Country), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
 
-            var pagingResult = await _repository.GetAsync(pagingDto, predicate, includes);
+            var pagingResult = await _repository.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(o => o.Date));
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResult.Total,
@@ -575,8 +580,213 @@ namespace Quqaz.Web.Services.Concret
         {
             var filePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderReceipt.html";
             var readText = await File.ReadAllTextAsync(filePath);
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Branch, c => c.Country,
+            c => c.OrderItems.Select(o => o.OrderTpye),
+            c => c.Client.ClientPhones);
+            readText = readText.Replace("{{orderCode}}", order.Code);
+            readText = readText.Replace("{{branchName}}", order.Branch.Name);
+            readText = readText.Replace("{{clientFbName}}", order.Client.FacebookLinke);
+            readText = readText.Replace("{{clientIgName}}", order.Client.IGLink);
+            readText = readText.Replace("{{clientPhoneNumber}}", order.Client.ClientPhones.FirstOrDefault().Phone);
+            readText = readText.Replace("{{orderDate}}", order.Date.Value.ToString("yyyy-mm-dd"));
+            readText = readText.Replace("{{clientName}}", order.Client.Name);
+            readText = readText.Replace("{{orderCost}}", (order.Cost + order.DeliveryCost).ToString());
+            readText = readText.Replace("{{receiverName}}", order.RecipientName);
+            readText = readText.Replace("{{receiverPhone}}", order.RecipientPhones);
+            readText = readText.Replace("{{orderAddress}}", order.Country.Name + ":" + order.Address);
+            var orderItem = order.OrderItems.FirstOrDefault();
+            readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
+            readText = readText.Replace("{{orderTypeCount}}", orderItem?.Count.ToString());
+            readText = readText.Replace("{{Note}}", order.Note);
+
+
             return readText;
         }
 
+        public async Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.NextBranch);
+            List<ClientTrackShipmentDto> tracking = new List<ClientTrackShipmentDto>();
+            if (order.NextBranchId.HasValue)
+            {
+                var inStore = new ClientTrackShipmentDto()
+                {
+                    Number = 1,
+                    Text = "في المخزن",
+                    ExtraText = "الأربعاء ",
+                    Checked = false
+                };
+                tracking.Add(inStore);
+                if ((order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed) && order.CurrentBranchId == order.BranchId)
+                {
+                    inStore.Checked = true;
+                }
+                var goingToBranch = new ClientTrackShipmentDto()
+                {
+                    Number = 2,
+                    Text = $"متوجعة إلى فرع ${order.NextBranch.Name}",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Way && order.CurrentBranchId == order.BranchId)
+                {
+                    goingToBranch.Checked = true;
+                }
+                tracking.Add(goingToBranch);
+                var inNextBrach = new ClientTrackShipmentDto()
+                {
+                    Number = 3,
+                    Text = $"وصلت إلى فرع {order.NextBranch.Name}",
+                    Checked = false
+                };
+                if ((order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed) && order.CurrentBranchId == order.NextBranchId)
+                {
+                    inNextBrach.Checked = true;
+                }
+                tracking.Add(inNextBrach);
+                var withAgent = new ClientTrackShipmentDto()
+                {
+                    Number = 4,
+                    Text = "خرجت مع مندوب",
+                    ExtraText = "00000000000 ",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Way && order.CurrentBranchId != order.BranchId)
+                {
+                    withAgent.Checked = true;
+                }
+                tracking.Add(withAgent);
+                var waiting = new ClientTrackShipmentDto()
+                {
+                    Number = 5,
+                    Text = "في إننزظار التسليم",
+                    ExtraText = "الأربعاء ",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned && order.MoneyPlace == MoneyPalce.WithAgent)
+                {
+                    waiting.Checked = true;
+                }
+                tracking.Add(waiting);
+                var delivered = new ClientTrackShipmentDto()
+                {
+                    Number = 4,
+                    Text = "تم التسليم",
+                    Checked = tracking.All(c => !c.Checked)
+                };
+                tracking.Add(delivered);
+
+
+            }
+            else
+            {
+                var inStore = new ClientTrackShipmentDto()
+                {
+                    Number = 1,
+                    Text = "في المخزن",
+                    ExtraText = "الأربعاء ",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed)
+                {
+                    inStore.Checked = true;
+                }
+                tracking.Add(inStore);
+                var agent = new ClientTrackShipmentDto()
+                {
+                    Number = 2,
+                    Text = "خرجت مع مندوب",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Way)
+                {
+                    agent.Checked = true;
+                }
+                var waiting = new ClientTrackShipmentDto()
+                {
+                    Number = 3,
+                    Text = "في إننزظار التسليم",
+                    Checked = false
+                };
+                if (order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned && order.MoneyPlace == MoneyPalce.WithAgent)
+                {
+                    waiting.Checked = true;
+                }
+                tracking.Add(waiting);
+                var delivered = new ClientTrackShipmentDto()
+                {
+                    Number = 4,
+                    Text = "تم التسليم",
+                    Checked = tracking.All(c => !c.Checked)
+                };
+                tracking.Add(delivered);
+
+            }
+            return tracking;
+        }
+
+        public async Task<List<AccountReportDto>> GetOrderStatics(DateRangeFilter dateRangeFilter)
+        {
+            var clientId = _contextAccessorService.AuthoticateUserId();
+            var totalOrder = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End);
+            var delivedOrderCount = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End && (c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned));
+            var returndOrderCount = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End && c.OrderPlace == OrderPlace.CompletelyReturned);
+
+            return new List<AccountReportDto>
+            {
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الكلي",
+                    Text = totalOrder.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الواصل",
+                    Text = delivedOrderCount.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الراجع",
+                    Text = returndOrderCount.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "نسبة الواصل",
+                    Text = ((delivedOrderCount*100)/totalOrder).ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "نسبةالراجع",
+                    Text = ((returndOrderCount*100)/totalOrder).ToString(),
+                },
+            };
+        }
+
+        public async Task<List<AccountReportDto>> GetPhoneOrderStatusCount(string phone)
+        {
+            if (phone.Length < 11)
+                return null;
+            var returnOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.CompletelyReturned);
+            var delivedOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.Delivered);
+            var PartialReturnedOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.PartialReturned);
+            var list = new List<AccountReportDto>
+            {
+                new AccountReportDto()
+                {
+                    Text = $"{returnOrderCount}",
+                    Title="مرتجع كلي"
+                },
+                new AccountReportDto()
+                {
+                    Text = $"{delivedOrderCount}",
+                    Title="تم التسليم"
+                },
+                new AccountReportDto()
+                {
+                    Text = $"{PartialReturnedOrderCount}",
+                    Title="مرتجع جزئي "
+                },
+            };
+            return list;
+        }
     }
 }

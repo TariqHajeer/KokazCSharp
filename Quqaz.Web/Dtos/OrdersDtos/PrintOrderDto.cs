@@ -1,11 +1,8 @@
 ﻿using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.DiscountDtos;
 using Quqaz.Web.Dtos.ReceiptDtos;
-using Quqaz.Web.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Quqaz.Web.Dtos.OrdersDtos
 {
