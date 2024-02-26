@@ -17,5 +17,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task SeeNotifactions(int[] ids);
         Task<IEnumerable<NotificationDto>> GetClientNotifcations();
         Task<int> NewNotfiactionCount();
+        Task Create(CreateNotificationDto createNotification);
     }
 }

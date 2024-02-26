@@ -1328,8 +1328,13 @@ namespace Quqaz.Web.Services.Concret
             };
             await _uintOfWork.Update(treasury);
             await _uintOfWork.Add(history);
+            await _notificationService.Create(new CreateNotificationDto()
+            {
+                Title = "تم تسديدك",
+                ClientId = clientId,
+                Body = $"تم تدسديك برقم {clientPayment.Id}"
+            });
             await _uintOfWork.Commit();
-            //semaphore.Release();
             return clientPayment.Id;
         }
 

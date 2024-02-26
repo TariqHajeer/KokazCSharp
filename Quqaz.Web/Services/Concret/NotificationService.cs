@@ -54,8 +54,16 @@ namespace Quqaz.Web.Services.Concret
 
                 tasks.Add(SendNotification(clientTokens, notification, withNotification));
             }
-
             return Task.WhenAll(tasks);
+        }
+        public Task SendNotification(Models.Notfication notification, bool withNotification = true)
+        {
+            var clientTokens = notification.Client.FCMTokens?.Select(t => t.Token).ToList();
+            if (clientTokens == null || !clientTokens.Any())
+            {
+                return Task.CompletedTask;
+            }
+            return SendNotification(clientTokens, notification, withNotification);
         }
         public Task SendNotification(List<string> clientToken, Models.Notfication notification, bool withNotification = true)
         {
@@ -218,7 +226,19 @@ namespace Quqaz.Web.Services.Concret
                 Data = _mapper.Map<List<NewNotificationDto>>(notification.Data)
             };
         }
-
+        public async Task Create(CreateNotificationDto createNotification)
+        {
+            var notification = new Models.Notfication()
+            {
+                Body = createNotification.Body,
+                Title = createNotification.Title,
+                ClientId = createNotification.ClientId,
+                CreatedDate = DateTime.UtcNow
+            };
+            await _repository.AddAsync(notification);
+            notification = await _repository.FirstOrDefualt(c => c.Id == notification.Id, c => c.Client.FCMTokens);
+            await SendNotification(notification);
+        }
         public async Task CreateRange(IEnumerable<CreateNotificationDto> createNotificationDtos)
         {
             var currentDate = DateTime.UtcNow;
