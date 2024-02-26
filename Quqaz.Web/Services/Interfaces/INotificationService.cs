@@ -10,7 +10,7 @@ namespace Quqaz.Web.Services.Interfaces
     public interface INotificationService
     {
         Task<PagingResualt<List<NewNotificationDto>>> GetNotifications(PagingDto paging);
-        Task CreateRange(List<CreateNotificationDto> createNotificationDtos);
+        Task CreateRange(IEnumerable<CreateNotificationDto> createNotificationDtos);
         Task SendOrderReciveNotifcation(IEnumerable<Order> orders);
         Task<AdminNotification> GetAdminNotification();
         Task SendClientNotification();

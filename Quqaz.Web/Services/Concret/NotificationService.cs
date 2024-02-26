@@ -219,7 +219,7 @@ namespace Quqaz.Web.Services.Concret
             };
         }
 
-        public async Task CreateRange(List<CreateNotificationDto> createNotificationDtos)
+        public async Task CreateRange(IEnumerable<CreateNotificationDto> createNotificationDtos)
         {
             var currentDate = DateTime.UtcNow;
             var notification = createNotificationDtos.Select(c => new Models.Notfication()

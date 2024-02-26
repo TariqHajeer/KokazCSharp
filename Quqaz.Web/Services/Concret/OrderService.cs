@@ -141,9 +141,6 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheDeliveredShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentWithCostDto> receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos)
         {
-            var moneyPlacedes = Consts.MoneyPlaceds;
-            var orderPlacedes = Consts.OrderPlaceds;
-            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalce.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
             if (!receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.All(c => c.OrderplacedId == OrderPlace.Way || c.OrderplacedId == OrderPlace.Delivered || c.OrderplacedId == OrderPlace.PartialReturned))
             {
@@ -159,8 +156,6 @@ namespace Quqaz.Web.Services.Concret
                 response.Errors = errors;
                 return response;
             }
-            List<Notfication> notfications = new List<Notfication>();
-            List<Notfication> addednotfications = new List<Notfication>();
 
             var ids = new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentWithCostDtos.Select(c => c.Id));
 
@@ -210,7 +205,6 @@ namespace Quqaz.Web.Services.Concret
                                     order.Cost = item.Cost;
                                 }
                                 var payForClient = order.ShouldToPay();
-
                                 if (decimal.Compare(payForClient, (order.ClientPaied ?? 0)) != 0)
                                 {
                                     order.OrderState = OrderState.ShortageOfCash;
@@ -252,6 +246,19 @@ namespace Quqaz.Web.Services.Concret
                     order.NegativeAlert = true;
                 }
             }
+            var PartialReturnedOrder = orders.Where(c => c.OrderPlace == OrderPlace.PartialReturned);
+            var deliveredOrder = orders.Where(c => c.OrderPlace == OrderPlace.Delivered);
+            var notifications = PartialReturnedOrder.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+            {
+                ClientId = c.Key,
+                Title = "استلام شحنات",
+                Body = $"لديك {c.Count()} شحنات مرتجع جزئي"
+            }).Union(deliveredOrder.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+            {
+                ClientId = c.Key,
+                Title = "استلام شحنات",
+                Body = $"لديك {c.Count()} شحنات تم تسليمها "
+            }));
 
             await _uintOfWork.BegeinTransaction();
             try
@@ -286,6 +293,7 @@ namespace Quqaz.Web.Services.Concret
                 receiptOfTheOrderStatus.ReceiptOfTheOrderStatusDetalis = receiptOfTheOrderStatusDetalis;
                 await _uintOfWork.Add(receiptOfTheOrderStatus);
                 await _treasuryService.IncreaseAmountByOrderFromAgent(receiptOfTheOrderStatus);
+                await _notificationService.CreateRange(notifications);
                 await _uintOfWork.Commit();
                 return response;
             }
@@ -519,8 +527,8 @@ namespace Quqaz.Web.Services.Concret
                 agnetOrderPrints.Add(agnetOrderPrint);
                 agentPrintsDetials.Add(agentPrintDetials);
             }
-            
-            var notifcations =  orders.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+
+            var notifcations = orders.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
             {
                 ClientId = c.Key,
                 Title = "طلبات في الطريق ",
