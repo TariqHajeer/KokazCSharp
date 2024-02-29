@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LinqKit;
+using Microsoft.AspNetCore.Mvc;
 using Quqaz.Web.Services.Interfaces;
 using System.Threading.Tasks;
 
@@ -17,7 +18,13 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet]
         public async Task<IActionResult> GetALL()
         {
-            return Ok(await _branchService.GetAll());
+            var data = await _branchService.GetAll();
+            data.ForEach(c =>
+            {
+                c.Address = "عناون";
+                c.PhoneNumber = "رقم هاتف";
+            });
+            return Ok(data);
 
         }
     }

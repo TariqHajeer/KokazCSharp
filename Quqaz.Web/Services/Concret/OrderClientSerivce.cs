@@ -598,14 +598,12 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
             readText = readText.Replace("{{orderTypeCount}}", orderItem?.Count.ToString());
             readText = readText.Replace("{{Note}}", order.Note);
-
-
             return readText;
         }
 
         public async Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id)
         {
-            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.NextBranch);
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.NextBranch, c => c.Agent.UserPhones);
             List<ClientTrackShipmentDto> tracking = new List<ClientTrackShipmentDto>();
             if (order.NextBranchId.HasValue)
             {
@@ -613,7 +611,6 @@ namespace Quqaz.Web.Services.Concret
                 {
                     Number = 1,
                     Text = "في المخزن",
-                    ExtraText = "الأربعاء ",
                     Checked = false
                 };
                 tracking.Add(inStore);
@@ -647,7 +644,7 @@ namespace Quqaz.Web.Services.Concret
                 {
                     Number = 4,
                     Text = "خرجت مع مندوب",
-                    ExtraText = "00000000000 ",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone,
                     Checked = false
                 };
                 if (order.OrderPlace == OrderPlace.Way && order.CurrentBranchId != order.BranchId)
@@ -695,12 +692,15 @@ namespace Quqaz.Web.Services.Concret
                 {
                     Number = 2,
                     Text = "خرجت مع مندوب",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone,
                     Checked = false
                 };
+
                 if (order.OrderPlace == OrderPlace.Way)
                 {
                     agent.Checked = true;
                 }
+                tracking.Add(agent);
                 var waiting = new ClientTrackShipmentDto()
                 {
                     Number = 3,
@@ -727,9 +727,20 @@ namespace Quqaz.Web.Services.Concret
         public async Task<List<AccountReportDto>> GetOrderStatics(DateRangeFilter dateRangeFilter)
         {
             var clientId = _contextAccessorService.AuthoticateUserId();
-            var totalOrder = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End);
-            var delivedOrderCount = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End && (c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned));
-            var returndOrderCount = await _repository.Count(c => c.ClientId == clientId && c.Date >= dateRangeFilter.Start && c.Date <= dateRangeFilter.End && c.OrderPlace == OrderPlace.CompletelyReturned);
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId);
+            if (dateRangeFilter.Start.HasValue)
+            {
+                predicate = predicate.And(c => c.Date >= dateRangeFilter.Start);
+            }
+            if (dateRangeFilter.End.HasValue)
+            {
+                predicate = predicate.And(c => c.Date <= dateRangeFilter.End);
+            }
+            var totalOrder = await _repository.Count(predicate);
+            var delivedOrderPredicate = predicate.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned);
+            var returndOrderCountPredicate=predicate.And(c=>c.OrderPlace == OrderPlace.CompletelyReturned);
+            var delivedOrderCount = await _repository.Count(delivedOrderPredicate);
+            var returndOrderCount = await _repository.Count(returndOrderCountPredicate);
 
             return new List<AccountReportDto>
             {
@@ -751,12 +762,12 @@ namespace Quqaz.Web.Services.Concret
                 new AccountReportDto()
                 {
                     Title = "نسبة الواصل",
-                    Text = ((delivedOrderCount*100)/totalOrder).ToString(),
+                    Text = totalOrder==0?0.ToString(): ((delivedOrderCount*100)/totalOrder).ToString(),
                 },
                 new AccountReportDto()
                 {
                     Title = "نسبةالراجع",
-                    Text = ((returndOrderCount*100)/totalOrder).ToString(),
+                    Text = totalOrder==0?0.ToString():((returndOrderCount*100)/totalOrder).ToString(),
                 },
             };
         }

@@ -145,9 +145,9 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             return Ok();
         }
         [HttpGet("Track")]
-        public async Task<IActionResult> Track([FromQuery] int Id)
+        public async Task<IActionResult> Track([FromQuery] int id)
         {
-            return Ok(await _orderClientSerivce.GetShipmentTracking(Id));
+            return Ok(await _orderClientSerivce.GetShipmentTracking(id));
         }
     }
 }

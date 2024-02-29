@@ -17,7 +17,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         private readonly ICountryCashedService _countryCashedService;
         private readonly IRegionCashedService _regionCashedService;
         private readonly IOrderTypeCashService _orderTypeCashService;
-        public CSettingsGetController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService,IOrderTypeCashService orderTypeCashService)
+        public CSettingsGetController(ICountryCashedService countryCashedService, IRegionCashedService regionCashedService, IOrderTypeCashService orderTypeCashService)
         {
 
             _countryCashedService = countryCashedService;

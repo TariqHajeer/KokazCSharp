@@ -307,9 +307,6 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<ErrorResponse<string, IEnumerable<string>>> ReceiptOfTheStatusOfTheReturnedShipment(IEnumerable<ReceiptOfTheStatusOfTheDeliveredShipmentDto> receiptOfTheStatusOfTheDeliveredShipmentDtos)
         {
-            var moneyPlacedes = Consts.MoneyPlaceds;
-            var orderPlacedes = Consts.OrderPlaceds;
-            var outSideCompny = moneyPlacedes.First(c => c.Id == (int)MoneyPalce.OutSideCompany).Name;
             var response = new ErrorResponse<string, IEnumerable<string>>();
 
             var orders = (await _uintOfWork.Repository<Order>().GetAsync(c => new HashSet<int>(receiptOfTheStatusOfTheDeliveredShipmentDtos.Select(c => c.Id)).Contains(c.Id))).ToList();
