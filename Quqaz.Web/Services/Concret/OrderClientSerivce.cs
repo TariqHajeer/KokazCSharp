@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using System.Linq.Expressions;
 using Quqaz.Web.Dtos.Statics;
 using Microsoft.Win32.SafeHandles;
+using System.Text;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -738,7 +739,7 @@ namespace Quqaz.Web.Services.Concret
             }
             var totalOrder = await _repository.Count(predicate);
             var delivedOrderPredicate = predicate.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned);
-            var returndOrderCountPredicate=predicate.And(c=>c.OrderPlace == OrderPlace.CompletelyReturned);
+            var returndOrderCountPredicate = predicate.And(c => c.OrderPlace == OrderPlace.CompletelyReturned);
             var delivedOrderCount = await _repository.Count(delivedOrderPredicate);
             var returndOrderCount = await _repository.Count(returndOrderCountPredicate);
 
@@ -798,6 +799,69 @@ namespace Quqaz.Web.Services.Concret
                 },
             };
             return list;
+        }
+
+        public async Task<string> GetOrderDoseNotFinish(OrderDontFinishFilter orderDontFinishFilter)
+        {
+            var clientId = _contextAccessorService.AuthoticateUserId();
+            var currentBranchId = _contextAccessorService.CurrentBranchId();
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
+            if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned) || orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable) || orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+            {
+                var orderFilterExcpt = orderDontFinishFilter.OrderPlacedId.Except(new[] { OrderPlace.CompletelyReturned, OrderPlace.Unacceptable, OrderPlace.PartialReturned });
+                predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId && orderFilterExcpt.Contains(c.OrderPlace) && c.AgentId != null);
+                var orderPlacePredicate = PredicateBuilder.New<Order>(false);
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.CurrentBranchId == currentBranchId);
+                }
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.Unacceptable && c.CurrentBranchId == currentBranchId);
+                }
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.PartialReturned && c.CurrentBranchId == currentBranchId);
+                }
+                orderPlacePredicate = orderPlacePredicate.And(c => c.ClientId == clientId && c.AgentId != null);
+                predicate = predicate.Or(orderPlacePredicate);
+
+            }
+            if (orderDontFinishFilter.ClientDoNotDeleviredMoney && !orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
+            }
+            else if (!orderDontFinishFilter.ClientDoNotDeleviredMoney && orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash);
+            }
+            else if (orderDontFinishFilter.ClientDoNotDeleviredMoney && orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
+            }
+            var data = await _repository.GetAsync(filter: predicate);
+            var rows = new StringBuilder();
+            var rowTempaltePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRow.html";
+
+            var rowTempalte = await File.ReadAllTextAsync(rowTempaltePath);
+            int counter= 1;
+            foreach (var order in data)
+            {
+                var row = rowTempalte.Replace("{{incremental}}",(counter++).ToString());
+                row=row.Replace("{{code}}",order.Code);
+                row=row.Replace("{{phone}}",order.RecipientPhones);
+                row=row.Replace("{{cost}}",order.Cost.ToString());
+                row=row.Replace("{{deliveryCost}}",order.DeliveryCost.ToString());
+                row=row.Replace("{{total}}",(order.Cost-order.DeliveryCost).ToString());
+                row=row.Replace("{{note}}",order.Note.ToString());
+                row=row.Replace("{{clientNote}}",order.ClientNote.ToString());
+                rows.AppendLine(row);
+            }
+            var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html"; 
+            var htmlPage = await File.ReadAllTextAsync(rowTempaltePath);
+            htmlPage = htmlPage.Replace("{{rows}}",rows.ToString());
+            return htmlPage;
+
         }
     }
 }

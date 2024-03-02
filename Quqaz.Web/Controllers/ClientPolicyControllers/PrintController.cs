@@ -48,7 +48,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
 
             });
             var pdfBytes = _generatePdf.GetPDF(txt);
-            string fileName = "وصل.pdf";
+            string fileName = "c.pdf";
             return File(pdfBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, fileName);
         }
     }

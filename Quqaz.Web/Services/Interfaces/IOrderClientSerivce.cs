@@ -20,6 +20,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<PagingResualt<IEnumerable<OrderDto>>> Get(PagingDto pagingDto, COrderFilter orderFilter);
         Task<bool> CodeExist(string code);
         Task<bool> CheckOrderTypesIdsExists(int[] ids);
+        public Task<string> GetOrderDoseNotFinish(OrderDontFinishFilter orderDontFinishFilter);
         Task<PagingResualt<List<PayForClientDto>>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter, PagingDto paging);
         Task<OrderDto> GetById(int id);
         Task CorrectOrderCountry(List<KeyValuePair<int, int>> pairs);

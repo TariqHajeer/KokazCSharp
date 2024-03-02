@@ -110,7 +110,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpPost("DownloadOrdersDontFinished")]
         public async Task<IActionResult> DownloadOrdersDontFinished([FromBody] OrderDontFinishFilter orderDontFinishFilter)
         {
-            var txt = await _orderClientSerivce.GetReceipt(10);
+            var txt = await _orderClientSerivce.GetOrderDoseNotFinish(orderDontFinishFilter);
             _generatePdf.SetConvertOptions(new ConvertOptions()
             {
                 PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,

@@ -303,17 +303,25 @@ namespace Quqaz.Web.DAL.Infrastructure.Concret
             }
             var query = Query.Include(c => c.Country).Where(predicate);
             var total = await query.CountAsync();
-            var costTotal = await query.SumAsync(c => c.Cost);
-            var dtotal = await query.SumAsync(c => c.DeliveryCost);
-            var payForClient = await query.SumAsync(c => (c.Cost - c.DeliveryCost) - (c.ClientPaied ?? 0));
-            var data = await query.OrderBy(c=>c.Code).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
+            decimal costTotal = 0;
+            decimal deliveryCostTotal = 0;
+            decimal payForClient = 0;
+            List<Order> data = new List<Order>();
+            if (total != 0)
+            {
+                costTotal = await query.SumAsync(c => c.Cost);
+                deliveryCostTotal = await query.SumAsync(c => c.DeliveryCost);
+                payForClient = await query.SumAsync(c => c.Cost - c.DeliveryCost - (c.ClientPaied ?? 0));
+                data = await query.OrderBy(c => c.Code).Skip((pagingDto.Page - 1) * pagingDto.RowCount).Take(pagingDto.RowCount).ToListAsync();
+            }
+
 
             var result = new PagingResualt<IEnumerable<Order>>()
             {
                 Total = total,
                 Data = data
             };
-            return (result, costTotal, dtotal, payForClient);
+            return (result, costTotal, deliveryCostTotal, payForClient);
         }
         public async Task<PagingResualt<IEnumerable<Order>>> OrdersDontFinished(OrderDontFinishedFilter orderDontFinishedFilter, PagingDto pagingDto)
         {
