@@ -708,7 +708,7 @@ namespace Quqaz.Web.Services.Concret
                     Text = "في إننزظار التسليم",
                     Checked = false
                 };
-                if (order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned && order.MoneyPlace == MoneyPalce.WithAgent)
+                if ((order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned) && order.MoneyPlace == MoneyPalce.WithAgent)
                 {
                     waiting.Checked = true;
                 }
@@ -844,22 +844,22 @@ namespace Quqaz.Web.Services.Concret
             var rowTempaltePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRow.html";
 
             var rowTempalte = await File.ReadAllTextAsync(rowTempaltePath);
-            int counter= 1;
+            int counter = 1;
             foreach (var order in data)
             {
-                var row = rowTempalte.Replace("{{incremental}}",(counter++).ToString());
-                row=row.Replace("{{code}}",order.Code);
-                row=row.Replace("{{phone}}",order.RecipientPhones);
-                row=row.Replace("{{cost}}",order.Cost.ToString());
-                row=row.Replace("{{deliveryCost}}",order.DeliveryCost.ToString());
-                row=row.Replace("{{total}}",(order.Cost-order.DeliveryCost).ToString());
-                row=row.Replace("{{note}}",order.Note.ToString());
-                row=row.Replace("{{clientNote}}",order.ClientNote.ToString());
+                var row = rowTempalte.Replace("{{incremental}}", (counter++).ToString());
+                row = row.Replace("{{code}}", order.Code);
+                row = row.Replace("{{phone}}", order.RecipientPhones);
+                row = row.Replace("{{cost}}", order.Cost.ToString());
+                row = row.Replace("{{deliveryCost}}", order.DeliveryCost.ToString());
+                row = row.Replace("{{total}}", (order.Cost - order.DeliveryCost).ToString());
+                row = row.Replace("{{note}}", order.Note.ToString());
+                row = row.Replace("{{clientNote}}", order.ClientNote.ToString());
                 rows.AppendLine(row);
             }
-            var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html"; 
+            var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(rowTempaltePath);
-            htmlPage = htmlPage.Replace("{{rows}}",rows.ToString());
+            htmlPage = htmlPage.Replace("{{rows}}", rows.ToString());
             return htmlPage;
 
         }
