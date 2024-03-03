@@ -725,7 +725,7 @@ namespace Quqaz.Web.Services.Concret
             return tracking;
         }
 
-        public async Task<List<AccountReportDto>> GetOrderStatics(DateRangeFilter dateRangeFilter)
+        public async Task<List<AccountReportDto>> AccountReport(DateRangeFilter dateRangeFilter)
         {
             var clientId = _contextAccessorService.AuthoticateUserId();
             var predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId);
@@ -853,15 +853,40 @@ namespace Quqaz.Web.Services.Concret
                 row = row.Replace("{{cost}}", order.Cost.ToString());
                 row = row.Replace("{{deliveryCost}}", order.DeliveryCost.ToString());
                 row = row.Replace("{{total}}", (order.Cost - order.DeliveryCost).ToString());
-                row = row.Replace("{{note}}", order.Note.ToString());
-                row = row.Replace("{{clientNote}}", order.ClientNote.ToString());
+                row = row.Replace("{{note}}", order.Note?.ToString());
+                row = row.Replace("{{clientNote}}", order.ClientNote?.ToString());
                 rows.AppendLine(row);
             }
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
-            var htmlPage = await File.ReadAllTextAsync(rowTempaltePath);
+            var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
             htmlPage = htmlPage.Replace("{{rows}}", rows.ToString());
             return htmlPage;
 
+        }
+
+        public Task<ClientOrderReportDto> GetOrderStaticsReport(DateRangeFilter dateRangeFilter)
+        {
+            var number = 10;
+            if (dateRangeFilter.Start.HasValue)
+            {
+                number = 25;
+            }
+            if (dateRangeFilter.End.HasValue)
+            {
+                number = 50;
+            }
+            if (dateRangeFilter.End.HasValue && dateRangeFilter.Start.HasValue)
+            {
+                number = 100;
+            }
+            return Task.FromResult(new ClientOrderReportDto()
+            {
+                DeliveredOrderRatio = number,
+                ReturnOrderRatio = number,
+                HighestDeliveredCountryMapId =1,
+                HighestRequestedCountryMapId = 1,
+                HighestReturnedCountryMapId =1
+            });
         }
     }
 }

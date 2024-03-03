@@ -28,7 +28,12 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("AccountReport")]
         public async Task<IActionResult> AccountReport([FromQuery] DateRangeFilter dateRangeFilter)
         {
-            return Ok(await _orderClientSerivce.GetOrderStatics(dateRangeFilter));
+            return Ok(await _orderClientSerivce.AccountReport(dateRangeFilter));
+        }
+        [HttpGet("GetOrderStaticsReport")]
+        public async Task<IActionResult> GetOrderStaticsReport([FromQuery] DateRangeFilter dateRangeFilter)
+        {
+            return Ok(await _orderClientSerivce.GetOrderStaticsReport(dateRangeFilter));
         }
         [HttpGet("GetPhoneOrderStatusCount")]
         public async Task<IActionResult> GetPhoneOrderStatusCount([FromQuery] string phone)

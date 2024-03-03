@@ -31,7 +31,9 @@ namespace Quqaz.Web.Services.Interfaces
         Task Edit(EditOrder editOrder);
         Task<string> GetReceipt(int id);
         Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id);
-        Task<List<AccountReportDto>> GetOrderStatics(DateRangeFilter dateRangeFilter);
+        Task<List<AccountReportDto>> AccountReport(DateRangeFilter dateRangeFilter);
         Task<List<AccountReportDto>> GetPhoneOrderStatusCount(string phone);
+        Task<ClientOrderReportDto> GetOrderStaticsReport(DateRangeFilter dateRangeFilter);
+
     }
 }
