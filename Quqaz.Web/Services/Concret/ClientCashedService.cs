@@ -239,7 +239,7 @@ namespace Quqaz.Web.Services.Concret
                 {
                     await file.CopyToAsync(stream);
                 }
-                client.Photo = Path.Combine("clientphoto",uniqueFileName);
+                client.Photo = Path.Combine("clientphoto", uniqueFileName);
             }
 
             await _uintOfWork.Update(client);
@@ -295,12 +295,24 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task SetToken(SetFCMTokenDto setFCMToken)
         {
-            var client = await _repository.FirstOrDefualt(c=>c.Id== _httpContextAccessorService.AuthoticateUserId(),c=>c.FCMTokens);
-            client.FCMTokens.Add(new FCMTokens(){
+            var client = await _repository.FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId(), c => c.FCMTokens);
+            client.FCMTokens.Add(new FCMTokens()
+            {
                 Token = setFCMToken.Token,
-                MacAddress= setFCMToken.MackAddress
+                MacAddress = setFCMToken.MackAddress
             });
-            await _repository.Update(client);            
+            await _repository.Update(client);
+        }
+
+        public async Task RemoveFCM(int clientId, string mackAddress)
+        {
+            var client = await _repository.FirstOrDefualt(c => c.Id == clientId, c => c.FCMTokens);
+            var fcm = client.FCMTokens.FirstOrDefault(c => c.MacAddress == mackAddress);
+            if (fcm != null)
+            {
+                client.FCMTokens.Remove(fcm);
+            }
+            await _repository.Update(client);
         }
     }
 }

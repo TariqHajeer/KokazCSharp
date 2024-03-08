@@ -20,6 +20,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpPost("LogOut")]
         public async Task<IActionResult> LogOut([FromForm] string mackAddress)
         {
+            await _clientCashedService.RemoveFCM(AuthoticateUserId(),mackAddress);
             return Ok();
         }
         [HttpPost("UpdatePassword")]

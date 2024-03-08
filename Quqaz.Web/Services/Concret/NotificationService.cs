@@ -85,8 +85,8 @@ namespace Quqaz.Web.Services.Concret
             {
                 message.Notification = new Notification()
                 {
-                    Body = notification.Title,
-                    Title = notification.Body,
+                    Body = notification.Body,
+                    Title = notification.Title,
                 };
             }
             return FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);

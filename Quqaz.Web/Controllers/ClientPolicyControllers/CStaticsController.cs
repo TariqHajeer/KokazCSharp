@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Quqaz.Web.Dtos.Common;
 using System.Collections.Generic;
 using Quqaz.Web.Dtos.Statics;
+using Quqaz.Web.Models.Static;
 
 namespace Quqaz.Web.Controllers.ClientPolicyControllers
 {
@@ -14,11 +15,13 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         private readonly INotificationService _notificationService;
         private readonly IStatisticsService _statisticsService;
         private readonly IOrderClientSerivce _orderClientSerivce;
-        public CStaticsController(INotificationService notificationService, IStatisticsService statisticsService, IOrderClientSerivce orderClientSerivce)
+        private readonly ICountryCashedService countryCashedService;
+        public CStaticsController(INotificationService notificationService, IStatisticsService statisticsService, IOrderClientSerivce orderClientSerivce, ICountryCashedService countryCashedService)
         {
             _notificationService = notificationService;
             _statisticsService = statisticsService;
             _orderClientSerivce = orderClientSerivce;
+            this.countryCashedService = countryCashedService;
         }
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -33,7 +36,11 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpGet("GetOrderStaticsReport")]
         public async Task<IActionResult> GetOrderStaticsReport([FromQuery] DateRangeFilter dateRangeFilter)
         {
-            return Ok(await _orderClientSerivce.GetOrderStaticsReport(dateRangeFilter));
+            var result = await _orderClientSerivce.GetOrderStaticsReport(dateRangeFilter);
+            result.HighestDeliveredCountryMapId = Consts.CountryMap[result.HighestDeliveredCountryMapId];
+            result.HighestRequestedCountryMapId = Consts.CountryMap[result.HighestRequestedCountryMapId];
+            result.HighestReturnedCountryMapId = Consts.CountryMap[result.HighestReturnedCountryMapId];
+            return Ok(result);
         }
         [HttpGet("GetPhoneOrderStatusCount")]
         public async Task<IActionResult> GetPhoneOrderStatusCount([FromQuery] string phone)

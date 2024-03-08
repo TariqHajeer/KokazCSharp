@@ -18,5 +18,6 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<NotificationDto>> GetClientNotifcations();
         Task<int> NewNotfiactionCount();
         Task Create(CreateNotificationDto createNotification);
+        Task SendNotification(List<string> clientToken, Models.Notfication notification, bool withNotification = true);
     }
 }

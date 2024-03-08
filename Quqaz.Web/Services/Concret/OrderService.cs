@@ -265,7 +265,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 await _uintOfWork.UpdateRange(orders);
                 await _uintOfWork.AddRange(logs);
-                await _notificationService.SendOrderReciveNotifcation(orders);
+                //await _notificationService.SendOrderReciveNotifcation(orders);
 
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
@@ -410,7 +410,7 @@ namespace Quqaz.Web.Services.Concret
             try
             {
                 await _uintOfWork.UpdateRange(orders);
-                await _notificationService.SendOrderReciveNotifcation(orders);
+                //await _notificationService.SendOrderReciveNotifcation(orders);
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
                     CreatedOn = DateTime.UtcNow,

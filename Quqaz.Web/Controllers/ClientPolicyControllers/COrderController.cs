@@ -18,11 +18,13 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         private readonly IOrderClientSerivce _orderClientSerivce;
         private readonly IReceiptService _receiptService;
         private readonly IGeneratePdf _generatePdf;
-        public COrderController(IOrderClientSerivce orderClientSerivce, IReceiptService receiptService, IGeneratePdf generatePdf)
+        private readonly INotificationService notificationService;
+        public COrderController(IOrderClientSerivce orderClientSerivce, IReceiptService receiptService, IGeneratePdf generatePdf, INotificationService notificationService)
         {
             _orderClientSerivce = orderClientSerivce;
             _receiptService = receiptService;
             _generatePdf = generatePdf;
+            this.notificationService = notificationService;
         }
         /// <summary>
         /// إضافة طلب
@@ -142,6 +144,17 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         public async Task<IActionResult> CorrectOrderCountry(List<KeyValuePair<int, int>> pairs)
         {
             await _orderClientSerivce.CorrectOrderCountry(pairs);
+            return Ok();
+        }
+        [HttpGet("SendTestNotification")]
+        public async Task<IActionResult> SendTestNotification([FromQuery] string token, [FromQuery] string text, [FromQuery] string body, [FromQuery] bool isWithNotification)
+        {
+            await notificationService.SendNotification(new List<string>() { token }, new Models.Notfication()
+            {
+                Title = text,
+                Body = body,
+
+            }, isWithNotification);
             return Ok();
         }
         [HttpGet("Track")]

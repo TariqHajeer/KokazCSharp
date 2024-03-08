@@ -19,11 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using System.ComponentModel;
-using Microsoft.AspNetCore.Razor.Language;
-using System.Linq.Expressions;
 using Quqaz.Web.Dtos.Statics;
-using Microsoft.Win32.SafeHandles;
 using System.Text;
 
 namespace Quqaz.Web.Services.Concret
@@ -864,29 +860,42 @@ namespace Quqaz.Web.Services.Concret
 
         }
 
-        public Task<ClientOrderReportDto> GetOrderStaticsReport(DateRangeFilter dateRangeFilter)
+        public async Task<ClientOrderReportDto> GetOrderStaticsReport(DateRangeFilter dateRangeFilter)
         {
-            var number = 10;
-            if (dateRangeFilter.Start.HasValue)
+            var predicate = PredicateBuilder.New<Order>(true);
+            if (dateRangeFilter != null)
             {
-                number = 25;
+                if (dateRangeFilter.Start.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date.Value.Date > dateRangeFilter.Start.Value.Date);
+                }
+                if (dateRangeFilter.End.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date.Value.Date < dateRangeFilter.End.Value.Date);
+                }
             }
-            if (dateRangeFilter.End.HasValue)
+            var orderCount = await _repository.Count(predicate);
+            var returndOrderPredicate = PredicateBuilder.New<Order>(predicate).And(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.OrderState == OrderState.Finished);
+            var returnOrderCount = await _repository.Count(returndOrderPredicate);
+            var delviverOrderPredicate = PredicateBuilder.New<Order>(predicate).And(c => (c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Delivered) && c.OrderState == OrderState.Finished);
+            var delviverOrderCount = await _repository.Count(delviverOrderPredicate);
+            var devlierdCountriesCount = await _repository.CountGroupBy(c => c.CountryId, delviverOrderPredicate);
+            var requestedCountriesCount = await _repository.CountGroupBy(c => c.CountryId, predicate);
+            var returnConutriesCount = await _repository.CountGroupBy(c => c.CountryId, returndOrderPredicate);
+
+            var highestDeliveredCountryMapId = devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestRequestedCountryMapId = requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestReturnedCountryMapId = returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var deliveredOrderRatio = Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount);
+            var returnOrderRatio = Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount);
+            return new ClientOrderReportDto()
             {
-                number = 50;
-            }
-            if (dateRangeFilter.End.HasValue && dateRangeFilter.Start.HasValue)
-            {
-                number = 100;
-            }
-            return Task.FromResult(new ClientOrderReportDto()
-            {
-                DeliveredOrderRatio = number,
-                ReturnOrderRatio = number,
-                HighestDeliveredCountryMapId =1,
-                HighestRequestedCountryMapId = 1,
-                HighestReturnedCountryMapId =1
-            });
+                DeliveredOrderRatio = deliveredOrderRatio,
+                ReturnOrderRatio = returnOrderRatio,
+                HighestDeliveredCountryMapId = highestDeliveredCountryMapId,
+                HighestRequestedCountryMapId = highestRequestedCountryMapId,
+                HighestReturnedCountryMapId = highestReturnedCountryMapId
+            };
         }
     }
 }
