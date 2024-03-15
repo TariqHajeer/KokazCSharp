@@ -11,6 +11,8 @@ namespace Quqaz.Web.Models
         public int ClientId { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
+        public NotificationType NotificationType{get;set;}
+        public string NotificationExtraData{get;set;}
         public string Note { get; set; }
         public int? OrderCount { get; set; }
         public OrderPlace? OrderPlace { get; set; }

@@ -30,6 +30,7 @@ using Microsoft.OpenApi.Validations;
 using Quqaz.Web.Dtos.OrdersDtos.Common;
 using Quqaz.Web.Dtos.OrdersDtos.Queries.AgentQueries;
 using Quqaz.Web.Dtos.HomeDto;
+using Newtonsoft.Json;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -246,26 +247,59 @@ namespace Quqaz.Web.Services.Concret
                     order.NegativeAlert = true;
                 }
             }
-            var PartialReturnedOrder = orders.Where(c => c.OrderPlace == OrderPlace.PartialReturned);
-            var deliveredOrder = orders.Where(c => c.OrderPlace == OrderPlace.Delivered);
-            var notifications = PartialReturnedOrder.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+            var orderGroupedByClient = orders.GroupBy(c => c.ClientId);
+            var notifications = new List<CreateNotificationDto>();
+            var title = "استلام شحنات";
+            foreach (var clientOrders in orderGroupedByClient)
             {
-                ClientId = c.Key,
-                Title = "استلام شحنات",
-                Body = $"لديك {c.Count()} شحنات مرتجع جزئي"
-            }).Union(deliveredOrder.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
-            {
-                ClientId = c.Key,
-                Title = "استلام شحنات",
-                Body = $"لديك {c.Count()} شحنات تم تسليمها "
-            }));
-
+                if (orderGroupedByClient.Count() <= 3)
+                {
+                    foreach (var clientOrder in clientOrders)
+                    {
+                        var body = "";
+                        if (clientOrder.OrderPlace == OrderPlace.PartialReturned)
+                        {
+                            body = $"لديك شحنة برقم {clientOrder.Code} مرتجع جزئي";
+                        }
+                        else
+                        {
+                            body = $"لديك شحنة برقم {clientOrder.Code} تم تسليمها";
+                        }
+                        notifications.Add(new CreateNotificationDto()
+                        {
+                            ClientId = clientOrder.ClientId,
+                            Title = title,
+                            Body = body,
+                            NotificationType = NotificationType.Order,
+                            NotificationExtraData = JsonConvert.SerializeObject(new { OrderId = clientOrder.Id })
+                        });
+                    }
+                }
+                else
+                {
+                    var returnOrderCount = clientOrders.ToList().Where(c => c.OrderPlace == OrderPlace.PartialReturned).Count();
+                    var deliveredOrderCount = clientOrders.ToList().Where(c => c.OrderPlace == OrderPlace.Delivered).Count();
+                    notifications.Add(new CreateNotificationDto()
+                    {
+                        ClientId = clientOrders.Key,
+                        Title = title,
+                        NotificationType = NotificationType.MultipleOrder,
+                        Body = $"لديك {returnOrderCount} شحنات مرتجع جزئي"
+                    });
+                    notifications.Add(new CreateNotificationDto()
+                    {
+                        ClientId = clientOrders.Key,
+                        Title = title,
+                        NotificationType = NotificationType.MultipleOrder,
+                        Body = $"لديك {deliveredOrderCount} شحنات تم تسليمها"
+                    });
+                }
+            }
             await _uintOfWork.BegeinTransaction();
             try
             {
                 await _uintOfWork.UpdateRange(orders);
                 await _uintOfWork.AddRange(logs);
-                //await _notificationService.SendOrderReciveNotifcation(orders);
 
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
@@ -410,7 +444,6 @@ namespace Quqaz.Web.Services.Concret
             try
             {
                 await _uintOfWork.UpdateRange(orders);
-                //await _notificationService.SendOrderReciveNotifcation(orders);
                 var receiptOfTheOrderStatus = new ReceiptOfTheOrderStatus
                 {
                     CreatedOn = DateTime.UtcNow,
@@ -524,14 +557,34 @@ namespace Quqaz.Web.Services.Concret
                 agnetOrderPrints.Add(agnetOrderPrint);
                 agentPrintsDetials.Add(agentPrintDetials);
             }
-
-            var notifcations = orders.GroupBy(c => c.ClientId).Select(c => new CreateNotificationDto()
+            var notifications = new List<CreateNotificationDto>();
+            var orderGroupedByClient = orders.GroupBy(c => c.ClientId);
+            var title = "لديك طلبات في الطريق ";
+            foreach (var clientOrder in orderGroupedByClient)
             {
-                ClientId = c.Key,
-                Title = "طلبات في الطريق ",
-                Body = $"لديك {c.Count()} طلبات خرجت مع المندوب "
-            }).ToList();
-            await _notificationService.CreateRange(notifcations);
+                if (clientOrder.Count() <= 3)
+                {
+                    notifications.AddRange(clientOrder.Select(c => new CreateNotificationDto()
+                    {
+                        ClientId = c.ClientId,
+                        Body = $"الشحنة برقم {c.Code} اصبحت في الطريق",
+                        Title = title,
+                        NotificationType = NotificationType.Order,
+                        NotificationExtraData = JsonConvert.SerializeObject(new { OrderId = c.Id })
+                    }));
+                }
+                else
+                {
+                    notifications.Add(new CreateNotificationDto()
+                    {
+                        ClientId = clientOrder.Key,
+                        Body = $"ليدك {clientOrder.Count()} خرجت في الطريق",
+                        Title = title,
+                        NotificationType = NotificationType.MultipleOrder,
+                    });
+                }
+            }
+            await _notificationService.CreateRange(notifications);
             await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.AddRange(agnetOrderPrints);
             await _uintOfWork.AddRange(agentPrintsDetials);
@@ -1329,7 +1382,9 @@ namespace Quqaz.Web.Services.Concret
             {
                 Title = "تم تسديدك",
                 ClientId = clientId,
-                Body = $"تم تدسديك برقم {clientPayment.Id}"
+                Body = $"تم تدسديك برقم {clientPayment.Id}",
+                NotificationType = NotificationType.Payment,
+                NotificationExtraData = JsonConvert.SerializeObject(new { PaymentId = clientPayment.Id })
             });
             await _uintOfWork.Commit();
             return clientPayment.Id;

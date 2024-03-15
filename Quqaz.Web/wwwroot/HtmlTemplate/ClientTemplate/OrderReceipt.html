@@ -95,16 +95,23 @@
       .card-title {
         background-color: rgba(189, 35, 34, 1);
         color: #fff;
-        border-radius: 10px;
-        padding: 5px;
+        border-radius: 8px;
+        padding: 6px;
       }
+
       .card-body {
-        padding: 5px 15px;
-        border: 0.5px rgb(94, 94, 94) solid;
-        margin-inline-start: -9px;
-        border-right: none;
+        margin-right: -9px;
         border-top-left-radius: 10px;
         border-bottom-left-radius: 10px;
+        background-color: rgb(94, 94, 94);
+        padding: 6px 0px 6px 1px;
+      }
+      .card-body > span {
+        padding: 5px 22px 5px 13px;
+        background-color: #fff;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        text-wrap: wrap;
       }
       .m-auto {
         padding: 0.3rem;
@@ -115,7 +122,9 @@
     <div class="bg-header">
       <table>
         <tr class="text-center">
-          <td style="width: 45%">القوقز للتوصيل السريع</td>
+          <td style="width: 45%; font-size: 20px; font-weight: 500">
+            القوقز للتوصيل السريع
+          </td>
           <td style="width: 10%">
             <hr
               style="
@@ -350,11 +359,11 @@
         <tr>
           <td style="width: 35%">
             <span class="card-title">الإسم التجاري</span>
-            <span class="card-body">{{clientName}}</span>
+            <span class="card-body"><span>{{clientName}}</span></span>
           </td>
           <td style="width: 35%">
             <span class="card-title"> الهاتف</span>
-            <span class="card-body">{{clientPhoneNumber}} </span>
+            <span class="card-body"><span>{{clientPhoneNumber}}</span> </span>
           </td>
         </tr>
       </table>
@@ -362,7 +371,7 @@
         <tr>
           <td style="width: 100%">
             <span class="card-title">المبلغ مع التوصيل </span>
-            <span class="card-body">{{orderCost}} </span>
+            <span class="card-body"><span>{{orderCost}} </span></span>
           </td>
         </tr>
       </table>
@@ -397,11 +406,11 @@
         <tr>
           <td style="width: 35%">
             <span class="card-title">الإسم </span>
-            <span class="card-body">{{receiverName}} </span>
+            <span class="card-body"><span>{{receiverName}}</span> </span>
           </td>
           <td style="width: 35%">
             <span class="card-title"> رقم المسلتم </span>
-            <span class="card-body">{{receiverPhone}} </span>
+            <span class="card-body"><span>{{receiverPhone}}</span> </span>
           </td>
         </tr>
       </table>
@@ -409,7 +418,7 @@
         <tr>
           <td>
             <span class="card-title">العنوان </span>
-            <span class="card-body">{{orderAddress}} </span>
+            <span class="card-body"><span>{{orderAddress}}</span> </span>
           </td>
         </tr>
       </table>
@@ -417,11 +426,11 @@
         <tr>
           <td style="width: 35%">
             <span class="card-title">نوع البضاعة </span>
-            <span class="card-body">{{orderType}} </span>
+            <span class="card-body"><span>{{orderType}}</span> </span>
           </td>
           <td style="width: 35%">
             <span class="card-title"> العدد </span>
-            <span class="card-body">{{orderTypeCount}} </span>
+            <span class="card-body"><span>{{orderTypeCount}}</span> </span>
           </td>
         </tr>
       </table>
@@ -429,7 +438,9 @@
         <tr>
           <td>
             <span class="card-title">معلومات وملاحظات للمندوب </span>
-            <span class="card-body">{{Note}} </span>
+            <span class="card-body"
+              ><span> <u>{{Note}} </u> </span>
+            </span>
           </td>
         </tr>
       </table>

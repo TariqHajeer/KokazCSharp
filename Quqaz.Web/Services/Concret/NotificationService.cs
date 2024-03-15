@@ -77,7 +77,9 @@ namespace Quqaz.Web.Services.Concret
                 Tokens = registrationTokens,
                 Data = new Dictionary<string, string>()
                 {
-                    { "id", notification.Id.ToString() }
+                    { "NotificationId", notification.Id.ToString()},
+                    {"NotificationType",((int)notification.NotificationType).ToString()},
+                    {"NotificationExtraData",notification.NotificationExtraData}
                 }
 
             };
@@ -233,7 +235,9 @@ namespace Quqaz.Web.Services.Concret
                 Body = createNotification.Body,
                 Title = createNotification.Title,
                 ClientId = createNotification.ClientId,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                NotificationExtraData = createNotification.NotificationExtraData,
+                NotificationType = createNotification.NotificationType
             };
             await _repository.AddAsync(notification);
             notification = await _repository.FirstOrDefualt(c => c.Id == notification.Id, c => c.Client.FCMTokens);
@@ -247,7 +251,9 @@ namespace Quqaz.Web.Services.Concret
                 ClientId = c.ClientId,
                 Body = c.Body,
                 Title = c.Title,
-                CreatedDate = currentDate
+                CreatedDate = currentDate,
+                NotificationExtraData = c.NotificationExtraData,
+                NotificationType = c.NotificationType,
             });
             await _repository.AddRangeAsync(notification);
             notification = await _repository.GetAsync(c => notification.Select(c => c.Id).Contains(c.Id), c => c.Client.FCMTokens);
