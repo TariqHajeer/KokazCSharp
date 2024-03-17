@@ -600,123 +600,270 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id)
         {
-            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.NextBranch, c => c.Agent.UserPhones);
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.TargetBranch, c => c.Agent.UserPhones);
             List<ClientTrackShipmentDto> tracking = new List<ClientTrackShipmentDto>();
-            if (order.NextBranchId.HasValue)
+            if (order.TargetBranchId.HasValue)
             {
-                var inStore = new ClientTrackShipmentDto()
+                var inStroe = new ClientTrackShipmentDto()
                 {
                     Number = 1,
                     Text = "في المخزن",
-                    Checked = false
                 };
-                tracking.Add(inStore);
-                if ((order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed) && order.CurrentBranchId == order.BranchId)
-                {
-                    inStore.Checked = true;
-                }
-                var goingToBranch = new ClientTrackShipmentDto()
+                var inWayToOtherBranch = new ClientTrackShipmentDto()
                 {
                     Number = 2,
-                    Text = $"متوجعة إلى فرع ${order.NextBranch.Name}",
-                    Checked = false
+                    Text = $"في الطريق إلى فرع {order.TargetBranch.Name}"
                 };
-                if (order.OrderPlace == OrderPlace.Way && order.CurrentBranchId == order.BranchId)
-                {
-                    goingToBranch.Checked = true;
-                }
-                tracking.Add(goingToBranch);
-                var inNextBrach = new ClientTrackShipmentDto()
+                var inStoreInNexBranch = new ClientTrackShipmentDto()
                 {
                     Number = 3,
-                    Text = $"وصلت إلى فرع {order.NextBranch.Name}",
-                    Checked = false
+                    Text = $"في مخزن فرع {order.TargetBranch.Name}"
                 };
-                if ((order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed) && order.CurrentBranchId == order.NextBranchId)
-                {
-                    inNextBrach.Checked = true;
-                }
-                tracking.Add(inNextBrach);
-                var withAgent = new ClientTrackShipmentDto()
+                var agent = new ClientTrackShipmentDto()
                 {
                     Number = 4,
-                    Text = "خرجت مع مندوب",
-                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone,
-                    Checked = false
+                    Text = "خرجت مع المندوب ",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone
                 };
-                if (order.OrderPlace == OrderPlace.Way && order.CurrentBranchId != order.BranchId)
-                {
-                    withAgent.Checked = true;
-                }
-                tracking.Add(withAgent);
-                var waiting = new ClientTrackShipmentDto()
+                var agentOrderStatus = new ClientTrackShipmentDto()
                 {
                     Number = 5,
-                    Text = "في إننزظار التسليم",
-                    ExtraText = "الأربعاء ",
-                    Checked = false
+                    Text = "تم التسليم/ المبلغ مع المندوب "
                 };
-                if (order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned && order.MoneyPlace == MoneyPalce.WithAgent)
+                var companyOrderStatus = new ClientTrackShipmentDto()
                 {
-                    waiting.Checked = true;
+                    Number = 6,
+                    Text = "المبلغ داخل الشركة"
+                };
+                var finalOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 7,
+                    Text = "تم التسديد"
+                };
+                tracking.Add(inStroe);
+                tracking.Add(inWayToOtherBranch);
+                tracking.Add(inStoreInNexBranch);
+                tracking.Add(agent);
+                tracking.Add(agentOrderStatus);
+                tracking.Add(companyOrderStatus);
+                tracking.Add(finalOrderStatus);
+                if (order.OrderPlace == OrderPlace.Store)
+                {
+                    if (order.CurrentBranchId == order.BranchId)
+                    {
+                        inStroe.Checked = true;
+                    }
+                    else
+                    {
+                        inStoreInNexBranch.Checked = true;
+                    }
                 }
-                tracking.Add(waiting);
-                var delivered = new ClientTrackShipmentDto()
+                else
                 {
-                    Number = 4,
-                    Text = "تم التسليم",
-                    Checked = tracking.All(c => !c.Checked)
-                };
-                tracking.Add(delivered);
-
-
+                    if (order.OrderPlace == OrderPlace.Way)
+                    {
+                        if (order.CurrentBranchId == order.BranchId)
+                        {
+                            inWayToOtherBranch.Checked = true;
+                        }
+                        else
+                        {
+                            agent.Checked = true;
+                        }
+                    }
+                    else
+                    {
+                        if (order.OrderPlace == OrderPlace.Delayed)
+                        {
+                            inStoreInNexBranch.Checked = true;
+                        }
+                        else
+                        {
+                            if (order.OrderPlace == OrderPlace.CompletelyReturned)
+                            {
+                                agentOrderStatus.Text = "الشحنة مرتجعة مع المندوب ";
+                                companyOrderStatus.Text = "الشحنة مرتجعة داخل الشركة";
+                                finalOrderStatus.Text = "مرتجع تم التسليم";
+                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                {
+                                    agentOrderStatus.Checked = true;
+                                }
+                                else if (order.MoneyPlace == MoneyPalce.InsideCompany)
+                                {
+                                    companyOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                            }
+                            else
+                            {
+                                if (order.ShouldToPay() == 0)
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                    companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                var inStore = new ClientTrackShipmentDto()
+                var inStroe = new ClientTrackShipmentDto()
                 {
                     Number = 1,
                     Text = "في المخزن",
-                    ExtraText = "الأربعاء ",
-                    Checked = false
                 };
-                if (order.OrderPlace == OrderPlace.Store || order.OrderPlace == OrderPlace.Delayed)
-                {
-                    inStore.Checked = true;
-                }
-                tracking.Add(inStore);
                 var agent = new ClientTrackShipmentDto()
                 {
                     Number = 2,
-                    Text = "خرجت مع مندوب",
-                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone,
-                    Checked = false
+                    Text = "خرجت مع المندوب ",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone
                 };
-
-                if (order.OrderPlace == OrderPlace.Way)
-                {
-                    agent.Checked = true;
-                }
-                tracking.Add(agent);
-                var waiting = new ClientTrackShipmentDto()
+                var agentOrderStatus = new ClientTrackShipmentDto()
                 {
                     Number = 3,
-                    Text = "في إننزظار التسليم",
-                    Checked = false
+                    Text = "تم التسليم/ المبلغ مع المندوب "
                 };
-                if ((order.OrderPlace == OrderPlace.Delivered || order.OrderPlace == OrderPlace.CompletelyReturned || order.OrderPlace == OrderPlace.PartialReturned) && order.MoneyPlace == MoneyPalce.WithAgent)
-                {
-                    waiting.Checked = true;
-                }
-                tracking.Add(waiting);
-                var delivered = new ClientTrackShipmentDto()
+                var companyOrderStatus = new ClientTrackShipmentDto()
                 {
                     Number = 4,
-                    Text = "تم التسليم",
-                    Checked = tracking.All(c => !c.Checked)
+                    Text = "المبلغ داخل الشركة"
                 };
-                tracking.Add(delivered);
+                var finalOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 5,
+                    Text = "تم التسديد"
+                };
+                tracking.Add(inStroe);
+                tracking.Add(agent);
+                tracking.Add(agentOrderStatus);
+                tracking.Add(companyOrderStatus);
+                tracking.Add(finalOrderStatus);
+                if (order.OrderPlace == OrderPlace.Store)
+                {
+                    inStroe.Checked = true;
+                }
+                else
+                {
+                    if (order.OrderPlace == OrderPlace.Way)
+                    {
+                        agent.Checked = true;
+                    }
+                    else
+                    {
+                        if (order.OrderPlace == OrderPlace.Delayed)
+                        {
+                            inStroe.Checked = true;
+                        }
+                        else
+                        {
+                            if (order.OrderPlace == OrderPlace.CompletelyReturned)
+                            {
+                                agentOrderStatus.Text = "الشحنة مرتجعة مع المندوب ";
+                                companyOrderStatus.Text = "الشحنة مرتجعة داخل الشركة";
+                                finalOrderStatus.Text = "مرتجع تم التسليم";
+                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                {
+                                    agentOrderStatus.Checked = true;
+                                }
+                                else if (order.MoneyPlace == MoneyPalce.InsideCompany)
+                                {
+                                    companyOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                            }
+                            else
+                            {
+                                if (order.OrderPlace == OrderPlace.Delivered)
+                                {
+                                    if (!order.IsClientDiliverdMoney)
+                                    {
+                                        if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                        {
+                                            agentOrderStatus.Checked = true;
+                                        }
+                                        else
+                                        {
+                                            companyOrderStatus.Checked = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (order.ShouldToPay() - order.ClientPaied == 0)
+                                        {
+                                            finalOrderStatus.Checked = true;
+                                        }
+                                        else
+                                        {
+                                            agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                            companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                            if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                            {
+                                                agentOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                companyOrderStatus.Checked = true;
+                                            }
+                                        }
 
+                                    }
+                                }
+                                else
+                                {
+                                    if (order.OrderPlace == OrderPlace.PartialReturned)
+                                    {
+                                        agentOrderStatus.Text = "تم تسليمها مرتجع جزئي/ المبلغ مع المندوب";
+                                        companyOrderStatus.Text = "المبلغ داخل الشرحة  مرتجع جزئي";
+                                        if (!order.IsClientDiliverdMoney)
+                                        {
+                                            if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                            {
+                                                agentOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                companyOrderStatus.Checked = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (order.ShouldToPay() - order.ClientPaied == 0)
+                                            {
+                                                finalOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                // agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                                // companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                                {
+                                                    agentOrderStatus.Checked = true;
+                                                }
+                                                else
+                                                {
+                                                    companyOrderStatus.Checked = true;
+                                                }
+                                            }
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             return tracking;
         }
@@ -855,7 +1002,10 @@ namespace Quqaz.Web.Services.Concret
             }
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
-            htmlPage = htmlPage.Replace("{{rows}}", rows.ToString());
+            var tableTemplatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayReporTable.html";
+            var tabelTemplate = await File.ReadAllTextAsync(tableTemplatePath);
+            tabelTemplate = tabelTemplate.Replace("{{rows}}", rows.ToString());
+            htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
             return htmlPage;
 
         }
