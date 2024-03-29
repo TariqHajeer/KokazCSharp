@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Quqaz.Web.Dtos.Statics;
 using System.Text;
+using Quqaz.Web.Helpers.Extensions;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1000,8 +1001,10 @@ namespace Quqaz.Web.Services.Concret
                 row = row.Replace("{{clientNote}}", order.ClientNote?.ToString());
                 rows.AppendLine(row);
             }
+
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
+            htmlPage = htmlPage.Replace("{{orderplacedName}}",string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
             var tableTemplatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayReporTable.html";
             var tabelTemplate = await File.ReadAllTextAsync(tableTemplatePath);
             tabelTemplate = tabelTemplate.Replace("{{rows}}", rows.ToString());
