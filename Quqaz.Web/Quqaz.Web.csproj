@@ -16,13 +16,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html" />
+		<_ContentIncludedByDefault Remove="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
 		<PackageReference Include="ExcelDataReader" Version="3.6.0" />
+		<PackageReference Include="FirebaseAdmin" Version="2.4.0" />
 		<PackageReference Include="LinqKit.Core" Version="1.2.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
@@ -45,31 +46,40 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="wwwroot\ClientMessages\" />
 		<Folder Include="wwwroot\MarketLogo\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DeleiverMoneyForClientReport.html">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DiscountRow.Html">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HtmlTemplate\SendOrdersReturnedToSecondBranchReport.html">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HtmlTemplate\TransferToOtherBranchTemplate.html">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
+		<Content Update="wwwroot\HtmlTemplate\ClientTemplate\OrderReceipt.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DeleiverMoneyForClientReport.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\DiscountRow.Html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\HtmlTemplate\DeleiverMoneyForClientReports\Receipts.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\HtmlTemplate\SendOrdersReturnedToSecondBranchReport.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="wwwroot\HtmlTemplate\TransferToOtherBranchTemplate.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="wkhtmltopdf\Windows\wkhtmltopdf.exe">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="wkhtmltopdf\Windows\wkhtmltopdf.exe">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Update="quqaz-7375d-firebase-adminsdk-2ct9q-3e49576397.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 </Project>

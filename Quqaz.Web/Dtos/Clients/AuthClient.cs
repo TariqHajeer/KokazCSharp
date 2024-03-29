@@ -10,6 +10,7 @@ namespace Quqaz.Web.Dtos.Clients
 {
     public class AuthClient
     {
+        public string Logo {get;set;}
         public string Name { get; set; }
         public string UserName { get; set; }
         public string Token { get; set; }
@@ -18,6 +19,8 @@ namespace Quqaz.Web.Dtos.Clients
         public NameAndIdDto Country { get; set; }
         public List<PhoneDto> Phones {   get; set; }
         public bool CanAddOrder { get; set; }
+        public string FacebookLinke { get; set; }
+        public string IGLink { get; set; }
 
     }
 }

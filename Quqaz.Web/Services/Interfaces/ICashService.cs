@@ -1,4 +1,5 @@
-﻿using Quqaz.Web.Models.Infrastrcuter;
+﻿using Quqaz.Web.Dtos.Common;
+using Quqaz.Web.Models.Infrastrcuter;
 using System;
 using System.Collections.Generic;
 using System.Linq;

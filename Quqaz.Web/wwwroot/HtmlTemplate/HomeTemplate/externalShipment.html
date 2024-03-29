@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلب خارجي</title>
+    <style>
+        /* أضف أنماط CSS مخصصة هنا */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .contact-info {
+            margin: 20px;
+        }
+
+        .product-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-info">
+        <h1>طلب خارجي</h1>
+        <p><strong>من:</strong>{{from}}</p>
+        <p><strong>إلى:</strong>{{to}}</p>
+        <p><strong>البريد الإلكتروني:</strong>{{email}}</p>
+        <p><strong>الهاتف:</strong>{{phone}}</p>
+        <p><strong>رابط المنتج:</strong> <a class="product-link" href="{{url}}">عرض المنتج</a></p>
+    </div>
+</body>
+</html>

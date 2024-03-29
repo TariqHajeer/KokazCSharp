@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 namespace Quqaz.Web.CustomException
 {
-    public class ConflictException:Exception
+    public class ConflictException : Exception
     {
         IEnumerable<string> errors;
         public ConfliectErrorMessage Errors
         {
-            get { return new ConfliectErrorMessage( errors); }
+            get { return new ConfliectErrorMessage(errors); }
         }
-        public ConflictException( string error)
+        public ConflictException(string error)
         {
             var errors = new List<string>
             {
                 error
             };
-            this.errors= errors;
+            this.errors = errors;
         }
         public ConflictException(IEnumerable<string> errors)
         {
@@ -30,5 +30,5 @@ namespace Quqaz.Web.CustomException
             public IEnumerable<string> Errors { get; set; }
         }
     }
-    
+
 }

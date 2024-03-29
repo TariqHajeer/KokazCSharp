@@ -13,6 +13,9 @@ using System;
 using Quqaz.Web.Helpers;
 using Quqaz.Web.HubsConfig;
 using Quqaz.Web.Dtos.NotifcationDtos;
+using Quqaz.Web.CustomException;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -23,14 +26,16 @@ namespace Quqaz.Web.Services.Concret
         private readonly IUintOfWork _uintOfWork;
         private readonly NotificationHub _notificationHub;
         private readonly new IClientRepository _repository;
-        public ClientCashedService(IClientRepository repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService, NotificationHub notificationHub)
+        private readonly IWebHostEnvironment _environment;
+        public ClientCashedService(IClientRepository repository, IMapper mapper, IMemoryCache cache, IRepository<Order> orderRepository, IRepository<ClientPhone> clientPhoneReposiotry, IUintOfWork uintOfWork, Logging logging, IHttpContextAccessorService httpContextAccessorService, NotificationHub notificationHub, IWebHostEnvironment environment)
             : base(repository, mapper, cache, logging, httpContextAccessorService)
         {
             _orderRepository = orderRepository;
             _clientPhoneReposiotry = clientPhoneReposiotry;
             _uintOfWork = uintOfWork;
             _notificationHub = notificationHub;
-            this._repository =repository;
+            this._repository = repository;
+            _environment = environment;
         }
         public override async Task<IEnumerable<ClientDto>> GetCashed()
         {
@@ -194,6 +199,7 @@ namespace Quqaz.Web.Services.Concret
 
         public async Task Update(CUpdateClientDto updateClientDto)
         {
+
             await _uintOfWork.BegeinTransaction();
             var client = await _uintOfWork.Repository<Client>().FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId());
             var clientName = client.Name;
@@ -202,8 +208,7 @@ namespace Quqaz.Web.Services.Concret
             client = _mapper.Map(updateClientDto, client);
             client.Name = clientName;
             client.UserName = clientUserName;
-            if (client.Password == "")
-                client.Password = oldPassword;
+            client.Password = oldPassword;
             await _uintOfWork.Repository<Client>().LoadCollection(client, c => c.ClientPhones);
 
             if (updateClientDto.Phones?.Any() == true)
@@ -217,6 +222,26 @@ namespace Quqaz.Web.Services.Concret
                     });
                 }
             }
+            if (updateClientDto.Photo != null)
+            {
+                string uploadsFolder = Path.Combine(_environment.WebRootPath, "clientphoto");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Create a unique filename to avoid overwriting existing files
+                var file = updateClientDto.Photo;
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                client.Photo = Path.Combine("clientphoto", uniqueFileName);
+            }
+
             await _uintOfWork.Update(client);
             bool isEditRequest = clientName != updateClientDto.Name || clientUserName != updateClientDto.UserName;
             if (isEditRequest)
@@ -255,6 +280,39 @@ namespace Quqaz.Web.Services.Concret
         {
             var clients = await _repository.GetClientsByBranchId(branchId);
             return _mapper.Map<List<ClientDto>>(clients);
+        }
+
+        public async Task UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            var client = await _repository.GetById(_httpContextAccessorService.AuthoticateUserId());
+            if (!MD5Hash.VerifyMd5Hash(updatePasswordDto.OldPassword, client.Password))
+            {
+                throw new ConflictException("كلمة السر خطأ");
+            }
+            client.Password = MD5Hash.GetMd5Hash(updatePasswordDto.NewPassowrd);
+            await _repository.Update(client);
+        }
+
+        public async Task SetToken(SetFCMTokenDto setFCMToken)
+        {
+            var client = await _repository.FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId(), c => c.FCMTokens);
+            client.FCMTokens.Add(new FCMTokens()
+            {
+                Token = setFCMToken.Token,
+                MacAddress = setFCMToken.MackAddress
+            });
+            await _repository.Update(client);
+        }
+
+        public async Task RemoveFCM(int clientId, string mackAddress)
+        {
+            var client = await _repository.FirstOrDefualt(c => c.Id == clientId, c => c.FCMTokens);
+            var fcm = client.FCMTokens.FirstOrDefault(c => c.MacAddress == mackAddress);
+            if (fcm != null)
+            {
+                client.FCMTokens.Remove(fcm);
+            }
+            await _repository.Update(client);
         }
     }
 }

@@ -18,6 +18,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Quqaz.Web.Dtos.Statics;
+using System.Text;
+using Quqaz.Web.Helpers.Extensions;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -30,7 +34,8 @@ namespace Quqaz.Web.Services.Concret
         private readonly IHttpContextAccessorService _contextAccessorService;
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository)
+        private readonly IWebHostEnvironment _environment;
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -39,6 +44,7 @@ namespace Quqaz.Web.Services.Concret
             _orderTypeRepository = orderTypeRepository;
             _UintOfWork = uintOfWork;
             _clientRepository = clientRepository;
+            _environment = environment;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -254,10 +260,21 @@ namespace Quqaz.Web.Services.Concret
             {
                 predicate = predicate.And(c => c.OrderClientPaymnets.Any(op => op.ClientPayment.Id == orderFilter.ClientPrintNumber));
             }
+            if (orderFilter.DateRange != null)
+            {
+                if (orderFilter.DateRange.FromDate.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date >= orderFilter.DateRange.FromDate.Value);
+                }
+                if (orderFilter.DateRange.ToDate.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date <= orderFilter.DateRange.ToDate.Value);
+                }
+            }
 
             var includes = new string[] { nameof(Order.Country), $"{nameof(Order.OrderItems)}.{nameof(OrderItem.OrderTpye)}", $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}" };
 
-            var pagingResult = await _repository.GetAsync(pagingDto, predicate, includes);
+            var pagingResult = await _repository.GetAsync(paging: pagingDto, filter: predicate, propertySelectors: includes, orderBy: c => c.OrderByDescending(o => o.Date));
             return new PagingResualt<IEnumerable<OrderDto>>()
             {
                 Total = pagingResult.Total,
@@ -273,13 +290,17 @@ namespace Quqaz.Web.Services.Concret
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<IEnumerable<OrderDto>> NonSendOrder()
+        public async Task<PagingResualt<IEnumerable<OrderDto>>> NonSendOrder(PagingDto pagingDto)
         {
-            var orders = await _repository.GetAsync(c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country);
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            var orders = await _repository.GetAsync(paging: pagingDto, c => c.IsSend == false && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Country);
+            return new PagingResualt<IEnumerable<OrderDto>>()
+            {
+                Data = _mapper.Map<IEnumerable<OrderDto>>(orders.Data),
+                Total = orders.Total
+            };
         }
 
-        public async Task<IEnumerable<PayForClientDto>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter)
+        public async Task<PagingResualt<List<PayForClientDto>>> OrdersDontFinished(OrderDontFinishFilter orderDontFinishFilter, PagingDto paging)
         {
             var predicate = PredicateBuilder.New<Order>(false);
             if (orderDontFinishFilter.ClientDoNotDeleviredMoney)
@@ -299,15 +320,19 @@ namespace Quqaz.Web.Services.Concret
                 predicate.Or(pr2);
             }
             var includes = new string[] { nameof(Order.Region), nameof(Order.Country), nameof(Order.Agent), $"{nameof(Order.OrderClientPaymnets)}.{nameof(OrderClientPaymnet.ClientPayment)}", $"{nameof(Order.AgentOrderPrints)}.{nameof(AgentOrderPrint.AgentPrint)}" };
-            var orders = await _repository.GetByFilterInclue(predicate, includes);
-            orders.ForEach(o =>
+            var orders = await _repository.GetByFilterInclue(paging, predicate, includes);
+            orders.Data.ForEach(o =>
             {
                 if (o.MoneyPlace == MoneyPalce.WithAgent)
                 {
                     o.MoneyPlace = MoneyPalce.OutSideCompany;
                 }
             });
-            return _mapper.Map<IEnumerable<PayForClientDto>>(orders);
+            return new PagingResualt<List<PayForClientDto>>()
+            {
+                Total = orders.Total,
+                Data = _mapper.Map<List<PayForClientDto>>(orders.Data)
+            };
         }
 
         public async Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision()
@@ -547,6 +572,483 @@ namespace Quqaz.Web.Services.Concret
             }
             await _UintOfWork.Update(order);
             await _UintOfWork.Commit();
+        }
+
+        public async Task<string> GetReceipt(int id)
+        {
+            var filePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderReceipt.html";
+            var readText = await File.ReadAllTextAsync(filePath);
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Branch, c => c.Country,
+            c => c.OrderItems.Select(o => o.OrderTpye),
+            c => c.Client.ClientPhones);
+            readText = readText.Replace("{{orderCode}}", order.Code);
+            readText = readText.Replace("{{branchName}}", order.Branch.Name);
+            readText = readText.Replace("{{clientFbName}}", order.Client.FacebookLinke);
+            readText = readText.Replace("{{clientIgName}}", order.Client.IGLink);
+            readText = readText.Replace("{{clientPhoneNumber}}", order.Client.ClientPhones.FirstOrDefault().Phone);
+            readText = readText.Replace("{{orderDate}}", order.Date.Value.ToString("yyyy-mm-dd"));
+            readText = readText.Replace("{{clientName}}", order.Client.Name);
+            readText = readText.Replace("{{orderCost}}", (order.Cost + order.DeliveryCost).ToString());
+            readText = readText.Replace("{{receiverName}}", order.RecipientName);
+            readText = readText.Replace("{{receiverPhone}}", order.RecipientPhones);
+            readText = readText.Replace("{{orderAddress}}", order.Country.Name + ":" + order.Address);
+            var orderItem = order.OrderItems.FirstOrDefault();
+            readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
+            readText = readText.Replace("{{orderTypeCount}}", orderItem?.Count.ToString());
+            readText = readText.Replace("{{Note}}", order.Note);
+            return readText;
+        }
+
+        public async Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id)
+        {
+            var order = await _repository.FirstOrDefualt(c => c.Id == id, c => c.Country, c => c.TargetBranch, c => c.Agent.UserPhones);
+            List<ClientTrackShipmentDto> tracking = new List<ClientTrackShipmentDto>();
+            if (order.TargetBranchId.HasValue)
+            {
+                var inStroe = new ClientTrackShipmentDto()
+                {
+                    Number = 1,
+                    Text = "في المخزن",
+                };
+                var inWayToOtherBranch = new ClientTrackShipmentDto()
+                {
+                    Number = 2,
+                    Text = $"في الطريق إلى فرع {order.TargetBranch.Name}"
+                };
+                var inStoreInNexBranch = new ClientTrackShipmentDto()
+                {
+                    Number = 3,
+                    Text = $"في مخزن فرع {order.TargetBranch.Name}"
+                };
+                var agent = new ClientTrackShipmentDto()
+                {
+                    Number = 4,
+                    Text = "خرجت مع المندوب ",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone
+                };
+                var agentOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 5,
+                    Text = "تم التسليم/ المبلغ مع المندوب "
+                };
+                var companyOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 6,
+                    Text = "المبلغ داخل الشركة"
+                };
+                var finalOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 7,
+                    Text = "تم التسديد"
+                };
+                tracking.Add(inStroe);
+                tracking.Add(inWayToOtherBranch);
+                tracking.Add(inStoreInNexBranch);
+                tracking.Add(agent);
+                tracking.Add(agentOrderStatus);
+                tracking.Add(companyOrderStatus);
+                tracking.Add(finalOrderStatus);
+                if (order.OrderPlace == OrderPlace.Store)
+                {
+                    if (order.CurrentBranchId == order.BranchId)
+                    {
+                        inStroe.Checked = true;
+                    }
+                    else
+                    {
+                        inStoreInNexBranch.Checked = true;
+                    }
+                }
+                else
+                {
+                    if (order.OrderPlace == OrderPlace.Way)
+                    {
+                        if (order.CurrentBranchId == order.BranchId)
+                        {
+                            inWayToOtherBranch.Checked = true;
+                        }
+                        else
+                        {
+                            agent.Checked = true;
+                        }
+                    }
+                    else
+                    {
+                        if (order.OrderPlace == OrderPlace.Delayed)
+                        {
+                            inStoreInNexBranch.Checked = true;
+                        }
+                        else
+                        {
+                            if (order.OrderPlace == OrderPlace.CompletelyReturned)
+                            {
+                                agentOrderStatus.Text = "الشحنة مرتجعة مع المندوب ";
+                                companyOrderStatus.Text = "الشحنة مرتجعة داخل الشركة";
+                                finalOrderStatus.Text = "مرتجع تم التسليم";
+                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                {
+                                    agentOrderStatus.Checked = true;
+                                }
+                                else if (order.MoneyPlace == MoneyPalce.InsideCompany)
+                                {
+                                    companyOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                            }
+                            else
+                            {
+                                if (order.ShouldToPay() == 0)
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                    companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var inStroe = new ClientTrackShipmentDto()
+                {
+                    Number = 1,
+                    Text = "في المخزن",
+                };
+                var agent = new ClientTrackShipmentDto()
+                {
+                    Number = 2,
+                    Text = "خرجت مع المندوب ",
+                    ExtraText = order.Agent?.UserPhones.FirstOrDefault()?.Phone
+                };
+                var agentOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 3,
+                    Text = "تم التسليم/ المبلغ مع المندوب "
+                };
+                var companyOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 4,
+                    Text = "المبلغ داخل الشركة"
+                };
+                var finalOrderStatus = new ClientTrackShipmentDto()
+                {
+                    Number = 5,
+                    Text = "تم التسديد"
+                };
+                tracking.Add(inStroe);
+                tracking.Add(agent);
+                tracking.Add(agentOrderStatus);
+                tracking.Add(companyOrderStatus);
+                tracking.Add(finalOrderStatus);
+                if (order.OrderPlace == OrderPlace.Store)
+                {
+                    inStroe.Checked = true;
+                }
+                else
+                {
+                    if (order.OrderPlace == OrderPlace.Way)
+                    {
+                        agent.Checked = true;
+                    }
+                    else
+                    {
+                        if (order.OrderPlace == OrderPlace.Delayed)
+                        {
+                            inStroe.Checked = true;
+                        }
+                        else
+                        {
+                            if (order.OrderPlace == OrderPlace.CompletelyReturned)
+                            {
+                                agentOrderStatus.Text = "الشحنة مرتجعة مع المندوب ";
+                                companyOrderStatus.Text = "الشحنة مرتجعة داخل الشركة";
+                                finalOrderStatus.Text = "مرتجع تم التسليم";
+                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                {
+                                    agentOrderStatus.Checked = true;
+                                }
+                                else if (order.MoneyPlace == MoneyPalce.InsideCompany)
+                                {
+                                    companyOrderStatus.Checked = true;
+                                }
+                                else
+                                {
+                                    finalOrderStatus.Checked = true;
+                                }
+                            }
+                            else
+                            {
+                                if (order.OrderPlace == OrderPlace.Delivered)
+                                {
+                                    if (!order.IsClientDiliverdMoney)
+                                    {
+                                        if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                        {
+                                            agentOrderStatus.Checked = true;
+                                        }
+                                        else
+                                        {
+                                            companyOrderStatus.Checked = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (order.ShouldToPay() - order.ClientPaied == 0)
+                                        {
+                                            finalOrderStatus.Checked = true;
+                                        }
+                                        else
+                                        {
+                                            agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                            companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                            if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                            {
+                                                agentOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                companyOrderStatus.Checked = true;
+                                            }
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    if (order.OrderPlace == OrderPlace.PartialReturned)
+                                    {
+                                        agentOrderStatus.Text = "تم تسليمها مرتجع جزئي/ المبلغ مع المندوب";
+                                        companyOrderStatus.Text = "المبلغ داخل الشرحة  مرتجع جزئي";
+                                        if (!order.IsClientDiliverdMoney)
+                                        {
+                                            if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                            {
+                                                agentOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                companyOrderStatus.Checked = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (order.ShouldToPay() - order.ClientPaied == 0)
+                                            {
+                                                finalOrderStatus.Checked = true;
+                                            }
+                                            else
+                                            {
+                                                // agentOrderStatus.Text = "تم التسليم/ المبلغ مع المندوب/ هناك تغير في السعر";
+                                                // companyOrderStatus.Text = "المبلغ داخل الشركة/هناك تغير في السعر";
+                                                if (order.MoneyPlace == MoneyPalce.WithAgent)
+                                                {
+                                                    agentOrderStatus.Checked = true;
+                                                }
+                                                else
+                                                {
+                                                    companyOrderStatus.Checked = true;
+                                                }
+                                            }
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return tracking;
+        }
+
+        public async Task<List<AccountReportDto>> AccountReport(DateRangeFilter dateRangeFilter)
+        {
+            var clientId = _contextAccessorService.AuthoticateUserId();
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId);
+            if (dateRangeFilter.Start.HasValue)
+            {
+                predicate = predicate.And(c => c.Date >= dateRangeFilter.Start);
+            }
+            if (dateRangeFilter.End.HasValue)
+            {
+                predicate = predicate.And(c => c.Date <= dateRangeFilter.End);
+            }
+            var totalOrder = await _repository.Count(predicate);
+            var delivedOrderPredicate = predicate.And(c => c.OrderPlace == OrderPlace.Delivered || c.OrderPlace == OrderPlace.PartialReturned);
+            var returndOrderCountPredicate = predicate.And(c => c.OrderPlace == OrderPlace.CompletelyReturned);
+            var delivedOrderCount = await _repository.Count(delivedOrderPredicate);
+            var returndOrderCount = await _repository.Count(returndOrderCountPredicate);
+
+            return new List<AccountReportDto>
+            {
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الكلي",
+                    Text = totalOrder.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الواصل",
+                    Text = delivedOrderCount.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "عدد الطلبات الراجع",
+                    Text = returndOrderCount.ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "نسبة الواصل",
+                    Text = totalOrder==0?0.ToString(): ((delivedOrderCount*100)/totalOrder).ToString(),
+                },
+                new AccountReportDto()
+                {
+                    Title = "نسبةالراجع",
+                    Text = totalOrder==0?0.ToString():((returndOrderCount*100)/totalOrder).ToString(),
+                },
+            };
+        }
+
+        public async Task<List<AccountReportDto>> GetPhoneOrderStatusCount(string phone)
+        {
+            if (phone.Length < 11)
+                return null;
+            var returnOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.CompletelyReturned);
+            var delivedOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.Delivered);
+            var PartialReturnedOrderCount = await _repository.Count(c => c.RecipientPhones.Contains(phone) && c.OrderPlace == OrderPlace.PartialReturned);
+            var list = new List<AccountReportDto>
+            {
+                new AccountReportDto()
+                {
+                    Text = $"{returnOrderCount}",
+                    Title="مرتجع كلي"
+                },
+                new AccountReportDto()
+                {
+                    Text = $"{delivedOrderCount}",
+                    Title="تم التسليم"
+                },
+                new AccountReportDto()
+                {
+                    Text = $"{PartialReturnedOrderCount}",
+                    Title="مرتجع جزئي "
+                },
+            };
+            return list;
+        }
+
+        public async Task<string> GetOrderDoseNotFinish(OrderDontFinishFilter orderDontFinishFilter)
+        {
+            var clientId = _contextAccessorService.AuthoticateUserId();
+            var currentBranchId = _contextAccessorService.CurrentBranchId();
+            var predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId && orderDontFinishFilter.OrderPlacedId.Contains(c.OrderPlace) && c.AgentId != null);
+            if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned) || orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable) || orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+            {
+                var orderFilterExcpt = orderDontFinishFilter.OrderPlacedId.Except(new[] { OrderPlace.CompletelyReturned, OrderPlace.Unacceptable, OrderPlace.PartialReturned });
+                predicate = PredicateBuilder.New<Order>(c => c.ClientId == clientId && orderFilterExcpt.Contains(c.OrderPlace) && c.AgentId != null);
+                var orderPlacePredicate = PredicateBuilder.New<Order>(false);
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.CompletelyReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.CurrentBranchId == currentBranchId);
+                }
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.Unacceptable))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.Unacceptable && c.CurrentBranchId == currentBranchId);
+                }
+                if (orderDontFinishFilter.OrderPlacedId.Contains(OrderPlace.PartialReturned))
+                {
+                    orderPlacePredicate = orderPlacePredicate.Or(c => c.OrderPlace == OrderPlace.PartialReturned && c.CurrentBranchId == currentBranchId);
+                }
+                orderPlacePredicate = orderPlacePredicate.And(c => c.ClientId == clientId && c.AgentId != null);
+                predicate = predicate.Or(orderPlacePredicate);
+
+            }
+            if (orderDontFinishFilter.ClientDoNotDeleviredMoney && !orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.IsClientDiliverdMoney == false);
+            }
+            else if (!orderDontFinishFilter.ClientDoNotDeleviredMoney && orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash);
+            }
+            else if (orderDontFinishFilter.ClientDoNotDeleviredMoney && orderDontFinishFilter.IsClientDeleviredMoney)
+            {
+                predicate = predicate.And(c => c.OrderState == OrderState.ShortageOfCash || c.IsClientDiliverdMoney == false);
+            }
+            var data = await _repository.GetAsync(filter: predicate);
+            var rows = new StringBuilder();
+            var rowTempaltePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRow.html";
+
+            var rowTempalte = await File.ReadAllTextAsync(rowTempaltePath);
+            int counter = 1;
+            foreach (var order in data)
+            {
+                var row = rowTempalte.Replace("{{incremental}}", (counter++).ToString());
+                row = row.Replace("{{code}}", order.Code);
+                row = row.Replace("{{phone}}", order.RecipientPhones);
+                row = row.Replace("{{cost}}", order.Cost.ToString());
+                row = row.Replace("{{deliveryCost}}", order.DeliveryCost.ToString());
+                row = row.Replace("{{total}}", (order.Cost - order.DeliveryCost).ToString());
+                row = row.Replace("{{note}}", order.Note?.ToString());
+                row = row.Replace("{{clientNote}}", order.ClientNote?.ToString());
+                rows.AppendLine(row);
+            }
+
+            var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
+            var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
+            htmlPage = htmlPage.Replace("{{orderplacedName}}",string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
+            var tableTemplatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayReporTable.html";
+            var tabelTemplate = await File.ReadAllTextAsync(tableTemplatePath);
+            tabelTemplate = tabelTemplate.Replace("{{rows}}", rows.ToString());
+            htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
+            return htmlPage;
+
+        }
+
+        public async Task<ClientOrderReportDto> GetOrderStaticsReport(DateRangeFilter dateRangeFilter)
+        {
+            var predicate = PredicateBuilder.New<Order>(true);
+            if (dateRangeFilter != null)
+            {
+                if (dateRangeFilter.Start.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date.Value.Date > dateRangeFilter.Start.Value.Date);
+                }
+                if (dateRangeFilter.End.HasValue)
+                {
+                    predicate = predicate.And(c => c.Date.Value.Date < dateRangeFilter.End.Value.Date);
+                }
+            }
+            var orderCount = await _repository.Count(predicate);
+            var returndOrderPredicate = PredicateBuilder.New<Order>(predicate).And(c => c.OrderPlace == OrderPlace.CompletelyReturned && c.OrderState == OrderState.Finished);
+            var returnOrderCount = await _repository.Count(returndOrderPredicate);
+            var delviverOrderPredicate = PredicateBuilder.New<Order>(predicate).And(c => (c.OrderPlace == OrderPlace.PartialReturned || c.OrderPlace == OrderPlace.Delivered) && c.OrderState == OrderState.Finished);
+            var delviverOrderCount = await _repository.Count(delviverOrderPredicate);
+            var devlierdCountriesCount = await _repository.CountGroupBy(c => c.CountryId, delviverOrderPredicate);
+            var requestedCountriesCount = await _repository.CountGroupBy(c => c.CountryId, predicate);
+            var returnConutriesCount = await _repository.CountGroupBy(c => c.CountryId, returndOrderPredicate);
+
+            var highestDeliveredCountryMapId = devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestRequestedCountryMapId = requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestReturnedCountryMapId = returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var deliveredOrderRatio = Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount);
+            var returnOrderRatio = Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount);
+            return new ClientOrderReportDto()
+            {
+                DeliveredOrderRatio = deliveredOrderRatio,
+                ReturnOrderRatio = returnOrderRatio,
+                HighestDeliveredCountryMapId = highestDeliveredCountryMapId,
+                HighestRequestedCountryMapId = highestRequestedCountryMapId,
+                HighestReturnedCountryMapId = highestReturnedCountryMapId
+            };
         }
     }
 }

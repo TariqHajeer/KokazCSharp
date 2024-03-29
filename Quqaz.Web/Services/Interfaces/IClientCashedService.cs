@@ -2,9 +2,7 @@
 using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Models;
 using Quqaz.Web.Services.Helper;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Quqaz.Web.Services.Interfaces
@@ -18,5 +16,8 @@ namespace Quqaz.Web.Services.Interfaces
         Task<AuthClient> GetAuthClient();
         Task Update(CUpdateClientDto cUpdateClientDto);
         Task<List<ClientDto>> GetClientsByBranchId(int branchId);   
+        Task UpdatePassword(UpdatePasswordDto updatePasswordDto);
+        Task SetToken(SetFCMTokenDto setFCMToken);
+        Task RemoveFCM(int clientId,string mackAddress);
     }
 }

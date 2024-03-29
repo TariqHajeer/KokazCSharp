@@ -2,6 +2,7 @@
 using Quqaz.Web.TypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Quqaz.Web.Models.SendOrdersReturnedToMainBranchModels;
+using Quqaz.Web.Models.Additional;
 
 #nullable disable
 
@@ -62,6 +63,9 @@ namespace Quqaz.Web.Models
         public virtual DbSet<BranchToCountryDeliverryCost> BranchToCountryDeliverryCosts { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<SendOrdersReturnedToMainBranchReport> SendOrdersReturnedToMainBranchReports { get; set; }
+        public virtual DbSet<ClientMessage> ClientMessages { get; set; }
+        public virtual DbSet<ExternalShipment> ExternalShipments { get; set; }
+        public virtual DbSet<FCMTokens> FCMTokens { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging(true);

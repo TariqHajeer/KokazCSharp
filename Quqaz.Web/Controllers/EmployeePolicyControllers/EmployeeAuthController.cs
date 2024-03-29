@@ -38,11 +38,15 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
                                 .ThenInclude(c => c.Privileg)
                     .Include(c => c.Branches)
                         .ThenInclude(c => c.Branch)
-                    .Where(c => c.UserName == loginDto.UserName).FirstOrDefaultAsync();
+                    .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefaultAsync();
                 if (user == null)
                     return Conflict();
                 if (!MD5Hash.VerifyMd5Hash(loginDto.Password, user.Password))
                     return Conflict();
+                if (DateTime.UtcNow.Day == 1)
+                {
+                    return Conflict();
+                }
                 var climes = new List<Claim>
                 {
                     new Claim("UserID", user.Id.ToString())

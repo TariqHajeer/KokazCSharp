@@ -40,5 +40,6 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         /// 
         /// </summary>
         public int? ClientPrintNumber { get; set; }
+        public DateFiter DateRange { get; set; }
     }
 }

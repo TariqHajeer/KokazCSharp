@@ -20,6 +20,57 @@ namespace Quqaz.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
+            modelBuilder.Entity("Quqaz.Web.Models.Additional.ClientMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientMessages");
+                });
+
+            modelBuilder.Entity("Quqaz.Web.Models.Additional.ExternalShipment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExternalShipments");
+                });
+
             modelBuilder.Entity("Quqaz.Web.Models.AgentCountry", b =>
                 {
                     b.Property<int>("AgentId")
@@ -1988,8 +2039,14 @@ namespace Quqaz.Web.Migrations
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("FacebookLinke")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("FirstDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("IGLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Mail")
                         .HasColumnType("nvarchar(max)");
@@ -2007,6 +2064,9 @@ namespace Quqaz.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Photo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Points")
                         .HasColumnType("int");
@@ -2574,6 +2634,29 @@ namespace Quqaz.Web.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EditRequest");
+                });
+
+            modelBuilder.Entity("Quqaz.Web.Models.FCMTokens", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("FCMTokens");
                 });
 
             modelBuilder.Entity("Quqaz.Web.Models.Group", b =>
@@ -4506,8 +4589,14 @@ namespace Quqaz.Web.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("IsSeen")
                         .ValueGeneratedOnAdd()
@@ -4520,11 +4609,20 @@ namespace Quqaz.Web.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NotificationExtraData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("int");
+
                     b.Property<int?>("OrderCount")
                         .HasColumnType("int");
 
                     b.Property<int?>("OrderPlace")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -6228,6 +6326,15 @@ namespace Quqaz.Web.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Quqaz.Web.Models.FCMTokens", b =>
+                {
+                    b.HasOne("Quqaz.Web.Models.Client", "Client")
+                        .WithMany("FCMTokens")
+                        .HasForeignKey("ClientId");
+
+                    b.Navigation("Client");
+                });
+
             modelBuilder.Entity("Quqaz.Web.Models.Group", b =>
                 {
                     b.HasOne("Quqaz.Web.Models.Branch", "Branch")
@@ -6878,6 +6985,8 @@ namespace Quqaz.Web.Migrations
                     b.Navigation("DisAcceptOrders");
 
                     b.Navigation("EditRequests");
+
+                    b.Navigation("FCMTokens");
 
                     b.Navigation("Markets");
 

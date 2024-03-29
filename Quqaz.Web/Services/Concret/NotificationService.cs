@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using FirebaseAdmin.Messaging;
+using Quqaz.Web.DAL.Helper;
 using Quqaz.Web.DAL.Infrastructure.Interfaces;
+using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.NotifcationDtos;
 using Quqaz.Web.HubsConfig;
 using Quqaz.Web.Models;
 using Quqaz.Web.Models.Static;
 using Quqaz.Web.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +36,91 @@ namespace Quqaz.Web.Services.Concret
             _repository = repository;
             _contextAccessorService = contextAccessorService;
         }
+        public Task SendNotification(List<Models.Notfication> notifications, bool withNotification = true)
+        {
+            if (notifications == null || !notifications.Any())
+            {
+                return Task.CompletedTask;
+            }
 
+            var tasks = new List<Task>();
+            foreach (var notification in notifications)
+            {
+                var clientTokens = notification.Client.FCMTokens?.Select(t => t.Token).ToList();
+                if (clientTokens == null || !clientTokens.Any())
+                {
+                    continue;
+                }
+
+                tasks.Add(SendNotification(clientTokens, notification, withNotification));
+            }
+            return Task.WhenAll(tasks);
+        }
+        public Task SendNotification(Models.Notfication notification, bool withNotification = true)
+        {
+            var clientTokens = notification.Client.FCMTokens?.Select(t => t.Token).ToList();
+            if (clientTokens == null || !clientTokens.Any())
+            {
+                return Task.CompletedTask;
+            }
+            return SendNotification(clientTokens, notification, withNotification);
+        }
+        public Task SendNotification(List<string> clientToken, Models.Notfication notification, bool withNotification = true)
+        {
+            var registrationTokens = clientToken;
+            if (registrationTokens == null || registrationTokens.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
+            var message = new MulticastMessage()
+            {
+                Tokens = registrationTokens,
+                Data = new Dictionary<string, string>()
+                {
+                    { "NotificationId", notification.Id.ToString()},
+                    {"NotificationType",((int)notification.NotificationType).ToString()},
+                    {"NotificationExtraData",notification.NotificationExtraData}
+                }
+
+            };
+            if (withNotification)
+            {
+                message.Notification = new Notification()
+                {
+                    Body = notification.Body,
+                    Title = notification.Title,
+                };
+            }
+            return FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+        }
+        public async Task SendNotification(List<string> clientToken, int id, bool withNotification = true)
+        {
+            var registrationTokens = clientToken;
+            if (registrationTokens == null || registrationTokens.Count == 0)
+            {
+                return;
+            }
+            var notification = await _repository.GetById(id);
+
+            var message = new MulticastMessage()
+            {
+                Tokens = registrationTokens,
+                Data = new Dictionary<string, string>()
+                {
+                    { "id", id.ToString() }
+                }
+
+            };
+            if (withNotification)
+            {
+                message.Notification = new Notification()
+                {
+                    Body = notification.Title,
+                    Title = notification.Body,
+                };
+            }
+            await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message).ConfigureAwait(true);
+        }
         public async Task<AdminNotification> GetAdminNotification()
         {
             var newOrdersCount = await _orderRepository.Count(c => c.IsSend == true && c.OrderPlace == OrderPlace.Client);
@@ -129,6 +217,47 @@ namespace Quqaz.Web.Services.Concret
         public async Task<int> NewNotfiactionCount()
         {
             return await _repository.Count(c => c.IsSeen != true && c.ClientId == _contextAccessorService.AuthoticateUserId());
+        }
+
+        public async Task<PagingResualt<List<NewNotificationDto>>> GetNotifications(PagingDto paging)
+        {
+            var notification = await _repository.GetAsync(paging: paging, propertySelectors: null, orderBy: c => c.OrderBy(c => c.CreatedDate));
+            return new PagingResualt<List<NewNotificationDto>>()
+            {
+                Total = notification.Total,
+                Data = _mapper.Map<List<NewNotificationDto>>(notification.Data)
+            };
+        }
+        public async Task Create(CreateNotificationDto createNotification)
+        {
+            var notification = new Models.Notfication()
+            {
+                Body = createNotification.Body,
+                Title = createNotification.Title,
+                ClientId = createNotification.ClientId,
+                CreatedDate = DateTime.UtcNow,
+                NotificationExtraData = createNotification.NotificationExtraData,
+                NotificationType = createNotification.NotificationType
+            };
+            await _repository.AddAsync(notification);
+            notification = await _repository.FirstOrDefualt(c => c.Id == notification.Id, c => c.Client.FCMTokens);
+            await SendNotification(notification);
+        }
+        public async Task CreateRange(IEnumerable<CreateNotificationDto> createNotificationDtos)
+        {
+            var currentDate = DateTime.UtcNow;
+            var notification = createNotificationDtos.Select(c => new Models.Notfication()
+            {
+                ClientId = c.ClientId,
+                Body = c.Body,
+                Title = c.Title,
+                CreatedDate = currentDate,
+                NotificationExtraData = c.NotificationExtraData,
+                NotificationType = c.NotificationType,
+            });
+            await _repository.AddRangeAsync(notification);
+            notification = await _repository.GetAsync(c => notification.Select(c => c.Id).Contains(c.Id), c => c.Client.FCMTokens);
+            await SendNotification(notification.ToList(), true);
         }
     }
 }

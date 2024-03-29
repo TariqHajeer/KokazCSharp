@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Quqaz.Web.Dtos.Statics
+﻿namespace Quqaz.Web.Dtos.Statics
 {
     public class AggregateDto
     {

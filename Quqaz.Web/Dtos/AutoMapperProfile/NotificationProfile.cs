@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using Quqaz.Web.Dtos.Common;
 using Quqaz.Web.Dtos.NotifcationDtos;
 using Quqaz.Web.Models;
 
 namespace Quqaz.Web.Dtos.AutoMapperProfile
 {
-    public class NotificationProfile:Profile
+    public class NotificationProfile : Profile
     {
         public NotificationProfile()
         {
@@ -18,6 +17,7 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 {
                     return obj.OrderPlace;
                 }));
+            CreateMap<Notfication, NewNotificationDto>();   
         }
     }
 }

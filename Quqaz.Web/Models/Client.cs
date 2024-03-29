@@ -1,13 +1,12 @@
 ﻿using Quqaz.Web.Models.Infrastrcuter;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
 namespace Quqaz.Web.Models
 {
-    public partial class Client: IHaveBranch, IIndex
+    public partial class Client : IHaveBranch, IIndex
     {
         public Client()
         {
@@ -23,7 +22,6 @@ namespace Quqaz.Web.Models
             ReceiptOfTheOrderStatusDetalis = new HashSet<ReceiptOfTheOrderStatusDetali>();
             Receipts = new HashSet<Receipt>();
         }
-
         public int Id { get; set; }
         public string Name { get; set; }
         public int? CountryId { get; set; }
@@ -36,7 +34,9 @@ namespace Quqaz.Web.Models
         public string Mail { get; set; }
         public int Points { get; set; }
         public int BranchId { get; set; }
-
+        public string Photo { get; set; }
+        public string FacebookLinke { get; set; }
+        public string IGLink { get; set; }
         public virtual Country Country { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<ClientPhone> ClientPhones { get; set; }
@@ -50,6 +50,7 @@ namespace Quqaz.Web.Models
         public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
         public virtual ICollection<ReceiptOfTheOrderStatusDetali> ReceiptOfTheOrderStatusDetalis { get; set; }
         public virtual ICollection<Receipt> Receipts { get; set; }
+        public virtual ICollection<FCMTokens> FCMTokens { get; set; }
         public Branch Branch { get; set; }
     }
 }

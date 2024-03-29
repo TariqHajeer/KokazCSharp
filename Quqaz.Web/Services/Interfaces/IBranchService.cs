@@ -8,6 +8,7 @@ namespace Quqaz.Web.Services.Interfaces
 {
     public interface IBranchService : ICRUDService<Branch,BranchDto,CreateBranchDto,UpdateBranchDto>
     {
+        Task<List<BranchPricesDto>> GetBranchPrices();
         Task<IEnumerable<NameAndIdDto>> GetLite();
     }
 }
