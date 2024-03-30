@@ -42,7 +42,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         [HttpPost("UploadExcel")]
         public async Task<IActionResult> UploadExcel(IFormFile file, [FromForm] DateTime dateTime)
         {
-            return Ok(await _orderClientSerivce.CreateFromExcel(file, dateTime));
+            return Ok(await _orderClientSerivce.ImportFromExcel(file, dateTime));
         }
         /// <summary>
         /// 

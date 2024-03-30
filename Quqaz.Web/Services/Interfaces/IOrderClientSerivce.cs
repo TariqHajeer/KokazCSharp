@@ -27,7 +27,7 @@ namespace Quqaz.Web.Services.Interfaces
         Task<IEnumerable<OrderFromExcel>> OrdersNeedToRevision();
         Task<OrderResponseClientDto> Create(CreateOrderFromClient createOrderFromClient);
         Task<List<string>> Validate(CreateOrderFromClient createOrderFromClient);
-        Task<bool> CreateFromExcel(IFormFile file, DateTime dateTime);
+        Task<bool> ImportFromExcel(IFormFile file, DateTime dateTime);
         Task Edit(EditOrder editOrder);
         Task<string> GetReceipt(int id);
         Task<List<ClientTrackShipmentDto>> GetShipmentTracking(int id);
