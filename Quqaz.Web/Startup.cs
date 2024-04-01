@@ -26,6 +26,7 @@ using Quqaz.Web.Services.Concret.Additional;
 using System.IO;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using OfficeOpenXml;
 
 namespace Quqaz.Web
 {
@@ -44,7 +45,7 @@ namespace Quqaz.Web
         //This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             services.AddControllers();
             services.AddDbContext<KokazContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BranchDB")));
             services.AddHttpContextAccessor();

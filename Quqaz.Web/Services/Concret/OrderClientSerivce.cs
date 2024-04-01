@@ -22,6 +22,9 @@ using Microsoft.AspNetCore.Hosting;
 using Quqaz.Web.Dtos.Statics;
 using System.Text;
 using Quqaz.Web.Helpers.Extensions;
+using OfficeOpenXml;
+using Quqaz.Web.Services.Helper;
+using Google.Apis.Util;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -357,97 +360,109 @@ namespace Quqaz.Web.Services.Concret
             };
             await _notificationHub.AdminNotifcation(adminNotification);
         }
-
-        private async Task<(List<OrderFromExcelDto> orderFromExcelDtos, HashSet<string> errors)> GetOrderFromExcelFile(IFormFile file)
+        private static async Task<ExcelWorksheet> GetFirstSheet(IFormFile file)
         {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            HashSet<string> errors = new HashSet<string>();
-            var excelOrder = new List<OrderFromExcelDto>();
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-            stream.Position = 0;
-            using var reader = ExcelReaderFactory.CreateReader(stream);
-            while (reader.Read())
-            {
-                var order = new OrderFromExcelDto();
-                if (!reader.IsDBNull(0))
-                {
-                    order.Code = reader.GetValue(0).ToString();
-                    if (excelOrder.Any(c => c.Code == order.Code))
-                    {
-                        errors.Add($"الكود {order.Code} مكرر");
-                    }
-                }
-                else
-                {
-                    errors.Add("يجب ملئ الكود ");
-                }
-                if (!reader.IsDBNull(1))
-                {
-                    order.RecipientName = reader.GetValue(1).ToString();
-                }
-                if (!reader.IsDBNull(2))
-                {
-                    order.Country = reader.GetValue(2).ToString();
-                }
-                else
-                {
-                    errors.Add("يجب ملئ المحافظة");
-                }
-                if (!reader.IsDBNull(3))
-                {
-                    if (Decimal.TryParse(reader.GetValue(3).ToString(), out var d))
-                    {
-                        order.Cost = d;
-                    }
-                    else
-                    {
-                        errors.Add("كلفة الطلب ليست رقم");
-                    }
-                }
-                else
-                {
-                    errors.Add("كلفة الطلب إجبارية");
-                }
-                if (!reader.IsDBNull(4))
-                {
-                    order.Address = reader.GetValue(4).ToString();
-                }
-                if (!reader.IsDBNull(5))
-                {
-                    order.Phone = reader.GetValue(5).ToString();
-                    if (order.Phone.Length > 15)
-                    {
-                        errors.Add("رقم الهاتف لا يجب ان يكون اكبر من 15 رقم");
-                    }
-                }
-                else
-                {
-                    errors.Add("رقم الهاتف إجباري");
-                }
-                if (!reader.IsDBNull(6))
-                {
-                    order.Note = reader.GetValue(6).ToString();
-                }
-                excelOrder.Add(order);
-            }
-            return (excelOrder, errors);
+            var workBook = await GetWorkbook(file);
+            var sheet = workBook.Worksheets[0];
+            return sheet;
         }
-
-        public async Task<bool> CreateFromExcel(IFormFile file, DateTime dateTime)
+        private static async Task<ExcelWorkbook> GetWorkbook(IFormFile file)
         {
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            ExcelPackage excel = new ExcelPackage(ms);
+            return excel.Workbook;
+        }
+        private async Task<(List<OrderFromExcelDto> orderFromExcelDtos, List<string> errors)> GetOrderFromExcelFile(IFormFile file)
+        {
+            var sheet = await GetFirstSheet(file);
+            List<string> errors = new List<string>();
+            List<OrderFromExcelDto> orders = new List<OrderFromExcelDto>();
+            for (var i = 2; i < sheet.Dimension.Columns; i++)
+            {
+                string errorMessageTemplate = "{0} في السطر رقم " + i;
+                var code = sheet.Cells[i, OrderExcelIndexes.CodeIndex].Value?.ToString() ?? string.Empty;
+                if (string.IsNullOrEmpty(code))
+                {
+                    continue;
+                }
+                var recipientName = sheet.Cells[i, OrderExcelIndexes.RecipientNameIndex].Value?.ToString() ?? string.Empty;
+
+                var countryName = sheet.Cells[i, OrderExcelIndexes.CountryIndex].Value?.ToString() ?? string.Empty;
+                if (string.IsNullOrEmpty(countryName))
+                {
+                    errors.Add(string.Format(errorMessageTemplate, "حقل المدينة فارغ"));
+                    continue;
+                }
+                var cosAsString = sheet.Cells[i, OrderExcelIndexes.CostIndex].Value.ToString() ?? string.Empty;
+                if (string.IsNullOrEmpty(cosAsString))
+                {
+                    errors.Add(string.Format(errorMessageTemplate, "حقل المبلغ فارغ "));
+                    continue;
+                }
+                if (!decimal.TryParse(cosAsString, out decimal cost))
+                {
+                    errors.Add(string.Format(errorMessageTemplate, "حقل المبلغ لا يحتوي على رقم  "));
+                }
+                var phone = sheet.Cells[i, OrderExcelIndexes.PhoneIndex].Value?.ToString() ?? string.Empty;
+                if (string.IsNullOrEmpty(phone))
+                {
+                    errors.Add(string.Format(errorMessageTemplate, "حقل رقم الهاتف "));
+                    continue;
+                }
+                if (phone.Length > 11)
+                {
+                    errors.Add(string.Format(errorMessageTemplate, "رقم الهاتف غير صحيح "));
+                }
+                var address = sheet.Cells[i, OrderExcelIndexes.AddressIndex].Value?.ToString() ?? string.Empty;
+                var note = sheet.Cells[i, OrderExcelIndexes.ClientNoteIndex].Value?.ToString() ?? string.Empty;
+                var orderType = sheet.Cells[i, OrderExcelIndexes.OrderTypeIndex].Value?.ToString() ?? string.Empty;
+                int? orderCount = null;
+                if (!string.IsNullOrEmpty(orderType))
+                {
+                    var orderCountAsString = sheet.Cells[i, OrderExcelIndexes.OrderTypeCountIndex].Value?.ToString() ?? string.Empty;
+                    if (!string.IsNullOrEmpty(orderCountAsString))
+                    {
+                        if (int.TryParse(orderCountAsString, out int orderCountValue))
+                        {
+                            orderCount = orderCountValue;
+                        }
+                    }
+                }
+                var order = new OrderFromExcelDto()
+                {
+                    Code = code,
+                    Country = countryName,
+                    Cost = cost,
+                    Phone = phone,
+                    RecipientName = recipientName,
+                    Address = address,
+                    Note = note,
+                    OrderType = orderType,
+                    OrderTypeCount = orderCount
+
+                };
+                orders.Add(order);
+            }
+            return (orders, errors);
+        }
+        public async Task<bool> ImportFromExcel(IFormFile file, DateTime dateTime)
+        {
+            var sheet = await GetFirstSheet(file);
+
             var (excelOrder, errors) = await GetOrderFromExcelFile(file);
 
             var codes = excelOrder.Select(c => c.Code);
             var similarOrders = await _UintOfWork.Repository<Order>().Select(c => codes.Any(co => co == c.Code) && c.ClientId == _contextAccessorService.AuthoticateUserId(), c => c.Code);
-            var simialrCodeInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(filter: c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code), c => c.Code, null);
+            var similarCodesInExcelTable = await _UintOfWork.Repository<OrderFromExcel>().Select(filter: c => c.ClientId == _contextAccessorService.AuthoticateUserId() && codes.Contains(c.Code), c => c.Code, null);
             if (similarOrders.Any())
             {
                 errors.Add($"الأكواد مكررة{string.Join(",", similarOrders)}");
             }
-            if (simialrCodeInExcelTable.Any())
+            if (similarCodesInExcelTable.Any())
             {
-                errors.Add($"الأكواد {string.Join(",", simialrCodeInExcelTable)} مكررة يجب مراجعة واجهة التصحيح");
+                errors.Add($"الأكواد {string.Join(",", similarCodesInExcelTable)} مكررة يجب مراجعة واجهة التصحيح");
             }
             if (errors.Any())
             {
@@ -460,63 +475,103 @@ namespace Quqaz.Web.Services.Concret
             var countriesName = excelOrder.Select(c => c.Country).Distinct().ToList();
             var countries = await _UintOfWork.Repository<Country>().GetAsync(c => countriesName.Contains(c.Name), c => c.BranchToCountryDeliverryCosts);
             var orderFromExcels = new List<OrderFromExcel>();
-            var orders = new List<Order>();
-            foreach (var item in excelOrder)
+            var typesNames = excelOrder.Select(c => c.OrderType).Distinct();
+            var orderTypes = await _orderTypeRepository.GetAsync(c => typesNames.Contains(c.Name));
+            var existsOrderTypeNames = orderTypes.Select(c => c.Name);
+            var notExistsOrderType = typesNames.Except(existsOrderTypeNames);
+            var newOrderTypes = notExistsOrderType.Select(c => new OrderType()
             {
-                var country = countries.FirstOrDefault(c => c.Name == item.Country);
-                if (country == null)
-                {
-                    var orderFromExcel = new OrderFromExcel()
-                    {
-                        Address = item.Address,
-                        Code = item.Code,
-                        Cost = item.Cost,
-                        Country = item.Country,
-                        Note = item.Note,
-                        Phone = item.Phone,
-                        RecipientName = item.RecipientName,
-                        ClientId = _contextAccessorService.AuthoticateUserId(),
-                        CreateDate = dateTime
-                    };
-                    orderFromExcels.Add(orderFromExcel);
-                    correct = true;
-                }
-                else
-                {
-                    var order = new Order()
-                    {
-                        Code = item.Code,
-                        CountryId = country.Id,
-                        Address = item.Address,
-                        RecipientName = item.RecipientName,
-                        RecipientPhones = item.Phone,
-                        ClientNote = item.Note,
-                        Cost = item.Cost,
-                        Date = dateTime,
-                        MoneyPlace = MoneyPalce.OutSideCompany,
-                        OrderPlace = OrderPlace.Client,
-                        OrderState = OrderState.Processing,
-                        ClientId = _contextAccessorService.AuthoticateUserId(),
-                        CreatedBy = _contextAccessorService.AuthoticateUserName(),
-                        DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
-                        IsSend = false,
-                        BranchId = client.BranchId,
-                        CurrentBranchId = client.BranchId
-                    };
-                    orders.Add(order);
-                }
-            }
+                Name = c,
+                BranchId = client.BranchId
+            });
             await _UintOfWork.BegeinTransaction();
-            await _UintOfWork.AddRange(orderFromExcels);
-            await _UintOfWork.AddRange(orders);
-            await _UintOfWork.Commit();
-
-            var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
-            AdminNotification adminNotification = new AdminNotification()
+            try
             {
-                NewOrdersDontSendCount = newOrdersDontSendCount
-            };
-            await _notificationHub.AdminNotifcation(adminNotification);
+                await _UintOfWork.AddRange(newOrderTypes);
+
+                var orders = new List<Order>();
+                foreach (var item in excelOrder)
+                {
+                    var country = countries.FirstOrDefault(c => c.Name == item.Country);
+                    if (country == null)
+                    {
+                        var orderFromExcel = new OrderFromExcel()
+                        {
+                            Address = item.Address,
+                            Code = item.Code,
+                            Cost = item.Cost,
+                            Country = item.Country,
+                            Note = item.Note,
+                            Phone = item.Phone,
+                            RecipientName = item.RecipientName,
+                            ClientId = _contextAccessorService.AuthoticateUserId(),
+                            CreateDate = dateTime,
+                            OrderType = item.OrderType,
+                            OrderTypeCount = item.OrderTypeCount
+                        };
+                        orderFromExcels.Add(orderFromExcel);
+                        correct = true;
+                    }
+                    else
+                    {
+                        var order = new Order()
+                        {
+                            Code = item.Code,
+                            CountryId = country.Id,
+                            Address = item.Address,
+                            RecipientName = item.RecipientName,
+                            RecipientPhones = item.Phone,
+                            ClientNote = item.Note,
+                            Cost = item.Cost,
+                            Date = dateTime,
+                            MoneyPlace = MoneyPalce.OutSideCompany,
+                            OrderPlace = OrderPlace.Client,
+                            OrderState = OrderState.Processing,
+                            ClientId = _contextAccessorService.AuthoticateUserId(),
+                            CreatedBy = _contextAccessorService.AuthoticateUserName(),
+                            DeliveryCost = country.BranchToCountryDeliverryCosts.First(c => c.BranchId == _contextAccessorService.CurrentBranchId()).DeliveryCost,
+                            IsSend = false,
+                            BranchId = client.BranchId,
+                            CurrentBranchId = client.BranchId
+                        };
+                        var orderType = orderTypes.FirstOrDefault(c => c.Name == item.OrderType);
+                        if (orderType == null)
+                        {
+                            var newOrderType = newOrderTypes.First(c => c.Name == item.OrderType);
+                            order.OrderItems.Add(new OrderItem()
+                            {
+                                OrderTpye = newOrderType,
+                                Count = item.OrderTypeCount ?? 1,
+                                
+                            });
+                        }
+                        else
+                        {
+
+                            order.OrderItems.Add(new OrderItem()
+                            {
+                                OrderTpyeId = orderType.Id,
+                                Count = item.OrderTypeCount ?? 1
+                            });
+                        }
+                        orders.Add(order);
+                    }
+                }
+                await _UintOfWork.AddRange(orderFromExcels);
+                await _UintOfWork.AddRange(orders);
+                await _UintOfWork.Commit();
+
+                var newOrdersDontSendCount = await _UintOfWork.Repository<Order>().Count(c => c.IsSend == false && c.OrderPlace == OrderPlace.Client);
+                AdminNotification adminNotification = new AdminNotification()
+                {
+                    NewOrdersDontSendCount = newOrdersDontSendCount
+                };
+                await _notificationHub.AdminNotifcation(adminNotification);
+            }
+            catch (Exception ex)
+            {
+                await _UintOfWork.Rollback();
+            }
             return correct;
         }
 
@@ -1004,7 +1059,7 @@ namespace Quqaz.Web.Services.Concret
 
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
-            htmlPage = htmlPage.Replace("{{orderplacedName}}",string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
+            htmlPage = htmlPage.Replace("{{orderplacedName}}", string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
             var tableTemplatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayReporTable.html";
             var tabelTemplate = await File.ReadAllTextAsync(tableTemplatePath);
             tabelTemplate = tabelTemplate.Replace("{{rows}}", rows.ToString());
