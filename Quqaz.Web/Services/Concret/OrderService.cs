@@ -2200,10 +2200,6 @@ namespace Quqaz.Web.Services.Concret
                 c.AgentRequestStatus = (int)AgentRequestStatusEnum.Approve;
             });
             await _uintOfWork.BegeinTransaction();
-
-            List<Notfication> notficationsGroup = new List<Notfication>();
-            List<Notfication> addednotfications = new List<Notfication>();
-            List<Notfication> notfications = new List<Notfication>();
             List<OrderLog> logs = new List<OrderLog>();
             foreach (var order in orders)
             {
@@ -2305,50 +2301,6 @@ namespace Quqaz.Web.Services.Concret
                             break;
 
                     }
-                }
-                if (order.OrderState != OrderState.Finished && order.OrderPlace != OrderPlace.Way)
-                {
-                    var clientNotigaction = notficationsGroup.Where(c => c.ClientId == order.ClientId && c.OrderPlace == order.OrderPlace && c.MoneyPlace == order.MoneyPlace).FirstOrDefault();
-                    if (clientNotigaction == null)
-                    {
-                        clientNotigaction = new Notfication()
-                        {
-                            ClientId = order.ClientId,
-                            OrderPlace = order.NewOrderPlace.Value,
-                            MoneyPlace = MoneyPalce.WithAgent,
-                            IsSeen = false,
-                            OrderCount = 1
-                        };
-                        notficationsGroup.Add(clientNotigaction);
-                    }
-                    else
-                    {
-                        clientNotigaction.OrderCount++;
-                    }
-                }
-                Notfication notfication = new Notfication()
-                {
-                    Note = $"الطلب {order.Code} اصبح {order.GetOrderPlaced().Name} و موقع المبلغ  {order.GetMoneyPlaced().Name}",
-                    ClientId = order.ClientId
-                };
-                notfications.Add(notfication);
-            }
-            await _uintOfWork.AddRange(notfications);
-            await _uintOfWork.AddRange(notficationsGroup);
-            addednotfications.AddRange(notfications);
-            addednotfications.AddRange(notficationsGroup);
-
-            {
-                var newnotifications = addednotfications.GroupBy(c => c.ClientId).ToList();
-                foreach (var item in newnotifications)
-                {
-                    var key = item.Key;
-                    List<NotificationDto> notficationDtos = new List<NotificationDto>();
-                    foreach (var groupItem in item)
-                    {
-                        notficationDtos.Add(_mapper.Map<NotificationDto>(groupItem));
-                    }
-                    await _notificationHub.AllNotification(key.ToString(), notficationDtos.ToArray());
                 }
             }
             await _uintOfWork.Commit();
