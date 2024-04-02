@@ -31,6 +31,7 @@ namespace Quqaz.Web.Services.Concret
     public class OrderClientSerivce : IOrderClientSerivce
     {
         private readonly IRepository<Order> _repository;
+        private readonly IRepository<Receipt> _receiptRepository;
         private readonly IRepository<OrderType> _orderTypeRepository;
         private readonly IRepository<Client> _clientRepository;
         private readonly NotificationHub _notificationHub;
@@ -38,7 +39,7 @@ namespace Quqaz.Web.Services.Concret
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment)
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment, IRepository<Receipt> receiptRepository)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -48,6 +49,7 @@ namespace Quqaz.Web.Services.Concret
             _UintOfWork = uintOfWork;
             _clientRepository = clientRepository;
             _environment = environment;
+            _receiptRepository = receiptRepository;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -542,7 +544,7 @@ namespace Quqaz.Web.Services.Concret
                             {
                                 OrderTpye = newOrderType,
                                 Count = item.OrderTypeCount ?? 1,
-                                
+
                             });
                         }
                         else
@@ -1056,13 +1058,39 @@ namespace Quqaz.Web.Services.Concret
                 row = row.Replace("{{clientNote}}", order.ClientNote?.ToString());
                 rows.AppendLine(row);
             }
+            var totalOrderRowPath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/TotalOrderRow.html";
+            var totalOrderRowTemplate = await File.ReadAllTextAsync(totalOrderRowPath);
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalCount}}", data.Count().ToString());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalCost}}", data.Sum(c => c.Cost).ToString());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalDeliveryCost}}", data.Sum(c => c.DeliveryCost).ToString());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{total}}", data.Sum(c => c.Cost - c.DeliveryCost).ToString());
+            rows.AppendLine(totalOrderRowTemplate);
+
 
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
             htmlPage = htmlPage.Replace("{{orderplacedName}}", string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
             var tableTemplatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayReporTable.html";
             var tabelTemplate = await File.ReadAllTextAsync(tableTemplatePath);
-            tabelTemplate = tabelTemplate.Replace("{{rows}}", rows.ToString());
+            tabelTemplate = tabelTemplate.Replace("{{orderRows}}", rows.ToString());
+            var receipts = await _receiptRepository.GetAsync(c => c.ClientId == clientId && c.ClientPaymentId == null);
+            var receiptTempatePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/ReceiptRow.html";
+            var receiptTempate = await File.ReadAllTextAsync(receiptTempatePath);
+            rows.Clear();
+            counter = 1;
+            foreach (var receipt in receipts)
+            {
+                var row = receiptTempate.Replace("{{incremental}}", (counter++).ToString());
+                row = row.Replace("{{number}}", receipt.Id.ToString());
+                row = row.Replace("{{date}}", receipt.Date.ToString("yyyy-mm-dd"));
+                row = row.Replace("{{type}}", receipt.IsPay?"قبض":"صرف");
+                row = row.Replace("{{cost}}", Math.Abs(receipt.Amount).ToString());
+                row = row.Replace("{{about}}", receipt.About);
+                row = row.Replace("{{note}}", receipt.Note);
+                rows.Append(row);
+            }
+            tabelTemplate = tabelTemplate.Replace("{{receiptRows}}", rows.ToString());
+
             htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
             return htmlPage;
 
