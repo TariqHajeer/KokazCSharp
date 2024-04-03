@@ -2303,6 +2303,7 @@ namespace Quqaz.Web.Services.Concret
                     }
                 }
             }
+            await _uintOfWork.UpdateRange(orders);
             await _uintOfWork.Commit();
 
         }
