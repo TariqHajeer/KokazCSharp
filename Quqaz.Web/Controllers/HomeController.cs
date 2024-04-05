@@ -144,7 +144,7 @@ namespace Quqaz.Web.Controllers
         [HttpGet("GetMinAppVersion")]
         public IActionResult GetMinAppVersion()
         {
-            return Ok("1.0.0");
+            return Ok("4.0.0");
         }
     }
 }
