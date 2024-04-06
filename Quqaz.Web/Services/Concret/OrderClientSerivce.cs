@@ -25,6 +25,7 @@ using Quqaz.Web.Helpers.Extensions;
 using OfficeOpenXml;
 using Quqaz.Web.Services.Helper;
 using Google.Apis.Util;
+using Quqaz.Web.Dtos.AutoMapperProfile;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -1051,19 +1052,20 @@ namespace Quqaz.Web.Services.Concret
                 var row = rowTempalte.Replace("{{incremental}}", (counter++).ToString());
                 row = row.Replace("{{code}}", order.Code);
                 row = row.Replace("{{phone}}", order.RecipientPhones);
-                row = row.Replace("{{cost}}", order.Cost.ToString());
-                row = row.Replace("{{deliveryCost}}", order.DeliveryCost.ToString());
-                row = row.Replace("{{total}}", (order.Cost - order.DeliveryCost).ToString());
+                row = row.Replace("{{cost}}", order.Cost.ToCurrencyStringWithoutSymbol());
+                row = row.Replace("{{deliveryCost}}", order.DeliveryCost.ToCurrencyStringWithoutSymbol());
+                row = row.Replace("{{total}}", (order.Cost - order.DeliveryCost).ToCurrencyStringWithoutSymbol());
                 row = row.Replace("{{note}}", order.Note?.ToString());
                 row = row.Replace("{{clientNote}}", order.ClientNote?.ToString());
                 rows.AppendLine(row);
             }
+            var totalOrders = data.Sum(c => c.Cost - c.DeliveryCost);
             var totalOrderRowPath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/TotalOrderRow.html";
             var totalOrderRowTemplate = await File.ReadAllTextAsync(totalOrderRowPath);
             totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalCount}}", data.Count().ToString());
-            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalCost}}", data.Sum(c => c.Cost).ToString());
-            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalDeliveryCost}}", data.Sum(c => c.DeliveryCost).ToString());
-            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{total}}", data.Sum(c => c.Cost - c.DeliveryCost).ToString());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalCost}}", data.Sum(c => c.Cost).ToCurrencyStringWithoutSymbol());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{totalDeliveryCost}}", data.Sum(c => c.DeliveryCost).ToCurrencyStringWithoutSymbol());
+            totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{total}}", totalOrders.ToCurrencyStringWithoutSymbol());
             rows.AppendLine(totalOrderRowTemplate);
 
 
@@ -1083,13 +1085,16 @@ namespace Quqaz.Web.Services.Concret
                 var row = receiptTempate.Replace("{{incremental}}", (counter++).ToString());
                 row = row.Replace("{{number}}", receipt.Id.ToString());
                 row = row.Replace("{{date}}", receipt.Date.ToString("yyyy-mm-dd"));
-                row = row.Replace("{{type}}", receipt.IsPay?"قبض":"صرف");
-                row = row.Replace("{{cost}}", Math.Abs(receipt.Amount).ToString());
+                row = row.Replace("{{type}}", receipt.IsPay ? "قبض" : "صرف");
+                row = row.Replace("{{cost}}", Math.Abs(receipt.Amount).ToCurrencyStringWithoutSymbol());
                 row = row.Replace("{{about}}", receipt.About);
                 row = row.Replace("{{note}}", receipt.Note);
                 rows.Append(row);
             }
+            var totalReceipts = receipts.Sum(c => c.Amount);
             tabelTemplate = tabelTemplate.Replace("{{receiptRows}}", rows.ToString());
+            tabelTemplate = tabelTemplate.Replace("{{totalReceipt}}", totalReceipts.ToCurrencyStringWithoutSymbol());
+            tabelTemplate = tabelTemplate.Replace("{{finalAmount}}", (totalOrders + totalReceipts).ToCurrencyStringWithoutSymbol());
 
             htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
             return htmlPage;
