@@ -89,6 +89,10 @@ namespace Quqaz.Web.Dtos.AutoMapperProfile
                 {
                     return obj.AgentOrderPrints.LastOrDefault()?.AgentPrint?.Id ?? null;
                 }))
+                .ForMember(c => c.AgentPrintDate, opt => opt.MapFrom((obj, dto, i, context) =>
+                {
+                    return obj.AgentOrderPrints.LastOrDefault()?.AgentPrint?.Date ?? null;
+                }))
                 .ForMember(c => c.ClientPrintNumber, opt => opt.MapFrom((obj, dto, i, context) =>
                 {
                     return obj.OrderClientPaymnets.LastOrDefault()?.ClientPayment?.Id ?? null;

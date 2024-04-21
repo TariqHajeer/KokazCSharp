@@ -654,7 +654,7 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{orderAddress}}", order.Country.Name + ":" + order.Address);
             var branchId = _contextAccessorService.CurrentBranchId();
             var branch = await _branchRepository.FirstOrDefualt(c => c.Id == branchId);
-            readText = readText.Replace("{{branchAddress}}",branch.Address);
+            readText = readText.Replace("{{branchAddress}}", branch.Address);
             readText = readText.Replace("{{branchPhone}}", branch.PhoneNumber);
             var orderItem = order.OrderItems.FirstOrDefault();
             readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
@@ -1104,7 +1104,7 @@ namespace Quqaz.Web.Services.Concret
 
             htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
             var branch = await _branchRepository.FirstOrDefualt(c => c.Id == currentBranchId);
-            htmlPage = htmlPage.Replace("{{branchPhone}}",branch.PhoneNumber);
+            htmlPage = htmlPage.Replace("{{branchPhone}}", branch.PhoneNumber);
             htmlPage = htmlPage.Replace("{{branchAddress}}", branch.Address);
             return htmlPage;
 
@@ -1133,9 +1133,9 @@ namespace Quqaz.Web.Services.Concret
             var requestedCountriesCount = await _repository.CountGroupBy(c => c.CountryId, predicate);
             var returnConutriesCount = await _repository.CountGroupBy(c => c.CountryId, returndOrderPredicate);
 
-            var highestDeliveredCountryMapId = devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-            var highestRequestedCountryMapId = requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-            var highestReturnedCountryMapId = returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestDeliveredCountryMapId = devlierdCountriesCount.Any() ? devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key : -1;
+            var highestRequestedCountryMapId = requestedCountriesCount.Any()?  requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key:-1;
+            var highestReturnedCountryMapId = returnConutriesCount.Any()? returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key:-1;
             var deliveredOrderRatio = Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount);
             var returnOrderRatio = Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount);
             return new ClientOrderReportDto()
