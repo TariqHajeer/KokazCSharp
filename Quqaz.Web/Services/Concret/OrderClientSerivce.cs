@@ -40,7 +40,8 @@ namespace Quqaz.Web.Services.Concret
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment, IRepository<Receipt> receiptRepository)
+        private readonly IRepository<Branch> _branchRepository;
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment, IRepository<Receipt> receiptRepository, IRepository<Branch> branchRepository)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -51,6 +52,7 @@ namespace Quqaz.Web.Services.Concret
             _clientRepository = clientRepository;
             _environment = environment;
             _receiptRepository = receiptRepository;
+            _branchRepository = branchRepository;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -650,6 +652,10 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{receiverName}}", order.RecipientName);
             readText = readText.Replace("{{receiverPhone}}", order.RecipientPhones);
             readText = readText.Replace("{{orderAddress}}", order.Country.Name + ":" + order.Address);
+            var branchId = _contextAccessorService.CurrentBranchId();
+            var branch = await _branchRepository.FirstOrDefualt(c => c.Id == branchId);
+            readText = readText.Replace("{{branchAddress}}",branch.Address);
+            readText = readText.Replace("{{branchPhone}}", branch.PhoneNumber);
             var orderItem = order.OrderItems.FirstOrDefault();
             readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
             readText = readText.Replace("{{orderTypeCount}}", orderItem?.Count.ToString());
@@ -1097,6 +1103,9 @@ namespace Quqaz.Web.Services.Concret
             tabelTemplate = tabelTemplate.Replace("{{finalAmount}}", (totalOrders + totalReceipts).ToCurrencyStringWithoutSymbol());
 
             htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
+            var branch = await _branchRepository.FirstOrDefualt(c => c.Id == currentBranchId);
+            htmlPage = htmlPage.Replace("{{branchPhone}}",branch.PhoneNumber);
+            htmlPage = htmlPage.Replace("{{branchAddress}}", branch.Address);
             return htmlPage;
 
         }
