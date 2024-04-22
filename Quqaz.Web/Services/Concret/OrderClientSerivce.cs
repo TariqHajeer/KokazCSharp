@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ExcelDataReader;
 using Quqaz.Web.CustomException;
 using Quqaz.Web.DAL.Helper;
 using Quqaz.Web.DAL.Infrastructure.Interfaces;
@@ -24,8 +23,6 @@ using System.Text;
 using Quqaz.Web.Helpers.Extensions;
 using OfficeOpenXml;
 using Quqaz.Web.Services.Helper;
-using Google.Apis.Util;
-using Quqaz.Web.Dtos.AutoMapperProfile;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -384,7 +381,7 @@ namespace Quqaz.Web.Services.Concret
             var sheet = await GetFirstSheet(file);
             List<string> errors = new List<string>();
             List<OrderFromExcelDto> orders = new List<OrderFromExcelDto>();
-            for (var i = 2; i < sheet.Dimension.Columns; i++)
+            for (var i = 2; i < sheet.Dimension.Rows; i++)
             {
                 string errorMessageTemplate = "{0} في السطر رقم " + i;
                 var code = sheet.Cells[i, OrderExcelIndexes.CodeIndex].Value?.ToString() ?? string.Empty;
@@ -454,8 +451,6 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<bool> ImportFromExcel(IFormFile file, DateTime dateTime)
         {
-            var sheet = await GetFirstSheet(file);
-
             var (excelOrder, errors) = await GetOrderFromExcelFile(file);
 
             var codes = excelOrder.Select(c => c.Code);
