@@ -28,6 +28,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public string Note { get; set; }
         public bool IsClientDiliverdMoney { get; set; }
         public int? AgentPrintNumber { get; set; }
+        public DateTime? AgentPrintDate { get; set; }
         public int? ClientPrintNumber { get; set; }
         public int OrderStateId { get; set; }
         public string CanResned { get; set; }

@@ -1360,11 +1360,6 @@ namespace Quqaz.Web.Services.Concret
                 await _uintOfWork.Add(discount);
                 total -= discount.Money;
             }
-            await _uintOfWork.Add(new Notfication()
-            {
-                Note = "تم تسديدك برقم " + clientPayment.Id,
-                ClientId = client.Id
-            });
 
             var treasury = await _uintOfWork.Repository<Treasury>().FirstOrDefualt(c => c.Id == _httpContextAccessorService.AuthoticateUserId());
             treasury.Total -= total;
@@ -1382,7 +1377,7 @@ namespace Quqaz.Web.Services.Concret
             {
                 Title = "تم تسديدك",
                 ClientId = clientId,
-                Body = $"تم تدسديك برقم {clientPayment.Id}",
+                Body = $"تم تسديدك برقم {clientPayment.Id}",
                 NotificationType = NotificationType.Payment,
                 NotificationExtraData = JsonConvert.SerializeObject(new { PaymentId = clientPayment.Id })
             });

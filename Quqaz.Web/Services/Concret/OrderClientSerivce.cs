@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ExcelDataReader;
 using Quqaz.Web.CustomException;
 using Quqaz.Web.DAL.Helper;
 using Quqaz.Web.DAL.Infrastructure.Interfaces;
@@ -24,8 +23,6 @@ using System.Text;
 using Quqaz.Web.Helpers.Extensions;
 using OfficeOpenXml;
 using Quqaz.Web.Services.Helper;
-using Google.Apis.Util;
-using Quqaz.Web.Dtos.AutoMapperProfile;
 
 namespace Quqaz.Web.Services.Concret
 {
@@ -40,7 +37,8 @@ namespace Quqaz.Web.Services.Concret
         private readonly IUintOfWork _UintOfWork;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
-        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment, IRepository<Receipt> receiptRepository)
+        private readonly IRepository<Branch> _branchRepository;
+        public OrderClientSerivce(IRepository<Order> repository, NotificationHub notificationHub, IHttpContextAccessorService contextAccessorService, IMapper mapper, IRepository<OrderType> orderTypeRepository, IUintOfWork uintOfWork, IRepository<Client> clientRepository, IWebHostEnvironment environment, IRepository<Receipt> receiptRepository, IRepository<Branch> branchRepository)
         {
             _repository = repository;
             _notificationHub = notificationHub;
@@ -51,6 +49,7 @@ namespace Quqaz.Web.Services.Concret
             _clientRepository = clientRepository;
             _environment = environment;
             _receiptRepository = receiptRepository;
+            _branchRepository = branchRepository;
         }
 
         public async Task<bool> CheckOrderTypesIdsExists(int[] ids)
@@ -382,7 +381,7 @@ namespace Quqaz.Web.Services.Concret
             var sheet = await GetFirstSheet(file);
             List<string> errors = new List<string>();
             List<OrderFromExcelDto> orders = new List<OrderFromExcelDto>();
-            for (var i = 2; i < sheet.Dimension.Columns; i++)
+            for (var i = 2; i < sheet.Dimension.Rows; i++)
             {
                 string errorMessageTemplate = "{0} في السطر رقم " + i;
                 var code = sheet.Cells[i, OrderExcelIndexes.CodeIndex].Value?.ToString() ?? string.Empty;
@@ -452,8 +451,6 @@ namespace Quqaz.Web.Services.Concret
         }
         public async Task<bool> ImportFromExcel(IFormFile file, DateTime dateTime)
         {
-            var sheet = await GetFirstSheet(file);
-
             var (excelOrder, errors) = await GetOrderFromExcelFile(file);
 
             var codes = excelOrder.Select(c => c.Code);
@@ -650,6 +647,10 @@ namespace Quqaz.Web.Services.Concret
             readText = readText.Replace("{{receiverName}}", order.RecipientName);
             readText = readText.Replace("{{receiverPhone}}", order.RecipientPhones);
             readText = readText.Replace("{{orderAddress}}", order.Country.Name + ":" + order.Address);
+            var branchId = _contextAccessorService.CurrentBranchId();
+            var branch = await _branchRepository.FirstOrDefualt(c => c.Id == branchId);
+            readText = readText.Replace("{{branchAddress}}", branch.Address);
+            readText = readText.Replace("{{branchPhone}}", branch.PhoneNumber);
             var orderItem = order.OrderItems.FirstOrDefault();
             readText = readText.Replace("{{orderType}}", orderItem?.OrderTpye?.Name);
             readText = readText.Replace("{{orderTypeCount}}", orderItem?.Count.ToString());
@@ -1097,6 +1098,9 @@ namespace Quqaz.Web.Services.Concret
             tabelTemplate = tabelTemplate.Replace("{{finalAmount}}", (totalOrders + totalReceipts).ToCurrencyStringWithoutSymbol());
 
             htmlPage = htmlPage.Replace("{{table}}", tabelTemplate);
+            var branch = await _branchRepository.FirstOrDefualt(c => c.Id == currentBranchId);
+            htmlPage = htmlPage.Replace("{{branchPhone}}", branch.PhoneNumber);
+            htmlPage = htmlPage.Replace("{{branchAddress}}", branch.Address);
             return htmlPage;
 
         }
@@ -1124,9 +1128,9 @@ namespace Quqaz.Web.Services.Concret
             var requestedCountriesCount = await _repository.CountGroupBy(c => c.CountryId, predicate);
             var returnConutriesCount = await _repository.CountGroupBy(c => c.CountryId, returndOrderPredicate);
 
-            var highestDeliveredCountryMapId = devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-            var highestRequestedCountryMapId = requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-            var highestReturnedCountryMapId = returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            var highestDeliveredCountryMapId = devlierdCountriesCount.Any() ? devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key : -1;
+            var highestRequestedCountryMapId = requestedCountriesCount.Any()?  requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key:-1;
+            var highestReturnedCountryMapId = returnConutriesCount.Any()? returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key:-1;
             var deliveredOrderRatio = Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount);
             var returnOrderRatio = Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount);
             return new ClientOrderReportDto()

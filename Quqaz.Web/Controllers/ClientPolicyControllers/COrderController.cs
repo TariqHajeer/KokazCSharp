@@ -68,6 +68,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         public async Task<IActionResult> DownloadReceipt(int id)
         {
             var txt = await _orderClientSerivce.GetReceipt(id);
+            
             _generatePdf.SetConvertOptions(new ConvertOptions()
             {
                 PageSize = Wkhtmltopdf.NetCore.Options.Size.A4,

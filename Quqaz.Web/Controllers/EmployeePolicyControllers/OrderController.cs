@@ -342,7 +342,7 @@ namespace Quqaz.Web.Controllers.EmployeePolicyControllers
         public async Task<IActionResult> OrderVicdanAgent(int agnetId)
         {
 
-            var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country) };
+            var includes = new string[] { nameof(Order.Client), nameof(Order.Region), nameof(Order.Country),nameof(Order.AgentOrderPrints)+"."+nameof(AgentOrderPrint.AgentPrint) };
             var orders = await _orderService.GetAsync(c => c.AgentId == agnetId && (c.AgentRequestStatus == (int)AgentRequestStatusEnum.Pending || (c.MoneyPlace == MoneyPalce.WithAgent) || (c.IsClientDiliverdMoney == true && c.OrderPlace == OrderPlace.Way)), includes);
             return Ok(orders);
         }

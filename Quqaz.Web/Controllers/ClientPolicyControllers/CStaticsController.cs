@@ -37,9 +37,18 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
         public async Task<IActionResult> GetOrderStaticsReport([FromQuery] DateRangeFilter dateRangeFilter)
         {
             var result = await _orderClientSerivce.GetOrderStaticsReport(dateRangeFilter);
-            result.HighestDeliveredCountryMapId = Consts.CountryMap[result.HighestDeliveredCountryMapId];
-            result.HighestRequestedCountryMapId = Consts.CountryMap[result.HighestRequestedCountryMapId];
-            result.HighestReturnedCountryMapId = Consts.CountryMap[result.HighestReturnedCountryMapId];
+            if (result.HighestDeliveredCountryMapId != -1)
+            {
+                result.HighestDeliveredCountryMapId = Consts.CountryMap[result.HighestDeliveredCountryMapId];
+            }
+            if (result.HighestRequestedCountryMapId != -1)
+            {
+                result.HighestRequestedCountryMapId = Consts.CountryMap[result.HighestRequestedCountryMapId];
+            }
+            if (result.HighestReturnedCountryMapId != -1)
+            {
+                result.HighestReturnedCountryMapId = Consts.CountryMap[result.HighestReturnedCountryMapId];
+            }
             return Ok(result);
         }
         [HttpGet("GetPhoneOrderStatusCount")]
