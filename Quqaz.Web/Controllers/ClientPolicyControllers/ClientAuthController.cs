@@ -38,6 +38,7 @@ namespace Quqaz.Web.Controllers.ClientPolicyControllers
             var client = this._context.Clients
                 .Include(c => c.Country)
                 .Include(c => c.ClientPhones)
+                .Include(c=>c.Branch)
                 .Where(c => c.UserName.ToLower() == loginDto.UserName.ToLower()).FirstOrDefault();
 
 
