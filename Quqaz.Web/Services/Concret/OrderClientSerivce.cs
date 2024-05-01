@@ -1070,7 +1070,6 @@ namespace Quqaz.Web.Services.Concret
             totalOrderRowTemplate = totalOrderRowTemplate.Replace("{{total}}", totalOrders.ToCurrencyStringWithoutSymbol());
             rows.AppendLine(totalOrderRowTemplate);
 
-
             var htmlPagePath = _environment.WebRootPath + "/HtmlTemplate/ClientTemplate/OrderToPayReport/OrderToPayRepor.html";
             var htmlPage = await File.ReadAllTextAsync(htmlPagePath);
             htmlPage = htmlPage.Replace("{{orderplacedName}}", string.Join('-', orderDontFinishFilter.OrderPlacedId.Select(c => c.GetDescription())));
@@ -1129,11 +1128,24 @@ namespace Quqaz.Web.Services.Concret
             var requestedCountriesCount = await _repository.CountGroupBy(c => c.CountryId, predicate);
             var returnConutriesCount = await _repository.CountGroupBy(c => c.CountryId, returndOrderPredicate);
 
-            var highestDeliveredCountryMapId = devlierdCountriesCount.Any() ? devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key : -1;
-            var highestRequestedCountryMapId = requestedCountriesCount.Any() ? requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key : -1;
-            var highestReturnedCountryMapId = returnConutriesCount.Any() ? returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key : -1;
-            var deliveredOrderRatio = Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount);
-            var returnOrderRatio = Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount);
+            int highestDeliveredCountryMapId = -1;
+            int highestRequestedCountryMapId = -1;
+            int highestReturnedCountryMapId = -1;
+
+            if (devlierdCountriesCount.Any())
+            {
+                highestDeliveredCountryMapId = devlierdCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            }
+            if (requestedCountriesCount.Any())
+            {
+                highestRequestedCountryMapId = requestedCountriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            }
+            if (returnConutriesCount.Any())
+            {
+                highestReturnedCountryMapId = returnConutriesCount.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            }
+            var deliveredOrderRatio = orderCount != 0 ? Convert.ToDecimal(returnOrderCount * 100) / Convert.ToDecimal(orderCount) : 0;
+            var returnOrderRatio = orderCount != 0 ? Convert.ToDecimal(delviverOrderCount * 100) / Convert.ToDecimal(orderCount) : 0;
             return new ClientOrderReportDto()
             {
                 DeliveredOrderRatio = deliveredOrderRatio,
