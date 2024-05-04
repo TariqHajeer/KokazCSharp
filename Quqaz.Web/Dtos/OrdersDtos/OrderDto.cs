@@ -39,7 +39,7 @@ namespace Quqaz.Web.Dtos.OrdersDtos
         public bool? IsSend { get; set; }
         public int? TargetBranchId { get; set; }
         public ClientDto Client { get; set; }
-        public CountryDto Country { get; set; }
+        public NameAndIdDto Country { get; set; }
         public CountryDto NextCountryDto { get; set; }
         public RegionDto Region { get; set; }
         public NameAndIdDto MonePlaced { get; set; }
